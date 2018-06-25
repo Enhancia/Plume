@@ -11,25 +11,49 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "PluginProcessor.h"
+#include "Plugin/PluginProcessor.h"
 
 //==============================================================================
 /**
 */
-class PlumeAudioProcessorEditor  : public AudioProcessorEditor
+
+/**
+ *  \class PlumeEditor PluginEditor.h
+ *
+ *  \brief Plume's editor component.
+ *
+ *  Holds plumes GUI. This component will create the child components that will handle the 3
+ *  interface blocks: wrapper, presets, and gestures.
+ */
+class PlumeEditor  : public AudioProcessorEditor
 {
 public:
-    PlumeAudioProcessorEditor (PlumeAudioProcessor&);
-    ~PlumeAudioProcessorEditor();
+    /**
+     * \brief Constructor.
+     *
+     * Draws the background, calls the subcomponents and sets their bounds accordingly.
+     *
+     * \param p Reference to Plume's processor object.
+     */
+    PlumeEditor (PlumeProcessor& p);
+    
+    /**
+     * \brief Destructor.
+     */
+    ~PlumeEditor();
 
     //==============================================================================
-    void paint (Graphics&) override;
+    /**
+     * \brief JUCE Components' paint method.
+     */
+    void paint (Graphics& g) override;
+    /**
+     * \brief JUCE Components' resized method.
+     */
     void resized() override;
 
 private:
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
-    PlumeAudioProcessor& processor;
+    PlumeProcessor& processor; /** < Reference to Plume's processor object */
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeAudioProcessorEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeEditor)
 };

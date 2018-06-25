@@ -2,8 +2,8 @@
 
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Plume\Source">
-      <UniqueIdentifier>{7756C8A7-AA0B-9AB4-D33E-2FA83717A3D6}</UniqueIdentifier>
+    <Filter Include="Plume\Plugin">
+      <UniqueIdentifier>{7B763B05-C198-85EB-FBD6-83A821DF927F}</UniqueIdentifier>
     </Filter>
     <Filter Include="Plume">
       <UniqueIdentifier>{508F6719-B0C1-9F4F-DB9B-B7E9F582C968}</UniqueIdentifier>
@@ -391,11 +391,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Source\PluginProcessor.cpp">
-      <Filter>Plume\Source</Filter>
+    <ClCompile Include="..\..\Source\Plugin\PluginEditor.cpp">
+      <Filter>Plume\Plugin</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\PluginEditor.cpp">
-      <Filter>Plume\Source</Filter>
+    <ClCompile Include="..\..\Source\Plugin\PluginProcessor.cpp">
+      <Filter>Plume\Plugin</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_audio_basics\buffers\juce_AudioChannelSet.cpp">
       <Filter>JUCE Modules\juce_audio_basics\buffers</Filter>
@@ -2286,11 +2286,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Source\PluginProcessor.h">
-      <Filter>Plume\Source</Filter>
+    <ClInclude Include="..\..\Source\Plugin\PluginEditor.h">
+      <Filter>Plume\Plugin</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\PluginEditor.h">
-      <Filter>Plume\Source</Filter>
+    <ClInclude Include="..\..\Source\Plugin\PluginProcessor.h">
+      <Filter>Plume\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h">
       <Filter>JUCE Modules\juce_audio_basics\audio_play_head</Filter>
