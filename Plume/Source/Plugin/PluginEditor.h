@@ -20,7 +20,7 @@
 /**
  *  \class PlumeEditor PluginEditor.h
  *
- *  \brief Plume's editor component.
+ *  \brief Plume's editor component. Holds the ui of the plugin.
  *
  *  Holds plumes GUI. This component will create the child components that will handle the 3
  *  interface blocks: wrapper, presets, and gestures.

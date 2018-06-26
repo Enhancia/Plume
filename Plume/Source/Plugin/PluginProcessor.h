@@ -69,7 +69,25 @@ public:
     void changeProgramName (int index, const String& newName) override {};
 
     //==============================================================================
+    /**
+     * \brief State save method.
+     *
+     * Creates the data representing the current state of the plugin. It will call
+     * both createWrapperXml and createGesturesXml, then save the data in the specified
+     * memory block.
+     *
+     * \param destData The memory block in which the data will be saved.
+     */  
     void getStateInformation (MemoryBlock& destData) override;
+    /**
+     * \brief State load method.
+     *
+     * Creates the data representing the current state of the plugin. It will call
+     * both createWrapperXml and createGesturesXml, then save the data in the specified
+     * memory block.
+     *
+     * \param destData The memory block in which the data will be saved.
+     */
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 private:

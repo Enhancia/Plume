@@ -15,7 +15,7 @@
 PlumeEditor::PlumeEditor (PlumeProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
 {
-    setSize (1024, 768);
+    setSize (800, 600);
 }
 
 PlumeEditor::~PlumeEditor()
