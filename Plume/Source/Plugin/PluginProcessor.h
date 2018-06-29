@@ -12,6 +12,8 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
+#include "Wrapper/PluginWrapper.h"
+
 //==============================================================================
 /**
 */
@@ -24,6 +26,7 @@
  *  The object that runs plume. Most of it's functions are held by objects instanciated
  *  in this object.
  */
+ 
 class PlumeProcessor  : public AudioProcessor
 {
 public:
@@ -82,15 +85,22 @@ public:
     /**
      * \brief State load method.
      *
-     * Creates the data representing the current state of the plugin. It will call
-     * both createWrapperXml and createGesturesXml, then save the data in the specified
-     * memory block.
+     * Reads the specified data and changes the state of the plugin accordingly.
      *
      * \param destData The memory block in which the data will be saved.
      */
     void setStateInformation (const void* data, int sizeInBytes) override;
+    
+    
+    //==============================================================================
+    PluginWrapper& getWrapper();
+    
 
 private:
+    //==============================================================================
+    ScopedPointer<FileLogger> plumeLogger;
+    ScopedPointer<PluginWrapper> wrapper;
+    
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeProcessor)
 };

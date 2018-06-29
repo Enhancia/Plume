@@ -11,7 +11,7 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "Plugin/PluginProcessor.h"
+#include "Ui/Wrapper/WrapperComponent.h"
 
 //==============================================================================
 /**
@@ -54,6 +54,7 @@ public:
 
 private:
     PlumeProcessor& processor; /** < Reference to Plume's processor object */
+    ScopedPointer<WrapperComponent> wrapperComp; /** < Object allowing to choose a plugin to wrap and use with neova */
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeEditor)
 };

@@ -14,7 +14,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{F77519DD-963F-94F2-CD74-0488B600955F}</ProjectGuid>
+    <ProjectGuid>{560FFC3E-AB42-4008-352B-F19A665EF3E0}</ProjectGuid>
     <PlatformToolset>v141</PlatformToolset>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -150,6 +150,10 @@
   <ItemGroup>
     <ClCompile Include="..\..\Source\Plugin\PluginEditor.cpp"/>
     <ClCompile Include="..\..\Source\Plugin\PluginProcessor.cpp"/>
+    <ClCompile Include="..\..\Source\Wrapper\PluginWrapper.cpp"/>
+    <ClCompile Include="..\..\Source\Wrapper\WrapperEditor.cpp"/>
+    <ClCompile Include="..\..\Source\Wrapper\WrapperProcessor.cpp"/>
+    <ClCompile Include="..\..\Source\Ui\Wrapper\WrapperComponent.cpp"/>
     <ClCompile Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_audio_basics\buffers\juce_AudioChannelSet.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -1866,6 +1870,7 @@
     <ClCompile Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_video\juce_video.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\BinaryData.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_basics.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_devices.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_formats.cpp"/>
@@ -1885,6 +1890,10 @@
   <ItemGroup>
     <ClInclude Include="..\..\Source\Plugin\PluginEditor.h"/>
     <ClInclude Include="..\..\Source\Plugin\PluginProcessor.h"/>
+    <ClInclude Include="..\..\Source\Wrapper\PluginWrapper.h"/>
+    <ClInclude Include="..\..\Source\Wrapper\WrapperEditor.h"/>
+    <ClInclude Include="..\..\Source\Wrapper\WrapperProcessor.h"/>
+    <ClInclude Include="..\..\Source\Ui\Wrapper\WrapperComponent.h"/>
     <ClInclude Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h"/>
     <ClInclude Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_audio_basics\buffers\juce_AudioChannelSet.h"/>
     <ClInclude Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_audio_basics\buffers\juce_AudioDataConverters.h"/>
@@ -2550,9 +2559,13 @@
     <ClInclude Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_video\playback\juce_VideoComponent.h"/>
     <ClInclude Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_video\juce_video.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h"/>
+    <ClInclude Include="..\..\JuceLibraryCode\BinaryData.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h"/>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Ressources\Images\Logo\Logo_ENHANCIA_Round.png"/>
+    <None Include="..\..\Ressources\Images\Wrapper\eye.png"/>
+    <None Include="..\..\Ressources\Images\Wrapper\folder.png"/>
     <None Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_audio_formats\codecs\flac\Flac Licence.txt"/>
     <None Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_audio_formats\codecs\oggvorbis\Ogg Vorbis Licence.txt"/>
     <None Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_graphics\image_formats\jpglib\changes to libjpeg for JUCE.txt"/>

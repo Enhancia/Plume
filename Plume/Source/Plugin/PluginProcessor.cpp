@@ -20,10 +20,12 @@ PlumeProcessor::PlumeProcessor()
                        )
 #endif
 {
+    wrapper = new PluginWrapper(*this);
 }
 
 PlumeProcessor::~PlumeProcessor()
 {
+    wrapper = nullptr;
 }
 
 //==============================================================================
@@ -61,6 +63,15 @@ bool PlumeProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 
 void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
+    if (wrapper->isWrapping())
+    {
+        wrapper->getWrapperProcessor().processBlock(buffer, midiMessages);
+    }
+}
+
+PluginWrapper& PlumeProcessor::getWrapper()
+{
+    return *wrapper;
 }
 
 //==============================================================================

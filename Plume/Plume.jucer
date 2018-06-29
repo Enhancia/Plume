@@ -1,25 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" jucerVersion="5.3.1"
-              pluginFormats="buildStandalone,buildVST" version="0.1" companyName="Enhancia"
+              pluginFormats="buildVST,buildStandalone" version="0.1" companyName="Enhancia"
               buildVST="1" buildVST3="0" buildAU="0" buildAUv3="0" buildRTAS="0"
-              buildAAX="0" enableIAA="0" pluginCharacteristicsValue="pluginProducesMidiOut,pluginWantsMidiIn"
+              buildAAX="0" enableIAA="0" pluginCharacteristicsValue="pluginIsMidiEffectPlugin,pluginProducesMidiOut,pluginWantsMidiIn"
               pluginManufacturer="Enhancia" pluginName="Plume" pluginDesc="Enhancia's Plume. Wraps other plugins and provides customizable and mappable gestures to use with Neova."
               binaryDataNamespace="PlumeData">
   <MAINGROUP id="RYgD59" name="Plume">
-    <GROUP id="{54990471-A6A0-7806-C307-C9055A8D35A0}" name="DataReader"/>
-    <GROUP id="{669FE17C-537F-8F05-04F0-742B485049BC}" name="Gesture"/>
-    <GROUP id="{F03A5F10-3E35-EA28-3AC6-F03774287A99}" name="Plugin">
-      <FILE id="FBWg3b" name="PluginEditor.cpp" compile="1" resource="0"
-            file="Source/Plugin/PluginEditor.cpp"/>
-      <FILE id="UB9JPb" name="PluginEditor.h" compile="0" resource="0" file="Source/Plugin/PluginEditor.h"/>
-      <FILE id="Z1VMn9" name="PluginProcessor.cpp" compile="1" resource="0"
-            file="Source/Plugin/PluginProcessor.cpp"/>
-      <FILE id="vUdlcd" name="PluginProcessor.h" compile="0" resource="0"
-            file="Source/Plugin/PluginProcessor.h"/>
+    <GROUP id="{9375F276-9F56-CF4A-C1B1-D4B5B9CE68B9}" name="Source">
+      <GROUP id="{9B740626-EAB3-638F-41B5-B9DE410DDCF6}" name="DataReader"/>
+      <GROUP id="{D6346BB4-85D0-4DE6-B98D-2B6F2B878441}" name="Gesture"/>
+      <GROUP id="{C4265A58-C7CC-0AD4-EB4C-B191A90D4C34}" name="Plugin">
+        <FILE id="QcTe6y" name="PluginEditor.cpp" compile="1" resource="0"
+              file="Source/Plugin/PluginEditor.cpp"/>
+        <FILE id="bZ5Qdl" name="PluginEditor.h" compile="0" resource="0" file="Source/Plugin/PluginEditor.h"/>
+        <FILE id="qTgVHs" name="PluginProcessor.cpp" compile="1" resource="0"
+              file="Source/Plugin/PluginProcessor.cpp"/>
+        <FILE id="RmlXrO" name="PluginProcessor.h" compile="0" resource="0"
+              file="Source/Plugin/PluginProcessor.h"/>
+      </GROUP>
+      <GROUP id="{791186BF-BE9A-5E6E-9781-2AA91843C798}" name="Wrapper">
+        <FILE id="js1EYd" name="PluginWrapper.cpp" compile="1" resource="0"
+              file="Source/Wrapper/PluginWrapper.cpp"/>
+        <FILE id="qz9CdB" name="PluginWrapper.h" compile="0" resource="0" file="Source/Wrapper/PluginWrapper.h"/>
+        <FILE id="yRXN8O" name="WrapperEditor.cpp" compile="1" resource="0"
+              file="Source/Wrapper/WrapperEditor.cpp"/>
+        <FILE id="j6GR6E" name="WrapperEditor.h" compile="0" resource="0" file="Source/Wrapper/WrapperEditor.h"/>
+        <FILE id="lLQshd" name="WrapperProcessor.cpp" compile="1" resource="0"
+              file="Source/Wrapper/WrapperProcessor.cpp"/>
+        <FILE id="QOI79a" name="WrapperProcessor.h" compile="0" resource="0"
+              file="Source/Wrapper/WrapperProcessor.h"/>
+      </GROUP>
+      <GROUP id="{EB1FE939-C694-02C5-E97F-E17B6084B07C}" name="Ui">
+        <GROUP id="{3CFEC0E3-E11C-6973-B8F6-2519E7B63825}" name="Gesture"/>
+        <GROUP id="{5E507387-603C-6B32-621A-C8B4F8C947FA}" name="LookAndFeel"/>
+        <GROUP id="{5450FD28-5BE9-06D6-902F-232955675D30}" name="Presets"/>
+        <GROUP id="{0D2A9DE8-260D-995D-E894-2CD89C78486D}" name="Wrapper">
+          <FILE id="HpuqnY" name="WrapperComponent.cpp" compile="1" resource="0"
+                file="Source/Ui/Wrapper/WrapperComponent.cpp"/>
+          <FILE id="XEqLHr" name="WrapperComponent.h" compile="0" resource="0"
+                file="Source/Ui/Wrapper/WrapperComponent.h"/>
+        </GROUP>
+      </GROUP>
     </GROUP>
-    <GROUP id="{1FB11512-0317-CC0D-4EB7-46F5C5D8C9F9}" name="UiComponents"/>
-    <GROUP id="{1DFA1CCE-8FA6-34C6-5D4A-528DF871E2AE}" name="Wrapper"/>
+    <GROUP id="{1DA701B0-86B1-D555-94AE-9A6D72F4225B}" name="Ressources">
+      <GROUP id="{0A88E0E6-0AAA-1A53-7038-4FEE4168F5B2}" name="Fonts"/>
+      <GROUP id="{E197EADC-7951-2072-30F3-1E0791A4B2A7}" name="Images">
+        <GROUP id="{5DAA9652-AC5A-272C-7445-2818971B7B55}" name="Backgrounds"/>
+        <GROUP id="{E3B6538E-ABF7-74A3-09C1-5FA4BB791D93}" name="Gestures"/>
+        <GROUP id="{818D20DD-E3FE-ED79-E2C1-85201F3EC29D}" name="Logo">
+          <FILE id="tNIIf1" name="Logo_ENHANCIA_Round.png" compile="0" resource="1"
+                file="Ressources/Images/Logo/Logo_ENHANCIA_Round.png"/>
+        </GROUP>
+        <GROUP id="{AB57C5A1-AAC9-FB9E-461C-410B09E3DA75}" name="Wrapper">
+          <FILE id="IedX1u" name="eye.png" compile="0" resource="1" file="Ressources/Images/Wrapper/eye.png"/>
+          <FILE id="n2RDNf" name="folder.png" compile="0" resource="1" file="Ressources/Images/Wrapper/folder.png"/>
+        </GROUP>
+      </GROUP>
+    </GROUP>
   </MAINGROUP>
   <LIVE_SETTINGS>
     <WINDOWS/>
@@ -69,5 +107,5 @@
     <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_video" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
   </MODULES>
-  <JUCEOPTIONS/>
+  <JUCEOPTIONS JUCE_PLUGINHOST_VST="1"/>
 </JUCERPROJECT>

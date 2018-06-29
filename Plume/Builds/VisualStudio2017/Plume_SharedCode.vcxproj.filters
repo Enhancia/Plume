@@ -2,8 +2,32 @@
 
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Plume\Plugin">
-      <UniqueIdentifier>{7B763B05-C198-85EB-FBD6-83A821DF927F}</UniqueIdentifier>
+    <Filter Include="Plume\Source\Plugin">
+      <UniqueIdentifier>{F4C25BF4-97EA-1A50-96C1-5F96C33405FA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plume\Source\Wrapper">
+      <UniqueIdentifier>{54B958E2-D16A-3EC6-B53B-D453AC38EE7B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plume\Source\Ui\Wrapper">
+      <UniqueIdentifier>{D0C8CA7B-2487-8A16-B897-27C74F41B6B6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plume\Source\Ui">
+      <UniqueIdentifier>{28CEA2CD-D009-9C6A-9AA3-7A8FF56F1542}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plume\Source">
+      <UniqueIdentifier>{7756C8A7-AA0B-9AB4-D33E-2FA83717A3D6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plume\Ressources\Images\Logo">
+      <UniqueIdentifier>{0062098B-B196-08C8-54A5-4C39F05928E5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plume\Ressources\Images\Wrapper">
+      <UniqueIdentifier>{51003CD9-4808-4D69-8D8B-D9F2CBD2CD4D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plume\Ressources\Images">
+      <UniqueIdentifier>{A7BE827C-CAEE-0EB9-286F-EAE5A20BACC9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plume\Ressources">
+      <UniqueIdentifier>{641FC332-43B6-170F-0C5A-349CF9C2F295}</UniqueIdentifier>
     </Filter>
     <Filter Include="Plume">
       <UniqueIdentifier>{508F6719-B0C1-9F4F-DB9B-B7E9F582C968}</UniqueIdentifier>
@@ -392,10 +416,22 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Plugin\PluginEditor.cpp">
-      <Filter>Plume\Plugin</Filter>
+      <Filter>Plume\Source\Plugin</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Plugin\PluginProcessor.cpp">
-      <Filter>Plume\Plugin</Filter>
+      <Filter>Plume\Source\Plugin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Wrapper\PluginWrapper.cpp">
+      <Filter>Plume\Source\Wrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Wrapper\WrapperEditor.cpp">
+      <Filter>Plume\Source\Wrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Wrapper\WrapperProcessor.cpp">
+      <Filter>Plume\Source\Wrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Ui\Wrapper\WrapperComponent.cpp">
+      <Filter>Plume\Source\Ui\Wrapper</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_audio_basics\buffers\juce_AudioChannelSet.cpp">
       <Filter>JUCE Modules\juce_audio_basics\buffers</Filter>
@@ -2239,6 +2275,9 @@
     <ClCompile Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_video\juce_video.mm">
       <Filter>JUCE Modules\juce_video</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\BinaryData.cpp">
+      <Filter>JUCE Library Code</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_basics.cpp">
       <Filter>JUCE Library Code</Filter>
     </ClCompile>
@@ -2287,10 +2326,22 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Plugin\PluginEditor.h">
-      <Filter>Plume\Plugin</Filter>
+      <Filter>Plume\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Plugin\PluginProcessor.h">
-      <Filter>Plume\Plugin</Filter>
+      <Filter>Plume\Source\Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Wrapper\PluginWrapper.h">
+      <Filter>Plume\Source\Wrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Wrapper\WrapperEditor.h">
+      <Filter>Plume\Source\Wrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Wrapper\WrapperProcessor.h">
+      <Filter>Plume\Source\Wrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Ui\Wrapper\WrapperComponent.h">
+      <Filter>Plume\Source\Ui\Wrapper</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h">
       <Filter>JUCE Modules\juce_audio_basics\audio_play_head</Filter>
@@ -4287,11 +4338,23 @@
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h">
       <Filter>JUCE Library Code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\BinaryData.h">
+      <Filter>JUCE Library Code</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h">
       <Filter>JUCE Library Code</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Ressources\Images\Logo\Logo_ENHANCIA_Round.png">
+      <Filter>Plume\Ressources\Images\Logo</Filter>
+    </None>
+    <None Include="..\..\Ressources\Images\Wrapper\eye.png">
+      <Filter>Plume\Ressources\Images\Wrapper</Filter>
+    </None>
+    <None Include="..\..\Ressources\Images\Wrapper\folder.png">
+      <Filter>Plume\Ressources\Images\Wrapper</Filter>
+    </None>
     <None Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_audio_formats\codecs\flac\Flac Licence.txt">
       <Filter>JUCE Modules\juce_audio_formats\codecs\flac</Filter>
     </None>
