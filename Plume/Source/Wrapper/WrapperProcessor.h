@@ -59,7 +59,6 @@ public:
     //==============================================================================
     PluginWrapper& getOwnerWrapper();
     AudioPluginInstance& getWrappedInstance();
-    bool hasOpenedEditor;
     
 private:
     //==============================================================================

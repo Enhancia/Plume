@@ -9,7 +9,10 @@
   <MAINGROUP id="RYgD59" name="Plume">
     <GROUP id="{9375F276-9F56-CF4A-C1B1-D4B5B9CE68B9}" name="Source">
       <GROUP id="{9B740626-EAB3-638F-41B5-B9DE410DDCF6}" name="DataReader"/>
-      <GROUP id="{D6346BB4-85D0-4DE6-B98D-2B6F2B878441}" name="Gesture"/>
+      <GROUP id="{D6346BB4-85D0-4DE6-B98D-2B6F2B878441}" name="Gesture">
+        <FILE id="uxDdhL" name="Gesture.cpp" compile="0" resource="0" file="Source/Gesture/Gesture.cpp"/>
+        <FILE id="BbeSU2" name="Gesture.h" compile="0" resource="0" file="Source/Gesture/Gesture.h"/>
+      </GROUP>
       <GROUP id="{C4265A58-C7CC-0AD4-EB4C-B191A90D4C34}" name="Plugin">
         <FILE id="QcTe6y" name="PluginEditor.cpp" compile="1" resource="0"
               file="Source/Plugin/PluginEditor.cpp"/>
@@ -34,7 +37,12 @@
       <GROUP id="{EB1FE939-C694-02C5-E97F-E17B6084B07C}" name="Ui">
         <GROUP id="{3CFEC0E3-E11C-6973-B8F6-2519E7B63825}" name="Gesture"/>
         <GROUP id="{5E507387-603C-6B32-621A-C8B4F8C947FA}" name="LookAndFeel"/>
-        <GROUP id="{5450FD28-5BE9-06D6-902F-232955675D30}" name="Presets"/>
+        <GROUP id="{5450FD28-5BE9-06D6-902F-232955675D30}" name="Presets">
+          <FILE id="jEnMNo" name="PresetComponent.cpp" compile="1" resource="0"
+                file="Source/Ui/Presets/PresetComponent.cpp"/>
+          <FILE id="m6axr4" name="PresetComponent.h" compile="0" resource="0"
+                file="Source/Ui/Presets/PresetComponent.h"/>
+        </GROUP>
         <GROUP id="{0D2A9DE8-260D-995D-E894-2CD89C78486D}" name="Wrapper">
           <FILE id="HpuqnY" name="WrapperComponent.cpp" compile="1" resource="0"
                 file="Source/Ui/Wrapper/WrapperComponent.cpp"/>

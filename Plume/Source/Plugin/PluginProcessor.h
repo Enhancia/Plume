@@ -27,7 +27,8 @@
  *  in this object.
  */
  
-class PlumeProcessor  : public AudioProcessor
+class PlumeProcessor  : public AudioProcessor,
+                        public ChangeBroadcaster
 {
 public:
     //==============================================================================
@@ -91,6 +92,11 @@ public:
      */
     void setStateInformation (const void* data, int sizeInBytes) override;
     
+    void createPluginXml (XmlElement& wrapperData);
+    void createGestureXml (XmlElement& wrapperData);
+    
+    void loadPluginXml(const XmlElement& pluginData);
+    void loadGestureXml(const XmlElement& gestureData);
     
     //==============================================================================
     PluginWrapper& getWrapper();

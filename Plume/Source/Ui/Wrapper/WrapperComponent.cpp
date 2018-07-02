@@ -24,31 +24,26 @@ WrapperComponent::WrapperComponent(PluginWrapper& wrap)
     
     // Creates the buttons and the label
     addAndMakeVisible (scanButton = new ImageButton ("Scan Plugin Button"));
-    scanButton->setImages (true, true, true, 
+    scanButton->setImages (false, true, false, 
                            scan, 1.0f, Colour (0x98000000),
                            scan, 0.7f, Colour (0x10ffffff),
                            scan, 0.7f, Colour (0x501600f0));
     scanButton->addListener (this);
-	scanButton->setTopLeftPosition(Point<int>(100, 15));
     
-    addAndMakeVisible (pluginNameLabel = new Label ("Plugin Name Label", TRANS ("No plugin")));
+    addAndMakeVisible (pluginNameLabel = new Label ("Plugin Name Label", TRANS (wrapper.getWrappedPluginName())));
     pluginNameLabel->setFont (Font (15.00f, Font::bold).withTypefaceStyle ("Regular"));
     pluginNameLabel->setJustificationType (Justification::centred);
     pluginNameLabel->setEditable (false, false, false);
     pluginNameLabel->setColour (Label::backgroundColourId, Colour (0xff505050));
     pluginNameLabel->setColour (Label::textColourId, Colour (0xffffffff));
     pluginNameLabel->setColour (Label::outlineColourId, Colour (0x00000000));
-    pluginNameLabel->setBounds (130, 15, 300, 30);
-    
     
     addAndMakeVisible (openEditorButton = new ImageButton ("Open Editor Button"));
-    openEditorButton->setImages (true, true, true, 
-                           editor, 1.0f, Colour (0x00000000),
-                           editor, 0.7f, Colour (0x10ffffff),
-                           editor, 0.7f, Colour (0x501600f0));
+    openEditorButton->setImages (false, true, false, 
+                                 editor, 1.0f, Colour (0x00000000),
+                                 editor, 0.7f, Colour (0x10ffffff),
+                                 editor, 0.7f, Colour (0x501600f0));
     openEditorButton->addListener (this);
-	openEditorButton->setTopLeftPosition(Point<int>(480, 15));
-	
 }
 
 WrapperComponent::~WrapperComponent()
@@ -62,7 +57,7 @@ void WrapperComponent::paint (Graphics& g)
 
     {
         //g.setColour (Colours::black);
-        int width = getHeight()/2, height = getHeight()/2, x = 20, y = getHeight()/4;
+        int width = getHeight()*2/3, height = getHeight()*2/3, x = 20, y = getHeight()/6;
         File f ("D:/Workspace/GitWorkspace/Plume/Plume/Ressources/Images/Logo/Logo_ENHANCIA_Round.png");
         Image logo = ImageFileFormat::loadFrom (f);
         g.drawImage (logo,
@@ -73,6 +68,11 @@ void WrapperComponent::paint (Graphics& g)
 
 void WrapperComponent::resized()
 {
+    int h = getHeight(), w = getWidth();
+    
+	scanButton->setBounds (w*3/16, h/3, w/16, h/3);
+    pluginNameLabel->setBounds (w*1/4, h/3, w*7/16, h/3);
+	openEditorButton->setBounds (w*23/32, h/4, w/4, h/2);
 }
 
 //==============================================================================
@@ -115,4 +115,10 @@ void WrapperComponent::openEditor()
     {
         wrapper.createWrapperEditor();
     }
+}
+
+//==============================================================================
+void WrapperComponent::update()
+{
+    pluginNameLabel->setText(wrapper.getWrappedPluginName(), dontSendNotification);
 }

@@ -52,7 +52,7 @@ bool PluginWrapper::wrapPlugin (File pluginFile)
         unwrapPlugin();
     }
     
-    //Scans the plugin directory for the wanted plugin and gets it's PluginDescription
+    //Scans the plugin directory for the wanted plugin and gets its PluginDescription
     DBG ("\n[Scan and add File]");
     ScopedPointer<KnownPluginList> pluginList = new KnownPluginList();
     
@@ -139,7 +139,7 @@ void PluginWrapper::createWrapperEditor()
         return;
     }
     
-    wrapperProcessor->hasOpenedEditor = true;
+    hasOpenedEditor = true;
         
     if (wrapperEditor == nullptr)
     {
@@ -172,4 +172,13 @@ String PluginWrapper::getWrappedPluginName()
 WrapperProcessor& PluginWrapper::getWrapperProcessor()
 {
     return *wrapperProcessor;
+}
+
+//==============================================================================
+void PluginWrapper::fillInPluginDescription (PluginDescription& pd)
+{
+    if (hasWrappedInstance)
+    {
+        wrappedInstance->fillInPluginDescription (pd);
+    }
 }

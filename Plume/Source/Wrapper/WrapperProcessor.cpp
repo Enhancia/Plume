@@ -51,7 +51,6 @@ WrapperProcessor::WrapperProcessor(AudioPluginInstance& wrappedPlugin, PluginWra
       owner (ownerWrapper)
 {
     initWrappedParameters();
-    hasOpenedEditor = false;
 }
 
 WrapperProcessor::~WrapperProcessor()

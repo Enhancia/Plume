@@ -13,7 +13,6 @@
 #include "../../JuceLibraryCode/JuceHeader.h"
 
 #include "Wrapper/WrapperEditor.h"
-#include "Wrapper/WrapperProcessor.h"
 
 /**
  *  \class PluginWrapper PluginWrapper.h
@@ -47,6 +46,9 @@ public:
     //==============================================================================
     String getWrappedPluginName();
     WrapperProcessor& getWrapperProcessor();
+    
+    //==============================================================================
+    void fillInPluginDescription (PluginDescription& pd);
     
 private:       
     //==============================================================================

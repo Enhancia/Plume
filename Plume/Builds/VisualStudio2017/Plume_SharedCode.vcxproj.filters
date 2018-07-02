@@ -2,11 +2,17 @@
 
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="Plume\Source\Gesture">
+      <UniqueIdentifier>{1A7522EE-1AC7-DA8D-D6C5-24E2583B9D18}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Plume\Source\Plugin">
       <UniqueIdentifier>{F4C25BF4-97EA-1A50-96C1-5F96C33405FA}</UniqueIdentifier>
     </Filter>
     <Filter Include="Plume\Source\Wrapper">
       <UniqueIdentifier>{54B958E2-D16A-3EC6-B53B-D453AC38EE7B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plume\Source\Ui\Presets">
+      <UniqueIdentifier>{07DF8710-99F0-310A-B747-D8BE926CC05F}</UniqueIdentifier>
     </Filter>
     <Filter Include="Plume\Source\Ui\Wrapper">
       <UniqueIdentifier>{D0C8CA7B-2487-8A16-B897-27C74F41B6B6}</UniqueIdentifier>
@@ -415,6 +421,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\Gesture\Gesture.cpp">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Plugin\PluginEditor.cpp">
       <Filter>Plume\Source\Plugin</Filter>
     </ClCompile>
@@ -429,6 +438,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Wrapper\WrapperProcessor.cpp">
       <Filter>Plume\Source\Wrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Ui\Presets\PresetComponent.cpp">
+      <Filter>Plume\Source\Ui\Presets</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Ui\Wrapper\WrapperComponent.cpp">
       <Filter>Plume\Source\Ui\Wrapper</Filter>
@@ -2325,6 +2337,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Gesture\Gesture.h">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Plugin\PluginEditor.h">
       <Filter>Plume\Source\Plugin</Filter>
     </ClInclude>
@@ -2339,6 +2354,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Wrapper\WrapperProcessor.h">
       <Filter>Plume\Source\Wrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Ui\Presets\PresetComponent.h">
+      <Filter>Plume\Source\Ui\Presets</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Ui\Wrapper\WrapperComponent.h">
       <Filter>Plume\Source\Ui\Wrapper</Filter>

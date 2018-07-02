@@ -35,6 +35,9 @@ public:
     void scanPlugin();
     void openEditor();
     
+    //==============================================================================
+    void update();
+    
 private:
     ScopedPointer<ImageButton> scanButton;
     ScopedPointer<ImageButton> openEditorButton;
