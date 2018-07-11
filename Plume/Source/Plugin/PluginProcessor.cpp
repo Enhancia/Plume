@@ -20,21 +20,26 @@ PlumeProcessor::PlumeProcessor()
                        )
 #endif
 {
-    wrapper = new PluginWrapper(*this);
+    wrapper = new PluginWrapper (*this);
+    dataReader = new DataReader();
+    gestureArray = new GestureArray (*dataReader);
 }
 
 PlumeProcessor::~PlumeProcessor()
 {
     wrapper = nullptr;
+    dataReader = nullptr;
 }
 
 //==============================================================================
 void PlumeProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    wrapper->getWrapperProcessor().prepareToPlay (sampleRate, samplesPerBlock);
 }
 
 void PlumeProcessor::releaseResources()
 {
+    wrapper->getWrapperProcessor().releaseResources();
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -63,8 +68,13 @@ bool PlumeProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 
 void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
+    gestureArray->updateAllValues();
+    
     if (wrapper->isWrapping())
     {
+        // Adds the gesture's MIDI messages to the buffer
+        gestureArray->addGestureMidiToBuffer(midiMessages);
+        
         // Calls the wrapper processor's processBlock method
         wrapper->getWrapperProcessor().processBlock(buffer, midiMessages);
     }
@@ -73,6 +83,11 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
 PluginWrapper& PlumeProcessor::getWrapper()
 {
     return *wrapper;
+}
+
+DataReader* PlumeProcessor::getDataReader()
+{
+    return dataReader;
 }
 
 //==============================================================================

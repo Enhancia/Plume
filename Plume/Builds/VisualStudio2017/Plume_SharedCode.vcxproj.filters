@@ -2,6 +2,9 @@
 
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="Plume\Source\DataReader">
+      <UniqueIdentifier>{345C7276-CC70-5981-6545-105A4398AAE5}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Plume\Source\Gesture">
       <UniqueIdentifier>{1A7522EE-1AC7-DA8D-D6C5-24E2583B9D18}</UniqueIdentifier>
     </Filter>
@@ -421,7 +424,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Source\Gesture\Gesture.cpp">
+    <ClCompile Include="..\..\Source\DataReader\DataReader.cpp">
+      <Filter>Plume\Source\DataReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Gesture\GestureArray.cpp">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Gesture\Tilt.cpp">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Gesture\Vibrato.cpp">
       <Filter>Plume\Source\Gesture</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Plugin\PluginEditor.cpp">
@@ -2337,7 +2349,19 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\DataReader\DataReader.h">
+      <Filter>Plume\Source\DataReader</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Gesture\Gesture.h">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Gesture\GestureArray.h">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Gesture\Tilt.h">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Gesture\Vibrato.h">
       <Filter>Plume\Source\Gesture</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Plugin\PluginEditor.h">

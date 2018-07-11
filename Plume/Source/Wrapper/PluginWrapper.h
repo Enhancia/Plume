@@ -65,4 +65,7 @@ private:
     ScopedPointer<AudioPluginFormatManager> formatManager;
  
     PlumeProcessor& owner;
+    
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginWrapper)
 };

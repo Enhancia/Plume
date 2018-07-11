@@ -30,6 +30,13 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	
     // Adds itself as a change listener for plume's processor
     processor.addChangeListener (this);
+    
+    //====================================================================
+    // Creates the data reader component, might need to be deleted in the future
+	auto* dataReader = processor.getDataReader();
+    addAndMakeVisible (dataReader);
+    dataReader->setTopLeftPosition (Point<int> (getWidth()  - dataReader->getWidth()  - 2*MARGIN,
+												getHeight() - dataReader->getHeight() - 2*MARGIN));
 }
 
 PlumeEditor::~PlumeEditor()

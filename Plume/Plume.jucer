@@ -8,10 +8,19 @@
               binaryDataNamespace="PlumeData">
   <MAINGROUP id="RYgD59" name="Plume">
     <GROUP id="{9375F276-9F56-CF4A-C1B1-D4B5B9CE68B9}" name="Source">
-      <GROUP id="{9B740626-EAB3-638F-41B5-B9DE410DDCF6}" name="DataReader"/>
+      <GROUP id="{9B740626-EAB3-638F-41B5-B9DE410DDCF6}" name="DataReader">
+        <FILE id="vdUcyM" name="DataReader.cpp" compile="1" resource="0" file="Source/DataReader/DataReader.cpp"/>
+        <FILE id="xokgvb" name="DataReader.h" compile="0" resource="0" file="Source/DataReader/DataReader.h"/>
+      </GROUP>
       <GROUP id="{D6346BB4-85D0-4DE6-B98D-2B6F2B878441}" name="Gesture">
-        <FILE id="uxDdhL" name="Gesture.cpp" compile="0" resource="0" file="Source/Gesture/Gesture.cpp"/>
         <FILE id="BbeSU2" name="Gesture.h" compile="0" resource="0" file="Source/Gesture/Gesture.h"/>
+        <FILE id="RWSIt8" name="GestureArray.cpp" compile="1" resource="0"
+              file="Source/Gesture/GestureArray.cpp"/>
+        <FILE id="YDOuks" name="GestureArray.h" compile="0" resource="0" file="Source/Gesture/GestureArray.h"/>
+        <FILE id="b96diG" name="Tilt.cpp" compile="0" resource="0" file="Source/Gesture/Tilt.cpp"/>
+        <FILE id="OBb6KF" name="Tilt.h" compile="0" resource="0" file="Source/Gesture/Tilt.h"/>
+        <FILE id="DxDfnn" name="Vibrato.cpp" compile="1" resource="0" file="Source/Gesture/Vibrato.cpp"/>
+        <FILE id="Q9pb1g" name="Vibrato.h" compile="0" resource="0" file="Source/Gesture/Vibrato.h"/>
       </GROUP>
       <GROUP id="{C4265A58-C7CC-0AD4-EB4C-B191A90D4C34}" name="Plugin">
         <FILE id="QcTe6y" name="PluginEditor.cpp" compile="1" resource="0"

@@ -13,6 +13,9 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 
 #include "Wrapper/PluginWrapper.h"
+#include "Gesture/Gesture.h"
+#include "Gesture/GestureArray.h"
+#include "DataReader/DataReader.h"
 
 //==============================================================================
 /**
@@ -100,12 +103,15 @@ public:
     
     //==============================================================================
     PluginWrapper& getWrapper();
+    DataReader* getDataReader();
     
 
 private:
     //==============================================================================
     ScopedPointer<FileLogger> plumeLogger;
     ScopedPointer<PluginWrapper> wrapper;
+    ScopedPointer<DataReader> dataReader;
+    ScopedPointer<GestureArray> gestureArray;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeProcessor)

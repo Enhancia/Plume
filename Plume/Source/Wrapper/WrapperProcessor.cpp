@@ -66,7 +66,7 @@ WrapperProcessor::~WrapperProcessor()
 //==============================================================================
 void WrapperProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-    // Clears the audioBuffer if not needed
+    // Clears the audioBuffer if its not needed
     if (plugin.getMainBusNumInputChannels() == 0)
     {
         buffer.clear();
