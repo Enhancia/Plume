@@ -19,7 +19,7 @@
     your controls and content.
 */
 class DataReader   : public Component,
-                       private InterprocessConnection
+                     private InterprocessConnection
 {
 public:
     static constexpr int DATA_SIZE = 7;
@@ -35,7 +35,7 @@ public:
     //==============================================================================
     void readData(String s);
     const String getRawData(int index);
-    bool getRawDataAsFloatArray(float arrayToFill[7]);
+    bool getRawDataAsFloatArray(Array<float>& arrayToFill);
     
     //==============================================================================
     bool createNewPipe(int maxNumber);

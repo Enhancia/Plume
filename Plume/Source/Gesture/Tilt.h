@@ -20,14 +20,14 @@ public:
     ~Tilt();
     
     //==============================================================================
-    void addGestureMidi(MidiBuffer& MidiMessages) override;
+    void addGestureMidi(MidiBuffer& midiMessages) override;
     int getMidiValue () override;
     
     void updateMappedParameter() override;
     float getValueForMappedParameter() override;
     
     //==============================================================================
-    void updateValue (const float* rawData) override;
+    void updateValue (const Array<float> rawData) override;
     void addGestureParameters() override;
     
 private:

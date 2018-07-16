@@ -15,6 +15,13 @@
 #include "Gesture/Gesture.h"
 #include "Gesture/Vibrato.h"
 
+/**
+ *  \class GestureArray GestureArray.h
+ *
+ *  \brief Gesture super class.
+ *
+ *  Base class to create gestures, with virtual mehtods to create MIDI or map the gesture to a parameter.
+ */
 class GestureArray
 {
 public:

@@ -64,12 +64,12 @@ float Vibrato::getValueForMappedParameter()
 }
 
 //==============================================================================
-void Vibrato::updateValue (float rawData[7])
+void Vibrato::updateValue (const Array<float> rawData)
 {
     intensity = rawData[1];
     value = rawData[0];
     
-    DBG ("values: 1 = " << intensity << " | 2 = " << value << " \n");
+    //DBG ("values: 1 = " << intensity << " | 2 = " << value << " \n");
 }
 
 void Vibrato::addGestureParameters()

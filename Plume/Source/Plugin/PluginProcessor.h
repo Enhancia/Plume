@@ -108,10 +108,10 @@ public:
 
 private:
     //==============================================================================
-    ScopedPointer<FileLogger> plumeLogger;
-    ScopedPointer<PluginWrapper> wrapper;
-    ScopedPointer<DataReader> dataReader;
-    ScopedPointer<GestureArray> gestureArray;
+    ScopedPointer<FileLogger> plumeLogger; /** < Logger object. Allows to write logs for testing purposes. */
+    ScopedPointer<PluginWrapper> wrapper; /** < PluginWrapper object. Handles the plugin wrapping. */
+    ScopedPointer<DataReader> dataReader; /** < DataReader object. Recieves the data from the ring. */
+    ScopedPointer<GestureArray> gestureArray; /** < GestureArray object. Stores all current gesture objects. */
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeProcessor)

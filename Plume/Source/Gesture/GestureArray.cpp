@@ -50,7 +50,7 @@ void GestureArray::updateAllMappedParameters ()
 
 void GestureArray::updateAllValues()
 {
-    float rawData[7] = {0.0f};
+    Array<float> rawData;
     
     if (dataReader.getRawDataAsFloatArray(rawData))
     {

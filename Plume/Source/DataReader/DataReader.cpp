@@ -61,18 +61,18 @@ const String DataReader::getRawData(int index)
     return (*data)[index];
 }
 
-bool DataReader::getRawDataAsFloatArray(float arrayToFill[7])
+bool DataReader::getRawDataAsFloatArray(Array<float>& arrayToFill)
 {
     // Checks that the array has the right amont and type of data
-    //if (sizeof(arrayToFill) != sizeof(float[7])) return false;
+    if (arrayToFill.isEmpty() == false) return false;
     
-    DBG ("Data: " << data->joinIntoString(", "));
+    //DBG ("Data: " << data->joinIntoString(", "));
     
     // Fills the array with new values taken from the "Data" StringArray
     for (int i =0; i<DATA_SIZE; i++)
     {
-        arrayToFill[i] = (*data)[i].getFloatValue();
-        DBG ("Value " << i << " = " << arrayToFill[i]);
+        arrayToFill.add ((*data)[i].getFloatValue());
+        //DBG ("Value " << i << " = " << arrayToFill[i]);
     }
     
     return true;
