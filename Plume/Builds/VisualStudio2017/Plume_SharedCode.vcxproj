@@ -14,7 +14,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{D6509819-CFD7-869E-4E59-CFEB87BEF839}</ProjectGuid>
+    <ProjectGuid>{93AFBFB1-CE5C-9BD9-C3E7-BF03AD8BFFD6}</ProjectGuid>
     <PlatformToolset>v141</PlatformToolset>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -159,6 +159,7 @@
     <ClCompile Include="..\..\Source\Wrapper\PluginWrapper.cpp"/>
     <ClCompile Include="..\..\Source\Wrapper\WrapperEditor.cpp"/>
     <ClCompile Include="..\..\Source\Wrapper\WrapperProcessor.cpp"/>
+    <ClCompile Include="..\..\Source\Ui\Gesture\GesturePanel.cpp"/>
     <ClCompile Include="..\..\Source\Ui\Presets\PresetComponent.cpp"/>
     <ClCompile Include="..\..\Source\Ui\Wrapper\WrapperComponent.cpp"/>
     <ClCompile Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_audio_basics\buffers\juce_AudioChannelSet.cpp">
@@ -1905,6 +1906,7 @@
     <ClInclude Include="..\..\Source\Wrapper\PluginWrapper.h"/>
     <ClInclude Include="..\..\Source\Wrapper\WrapperEditor.h"/>
     <ClInclude Include="..\..\Source\Wrapper\WrapperProcessor.h"/>
+    <ClInclude Include="..\..\Source\Ui\Gesture\GesturePanel.h"/>
     <ClInclude Include="..\..\Source\Ui\Presets\PresetComponent.h"/>
     <ClInclude Include="..\..\Source\Ui\Wrapper\WrapperComponent.h"/>
     <ClInclude Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h"/>

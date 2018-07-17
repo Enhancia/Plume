@@ -22,8 +22,8 @@ Tilt (String gestName)
 void addGestureMidi(MidiBuffer& midiMessages) override;
 int getMidiValue () override;
    
-void updateMappedParameter() override;
-float getValueForMappedParameter() override;
+void updateMappedParameters() override;
+float getValueForMappedParameter(int paramId) override;
     
 //==============================================================================
 void updateValue (const Array<float> rawData) override;

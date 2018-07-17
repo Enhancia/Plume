@@ -44,7 +44,11 @@
               file="Source/Wrapper/WrapperProcessor.h"/>
       </GROUP>
       <GROUP id="{EB1FE939-C694-02C5-E97F-E17B6084B07C}" name="Ui">
-        <GROUP id="{3CFEC0E3-E11C-6973-B8F6-2519E7B63825}" name="Gesture"/>
+        <GROUP id="{3CFEC0E3-E11C-6973-B8F6-2519E7B63825}" name="Gesture">
+          <FILE id="tb4LAs" name="GesturePanel.cpp" compile="1" resource="0"
+                file="Source/Ui/Gesture/GesturePanel.cpp"/>
+          <FILE id="ZGz1SG" name="GesturePanel.h" compile="0" resource="0" file="Source/Ui/Gesture/GesturePanel.h"/>
+        </GROUP>
         <GROUP id="{5E507387-603C-6B32-621A-C8B4F8C947FA}" name="LookAndFeel"/>
         <GROUP id="{5450FD28-5BE9-06D6-902F-232955675D30}" name="Presets">
           <FILE id="jEnMNo" name="PresetComponent.cpp" compile="1" resource="0"

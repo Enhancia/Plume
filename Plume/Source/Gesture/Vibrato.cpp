@@ -10,7 +10,7 @@
 
 #include "Vibrato.h"
 
-Vibrato::Vibrato (String gestName)  : Gesture (gestName, Gesture::vibrato)
+Vibrato::Vibrato (String gestName)  : Gesture (gestName, Gesture::vibrato, Range<float> (0.0f, 500.0f), 0.0f)
 {
 }
 Vibrato::~Vibrato()
@@ -53,12 +53,12 @@ int Vibrato::getMidiValue ()
     return 8192;
 }
 
-void Vibrato::updateMappedParameter()
+void Vibrato::updateMappedParameters()
 {
     // WIP
 }
 
-float Vibrato::getValueForMappedParameter()
+float Vibrato::getValueForMappedParameter(int paramId)
 {
     return 0.0f; // WIP
 }

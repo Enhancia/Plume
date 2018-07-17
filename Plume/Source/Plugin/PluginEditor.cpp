@@ -22,11 +22,14 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     setSize (800, 600);
     
     // Creates the 3 main components
-    addAndMakeVisible (wrapperComp = new WrapperComponent(processor.getWrapper()));
+    addAndMakeVisible (wrapperComp = new WrapperComponent (processor.getWrapper()));
     wrapperComp->setBounds (2*MARGIN, 2*MARGIN, 492, TOP_PANEL);
     
-    addAndMakeVisible (presetComp = new PresetComponent(processor));
+    addAndMakeVisible (presetComp = new PresetComponent (processor));
 	presetComp->setBounds(wrapperComp->getWidth() + 3*MARGIN, 2*MARGIN, getWidth() - wrapperComp->getWidth() - 5*MARGIN, TOP_PANEL);
+	
+	addAndMakeVisible (gesturePanel = new gesturePanel (processor.getGestureArray()));
+	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 4*MARGIN, getWidth() - 2*MARGIN, getHeight() - TOP_PANEL - 6*MARGIN);
 	
     // Adds itself as a change listener for plume's processor
     processor.addChangeListener (this);
@@ -43,6 +46,7 @@ PlumeEditor::~PlumeEditor()
 {
     wrapperComp = nullptr;
     presetComp = nullptr;
+    gesturePanel = nullptr;
 }
 
 //==============================================================================

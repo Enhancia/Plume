@@ -29,6 +29,7 @@ PlumeProcessor::~PlumeProcessor()
 {
     wrapper = nullptr;
     dataReader = nullptr;
+    gestureArray = nullptr;
 }
 
 //==============================================================================
@@ -80,6 +81,7 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
     }
 }
 
+//==============================================================================
 PluginWrapper& PlumeProcessor::getWrapper()
 {
     return *wrapper;

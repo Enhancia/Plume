@@ -9,11 +9,38 @@
 */
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
-#include "GesturePanel.h"
+#include "Gesture/GestureArray.h"
+#include "Ui/Gesture/GesturePanel.h"
 
 //==============================================================================
-GesturePanel::GesturePanel()
+class  GesturePanel::GestureComponent   : public Component
 {
+public:
+    GestureComponent(Gesture& gest): gesture (gest)
+    {
+    }
+    
+    ~GestureComponent()
+    {
+    }
+    
+    void paint (Graphics& g) override
+    {
+        g.fillAll(Colour (0xffeeeeee));
+    }
+    
+    void resized() override
+    {
+    }
+    
+private:
+    Gesture& gesture;
+};
+
+//==============================================================================
+GesturePanel::GesturePanel(GestureArray& gestArray) : gestureArray (gestArray)
+{
+    initialize();
 }
 
 GesturePanel::~GesturePanel()
@@ -22,9 +49,12 @@ GesturePanel::~GesturePanel()
 
 void GesturePanel::paint (Graphics& g)
 {
-    g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));   // clear the background
 }
 
 void GesturePanel::resized()
+{
+}
+
+void GesturePanel::initialize()
 {
 }

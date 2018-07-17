@@ -29,23 +29,39 @@ public:
     ~GestureArray();
 
     //==============================================================================
+    // Helper methods for processor
     void addGestureMidiToBuffer (MidiBuffer& MidiMessages);
     void updateAllMappedParameters();
     void updateAllValues();
     
     //==============================================================================
-    Gesture* getGestureByName (String nameToSearch);
+    // Getters
+    Gesture* getGestureByName (const String nameToSearch);
+    Gesture* getGestureById(const unsigned int idToSearch);
+    OwnedArray<Gesture>& getArray();
+    int getSize();
+    
+    //==============================================================================
+    // Modifiers
     void addGesture (String gestureName, int gestureType);
     void clearAllGestures ();
     
 private:
     //==============================================================================
+    // Pitch message issue handler methods
     bool requiresPitchMerging();
     MidiMessage mergePitchMessages();
     
+    //==============================================================================
+    /**
+     *  \brief Initializer method.
+     *
+     *  Creates the initial array of gestures.
+     *  Initializes Plume with the default gestures, that eventually will be changeable / renable.
+     */
     void initializeGestures();
     
     //==============================================================================
-    OwnedArray<Gesture> gestures;
-    DataReader& dataReader;
+    OwnedArray<Gesture> gestures; /** < OwnedArray that holds all gesture objects*/
+    DataReader& dataReader; /** < Reference to the data reader object, to access the raw data from the ring*/
 };

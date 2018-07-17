@@ -18,15 +18,19 @@
 class GesturePanel    : public Component
 {
 public:
-    GesturePanel();
+    GesturePanel (GestureArray& gestureArray);
     ~GesturePanel();
 
     void paint (Graphics&) override;
     void resized() override;
 
+    void initialize();
+    
 private:
     class GestureComponent;
     
-    OwnedArray<GestureComponent>;
+    OwnedArray<GestureComponent> gestureComponents;
+    GestureArray& gestureArray;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GesturePanel)
 };

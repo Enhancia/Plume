@@ -31,7 +31,7 @@ public:
     AudioProcessorEditor* createProcessorEditor (AudioProcessor& processor);
     
     //==============================================================================
-    WrapperProcessor& wrapperProcessor;
+    WrapperProcessor& wrapperProcessor; /** < Reference to the wrapper processor object linked to this editor */
     
 private:
     //==============================================================================

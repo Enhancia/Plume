@@ -102,8 +102,11 @@ public:
     void loadGestureXml(const XmlElement& gestureData);
     
     //==============================================================================
+    // Getters to the main function objects
+    
     PluginWrapper& getWrapper();
     DataReader* getDataReader();
+    GestureArray& getGestureArray();
     
 
 private:

@@ -43,7 +43,7 @@ void GestureArray::updateAllMappedParameters ()
 {
     for (auto* g : gestures)
     {
-        g->updateMappedParameter();
+        g->updateMappedParameters();
     }
 }
 
@@ -65,7 +65,7 @@ void GestureArray::updateAllValues()
 }
 
 //==============================================================================
-Gesture* GestureArray::getGestureByName (String nameToSearch)
+Gesture* GestureArray::getGestureByName (const String nameToSearch)
 {
     for (auto* g : gestures)
     {
@@ -77,6 +77,22 @@ Gesture* GestureArray::getGestureByName (String nameToSearch)
     
     DBG ("Gesture " << nameToSearch << " doesn't exist");
     return nullptr;
+}
+
+Gesture* GestureArray::getGestureById (const unsigned int idToSearch)
+{
+    if (idToSearch >= gestures.size())
+    {
+        DBG ("Gesture n°" << idToSearch << " doesn't exist. Number of gestures: " << gestures.size());
+        return nullptr;
+    }
+    
+    return gestures[idToSearch];
+}
+
+OwnedArray<Gesture>& GestureArray::getArray()
+{
+    return gestures;
 }
 
 void GestureArray::addGesture (String gestureName, int gestureType)

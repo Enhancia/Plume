@@ -48,10 +48,12 @@ public:
      *  \param gestName A string that holds the gesture name
      *  \param gestType The gesture type. Uses the gestureType enum.
      */
-    Gesture(String gestName, int gestType)	: name (gestName), type (gestType)
+    Gesture(String gestName, int gestType, Range<float> r, float defaultValue = 0.0f)	: name (gestName), type (gestType)
     {
         on = false;
         mapped = false;
+        range = r;
+        value = defaultValue;
     }
     
     /**
@@ -60,6 +62,8 @@ public:
     ~Gesture() {}
 
     //==============================================================================
+    // virtual getters used by the processor and the editor
+    
     /**
      *  \brief Helper function to write the gesture's MIDI to a buffer.
      *
@@ -72,16 +76,34 @@ public:
     /**
      *  \brief Method that returns the value that would be used to create a MIDI message.
      *
-     *  This will 
+     *  Override this method to return the right value, according to gesture current value.
+     *
+     *  \return The correct value to create a midi message, between 0 and 127.
      */
     virtual int getMidiValue() =0;
     
-    virtual void updateMappedParameter() =0;
-    virtual float getValueForMappedParameter() =0;
+    /**
+     *  \brief Helper function to write the correct values for the mapped parameters.
+     */
+    virtual void updateMappedParameters() =0;
+    virtual float getValueForMappedParameter(int paramId) =0;
     
     //==============================================================================
     virtual void updateValue (const Array<float> rawData) =0;
     virtual void addGestureParameters() =0;
+    
+    //==============================================================================
+    // Getters to get const references to the value and range of the gesture.
+    
+    const float& getRawValueRef()
+    {
+        return value;
+    }
+    
+    const Range<float>& getRangeRef()
+    {
+        return range;
+    }
     
     //==============================================================================
     /**
@@ -168,5 +190,10 @@ protected:
     //==============================================================================
     bool on; /** < Boolean that represents if the movement is active or not. */
     bool mapped; /** < Boolean that represents if the movement is mapped or not */
+    
+    
+    //==============================================================================
+    float value; /** < Parameter that holds the current "raw" value of the gesture. Should be used and updated by subclasses */
+    Range<float> range; /** < */
     
 };

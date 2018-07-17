@@ -23,8 +23,8 @@ public:
     void addGestureMidi(MidiBuffer& midiMessages) override;
     int getMidiValue () override;
     
-    void updateMappedParameter() override;
-    float getValueForMappedParameter() override;
+    void updateMappedParameters() override;
+    float getValueForMappedParameter(int paramId) override;
     
     //==============================================================================
     void updateValue (const Array<float> rawData) override;
@@ -35,8 +35,8 @@ private:
     float gain = 400.0f;
     
     float intensity = 0.0f;
-    float value = 0.0f;
     
+    // Booleans that represent the state of the vibrato
     bool send = false;
     bool vibLast = false;
 };
