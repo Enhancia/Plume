@@ -68,7 +68,9 @@
       <GROUP id="{0A88E0E6-0AAA-1A53-7038-4FEE4168F5B2}" name="Fonts"/>
       <GROUP id="{E197EADC-7951-2072-30F3-1E0791A4B2A7}" name="Images">
         <GROUP id="{5DAA9652-AC5A-272C-7445-2818971B7B55}" name="Backgrounds"/>
-        <GROUP id="{E3B6538E-ABF7-74A3-09C1-5FA4BB791D93}" name="Gestures"/>
+        <GROUP id="{E3B6538E-ABF7-74A3-09C1-5FA4BB791D93}" name="Gestures">
+          <FILE id="P5NmnU" name="OnOff.png" compile="0" resource="1" file="Ressources/Images/Gestures/OnOff.png"/>
+        </GROUP>
         <GROUP id="{818D20DD-E3FE-ED79-E2C1-85201F3EC29D}" name="Logo">
           <FILE id="tNIIf1" name="Logo_ENHANCIA_Round.png" compile="0" resource="1"
                 file="Ressources/Images/Logo/Logo_ENHANCIA_Round.png"/>

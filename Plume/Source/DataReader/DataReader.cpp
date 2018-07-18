@@ -11,7 +11,7 @@
 //==============================================================================
 DataReader::DataReader(): InterprocessConnection (true, 0x6a6d626e)
 {
-    setSize (170, 50);
+    setSize (150, 50);
     connected = false;
     
     // Data initialization

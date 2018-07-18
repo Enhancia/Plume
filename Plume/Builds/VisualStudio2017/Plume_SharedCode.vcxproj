@@ -14,7 +14,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{93AFBFB1-CE5C-9BD9-C3E7-BF03AD8BFFD6}</ProjectGuid>
+    <ProjectGuid>{680F6FAF-E663-B376-23EC-171A387AB7D1}</ProjectGuid>
     <PlatformToolset>v141</PlatformToolset>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -2578,6 +2578,7 @@
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h"/>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Ressources\Images\Gestures\OnOff.png"/>
     <None Include="..\..\Ressources\Images\Logo\Logo_ENHANCIA_Round.png"/>
     <None Include="..\..\Ressources\Images\Wrapper\eye.png"/>
     <None Include="..\..\Ressources\Images\Wrapper\folder.png"/>

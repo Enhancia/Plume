@@ -129,9 +129,49 @@ public:
     /**
      *  \brief Getter for the "mapped" boolean value.
      */
-    bool isMapped ()
+    bool isMapped()
     {
         return mapped;
+    }
+    
+    /**
+     *  \brief Getter for the "active" boolean value.
+     */
+    bool isActive()
+    {
+        return on;
+    }
+    
+    /**
+     *  \brief Returns a string corresponding to the gesture's type.
+     */
+    String getTypeString()
+    {
+        switch (type)
+        {
+            case Gesture::vibrato:
+                return "vibrato";
+                break;
+                
+            case Gesture::pitchBend:
+                return "pitchBend";
+                break;
+                
+            case Gesture::tilt:
+                return "tilt";
+                break;
+                
+            case Gesture::wave:
+                return "wave";
+                break;
+                
+            case Gesture::roll:
+                return "roll";
+                break;
+            
+            default:
+                return "unknown";
+        }
     }
     
     //==============================================================================
@@ -189,11 +229,11 @@ protected:
     
     //==============================================================================
     bool on; /** < Boolean that represents if the movement is active or not. */
-    bool mapped; /** < Boolean that represents if the movement is mapped or not */
+    bool mapped; /** < Boolean that represents if the movement is mapped or not. */
     
     
     //==============================================================================
-    float value; /** < Parameter that holds the current "raw" value of the gesture. Should be used and updated by subclasses */
-    Range<float> range; /** < */
+    float value; /** < Parameter that holds the current "raw" value of the gesture. Should be used and updated by subclasses. */
+    Range<float> range; /** < Attribute that holds the maximum range of values that the attribute "value" can take. */
     
 };

@@ -28,8 +28,9 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     addAndMakeVisible (presetComp = new PresetComponent (processor));
 	presetComp->setBounds(wrapperComp->getWidth() + 3*MARGIN, 2*MARGIN, getWidth() - wrapperComp->getWidth() - 5*MARGIN, TOP_PANEL);
 	
-	addAndMakeVisible (gesturePanel = new gesturePanel (processor.getGestureArray()));
-	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 4*MARGIN, getWidth() - 2*MARGIN, getHeight() - TOP_PANEL - 6*MARGIN);
+	addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray()));
+	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 4*MARGIN, getWidth() - 4*MARGIN, getHeight() - TOP_PANEL - 50 - 8*MARGIN);
+	gesturePanel->initialize();
 	
     // Adds itself as a change listener for plume's processor
     processor.addChangeListener (this);

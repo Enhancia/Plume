@@ -24,7 +24,7 @@ GestureArray::~GestureArray()
 //==============================================================================
 void GestureArray::initializeGestures()
 {
-    gestures.add (new Vibrato ("default_vibrato"));
+    gestures.add (new Vibrato ("Vibrato_Default"));
     
     gestures[0]->setActive(true);
 }
@@ -79,9 +79,9 @@ Gesture* GestureArray::getGestureByName (const String nameToSearch)
     return nullptr;
 }
 
-Gesture* GestureArray::getGestureById (const unsigned int idToSearch)
+Gesture* GestureArray::getGestureById (const int idToSearch)
 {
-    if (idToSearch >= gestures.size())
+    if (idToSearch >= gestures.size() || idToSearch < 0)
     {
         DBG ("Gesture n°" << idToSearch << " doesn't exist. Number of gestures: " << gestures.size());
         return nullptr;
@@ -95,6 +95,13 @@ OwnedArray<Gesture>& GestureArray::getArray()
     return gestures;
 }
 
+int GestureArray::size()
+{
+    return gestures.size();
+}
+
+
+//==============================================================================
 void GestureArray::addGesture (String gestureName, int gestureType)
 {
     

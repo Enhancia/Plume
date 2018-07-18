@@ -92,6 +92,11 @@ DataReader* PlumeProcessor::getDataReader()
     return dataReader;
 }
 
+GestureArray& PlumeProcessor::getGestureArray()
+{
+    return *gestureArray;
+}
+
 //==============================================================================
 bool PlumeProcessor::hasEditor() const
 {

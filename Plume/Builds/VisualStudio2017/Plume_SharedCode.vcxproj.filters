@@ -29,6 +29,9 @@
     <Filter Include="Plume\Source">
       <UniqueIdentifier>{7756C8A7-AA0B-9AB4-D33E-2FA83717A3D6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Plume\Ressources\Images\Gestures">
+      <UniqueIdentifier>{C0D8C767-3C06-866B-ADE9-8C94CFEA9737}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Plume\Ressources\Images\Logo">
       <UniqueIdentifier>{0062098B-B196-08C8-54A5-4C39F05928E5}</UniqueIdentifier>
     </Filter>
@@ -4397,6 +4400,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Ressources\Images\Gestures\OnOff.png">
+      <Filter>Plume\Ressources\Images\Gestures</Filter>
+    </None>
     <None Include="..\..\Ressources\Images\Logo\Logo_ENHANCIA_Round.png">
       <Filter>Plume\Ressources\Images\Logo</Filter>
     </None>

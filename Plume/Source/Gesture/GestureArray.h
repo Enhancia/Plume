@@ -37,9 +37,9 @@ public:
     //==============================================================================
     // Getters
     Gesture* getGestureByName (const String nameToSearch);
-    Gesture* getGestureById(const unsigned int idToSearch);
+    Gesture* getGestureById(const int idToSearch);
     OwnedArray<Gesture>& getArray();
-    int getSize();
+    int size();
     
     //==============================================================================
     // Modifiers

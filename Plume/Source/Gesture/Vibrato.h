@@ -30,9 +30,13 @@ public:
     void updateValue (const Array<float> rawData) override;
     void addGestureParameters() override;
     
-private:
+    //==============================================================================
+    // Attributes that will be referenced to the Tuner component.
+    // Might want to replace them with audio processor parameters in the future.
     float threshold = 40.0f;
     float gain = 400.0f;
+    
+private:
     
     float intensity = 0.0f;
     
