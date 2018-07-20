@@ -11,6 +11,7 @@
 #include "../../../JuceLibraryCode/JuceHeader.h"
 #include "Gesture/GestureArray.h"
 #include "Ui/Gesture/GesturePanel.h"
+#include "Ui/Gesture/Tuner/Tuner.h"
 
 
 #define MARGIN 8
@@ -26,7 +27,6 @@ public:
         // Creates the on/off button
         Image onOff = ImageFileFormat::loadFrom (File ("D:/Workspace/GitWorkspace/Plume/Plume/Ressources/Images/Gestures/onOff.png"));
     
-        // Creates the buttons and the label
         addAndMakeVisible (onOffButton = new ImageButton ("On Off Button"));
         onOffButton->setImages (false, true, true,
 								onOff, 1.0f, Colour (0xffffffff),
@@ -36,10 +36,14 @@ public:
         onOffButton->setClickingTogglesState (true);
 		onOffButton->setState(Button::buttonNormal);
         onOffButton->addListener (this);
+        
+        // Creates the right Tuner Object
+        addAndMakeVisible (gestTuner = new Tuner (gesture.getValueReference(), gesture.getRangeReference()));
     }
     
     ~GestureComponent()
     {
+        onOffButton = nullptr;
     }
     
     void paint (Graphics& g) override
@@ -115,6 +119,7 @@ public:
 		int tunerWidth = getWidth() * 5/8 - MARGIN;
 
         onOffButton->setBounds (tunerWidth/8 + 2*MARGIN, MARGIN, 20, 20);
+        gestTuner->setBounds(tunerWidth/8 + 2*MARGIN, getHeight()/4, tunerWidth*7/8 - 2*MARGIN, getHeight()*3/4);
         repaint();
     }
     
@@ -132,14 +137,24 @@ public:
     }
     
     
+    //==============================================================================
+    void updateDisplay()
+    {
+        gestTuner->updateDisplay();
+        //gestMapper.updateDisplay();
+    }
+    
 private:
     Gesture& gesture;
     ScopedPointer<ImageButton> onOffButton;
+    
+    ScopedPointer<Tuner> gestTuner;
 };
 
 //==============================================================================
-GesturePanel::GesturePanel(GestureArray& gestArray) : gestureArray (gestArray)
+GesturePanel::GesturePanel(GestureArray& gestArray, int freqHz) : gestureArray (gestArray)
 {
+    startTimerHz (freqHz);
 }
 
 GesturePanel::~GesturePanel()
@@ -148,7 +163,6 @@ GesturePanel::~GesturePanel()
 
 void GesturePanel::paint (Graphics& g)
 {
-    //g.fillAll(Colour (0xffffffff));
 }
 
 void GesturePanel::resized()
@@ -165,5 +179,13 @@ void GesturePanel::initialize()
         gestureComponents.add (new GestureComponent (*gestureArray.getGestureById (i)));
         addAndMakeVisible (gestureComponents[i]);
         gestureComponents[i]->setBounds (0, i*(getHeight() + MARGIN), getWidth(), gestureHeight);
+    }
+}
+
+void GesturePanel::timerCallback()
+{
+    for (auto* gComp : gestureComponents)
+    {
+        gComp->updateDisplay();
     }
 }

@@ -24,9 +24,7 @@ GestureArray::~GestureArray()
 //==============================================================================
 void GestureArray::initializeGestures()
 {
-    gestures.add (new Vibrato ("Vibrato_Default"));
-    
-    gestures[0]->setActive(true);
+    addGesture("Vibrato_Default", Gesture::vibrato);
 }
 
 void GestureArray::addGestureMidiToBuffer (MidiBuffer& MidiMessages)
@@ -100,11 +98,40 @@ int GestureArray::size()
     return gestures.size();
 }
 
+//==============================================================================
+void GestureArray::changeListenerCallback(ChangeBroadcaster* source)
+{
+    updateAllValues();
+}
 
 //==============================================================================
 void GestureArray::addGesture (String gestureName, int gestureType)
 {
+    switch (gestureType)
+    {
+        case Gesture::vibrato:
+            gestures.add (new Vibrato (gestureName));
+            break;
+        /*   
+        case Gesture::pitchBend:
+            gestures.add (new PitchBend (gestureName));
+            break;
+            
+        case Gesture::tilt:
+            gestures.add (new Tilt (gestureName));
+            break;
+            
+        case Gesture::wave:
+            gestures.add (new Wave (gestureName));
+            break;
+            
+        case Gesture::roll:
+            gestures.add (new Roll (gestureName));
+            break;
+        */
+    }
     
+    gestures.getLast()->setActive(true);
 }
 
 void GestureArray::clearAllGestures()

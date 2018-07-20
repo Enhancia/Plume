@@ -119,5 +119,6 @@ void DataReader::messageReceived(const MemoryBlock &message)
     if (connected && message.getSize() != 0)
     {
         readData(message.toString());
+        sendChangeMessage();
     }
 }

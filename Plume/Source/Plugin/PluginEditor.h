@@ -63,7 +63,7 @@ public:
      * It calls the method updateFullInterface. sets the right current wrapped plugin, preset and gestures.
      */
     void changeListenerCallback(ChangeBroadcaster* source) override;
-    
+
     //==============================================================================
     /**
      * \brief Method that sets a full interface update.

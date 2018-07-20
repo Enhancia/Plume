@@ -19,7 +19,8 @@
     your controls and content.
 */
 class DataReader   : public Component,
-                     private InterprocessConnection
+                     private InterprocessConnection,
+                     public ChangeBroadcaster
 {
 public:
     static constexpr int DATA_SIZE = 7;

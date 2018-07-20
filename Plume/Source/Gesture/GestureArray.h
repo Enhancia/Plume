@@ -22,7 +22,7 @@
  *
  *  Base class to create gestures, with virtual mehtods to create MIDI or map the gesture to a parameter.
  */
-class GestureArray
+class GestureArray	: public ChangeListener
 {
 public:
     GestureArray(DataReader& reader);
@@ -45,6 +45,9 @@ public:
     // Modifiers
     void addGesture (String gestureName, int gestureType);
     void clearAllGestures ();
+    
+    //==============================================================================
+    void changeListenerCallback(ChangeBroadcaster* source) override;
     
 private:
     //==============================================================================

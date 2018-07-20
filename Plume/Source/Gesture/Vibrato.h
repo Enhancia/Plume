@@ -37,7 +37,6 @@ public:
     float gain = 400.0f;
     
 private:
-    
     float intensity = 0.0f;
     
     // Booleans that represent the state of the vibrato

@@ -15,14 +15,17 @@
 //==============================================================================
 /*
 */
-class GesturePanel    : public Component
+class GesturePanel    : public Component,
+                        public Timer
 {
 public:
-    GesturePanel (GestureArray& gestureArray);
+    GesturePanel (GestureArray& gestureArray, int freqHz);
     ~GesturePanel();
 
     void paint (Graphics&) override;
     void resized() override;
+    
+    void timerCallback() override;
 
     void initialize();
     

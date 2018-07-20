@@ -14,7 +14,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{680F6FAF-E663-B376-23EC-171A387AB7D1}</ProjectGuid>
+    <ProjectGuid>{5C1D770C-3DD3-0771-97CD-9859098A9489}</ProjectGuid>
     <PlatformToolset>v141</PlatformToolset>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -1906,6 +1906,7 @@
     <ClInclude Include="..\..\Source\Wrapper\PluginWrapper.h"/>
     <ClInclude Include="..\..\Source\Wrapper\WrapperEditor.h"/>
     <ClInclude Include="..\..\Source\Wrapper\WrapperProcessor.h"/>
+    <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\Tuner.h"/>
     <ClInclude Include="..\..\Source\Ui\Gesture\GesturePanel.h"/>
     <ClInclude Include="..\..\Source\Ui\Presets\PresetComponent.h"/>
     <ClInclude Include="..\..\Source\Ui\Wrapper\WrapperComponent.h"/>
@@ -2578,7 +2579,12 @@
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h"/>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Ressources\Images\Gestures\pitchBend.png"/>
     <None Include="..\..\Ressources\Images\Gestures\OnOff.png"/>
+    <None Include="..\..\Ressources\Images\Gestures\roll.png"/>
+    <None Include="..\..\Ressources\Images\Gestures\tilt.png"/>
+    <None Include="..\..\Ressources\Images\Gestures\vibrato.png"/>
+    <None Include="..\..\Ressources\Images\Gestures\wave.png"/>
     <None Include="..\..\Ressources\Images\Logo\Logo_ENHANCIA_Round.png"/>
     <None Include="..\..\Ressources\Images\Wrapper\eye.png"/>
     <None Include="..\..\Ressources\Images\Wrapper\folder.png"/>

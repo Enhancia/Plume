@@ -23,11 +23,13 @@ PlumeProcessor::PlumeProcessor()
     wrapper = new PluginWrapper (*this);
     dataReader = new DataReader();
     gestureArray = new GestureArray (*dataReader);
+    dataReader->addChangeListener(gestureArray);
 }
 
 PlumeProcessor::~PlumeProcessor()
 {
     wrapper = nullptr;
+    dataReader->removeChangeListener(gestureArray);
     dataReader = nullptr;
     gestureArray = nullptr;
 }
@@ -69,7 +71,7 @@ bool PlumeProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 
 void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-    gestureArray->updateAllValues();
+    //gestureArray->updateAllValues();
     
     if (wrapper->isWrapping())
     {

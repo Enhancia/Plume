@@ -45,6 +45,10 @@
       </GROUP>
       <GROUP id="{EB1FE939-C694-02C5-E97F-E17B6084B07C}" name="Ui">
         <GROUP id="{3CFEC0E3-E11C-6973-B8F6-2519E7B63825}" name="Gesture">
+          <GROUP id="{6AF40B7D-7CAB-7E83-301F-B50F2A1EF68A}" name="Mapper"/>
+          <GROUP id="{027C4BCF-8809-483D-C6DA-16DDB0E6F69A}" name="Tuner">
+            <FILE id="M4nvbi" name="Tuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/Tuner.h"/>
+          </GROUP>
           <FILE id="tb4LAs" name="GesturePanel.cpp" compile="1" resource="0"
                 file="Source/Ui/Gesture/GesturePanel.cpp"/>
           <FILE id="ZGz1SG" name="GesturePanel.h" compile="0" resource="0" file="Source/Ui/Gesture/GesturePanel.h"/>
@@ -69,7 +73,12 @@
       <GROUP id="{E197EADC-7951-2072-30F3-1E0791A4B2A7}" name="Images">
         <GROUP id="{5DAA9652-AC5A-272C-7445-2818971B7B55}" name="Backgrounds"/>
         <GROUP id="{E3B6538E-ABF7-74A3-09C1-5FA4BB791D93}" name="Gestures">
+          <FILE id="vG9nZk" name="pitchBend.png" compile="0" resource="1" file="Ressources/Images/Gestures/pitchBend.png"/>
           <FILE id="P5NmnU" name="OnOff.png" compile="0" resource="1" file="Ressources/Images/Gestures/OnOff.png"/>
+          <FILE id="o90tE2" name="roll.png" compile="0" resource="1" file="Ressources/Images/Gestures/roll.png"/>
+          <FILE id="zaqIaF" name="tilt.png" compile="0" resource="1" file="Ressources/Images/Gestures/tilt.png"/>
+          <FILE id="WxnGzF" name="vibrato.png" compile="0" resource="1" file="Ressources/Images/Gestures/vibrato.png"/>
+          <FILE id="fezwkn" name="wave.png" compile="0" resource="1" file="Ressources/Images/Gestures/wave.png"/>
         </GROUP>
         <GROUP id="{818D20DD-E3FE-ED79-E2C1-85201F3EC29D}" name="Logo">
           <FILE id="tNIIf1" name="Logo_ENHANCIA_Round.png" compile="0" resource="1"

@@ -10,7 +10,7 @@
 
 #include "Vibrato.h"
 
-Vibrato::Vibrato (String gestName)  : Gesture (gestName, Gesture::vibrato, Range<float> (0.0f, 500.0f), 0.0f)
+Vibrato::Vibrato (String gestName)  : Gesture (gestName, Gesture::vibrato, Range<float> (-200.0f, 200.0f), 0.0f)
 {
 }
 Vibrato::~Vibrato()

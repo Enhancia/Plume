@@ -93,14 +93,15 @@ public:
     virtual void addGestureParameters() =0;
     
     //==============================================================================
-    // Getters to get const references to the value and range of the gesture.
+    // Getters to get const references to the value and range of the gesture. Used by the display
     
-    const float& getRawValueRef()
+    
+    const float& getValueReference()
     {
         return value;
     }
     
-    const Range<float>& getRangeRef()
+    const Range<float>& getRangeReference()
     {
         return range;
     }
