@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "Vibrato.h"
+#include "Gesture/Vibrato.h"
 
 Vibrato::Vibrato (String gestName)  : Gesture (gestName, Gesture::vibrato, Range<float> (-200.0f, 200.0f), 0.0f)
 {

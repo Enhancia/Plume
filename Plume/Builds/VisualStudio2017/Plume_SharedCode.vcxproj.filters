@@ -2391,7 +2391,13 @@
     <ClInclude Include="..\..\Source\Wrapper\WrapperProcessor.h">
       <Filter>Plume\Source\Wrapper</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\SymmetricalTuner.h">
+      <Filter>Plume\Source\Ui\Gesture\Tuner</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\Tuner.h">
+      <Filter>Plume\Source\Ui\Gesture\Tuner</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\VibratoTuner.h">
       <Filter>Plume\Source\Ui\Gesture\Tuner</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Ui\Gesture\GesturePanel.h">

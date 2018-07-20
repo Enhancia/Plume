@@ -11,6 +11,7 @@
 #pragma once
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
+
 #define CURSOR_SIZE 10
 #define W getWidth()
 #define H getHeight()
@@ -22,16 +23,15 @@ class Tuner    : public Component
 {
 public:
     //==============================================================================
-    Tuner(const float& val, const Range<float>& totRange, const String unit = "", int freqHz = 60)
+    Tuner(const float& val, const Range<float>& totRange, const String unit = "")
         :   value (val), totalRange (totRange), valueUnit (unit)
     {
-        displayFreq = freqHz;
         yCursor = getHeight()/3 - CURSOR_SIZE;
         
         addAndMakeVisible(valueLabel = new Label("value Label"));
         valueLabel->setEditable (false, false, false);
         valueLabel->setText (String(value), dontSendNotification);
-        valueLabel->setFont (Font (15.0f, Font::plain));
+        valueLabel->setFont (Font (13.0f, Font::plain));
         valueLabel->setColour (Label::textColourId, Colour(0xffffffff));
         valueLabel->setColour (Label::backgroundColourId, Colour(0xff000000));
         valueLabel->setJustificationType (Justification::centred);
@@ -68,7 +68,7 @@ public:
     //==============================================================================
     void updateDisplay()
     {
-        valueLabel->setText (String(value), dontSendNotification);
+        valueLabel->setText (String(int (value)), dontSendNotification);
         repaint();
     }
     
@@ -90,10 +90,9 @@ private:
     //==============================================================================
     const float& value;
     const Range<float>& totalRange;
-    int displayFreq;
     
     int yCursor;
-    ScopedPointer<Path> displayTriangle;
+    //ScopedPointer<Path> displayTriangle;
     ScopedPointer<Label> valueLabel;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Tuner)

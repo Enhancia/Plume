@@ -11,7 +11,7 @@
 #include "../../../JuceLibraryCode/JuceHeader.h"
 #include "Gesture/GestureArray.h"
 #include "Ui/Gesture/GesturePanel.h"
-#include "Ui/Gesture/Tuner/Tuner.h"
+#include "Ui/Gesture/Tuner/VibratoTuner.h"
 
 
 #define MARGIN 8
@@ -38,7 +38,7 @@ public:
         onOffButton->addListener (this);
         
         // Creates the right Tuner Object
-        addAndMakeVisible (gestTuner = new Tuner (gesture.getValueReference(), gesture.getRangeReference()));
+        createTuner();
     }
     
     ~GestureComponent()
@@ -145,6 +145,15 @@ public:
     }
     
 private:
+    void createTuner()
+    {
+        // à remplacer par un switch sur type avec un simple "addAndMakeVisible (gestTuner = new [nom gesture]Tuner (...) );"
+		
+		Vibrato& vib = dynamic_cast<Vibrato&> (gesture);
+        DBG ("vibrato cast");
+        addAndMakeVisible (gestTuner = new VibratoTuner (vib));
+    }
+    
     Gesture& gesture;
     ScopedPointer<ImageButton> onOffButton;
     
