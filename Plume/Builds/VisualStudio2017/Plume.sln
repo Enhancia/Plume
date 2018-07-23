@@ -1,17 +1,17 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2017
 
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Plume - Standalone Plugin", "Plume_StandalonePlugin.vcxproj", "{B943E4B9-FE08-63E2-BA87-377D20EC6517}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Plume - Standalone Plugin", "Plume_StandalonePlugin.vcxproj", "{9D0AA67B-8BAD-C318-B26E-C01F2CAFB78D}"
 	ProjectSection(ProjectDependencies) = postProject
-		{B16D7EDE-B7CF-806E-064F-BFC7C120B5E7} = {B16D7EDE-B7CF-806E-064F-BFC7C120B5E7}
+		{2F169CED-792D-BD49-74FC-FFA8E36CFBB8} = {2F169CED-792D-BD49-74FC-FFA8E36CFBB8}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Plume - VST", "Plume_VST.vcxproj", "{CBE21F06-952D-0098-61B9-AA3D156E61DC}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Plume - VST", "Plume_VST.vcxproj", "{55CA4276-A171-22F6-8D3F-17B40AA77027}"
 	ProjectSection(ProjectDependencies) = postProject
-		{B16D7EDE-B7CF-806E-064F-BFC7C120B5E7} = {B16D7EDE-B7CF-806E-064F-BFC7C120B5E7}
+		{2F169CED-792D-BD49-74FC-FFA8E36CFBB8} = {2F169CED-792D-BD49-74FC-FFA8E36CFBB8}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Plume - Shared Code", "Plume_SharedCode.vcxproj", "{B16D7EDE-B7CF-806E-064F-BFC7C120B5E7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Plume - Shared Code", "Plume_SharedCode.vcxproj", "{2F169CED-792D-BD49-74FC-FFA8E36CFBB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,18 +19,18 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{CBE21F06-952D-0098-61B9-AA3D156E61DC}.Debug|x64.ActiveCfg = Debug|x64
-		{CBE21F06-952D-0098-61B9-AA3D156E61DC}.Debug|x64.Build.0 = Debug|x64
-		{CBE21F06-952D-0098-61B9-AA3D156E61DC}.Release|x64.ActiveCfg = Release|x64
-		{CBE21F06-952D-0098-61B9-AA3D156E61DC}.Release|x64.Build.0 = Release|x64
-		{B943E4B9-FE08-63E2-BA87-377D20EC6517}.Debug|x64.ActiveCfg = Debug|x64
-		{B943E4B9-FE08-63E2-BA87-377D20EC6517}.Debug|x64.Build.0 = Debug|x64
-		{B943E4B9-FE08-63E2-BA87-377D20EC6517}.Release|x64.ActiveCfg = Release|x64
-		{B943E4B9-FE08-63E2-BA87-377D20EC6517}.Release|x64.Build.0 = Release|x64
-		{B16D7EDE-B7CF-806E-064F-BFC7C120B5E7}.Debug|x64.ActiveCfg = Debug|x64
-		{B16D7EDE-B7CF-806E-064F-BFC7C120B5E7}.Debug|x64.Build.0 = Debug|x64
-		{B16D7EDE-B7CF-806E-064F-BFC7C120B5E7}.Release|x64.ActiveCfg = Release|x64
-		{B16D7EDE-B7CF-806E-064F-BFC7C120B5E7}.Release|x64.Build.0 = Release|x64
+		{55CA4276-A171-22F6-8D3F-17B40AA77027}.Debug|x64.ActiveCfg = Debug|x64
+		{55CA4276-A171-22F6-8D3F-17B40AA77027}.Debug|x64.Build.0 = Debug|x64
+		{55CA4276-A171-22F6-8D3F-17B40AA77027}.Release|x64.ActiveCfg = Release|x64
+		{55CA4276-A171-22F6-8D3F-17B40AA77027}.Release|x64.Build.0 = Release|x64
+		{9D0AA67B-8BAD-C318-B26E-C01F2CAFB78D}.Debug|x64.ActiveCfg = Debug|x64
+		{9D0AA67B-8BAD-C318-B26E-C01F2CAFB78D}.Debug|x64.Build.0 = Debug|x64
+		{9D0AA67B-8BAD-C318-B26E-C01F2CAFB78D}.Release|x64.ActiveCfg = Release|x64
+		{9D0AA67B-8BAD-C318-B26E-C01F2CAFB78D}.Release|x64.Build.0 = Release|x64
+		{2F169CED-792D-BD49-74FC-FFA8E36CFBB8}.Debug|x64.ActiveCfg = Debug|x64
+		{2F169CED-792D-BD49-74FC-FFA8E36CFBB8}.Debug|x64.Build.0 = Debug|x64
+		{2F169CED-792D-BD49-74FC-FFA8E36CFBB8}.Release|x64.ActiveCfg = Release|x64
+		{2F169CED-792D-BD49-74FC-FFA8E36CFBB8}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

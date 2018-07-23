@@ -11,8 +11,7 @@
 #include "../../../JuceLibraryCode/JuceHeader.h"
 #include "Gesture/GestureArray.h"
 #include "Ui/Gesture/GesturePanel.h"
-#include "Ui/Gesture/Tuner/VibratoTuner.h"
-
+#include "Ui/Gesture/Tuner/GesturesTuner.h"
 
 #define MARGIN 8
 #define NUM_GEST 3
@@ -147,24 +146,35 @@ public:
 private:
     void createTuner()
     {
-        // à remplacer par un switch sur type avec un simple "addAndMakeVisible (gestTuner = new [nom gesture]Tuner (...) );"
 		if      (gesture.type == Gesture::vibrato)
         {
             Vibrato& vib = dynamic_cast<Vibrato&> (gesture);
             addAndMakeVisible (gestTuner = new VibratoTuner (vib));
         }
+        /*
         else if (gesture.type == Gesture::pitchBend)
         {
+            PitchBend& pitchBend = dynamic_cast<PitchBend&> (gesture);
+            addAndMakeVisible (gestTuner = new PitchBendTuner (pitchBend));
         }
+        */
         else if (gesture.type == Gesture::tilt)
         {
+            Tilt& tilt = dynamic_cast<Tilt&> (gesture);
+            addAndMakeVisible (gestTuner = new TiltTuner (tilt));
         }
+        /*
         else if (gesture.type == Gesture::wave)
         {
+            Wave& wave = dynamic_cast<Wave&> (gesture);
+            addAndMakeVisible (gestTuner = new WaveTuner (wave));
         }
         else if (gesture.type == Gesture::roll)
         {
+            Roll& roll = dynamic_cast<Roll&> (gesture);
+            addAndMakeVisible (gestTuner = new RollTuner (roll));
         }
+        */
         else
         {
             DBG ("Unknown Gesture type. No tuner was created.");
@@ -204,7 +214,7 @@ void GesturePanel::initialize()
         // Loop that creates and places a gestureComponent for each existing gesture.
         gestureComponents.add (new GestureComponent (*gestureArray.getGestureById (i)));
         addAndMakeVisible (gestureComponents[i]);
-        gestureComponents[i]->setBounds (0, i*(getHeight() + MARGIN), getWidth(), gestureHeight);
+        gestureComponents[i]->setBounds (0, i*(gestureHeight + MARGIN), getWidth(), gestureHeight);
     }
 }
 

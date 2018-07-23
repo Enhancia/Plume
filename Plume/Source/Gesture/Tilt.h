@@ -42,7 +42,6 @@ public:
     // Attributes that will be referenced to the Tuner component.
     // Might want to replace them with audio processor parameters in the future.
     
-    float low; /**< \brief Low value of the range */
-    float high; /**< \brief High value of the range */
+    Range<float> range; /**< \brief Tilt's range. The full effect will happend between the two values. */
 private:
 };

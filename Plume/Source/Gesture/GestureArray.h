@@ -14,6 +14,8 @@
 #include "DataReader/DataReader.h"
 #include "Gesture/Gesture.h"
 #include "Gesture/Vibrato.h"
+#include "Gesture/PitchBend.h"
+#include "Gesture/Tilt.h"
 
 /**
  *  \class GestureArray GestureArray.h

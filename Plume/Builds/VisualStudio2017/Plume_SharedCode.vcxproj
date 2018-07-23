@@ -14,7 +14,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{B16D7EDE-B7CF-806E-064F-BFC7C120B5E7}</ProjectGuid>
+    <ProjectGuid>{2F169CED-792D-BD49-74FC-FFA8E36CFBB8}</ProjectGuid>
     <PlatformToolset>v141</PlatformToolset>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -1914,9 +1914,11 @@
     <ClInclude Include="..\..\Source\Wrapper\PluginWrapper.h"/>
     <ClInclude Include="..\..\Source\Wrapper\WrapperEditor.h"/>
     <ClInclude Include="..\..\Source\Wrapper\WrapperProcessor.h"/>
+    <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\GesturesTuner.h"/>
+    <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\OneRangeTuner.h"/>
     <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\SymmetricalTuner.h"/>
     <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\Tuner.h"/>
-    <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\VibratoTuner.h"/>
+    <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\TwoRangeTuner.h"/>
     <ClInclude Include="..\..\Source\Ui\Gesture\GesturePanel.h"/>
     <ClInclude Include="..\..\Source\Ui\Presets\PresetComponent.h"/>
     <ClInclude Include="..\..\Source\Ui\Wrapper\WrapperComponent.h"/>

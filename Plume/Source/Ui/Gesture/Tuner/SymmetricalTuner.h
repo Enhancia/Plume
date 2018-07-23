@@ -66,7 +66,7 @@ public:
         // Sets bounds and changes the slider position
         Component::setBounds (Tuner::getBounds());
         symmetricalSlider->setBounds (Tuner::sliderPlacement.getStart(), H/3 - 6, Tuner::sliderPlacement.getLength(), 15);
-        rangeLabel->setBounds (W*3/4+W/16, H/4, W/8, H/4);
+        rangeLabel->setBounds (W*3/4+W/16, H/4, W/8, H/5);
         Component::repaint();
     }
     
@@ -74,13 +74,17 @@ public:
     void labelTextChanged (Label* lbl) override
     {
         // checks that the string is numbers only
-        if (lbl->getText().containsOnly ("0123456789") == false)
+        if (lbl->getText().containsOnly ("0123456789"+valueUnit) == false)
         {
             lbl->setText (String (int (parameter)), dontSendNotification);
             return;
         }
             
-        float val = lbl->getText().getFloatValue();
+        float val;
+        
+        // Gets the float value of the text 
+        if (valueUnit != "" && lbl->getText().endsWith(valueUnit)) val = lbl->getText().upToFirstOccurrenceOf(valueUnit, false, false).getFloatValue();
+        else                                             val = lbl->getText().getFloatValue();
         
         if (val < 0.0f) val = 0.0f;
         else if (val > parameterMax) val = parameterMax;
@@ -129,6 +133,7 @@ private:
         symmetricalSlider->setColour (Slider::backgroundColourId, Colour (0xff101010));
 	    symmetricalSlider->setSliderStyle(Slider::TwoValueHorizontal);
         symmetricalSlider->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
+        
 	    
         // Slider values
         symmetricalSlider->setRange (double (-parameterMax), double (parameterMax), 1.0);

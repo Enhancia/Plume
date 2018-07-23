@@ -13,6 +13,14 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Gesture/Gesture.h"
 
+/**
+ *  \class Vibrato Vibrato.h
+ *
+ *  \brief Vibrato gesture class.
+ *
+ *  Gesture class for to create the vibrato effect. Has it's own variables and overrides the base Gesture class methods
+ *  in accordance to the effect.
+ */
 class Wave : public Gesture
 {
 public:

@@ -53,16 +53,18 @@
         <GROUP id="{3CFEC0E3-E11C-6973-B8F6-2519E7B63825}" name="Gesture">
           <GROUP id="{6AF40B7D-7CAB-7E83-301F-B50F2A1EF68A}" name="Mapper"/>
           <GROUP id="{027C4BCF-8809-483D-C6DA-16DDB0E6F69A}" name="Tuner">
+            <FILE id="p4jPAQ" name="GesturesTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/GesturesTuner.h"/>
+            <FILE id="lWYww1" name="OneRangeTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/OneRangeTuner.h"/>
             <FILE id="WeeLEA" name="SymmetricalTuner.h" compile="0" resource="0"
                   file="Source/Ui/Gesture/Tuner/SymmetricalTuner.h"/>
             <FILE id="M4nvbi" name="Tuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/Tuner.h"/>
-            <FILE id="Fjhwhn" name="VibratoTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/VibratoTuner.h"/>
+            <FILE id="ZmZmBe" name="TwoRangeTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/TwoRangeTuner.h"/>
           </GROUP>
           <FILE id="tb4LAs" name="GesturePanel.cpp" compile="1" resource="0"
                 file="Source/Ui/Gesture/GesturePanel.cpp"/>
           <FILE id="ZGz1SG" name="GesturePanel.h" compile="0" resource="0" file="Source/Ui/Gesture/GesturePanel.h"/>
+          <GROUP id="{5E507387-603C-6B32-621A-C8B4F8C947FA}" name="LookAndFeel"/>
         </GROUP>
-        <GROUP id="{5E507387-603C-6B32-621A-C8B4F8C947FA}" name="LookAndFeel"/>
         <GROUP id="{5450FD28-5BE9-06D6-902F-232955675D30}" name="Presets">
           <FILE id="jEnMNo" name="PresetComponent.cpp" compile="1" resource="0"
                 file="Source/Ui/Presets/PresetComponent.cpp"/>

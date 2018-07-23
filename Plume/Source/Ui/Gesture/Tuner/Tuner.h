@@ -51,7 +51,7 @@ public:
         g.setColour (Colours::black);
         
         //g.drawRect(0, 0, getWidth(), getHeight()); // outline
-        g.drawRect(W*3/4, 0, 1, getHeight()); // boundary slider|values
+        //g.drawRect(W*3/4, 0, 1, getHeight()); // boundary slider|values
         drawCursor(g);
     }
 
@@ -68,7 +68,7 @@ public:
     //==============================================================================
     void updateDisplay()
     {
-        valueLabel->setText (String(int (value)), dontSendNotification);
+        valueLabel->setText (String(int (value))+valueUnit, dontSendNotification);
         repaint();
     }
     
@@ -80,9 +80,22 @@ private:
     //==============================================================================
     void drawCursor(Graphics& g)
     {
-        // Formula: x = length * (val - start)/(end - start) + x0;
-        int xCursor = sliderPlacement.getLength()*(value-totalRange.getStart())/(totalRange.getEnd()-totalRange.getStart())
-                      + sliderPlacement.getStart();
+        int xCursor;
+        
+        // Regular cursor placement
+        if (value > totalRange.getStart() && value < totalRange.getEnd())
+        {
+            // Formula: x = length * (val - start)/(end - start) + x0;
+            xCursor = (sliderPlacement.getLength() - 10)*(value-totalRange.getStart())/(totalRange.getEnd()-totalRange.getStart())
+                      + sliderPlacement.getStart()+5;
+        }
+        
+        // Placement if value exceeds limits
+        else 
+        {
+            if (value < totalRange.getStart())      xCursor = sliderPlacement.getStart() + 5;
+            else if (value > totalRange.getEnd())   xCursor = sliderPlacement.getEnd() - 5;
+        }
         
         g.drawRect (xCursor, yCursor, 1, CURSOR_SIZE);
     }

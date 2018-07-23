@@ -24,7 +24,8 @@ GestureArray::~GestureArray()
 //==============================================================================
 void GestureArray::initializeGestures()
 {
-    addGesture("Vibrato_Default", Gesture::vibrato);
+    addGesture ("Vibrato_Default", Gesture::vibrato);
+    addGesture ("Tilt_Default", Gesture::tilt);
 }
 
 void GestureArray::addGestureMidiToBuffer (MidiBuffer& MidiMessages)

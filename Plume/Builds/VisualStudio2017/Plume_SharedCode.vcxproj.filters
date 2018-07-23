@@ -2409,13 +2409,19 @@
     <ClInclude Include="..\..\Source\Wrapper\WrapperProcessor.h">
       <Filter>Plume\Source\Wrapper</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\GesturesTuner.h">
+      <Filter>Plume\Source\Ui\Gesture\Tuner</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\OneRangeTuner.h">
+      <Filter>Plume\Source\Ui\Gesture\Tuner</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\SymmetricalTuner.h">
       <Filter>Plume\Source\Ui\Gesture\Tuner</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\Tuner.h">
       <Filter>Plume\Source\Ui\Gesture\Tuner</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\VibratoTuner.h">
+    <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\TwoRangeTuner.h">
       <Filter>Plume\Source\Ui\Gesture\Tuner</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Ui\Gesture\GesturePanel.h">

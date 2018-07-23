@@ -12,7 +12,7 @@
 
 Tilt::Tilt (String gestName, float lowValue, float highValue)
     : Gesture (gestName, Gesture::tilt, Range<float> (-90.0f, 90.0f), 0.0f),
-      low (lowValue), high (highValue)
+      range (Range<float> (lowValue, highValue))
 {
 }
 
@@ -35,7 +35,7 @@ void Tilt::addGestureMidi (MidiBuffer& midiMessages)
 
 int Tilt::getMidiValue()
 {
-    return Gesture::normalizeMidi (low, high, value);
+    return Gesture::normalizeMidi (range.getStart(), range.getEnd(), value);
 }
 
 void Tilt::updateMappedParameters()
