@@ -10,21 +10,49 @@
 
 #include "Tilt.h"
 
-Tilt (String gestName)
+Tilt::Tilt (String gestName, float lowValue, float highValue)
+    : Gesture (gestName, Gesture::tilt, Range<float> (-90.0f, 90.0f), 0.0f),
+      low (lowValue), high (highValue)
 {
 }
 
-~Tilt()
+Tilt::~Tilt()
 {
 }
     
 //==============================================================================
-void addGestureMidi(MidiBuffer& midiMessages) override;
-int getMidiValue () override;
-   
-void updateMappedParameters() override;
-float getValueForMappedParameter(int paramId) override;
+void Tilt::addGestureMidi (MidiBuffer& midiMessages)
+{
+    // Checks if Gesture is on and if value is within the right range
+    if (on == false || value >= 120.0f || value <= -120.0f)
+    {
+        return;
+    }
+    
+    MidiMessage message = MidiMessage::controllerEvent (1, 1, getMidiValue());
+    midiMessages.addEvent(message, 1);
+}
+
+int Tilt::getMidiValue()
+{
+    return Gesture::normalizeMidi (low, high, value);
+}
+
+void Tilt::updateMappedParameters()
+{
+}
+
+float Tilt::getValueForMappedParameter (int paramId)
+{
+	return 0.0f;
+}
     
 //==============================================================================
-void updateValue (const Array<float> rawData) override;
-void addGestureParameters() override;
+void Tilt::updateValue (const Array<float> rawData)
+{
+    value = rawData[4];
+}
+
+void Tilt::addGestureParameters()
+{
+}

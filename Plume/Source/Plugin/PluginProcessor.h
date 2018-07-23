@@ -104,17 +104,32 @@ public:
     //==============================================================================
     // Getters to the main function objects
     
+    /**
+     * \brief PluginWrapper getter.
+     *
+     * \return Reference to the PluginWrapper object.
+     */
     PluginWrapper& getWrapper();
+    /**
+     * \brief DataReader getter.
+     *
+     * \return Reference to the DataReader object.
+     */
     DataReader* getDataReader();
+    /**
+     * \brief GestureArray getter.
+     *
+     * \return Reference to the GestureArray object.
+     */
     GestureArray& getGestureArray();
     
 
 private:
     //==============================================================================
-    ScopedPointer<FileLogger> plumeLogger; /** < Logger object. Allows to write logs for testing purposes. */
-    ScopedPointer<PluginWrapper> wrapper; /** < PluginWrapper object. Handles the plugin wrapping. */
-    ScopedPointer<DataReader> dataReader; /** < DataReader object. Recieves the data from the ring. */
-    ScopedPointer<GestureArray> gestureArray; /** < GestureArray object. Stores all current gesture objects. */
+    ScopedPointer<FileLogger> plumeLogger; /**< \brief Logger object. Allows to write logs for testing purposes. */
+    ScopedPointer<PluginWrapper> wrapper; /**< \brief PluginWrapper object. Handles the plugin wrapping. */
+    ScopedPointer<DataReader> dataReader; /**< \brief DataReader object. Recieves the data from the ring. */
+    ScopedPointer<GestureArray> gestureArray; /**< \brief GestureArray object. Stores all current gesture objects. */
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeProcessor)

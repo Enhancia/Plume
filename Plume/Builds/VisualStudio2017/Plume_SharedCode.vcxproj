@@ -14,7 +14,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{C351C915-65B8-8809-34BE-45393173F936}</ProjectGuid>
+    <ProjectGuid>{B16D7EDE-B7CF-806E-064F-BFC7C120B5E7}</ProjectGuid>
     <PlatformToolset>v141</PlatformToolset>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -150,10 +150,15 @@
   <ItemGroup>
     <ClCompile Include="..\..\Source\DataReader\DataReader.cpp"/>
     <ClCompile Include="..\..\Source\Gesture\GestureArray.cpp"/>
-    <ClCompile Include="..\..\Source\Gesture\Tilt.cpp">
+    <ClCompile Include="..\..\Source\Gesture\PitchBend.cpp"/>
+    <ClCompile Include="..\..\Source\Gesture\Roll.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Gesture\Tilt.cpp"/>
     <ClCompile Include="..\..\Source\Gesture\Vibrato.cpp"/>
+    <ClCompile Include="..\..\Source\Gesture\Wave.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Plugin\PluginEditor.cpp"/>
     <ClCompile Include="..\..\Source\Plugin\PluginProcessor.cpp"/>
     <ClCompile Include="..\..\Source\Wrapper\PluginWrapper.cpp"/>
@@ -1899,8 +1904,11 @@
     <ClInclude Include="..\..\Source\DataReader\DataReader.h"/>
     <ClInclude Include="..\..\Source\Gesture\Gesture.h"/>
     <ClInclude Include="..\..\Source\Gesture\GestureArray.h"/>
+    <ClInclude Include="..\..\Source\Gesture\PitchBend.h"/>
+    <ClInclude Include="..\..\Source\Gesture\Roll.h"/>
     <ClInclude Include="..\..\Source\Gesture\Tilt.h"/>
     <ClInclude Include="..\..\Source\Gesture\Vibrato.h"/>
+    <ClInclude Include="..\..\Source\Gesture\Wave.h"/>
     <ClInclude Include="..\..\Source\Plugin\PluginEditor.h"/>
     <ClInclude Include="..\..\Source\Plugin\PluginProcessor.h"/>
     <ClInclude Include="..\..\Source\Wrapper\PluginWrapper.h"/>

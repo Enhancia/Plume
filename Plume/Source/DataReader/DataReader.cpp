@@ -103,7 +103,7 @@ void DataReader::connectionMade()
     connected = true;
     
     connectedLabel->setColour (Label::textColourId, Colour (0xaa00ff00));
-    connectedLabel->setText (TRANS ("Connected : pipe " + String(pipeNumber)), dontSendNotification);
+    connectedLabel->setText (TRANS ("<Connected>" /* : pipe " + String(pipeNumber)*/), dontSendNotification);
 }
 
 void DataReader::connectionLost()

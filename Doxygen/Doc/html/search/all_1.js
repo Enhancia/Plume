@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['paint',['paint',['../class_plume_editor.html#a3b31e2023faf921f446b132b24a917c0',1,'PlumeEditor']]],
-  ['plumeeditor',['PlumeEditor',['../class_plume_editor.html',1,'PlumeEditor'],['../class_plume_editor.html#a0b9b4a952769836ca43c49ed020951f9',1,'PlumeEditor::PlumeEditor()']]],
-  ['plumeprocessor',['PlumeProcessor',['../class_plume_processor.html',1,'PlumeProcessor'],['../class_plume_processor.html#a1462b7f98f4677da0dab2d98dd8da1e1',1,'PlumeProcessor::PlumeProcessor()']]]
+  ['changelistenercallback',['changeListenerCallback',['../class_gesture_array.html#a02e8d70ea77c890d99c0c081cb487138',1,'GestureArray::changeListenerCallback()'],['../class_plume_editor.html#a5d593b33e5e4e33827928dbcdc272416',1,'PlumeEditor::changeListenerCallback()']]],
+  ['clearallgestures',['clearAllGestures',['../class_gesture_array.html#a6abfbb6562201738337aa55c7a513e83',1,'GestureArray']]]
 ];

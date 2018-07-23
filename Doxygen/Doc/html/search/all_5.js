@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['_7eplumeeditor',['~PlumeEditor',['../class_plume_editor.html#af16dd852a3419961627d070d62e3e644',1,'PlumeEditor']]],
-  ['_7eplumeprocessor',['~PlumeProcessor',['../class_plume_processor.html#a3ff1acd929c81502079017721525a2df',1,'PlumeProcessor']]]
+  ['isactive',['isActive',['../class_gesture.html#ab1221e995b4c1a4494318fc167b45e94',1,'Gesture']]],
+  ['ismapped',['isMapped',['../class_gesture.html#a092ee0910ca517219ea1b6de2005570f',1,'Gesture']]]
 ];

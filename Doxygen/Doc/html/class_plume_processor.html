@@ -146,6 +146,27 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>changeProgramName</b>
 <tr class="memitem:aa7ab9da73c37f6db69ea6c7e1e4a0211"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_plume_processor.html#aa7ab9da73c37f6db69ea6c7e1e4a0211">setStateInformation</a> (const void *data, int sizeInBytes) override</td></tr>
 <tr class="memdesc:aa7ab9da73c37f6db69ea6c7e1e4a0211"><td class="mdescLeft">&#160;</td><td class="mdescRight">State load method.  <a href="#aa7ab9da73c37f6db69ea6c7e1e4a0211">More...</a><br /></td></tr>
 <tr class="separator:aa7ab9da73c37f6db69ea6c7e1e4a0211"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad29b07ddcd526e44529e361374c8c99e"><td class="memItemLeft" align="right" valign="top"><a id="ad29b07ddcd526e44529e361374c8c99e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>createPluginXml</b> (XmlElement &amp;wrapperData)</td></tr>
+<tr class="separator:ad29b07ddcd526e44529e361374c8c99e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14455799e2ddefd50b860d4492845509"><td class="memItemLeft" align="right" valign="top"><a id="a14455799e2ddefd50b860d4492845509"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>createGestureXml</b> (XmlElement &amp;wrapperData)</td></tr>
+<tr class="separator:a14455799e2ddefd50b860d4492845509"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08587fb2663557a8250132502785205c"><td class="memItemLeft" align="right" valign="top"><a id="a08587fb2663557a8250132502785205c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>loadPluginXml</b> (const XmlElement &amp;pluginData)</td></tr>
+<tr class="separator:a08587fb2663557a8250132502785205c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a988e2a3ce47486bd8dfc5d5702420a7e"><td class="memItemLeft" align="right" valign="top"><a id="a988e2a3ce47486bd8dfc5d5702420a7e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>loadGestureXml</b> (const XmlElement &amp;gestureData)</td></tr>
+<tr class="separator:a988e2a3ce47486bd8dfc5d5702420a7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ec4d89f181beea78034b81911c59aa8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_plugin_wrapper.html">PluginWrapper</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_plume_processor.html#a6ec4d89f181beea78034b81911c59aa8">getWrapper</a> ()</td></tr>
+<tr class="memdesc:a6ec4d89f181beea78034b81911c59aa8"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_plugin_wrapper.html" title="Class that manages the plugin wrapping function of plume. ">PluginWrapper</a> getter.  <a href="#a6ec4d89f181beea78034b81911c59aa8">More...</a><br /></td></tr>
+<tr class="separator:a6ec4d89f181beea78034b81911c59aa8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab24c4b6857ca26d462fce6be9e23cedd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_data_reader.html">DataReader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_plume_processor.html#ab24c4b6857ca26d462fce6be9e23cedd">getDataReader</a> ()</td></tr>
+<tr class="memdesc:ab24c4b6857ca26d462fce6be9e23cedd"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_data_reader.html" title="Class that gets the raw data from the ring. ">DataReader</a> getter.  <a href="#ab24c4b6857ca26d462fce6be9e23cedd">More...</a><br /></td></tr>
+<tr class="separator:ab24c4b6857ca26d462fce6be9e23cedd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a691a2f342167e257fabf74d0bb76a563"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gesture_array.html">GestureArray</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_plume_processor.html#a691a2f342167e257fabf74d0bb76a563">getGestureArray</a> ()</td></tr>
+<tr class="memdesc:a691a2f342167e257fabf74d0bb76a563"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_gesture_array.html" title="Class that holds an array of Gesture, with several methods to use them. ">GestureArray</a> getter.  <a href="#a691a2f342167e257fabf74d0bb76a563">More...</a><br /></td></tr>
+<tr class="separator:a691a2f342167e257fabf74d0bb76a563"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Plume's processor object. </p>
@@ -172,6 +193,46 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>changeProgramName</b>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="ab24c4b6857ca26d462fce6be9e23cedd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab24c4b6857ca26d462fce6be9e23cedd">&#9670;&nbsp;</a></span>getDataReader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_data_reader.html">DataReader</a> * PlumeProcessor::getDataReader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="class_data_reader.html" title="Class that gets the raw data from the ring. ">DataReader</a> getter. </p>
+<dl class="section return"><dt>Returns</dt><dd>Reference to the <a class="el" href="class_data_reader.html" title="Class that gets the raw data from the ring. ">DataReader</a> object. </dd></dl>
+
+</div>
+</div>
+<a id="a691a2f342167e257fabf74d0bb76a563"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a691a2f342167e257fabf74d0bb76a563">&#9670;&nbsp;</a></span>getGestureArray()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_gesture_array.html">GestureArray</a> &amp; PlumeProcessor::getGestureArray </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="class_gesture_array.html" title="Class that holds an array of Gesture, with several methods to use them. ">GestureArray</a> getter. </p>
+<dl class="section return"><dt>Returns</dt><dd>Reference to the <a class="el" href="class_gesture_array.html" title="Class that holds an array of Gesture, with several methods to use them. ">GestureArray</a> object. </dd></dl>
+
+</div>
+</div>
 <a id="ae06dd312c3dc3ba7389ce44fd74cbc18"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae06dd312c3dc3ba7389ce44fd74cbc18">&#9670;&nbsp;</a></span>getStateInformation()</h2>
 
@@ -204,6 +265,26 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>changeProgramName</b>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a6ec4d89f181beea78034b81911c59aa8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ec4d89f181beea78034b81911c59aa8">&#9670;&nbsp;</a></span>getWrapper()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_plugin_wrapper.html">PluginWrapper</a> &amp; PlumeProcessor::getWrapper </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="class_plugin_wrapper.html" title="Class that manages the plugin wrapping function of plume. ">PluginWrapper</a> getter. </p>
+<dl class="section return"><dt>Returns</dt><dd>Reference to the <a class="el" href="class_plugin_wrapper.html" title="Class that manages the plugin wrapping function of plume. ">PluginWrapper</a> object. </dd></dl>
 
 </div>
 </div>
@@ -242,7 +323,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>changeProgramName</b>
 </div><div class="memdoc">
 
 <p>State load method. </p>
-<p>Creates the data representing the current state of the plugin. It will call both createWrapperXml and createGesturesXml, then save the data in the specified memory block.</p>
+<p>Reads the specified data and changes the state of the plugin accordingly.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">destData</td><td>The memory block in which the data will be saved. </td></tr>

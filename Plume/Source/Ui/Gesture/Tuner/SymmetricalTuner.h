@@ -116,8 +116,6 @@ public:
 		}
         
 		rangeLabel->setText (String (int (parameter)), dontSendNotification);
-		
-		DBG ("Value: " << parameter << " max: " << float(sldr->getMaxValue()) << " min: " << float(sldr->getMinValue()));
     }
     
 private:

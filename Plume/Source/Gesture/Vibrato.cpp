@@ -18,7 +18,7 @@ Vibrato::~Vibrato()
 }
     
 //==============================================================================
-void Vibrato::addGestureMidi(MidiBuffer& midiMessages)
+void Vibrato::addGestureMidi (MidiBuffer& midiMessages)
 {
     if (on == false) return; // does nothing if the gesture is inactive
     
@@ -32,7 +32,7 @@ void Vibrato::addGestureMidi(MidiBuffer& midiMessages)
     }
 }
 
-int Vibrato::getMidiValue ()
+int Vibrato::getMidiValue()
 {
     bool vibTrig = (intensity > 40.0f);
     
@@ -40,7 +40,7 @@ int Vibrato::getMidiValue ()
     {
         vibLast = true;
         send = true;
-        return (Gesture::map (value, -(500.0f - gain), (500.01f - gain), 0, 16367));
+        return (Gesture::map (value, -(500.0f - gain), (500.01f - gain), 0, 16383));
     }
     else if (vibTrig != vibLast && vibTrig == false)
     {
@@ -58,7 +58,7 @@ void Vibrato::updateMappedParameters()
     // WIP
 }
 
-float Vibrato::getValueForMappedParameter(int paramId)
+float Vibrato::getValueForMappedParameter (int paramId)
 {
     return 0.0f; // WIP
 }

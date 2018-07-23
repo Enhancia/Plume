@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    Tilt.h
+    Roll.h
     Created: 9 Jul 2018 2:57:36pm
     Author:  Alex
 
@@ -14,18 +14,18 @@
 #include "Gesture/Gesture.h"
 
 /**
- *  \class Tilt Tilt.h
+ *  \class Roll Roll.h
  *
- *  \brief Tilt gesture class.
+ *  \brief Roll gesture class.
  *
- *  Gesture class for to create the tilt effect. Has it's own variables and overrides the base Gesture class methods
+ *  Gesture class for to create the roll effect. Has it's own variables and overrides the base Gesture class methods
  *  in accordance to the effect.
  */
-class Tilt : public Gesture
+class Roll : public Gesture
 {
 public:
-    Tilt (String gestName, float lowValue = 0.0f, float highValue = 50.0f);
-    ~Tilt();
+    Roll (String gestName);
+    ~Roll();
     
     //==============================================================================
     void addGestureMidi(MidiBuffer& midiMessages) override;
@@ -38,11 +38,5 @@ public:
     void updateValue (const Array<float> rawData) override;
     void addGestureParameters() override;
     
-    //==============================================================================
-    // Attributes that will be referenced to the Tuner component.
-    // Might want to replace them with audio processor parameters in the future.
-    
-    float low; /**< \brief Low value of the range */
-    float high; /**< \brief High value of the range */
 private:
 };

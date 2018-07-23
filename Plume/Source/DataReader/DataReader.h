@@ -18,6 +18,15 @@
     This component lives inside our window, and this is where you should put all
     your controls and content.
 */
+
+/**
+ *  \class DataReader DataReader.h
+ *
+ *  \brief Class that gets the raw data from the ring.
+ *
+ *  This is a class that is instanciated by the PlumeProcessor object. It inherits from InterprocessConnection
+ *  so that it can create a pipe, to which a RawDataReader app can connect to send data.
+ */
 class DataReader   : public Component,
                      private InterprocessConnection,
                      public ChangeBroadcaster

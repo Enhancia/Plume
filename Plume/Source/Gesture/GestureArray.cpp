@@ -59,7 +59,7 @@ void GestureArray::updateAllValues()
         return;
     }
     
-	DBG ("couldn't get the float values!!");
+	DBG ("couldn't get the float values. No vaues were updated.");
 }
 
 //==============================================================================
@@ -112,7 +112,7 @@ void GestureArray::addGesture (String gestureName, int gestureType)
         case Gesture::vibrato:
             gestures.add (new Vibrato (gestureName));
             break;
-        /*   
+        
         case Gesture::pitchBend:
             gestures.add (new PitchBend (gestureName));
             break;
@@ -120,7 +120,7 @@ void GestureArray::addGesture (String gestureName, int gestureType)
         case Gesture::tilt:
             gestures.add (new Tilt (gestureName));
             break;
-            
+        /*    
         case Gesture::wave:
             gestures.add (new Wave (gestureName));
             break;

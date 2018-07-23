@@ -74,10 +74,10 @@ public:
     void updateFullInterface();
     
 private:
-    PlumeProcessor& processor; /** < Reference to Plume's processor object */
-    ScopedPointer<WrapperComponent> wrapperComp; /** < Object allowing to choose a plugin to wrap and use with neova */
-    ScopedPointer<PresetComponent> presetComp; /** < Object allowing to save or load presets, in the xml format */
-    ScopedPointer<GesturePanel> gesturePanel; /** < Object that handles the different gesture gui objects */
+    PlumeProcessor& processor; /**< \brief Reference to Plume's processor object */
+    ScopedPointer<WrapperComponent> wrapperComp; /**< \brief Object allowing to choose a plugin to wrap and use with neova */
+    ScopedPointer<PresetComponent> presetComp; /**< \brief Object allowing to save or load presets, in the xml format */
+    ScopedPointer<GesturePanel> gesturePanel; /**< \brief Object that handles the different gesture gui objects */
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeEditor)
 };

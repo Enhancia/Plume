@@ -148,10 +148,27 @@ private:
     void createTuner()
     {
         // à remplacer par un switch sur type avec un simple "addAndMakeVisible (gestTuner = new [nom gesture]Tuner (...) );"
-		
-		Vibrato& vib = dynamic_cast<Vibrato&> (gesture);
-        DBG ("vibrato cast");
-        addAndMakeVisible (gestTuner = new VibratoTuner (vib));
+		if      (gesture.type == Gesture::vibrato)
+        {
+            Vibrato& vib = dynamic_cast<Vibrato&> (gesture);
+            addAndMakeVisible (gestTuner = new VibratoTuner (vib));
+        }
+        else if (gesture.type == Gesture::pitchBend)
+        {
+        }
+        else if (gesture.type == Gesture::tilt)
+        {
+        }
+        else if (gesture.type == Gesture::wave)
+        {
+        }
+        else if (gesture.type == Gesture::roll)
+        {
+        }
+        else
+        {
+            DBG ("Unknown Gesture type. No tuner was created.");
+        }
     }
     
     Gesture& gesture;

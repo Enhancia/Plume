@@ -439,10 +439,19 @@
     <ClCompile Include="..\..\Source\Gesture\GestureArray.cpp">
       <Filter>Plume\Source\Gesture</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Gesture\PitchBend.cpp">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Gesture\Roll.cpp">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Gesture\Tilt.cpp">
       <Filter>Plume\Source\Gesture</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Gesture\Vibrato.cpp">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Gesture\Wave.cpp">
       <Filter>Plume\Source\Gesture</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Plugin\PluginEditor.cpp">
@@ -2370,10 +2379,19 @@
     <ClInclude Include="..\..\Source\Gesture\GestureArray.h">
       <Filter>Plume\Source\Gesture</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Gesture\PitchBend.h">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Gesture\Roll.h">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Gesture\Tilt.h">
       <Filter>Plume\Source\Gesture</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Gesture\Vibrato.h">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Gesture\Wave.h">
       <Filter>Plume\Source\Gesture</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Plugin\PluginEditor.h">
