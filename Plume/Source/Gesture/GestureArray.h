@@ -98,6 +98,14 @@ public:
      */
     int size();
     
+    // Pitch message issue handler methods
+    /**
+     *  \brief Helper method to know if a pitch merge is needed.
+     *
+     *  
+     */
+    void checkPitchMerging();
+    
     //==============================================================================
     // Modifiers
     
@@ -123,6 +131,13 @@ public:
      */
     void setMapMode (bool mapModeOn);
     
+    /**
+     *  \brief Loader method allowing to initialize the array using.
+     *
+     *  
+     */
+    void loadFromXml ();
+    
     //==============================================================================
     //Callbacks 
     
@@ -136,21 +151,12 @@ public:
     
 private:
     //==============================================================================
-    // Pitch message issue handler methods
-    
     /**
-     *  \brief Helper method to know if a pitch merge is needed.
+     *  \brief Method to merge the pitch of all pitch related gestures and add the resulting message to a MidiBuffer.
      *
      *  
      */
-    bool requiresPitchMerging();
-    
-    /**
-     *  \brief Method to merge the pitch of all pitch related gestures.
-     *
-     *  
-     */
-    MidiMessage mergePitchMessages();
+    void addMergedPitchMessage (MidiBuffer& midiMessages);
     
     //==============================================================================
     /**
@@ -164,6 +170,7 @@ private:
     //==============================================================================
     struct mapperParameter;
     bool mapMode = false;
+    bool shouldMergePitch = false;
     
     //==============================================================================
     OwnedArray<Gesture> gestures; /**< \brief OwnedArray that holds all gesture objects*/

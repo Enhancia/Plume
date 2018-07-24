@@ -21,7 +21,7 @@ class  GesturePanel::GestureComponent   : public Component,
 										  private Button::Listener
 {
 public:
-    GestureComponent(Gesture& gest): gesture (gest)
+    GestureComponent(Gesture& gest, GestureArray& gestArray): gesture (gest), gestureArray (gestArray)
     {
         // Creates the on/off button
         Image onOff = ImageFileFormat::loadFrom (File ("D:/Workspace/GitWorkspace/Plume/Plume/Ressources/Images/Gestures/onOff.png"));
@@ -128,6 +128,7 @@ public:
 		// Sets all subcomponents active/inactive depending of the button state
 		
 		gesture.setActive (onOffButton->getToggleState()); // Sets gesture active or inactive.
+		gestureArray.checkPitchMerging();
 		
 		onOffButton->setState(onOffButton->getState() ? Button::buttonNormal:
 														Button::buttonDown);
@@ -151,13 +152,13 @@ private:
             Vibrato& vib = dynamic_cast<Vibrato&> (gesture);
             addAndMakeVisible (gestTuner = new VibratoTuner (vib));
         }
-        /*
+        
         else if (gesture.type == Gesture::pitchBend)
         {
             PitchBend& pitchBend = dynamic_cast<PitchBend&> (gesture);
             addAndMakeVisible (gestTuner = new PitchBendTuner (pitchBend));
         }
-        */
+        
         else if (gesture.type == Gesture::tilt)
         {
             Tilt& tilt = dynamic_cast<Tilt&> (gesture);
@@ -182,6 +183,7 @@ private:
     }
     
     Gesture& gesture;
+    GestureArray& gestureArray;
     ScopedPointer<ImageButton> onOffButton;
     
     ScopedPointer<Tuner> gestTuner;
@@ -212,7 +214,7 @@ void GesturePanel::initialize()
     for (int i=0; i<NUM_GEST && i<gestureArray.size(); i++)
     {
         // Loop that creates and places a gestureComponent for each existing gesture.
-        gestureComponents.add (new GestureComponent (*gestureArray.getGestureById (i)));
+        gestureComponents.add (new GestureComponent (*gestureArray.getGestureById (i), gestureArray));
         addAndMakeVisible (gestureComponents[i]);
         gestureComponents[i]->setBounds (0, i*(gestureHeight + MARGIN), getWidth(), gestureHeight);
     }

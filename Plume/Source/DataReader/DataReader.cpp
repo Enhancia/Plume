@@ -11,7 +11,7 @@
 //==============================================================================
 DataReader::DataReader(): InterprocessConnection (true, 0x6a6d626e)
 {
-    setSize (150, 50);
+    setSize (120, 50);
     connected = false;
     
     // Data initialization
@@ -24,7 +24,7 @@ DataReader::DataReader(): InterprocessConnection (true, 0x6a6d626e)
     addAndMakeVisible (connectedLabel = new Label ("connectedLabel", TRANS ("Disconnected")));
     connectedLabel->setColour (Label::textColourId, Colour (0xaaff0000));
     connectedLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
-    connectedLabel->setBounds (10, 5, 150, 40);
+    connectedLabel->setBounds (10, 5, 100, 40);
 }
 
 DataReader::~DataReader()

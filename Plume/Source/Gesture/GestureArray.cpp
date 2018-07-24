@@ -25,14 +25,31 @@ GestureArray::~GestureArray()
 void GestureArray::initializeGestures()
 {
     addGesture ("Vibrato_Default", Gesture::vibrato);
+    addGesture ("PitchBend_Default", Gesture::pitchBend);
     addGesture ("Tilt_Default", Gesture::tilt);
 }
 
 void GestureArray::addGestureMidiToBuffer (MidiBuffer& MidiMessages)
 {
-    for (auto* g : gestures)
+    if (shouldMergePitch)
     {
-        g->addGestureMidi (MidiMessages);
+        // Adds non-pitch midi
+        for (auto* g : gestures)
+        {
+            if (g->affectsPitch() == false) g->addGestureMidi (MidiMessages);
+        }
+        
+        // Adds pitch midi
+        addMergedPitchMessage(MidiMessages);
+    }
+    
+    else
+    {
+        // Adds all midi
+        for (auto* g : gestures)
+        {
+            g->addGestureMidi (MidiMessages);
+        }
     }
 }
 
@@ -133,21 +150,57 @@ void GestureArray::addGesture (String gestureName, int gestureType)
     }
     
     gestures.getLast()->setActive(true);
+    
+    checkPitchMerging();
+    
 }
 
 void GestureArray::clearAllGestures()
 {
     gestures.clear();
+    shouldMergePitch = false;
 }
 
 //==============================================================================
-bool GestureArray::requiresPitchMerging()
+void GestureArray::checkPitchMerging()
 {
-    return false;
+    bool pitchGest = false;
+    
+    for (auto* g : gestures)
+    {
+        if (g->isActive() && g->affectsPitch())
+        {
+            if (pitchGest == false) pitchGest = true;
+			else if (pitchGest == true)
+			{
+				shouldMergePitch = true;
+				return;
+			}
+        }
+    }
+    
+    shouldMergePitch = false;
 }
 
-/*
-MidiMessage GestureArray::mergePitchMessages()
+
+void GestureArray::addMergedPitchMessage (MidiBuffer& midiMessages)
 {
+    int pitchVal = 8192;
+    
+    // Creates a sum of pitch values, centered around 8192
+    for (auto* g : gestures)
+    {
+        if (g->affectsPitch() && g->isActive())
+        {
+            pitchVal = pitchVal + g->getMidiValue() - 8192;
+        }
+    }
+    
+    // Limits the value to be inbounds
+    if (pitchVal > 16383) pitchVal = 16383;
+    else if (pitchVal < 0) pitchVal = 0;
+    
+	// Creates the midi message and adds it to the buffer
+	MidiMessage message = MidiMessage::pitchWheel (1, pitchVal);
+    midiMessages.addEvent(message, 1);
 }
-*/

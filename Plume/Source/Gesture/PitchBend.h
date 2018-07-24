@@ -42,10 +42,8 @@ public:
     // Attributes that will be referenced to the Tuner component.
     // Might want to replace them with audio processor parameters in the future.
     
-    float lLow; /**< \brief Low value of the left range */
-    float lHigh; /**< \brief High value of the left range */
-    float hLow; /**< \brief Low value of the right range */
-    float hHigh; /**< \brief High value of the right range */
+    Range<float> rangeLeft;  /**< \brief Left range of the gesture */
+    Range<float> rangeRight; /**< \brief Right range of the gesture */
     
 private:
     bool send = false; /**< \brief Boolean used to know if the gesture should send midi */

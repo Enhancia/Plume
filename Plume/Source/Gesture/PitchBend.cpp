@@ -12,7 +12,7 @@
 
 PitchBend::PitchBend (String gestName, float leftLow, float leftHigh, float rightLow, float rightHigh)
     : Gesture (gestName, Gesture::pitchBend, Range<float> (-90.0f, 90.0f), 0.0f),
-      lLow (leftLow), lHigh (leftHigh), hLow (rightLow), hHigh (rightHigh) 
+      rangeLeft (Range<float> (leftLow, leftHigh)), rangeRight (Range<float> (rightLow, rightHigh)) 
 {
 }
 
@@ -37,16 +37,16 @@ void PitchBend::addGestureMidi (MidiBuffer& midiMessages)
 
 int PitchBend::getMidiValue()
 {
-    if (value>= 0.0f && -value < 140.0f && hLow != hHigh)
+    if (value>= 0.0f && value < 140.0f && !(rangeRight.isEmpty()))
     {
         send = true;
-        return (Gesture::map (-value, hLow, hHigh, 8192, 16383));
+        return (Gesture::map (value, rangeRight.getStart(), rangeRight.getEnd(), 8192, 16383));
     }
     
-    else if (-value < 0.0f && -value > -140.0f && lLow != lHigh)
+    else if (value < 0.0f && value > -140.0f && !(rangeLeft.isEmpty()))
     {
         send = true;
-        return (Gesture::map (-value, lLow, lHigh, 0, 8191));
+        return (Gesture::map (value, rangeLeft.getStart(), rangeLeft.getEnd(), 0, 8191));
     }
     
     send = false;
@@ -66,7 +66,7 @@ float PitchBend::getValueForMappedParameter (int paramId)
 //==============================================================================
 void PitchBend::updateValue (const Array<float> rawData)
 {
-    value = rawData[5];
+    value = -rawData[5];
 }
 
 void PitchBend::addGestureParameters()

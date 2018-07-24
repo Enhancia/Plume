@@ -74,7 +74,7 @@ public:
     void labelTextChanged (Label* lbl) override
     {
         // checks that the string is numbers only
-        if (lbl->getText().containsOnly ("0123456789"+valueUnit) == false)
+        if (lbl->getText().containsOnly ("-0123456789"+valueUnit) == false)
         {
             lbl->setText (String (int (parameter)), dontSendNotification);
             return;

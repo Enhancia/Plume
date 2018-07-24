@@ -47,12 +47,15 @@ public:
      *
      *  \param gestName A string that holds the gesture name
      *  \param gestType The gesture type. Uses the GestureType enum.
+     *  \param maxRange The maximum values that the gesture's value can take.
+     *  \param defaultValue The default value of the gesture's value attribute.
      */
-    Gesture(String gestName, int gestType, Range<float> r, float defaultValue = 0.0f)	: name (gestName), type (gestType)
+    Gesture(String gestName, int gestType, Range<float> maxRange, float defaultValue = 0.0f)	: name (gestName), type (gestType)
     {
         on = false;
         mapped = false;
-        range = r;
+        midiMap = false;
+        range = maxRange;
         value = defaultValue;
     }
     
@@ -205,9 +208,30 @@ public:
         }
     }
     
+    /**
+     *  \brief Method to know if the gesture currently creates a pitchWheel midi message.
+     *
+     *  \return true if the gesture creates a PitchWheel message.
+     */
+    bool affectsPitch()
+    {
+        if ((type == Gesture::vibrato || type == Gesture::pitchBend) && mapped == false)
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    //==============================================================================
+    // Parameter related methods
+    
+    
+    
     //==============================================================================
     const String name; /**< Specific name of the gesture. By default [gesture_type]_default */
     const int type; /**< Type of Gesture. Int value from gestureType enum */
+    bool mapModeOn = false; /**< Boolean that indicates if the gesture looks for a new parameter to map */
     
 protected:
     //==============================================================================
@@ -255,16 +279,64 @@ protected:
         if (value < minVal) return minNew;
         if (value > maxVal) return maxNew;
     
-        return (minNew + int (float (maxNew - minNew)*(value - minVal)/(maxVal-minVal)));
+        return (minNew + int ((maxNew - minNew)*(value - minVal)/(maxVal-minVal)));
+    }
+    
+    /**
+     *  \brief Helper function to map a floating point value to the specified interval within [0.0f 1.0f].
+     *
+     *  Used to map the value of the gesture to one of the gestures parameters.
+     * 
+     *  \param minVal Low value of the range
+     *  \param maxVal High value of the range
+     *  \param value  Current value inside the range
+     *  \param paramRange Range used by the parameter
+     */
+    static float mapParam (float value, float minVal, float maxVal, Range<float> paramRange)
+    {
+        // Prevents dividing by 0
+        if (minVal == maxVal) return paramRange.getStart();
+        
+        // Forces the interval to [0.0f 1.0f]
+        if (paramRange.getStart() < 0.0f) paramRange.setStart (0.0f);
+        if (paramRange.getEnd() > 1.0f)   paramRange.setEnd (1.0f);
+        
+        // Checks out of bounds values
+        if (value < minVal) return paramRange.getStart();
+        if (value > maxVal) return paramRange.getEnd();
+    
+        return (paramRange.getStart() + paramRange.getLength()*(value - minVal)/(maxVal - minVal));
     }
     
     //==============================================================================
     bool on; /**< \brief Boolean that represents if the gesture is active or not. */
     bool mapped; /**< \brief Boolean that represents if the gesture is mapped or not. */
-    
+    bool midiMap; /**< \brief Boolean that tells if the gesture is currently in midiMap mode */
     
     //==============================================================================
     float value; /**< \brief Parameter that holds the current "raw" value of the gesture. Should be used and updated by subclasses. */
     Range<float> range; /**< \brief Attribute that holds the maximum range of values that the attribute "value" can take. */
     
+    //OwnedArray<MappedParameter> parameterArray;  /**< \brief Array of all the MappedParameter that the gesture controls. */
+
+private:
+    /**
+     *  \struct MappedParameter
+     *
+     *  \brief Struct that holds a reference to an AudioProcessorParameter from the wrapped plugin and a range.
+     *
+     *  This struct is used by the Gesture class to control a parameter from the wrapped plugin, and the range of values that the
+     *  gesture should control. The Gesture class implements several methods to modify an array of MappedParameter that it holds.
+     */
+    struct MappedParameter
+    {
+        MappedParameter(const AudioProcessorParameter& p, Range<float> pRange)
+            : parameter (p), parameterRange(pRange)
+        {}
+        
+        ~MappedParameter() {}
+        
+        const AudioProcessorParameter& parameter; /**< \brief Reference to a mapped Parameter from the wrapped Plugin. */
+        Range<float> parameterRange; /**< \brief Range of values from the parameter that the Gesture controls. */
+    };
 };
