@@ -31,7 +31,7 @@ void Roll::updateMappedParameters()
 {
 }
 
-float Roll::getValueForMappedParameter (int paramId)
+float Roll::getValueForMappedParameter (Range<float> paramRange)
 {
 }
     

@@ -33,12 +33,20 @@ public:
     // Helper methods for processor
     
     /**
+     *  \brief Main method for the processor. Will either add Midi or modify parameters for each gestures.
+     *
+     *  This method is called by the processor processBlock() method to create Neova's effects. It will use
+     *  addGestureMidiToBuffer() or updateAllMappedParameters
+     */
+    void process (MidiBuffer& MidiMessages);
+    
+    /**
      *  \brief Method that creates the Midi for each gesture and adds it to the parameter buffer.
      *
-     *  This method is called by the processor processBlock() method to create Neova's MIDI. It uses each gesture
+     *  This method is called by the process() method to create Neova's MIDI. It uses each gesture
      *  Gesture::addGestureMidi() method.
      */
-    void addGestureMidiToBuffer (MidiBuffer& MidiMessages);
+    void addGestureMidiToBuffer (MidiBuffer& midiMessages);
     
     /**
      *  \brief Method that changes the value of every mapped parameter.
@@ -106,6 +114,8 @@ public:
      */
     void checkPitchMerging();
     
+     
+    
     //==============================================================================
     // Modifiers
     
@@ -118,6 +128,13 @@ public:
     void addGesture (String gestureName, int gestureType);
     
     /**
+     *  \brief Method to add a parameter to the right gesture.
+     *
+     *  
+     */
+    void addParameterToMapModeGesture (AudioProcessorParameter& param);
+    
+    /**
      *  \brief Deletes all gestures in the array.
      *
      *  Used when there is a need to reset the gestures, and in the GestureArray destructor.
@@ -125,18 +142,25 @@ public:
     void clearAllGestures ();
     
     /**
-     *  \brief Setter for the map mode boolean.
+     *  \brief Deletes all mapped parameters from every gesture.
      *
-     *  
+     *  Useful when loading a new plugin or a preset.
+     *
      */
-    void setMapMode (bool mapModeOn);
+    void clearAllParameters();
+    
+    /**
+     *  \brief Method that puts every Gesture's to a non mapping state.
+     *
+     */
+    void cancelMapMode();
     
     /**
      *  \brief Loader method allowing to initialize the array using.
      *
      *  
      */
-    void loadFromXml ();
+    void loadFromXml();
     
     //==============================================================================
     //Callbacks 
@@ -148,6 +172,8 @@ public:
      *  This method will call updateValues() to change all the gestures' values to the updated ones.
      */
     void changeListenerCallback(ChangeBroadcaster* source) override;
+    
+    bool mapModeOn = false; /**< \brief Boolean to assess if one of the gestures in currently in mapMode*/
     
 private:
     //==============================================================================
@@ -168,8 +194,6 @@ private:
     void initializeGestures();
     
     //==============================================================================
-    struct mapperParameter;
-    bool mapMode = false;
     bool shouldMergePitch = false;
     
     //==============================================================================

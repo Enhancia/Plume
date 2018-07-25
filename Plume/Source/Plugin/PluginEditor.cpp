@@ -67,6 +67,12 @@ void PlumeEditor::changeListenerCallback(ChangeBroadcaster* source)
 }
 
 //==============================================================================
+PlumeProcessor& PlumeEditor::getProcessor()
+{
+    return processor;
+}
+
+//==============================================================================
 void PlumeEditor::updateFullInterface()
 {
     wrapperComp->update();

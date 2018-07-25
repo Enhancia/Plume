@@ -14,8 +14,8 @@
  #error "If you're building the wrapper, you probably want to enable VST and/or AU support"
 #endif
 
-PluginWrapper::PluginWrapper (PlumeProcessor& p)
-    : owner (p)
+PluginWrapper::PluginWrapper (PlumeProcessor& p, GestureArray& gArr)
+    : owner (p), gestArray (gArr)
 {
     // Initializes the booleans
     hasWrappedInstance = false;
@@ -107,6 +107,7 @@ void PluginWrapper::unwrapPlugin()
     
     hasWrappedInstance = false;
     
+    owner.getGestureArray().clearAllParameters();
     wrapperProcessor.reset();
     wrappedInstance.reset();
 }
@@ -135,7 +136,7 @@ void PluginWrapper::createWrapperEditor()
     
     if (hasOpenedEditor == true)
     {
-        wrapperEditor->toFront(false);
+        wrapperEditor->toFront(true);
         return;
     }
     
@@ -174,11 +175,25 @@ WrapperProcessor& PluginWrapper::getWrapperProcessor()
     return *wrapperProcessor;
 }
 
+PlumeProcessor& PluginWrapper::getOwner()
+{
+    return owner;
+}
+
 //==============================================================================
 void PluginWrapper::fillInPluginDescription (PluginDescription& pd)
 {
     if (hasWrappedInstance)
     {
         wrappedInstance->fillInPluginDescription (pd);
+    }
+}
+
+//==============================================================================
+void PluginWrapper::parameterValueChanged (int parameterIndex, float newValue)
+{
+    if (gestArray.mapModeOn)
+    {
+	    gestArray.addParameterToMapModeGesture (wrapperProcessor->getWrappedParameter (parameterIndex));
     }
 }

@@ -12,9 +12,9 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
+#include "Gesture/GestureArray.h"
 #include "Wrapper/PluginWrapper.h"
 #include "Gesture/Gesture.h"
-#include "Gesture/GestureArray.h"
 #include "DataReader/DataReader.h"
 
 //==============================================================================

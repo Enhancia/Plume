@@ -59,7 +59,7 @@ WrapperProcessor::~WrapperProcessor()
     
     for (auto* param : params)
     {
-        //param->removeListener (this);
+        param->removeListener (&getOwnerWrapper());
     }
 }
 
@@ -84,8 +84,15 @@ void WrapperProcessor::initWrappedParameters()
     for (auto* param : params)
     {
         addParameter(new WrappedParameter(*param));
-        //param->addListener (this);
+        param->addListener (&getOwnerWrapper());
     }
+}
+
+AudioProcessorParameter& WrapperProcessor::getWrappedParameter (int id)
+{
+    auto& params = plugin.getParameters();
+    
+    return *(params[id]);
 }
 
 PluginWrapper& WrapperProcessor::getOwnerWrapper()

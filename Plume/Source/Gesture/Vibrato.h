@@ -32,7 +32,7 @@ public:
     int getMidiValue () override;
     
     void updateMappedParameters() override;
-    float getValueForMappedParameter(int paramId) override;
+    float getValueForMappedParameter(Range<float> paramRange) override;
     
     //==============================================================================
     void updateValue (const Array<float> rawData) override;

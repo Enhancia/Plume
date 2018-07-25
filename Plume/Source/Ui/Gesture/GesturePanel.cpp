@@ -12,6 +12,7 @@
 #include "Gesture/GestureArray.h"
 #include "Ui/Gesture/GesturePanel.h"
 #include "Ui/Gesture/Tuner/GesturesTuner.h"
+#include "Ui/Gesture/Mapper/MapperComponent.h"
 
 #define MARGIN 8
 #define NUM_GEST 3
@@ -38,6 +39,9 @@ public:
         
         // Creates the right Tuner Object
         createTuner();
+        
+        // Creates the mapper object
+        addAndMakeVisible( gestMapper = new MapperComponent(gesture, gestureArray));
     }
     
     ~GestureComponent()
@@ -51,9 +55,11 @@ public:
 
         int tunerWidth = getWidth()*5/8 - MARGIN;
         int mapperWidth = getWidth()*3/8 - MARGIN;
+        int x, y, width, height;
+        Colour fillColour;
         
-        {
-            // Fills the area for the Tuner and Mapper 
+        // Fills the area for the Tuner and Mapper
+        { 
 			if (onOffButton->getToggleState() == true)	g.setColour(Colour(0xffa0a0a0));
 			else										g.setColour(Colour(0xff606060));
 
@@ -62,12 +68,12 @@ public:
             g.fillRect (tunerWidth, getHeight()*9/20, 2*MARGIN, getHeight()/10);
         }
         
+        // Loads the gesture image
 		{
-		    // Loads the gesture image
-            int x = MARGIN,
-                y = MARGIN,
-                width = tunerWidth/8 - 2*MARGIN,
-                height = getHeight() - 2*MARGIN;
+            x = MARGIN;
+            y = MARGIN;
+            width = tunerWidth/8 - 2*MARGIN;
+            height = getHeight() - 2*MARGIN;
 
             Image gest = ImageFileFormat::loadFrom (File ("D:/Workspace/GitWorkspace/Plume/Plume/Ressources/Images/Gestures/"+
                                                     gesture.getTypeString()+
@@ -75,38 +81,53 @@ public:
 			g.drawImageWithin(gest, x, y, width, height,
 							  RectanglePlacement(RectanglePlacement::centred));
         }
-
+        
+        // Gesture Name text
         {
-            // Gesture Name text
-            int x = tunerWidth/8 + 2*MARGIN,
-                y = 0,
-                width = (tunerWidth - tunerWidth/8 - 2*MARGIN)*3/4,
-                height = getHeight()/4;
-                
-            String text (TRANS(gesture.name));
-            Colour fillColour;
+            x = tunerWidth/8 + 2*MARGIN;
+            y = 0;
+            width = (tunerWidth - tunerWidth/8 - 2*MARGIN)*3/4;
+            height = getHeight()/4;
+
             if (onOffButton->getToggleState() == true)	fillColour = Colour(0xffffffff);
 			else										fillColour = Colour(0x80ffffff);
-
             g.setColour (fillColour);
+                            
+            String text (TRANS(gesture.name));
             g.setFont (Font (15.0f, Font::plain).withTypefaceStyle ("Regular"));
             g.drawText (text, x, y, width, height,
                         Justification::centred, true);
         }
         
+        // "Values" text
         {
-            // "Values" text
-            int x = tunerWidth*3/4 + (tunerWidth/8 + 2*MARGIN)/4,
-                y = 0,
-                width = (tunerWidth - tunerWidth/8 - 2*MARGIN)/4,
-                height = getHeight()/4;
-                
-            String text (TRANS("Values"));
-            Colour fillColour;
+            x = tunerWidth*3/4 + (tunerWidth/8 + 2*MARGIN)/4;
+            y = 0;
+            width = (tunerWidth - tunerWidth/8 - 2*MARGIN)/4;
+            height = getHeight()/4;
+            
             if (onOffButton->getToggleState() == true)	fillColour = Colour(0xffffffff);
 			else										fillColour = Colour(0x80ffffff);
-
             g.setColour (fillColour);
+            
+            String text (TRANS("Values"));
+            g.setFont (Font (15.0f, Font::plain).withTypefaceStyle ("Regular"));
+            g.drawText (text, x, y, width, height,
+                        Justification::centred, true);
+        }
+        
+        // "Parameters" text
+        {
+            x = getWidth()*5/8 + MARGIN;
+            y = 0;
+            width = mapperWidth*3/4;
+            height = getHeight()/4;
+                
+            if (onOffButton->getToggleState() == true)	fillColour = Colour(0xffffffff);
+			else										fillColour = Colour(0x80ffffff);
+            g.setColour (fillColour);
+            
+            String text (TRANS("Parameters"));
             g.setFont (Font (15.0f, Font::plain).withTypefaceStyle ("Regular"));
             g.drawText (text, x, y, width, height,
                         Justification::centred, true);
@@ -116,9 +137,11 @@ public:
     void resized() override
     {
 		int tunerWidth = getWidth() * 5/8 - MARGIN;
+		int mapperWidth = getWidth() * 3/8 - MARGIN;
 
         onOffButton->setBounds (tunerWidth/8 + 2*MARGIN, MARGIN, 20, 20);
         gestTuner->setBounds(tunerWidth/8 + 2*MARGIN, getHeight()/4, tunerWidth*7/8 - 2*MARGIN, getHeight()*3/4);
+        gestMapper->setBounds(getWidth() * 5/8 + MARGIN, 0, mapperWidth, getHeight());
         repaint();
     }
     
@@ -140,8 +163,8 @@ public:
     //==============================================================================
     void updateDisplay()
     {
-        gestTuner->updateDisplay();
-        //gestMapper.updateDisplay();
+        if (gesture.isActive()) gestTuner->updateDisplay();
+        //if (gesture.isMapped()) gestMapper->updateDisplay();
     }
     
 private:
@@ -187,6 +210,7 @@ private:
     ScopedPointer<ImageButton> onOffButton;
     
     ScopedPointer<Tuner> gestTuner;
+    ScopedPointer<MapperComponent> gestMapper;
 };
 
 //==============================================================================

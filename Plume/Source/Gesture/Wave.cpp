@@ -31,7 +31,7 @@ void Wave::updateMappedParameters()
 {
 }
 
-float Wave::getValueForMappedParameter (int paramId)
+float Wave::getValueForMappedParameter (Range<float> paramRange)
 {
 }
     

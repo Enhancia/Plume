@@ -19,30 +19,36 @@ PlumeProcessor::PlumeProcessor()
                        .withOutput ("Output", AudioChannelSet::stereo(), true)
                        )
 #endif
-{
-    wrapper = new PluginWrapper (*this);
+{   
     dataReader = new DataReader();
     gestureArray = new GestureArray (*dataReader);
+    wrapper = new PluginWrapper (*this, *gestureArray);
     dataReader->addChangeListener(gestureArray);
 }
 
 PlumeProcessor::~PlumeProcessor()
 {
-    wrapper = nullptr;
     dataReader->removeChangeListener(gestureArray);
     dataReader = nullptr;
     gestureArray = nullptr;
+    wrapper = nullptr;
 }
 
 //==============================================================================
 void PlumeProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    wrapper->getWrapperProcessor().prepareToPlay (sampleRate, samplesPerBlock);
+    if (wrapper->isWrapping())
+    {
+        wrapper->getWrapperProcessor().prepareToPlay (sampleRate, samplesPerBlock);
+    }
 }
 
 void PlumeProcessor::releaseResources()
 {
-    wrapper->getWrapperProcessor().releaseResources();
+    if (wrapper->isWrapping())
+    {
+        wrapper->getWrapperProcessor().releaseResources();
+    }
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -76,7 +82,7 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
     if (wrapper->isWrapping())
     {
         // Adds the gesture's MIDI messages to the buffer
-        gestureArray->addGestureMidiToBuffer(midiMessages);
+        gestureArray->process (midiMessages);
         
         // Calls the wrapper processor's processBlock method
         wrapper->getWrapperProcessor().processBlock(buffer, midiMessages);

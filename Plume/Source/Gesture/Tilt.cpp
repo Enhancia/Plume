@@ -40,11 +40,22 @@ int Tilt::getMidiValue()
 
 void Tilt::updateMappedParameters()
 {
+    // Checks if Gesture is on and if value is within the right range
+    if (on == false || value >= 120.0f || value <= -120.0f)
+    {
+        return;
+    }
+    
+    // Goes through the parameterArray to update each value
+    for (auto* param : parameterArray)
+    {                
+        param->parameter.setValueNotifyingHost (getValueForMappedParameter (param->range));
+    }
 }
 
-float Tilt::getValueForMappedParameter (int paramId)
+float Tilt::getValueForMappedParameter (Range<float> paramRange)
 {
-	return 0.0f;
+	return Gesture::mapParameter (value, range.getStart(), range.getEnd(), paramRange);
 }
     
 //==============================================================================

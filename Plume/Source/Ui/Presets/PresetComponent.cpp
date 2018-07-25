@@ -66,7 +66,7 @@ void PresetComponent::savePreset()
 {
     // Lets the user chose the location and name to save a preset file
     FileChooser presetSaver ("Select the folder you want the preset to be saved to.",
-                             File::getSpecialLocation (File::currentApplicationFile),
+                             File::getSpecialLocation (File::currentApplicationFile).getParentDirectory(),
                              ".xml");
         
     if (presetSaver.browseForFileToSave(true))
@@ -93,7 +93,7 @@ void PresetComponent::loadPreset()
 {
     // Lets the user chose a preset file to load
     FileChooser presetLoader ("Select the preset file to load.",
-                              File::getSpecialLocation (File::currentApplicationFile),
+                              File::getSpecialLocation (File::currentApplicationFile).getParentDirectory(),
                               "*.xml");
                               
     if (presetLoader.browseForFileToOpen())

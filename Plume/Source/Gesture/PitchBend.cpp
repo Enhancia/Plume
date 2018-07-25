@@ -23,7 +23,7 @@ PitchBend::~PitchBend()
 //==============================================================================
 void PitchBend::addGestureMidi (MidiBuffer& midiMessages)
 {
-    if (on == false) return; // does nothing if the gesture is inactive
+    if (on == false) return; // does nothing if the gesture is inactive or mapped
     
     int pbVal = getMidiValue();
     
@@ -55,12 +55,42 @@ int PitchBend::getMidiValue()
    
 void PitchBend::updateMappedParameters()
 {
-    //WIP
+    if (on == false) return; // does nothing if the gesture is inactive
+    
+    float paramVal;
+    
+    // Goes through the parameterArray to update each value
+    for (auto* param : parameterArray)
+    {
+        paramVal = getValueForMappedParameter (param->range);
+        
+        if (send == true)
+        {
+            param->parameter.setValueNotifyingHost (paramVal);	
+        }
+    }
 }
 
-float PitchBend::getValueForMappedParameter (int paramId)
+float PitchBend::getValueForMappedParameter (Range<float> paramRange)
 {
-    return 0.0f; //WIP
+    if (value>= 0.0f && value < 140.0f && !(rangeRight.isEmpty()))
+    {
+        send = true;
+        return (Gesture::mapParameter (value, rangeRight.getStart(), rangeRight.getEnd(),
+                                       Range<float> (paramRange.getStart() + paramRange.getLength()/2,
+                                                     paramRange.getEnd())));
+    }
+    
+    else if (value < 0.0f && value > -140.0f && !(rangeLeft.isEmpty()))
+    {
+        send = true;
+        return (Gesture::mapParameter (value, rangeLeft.getStart(), rangeLeft.getEnd(),
+                                       Range<float> (paramRange.getStart(),
+                                                     paramRange.getStart() + paramRange.getLength()/2)));
+    }
+    
+    send = false;
+    return paramRange.getStart() + paramRange.getLength()/2;
 }
     
 //==============================================================================

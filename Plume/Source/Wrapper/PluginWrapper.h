@@ -12,6 +12,7 @@
 
 #include "../../JuceLibraryCode/JuceHeader.h"
 
+#include "Gesture/GestureArray.h"
 #include "Wrapper/WrapperEditor.h"
 
 /**
@@ -24,11 +25,11 @@
  */
 class PlumeProcessor;
 
-class PluginWrapper
+class PluginWrapper : public AudioProcessorParameter::Listener
 {
 public:
     //==============================================================================
-    PluginWrapper(PlumeProcessor&);
+    PluginWrapper(PlumeProcessor&, GestureArray&);
     ~PluginWrapper();
     
     //==============================================================================
@@ -46,9 +47,14 @@ public:
     //==============================================================================
     String getWrappedPluginName();
     WrapperProcessor& getWrapperProcessor();
+    PlumeProcessor& getOwner();
     
     //==============================================================================
     void fillInPluginDescription (PluginDescription& pd);
+    
+    //==============================================================================
+    void parameterValueChanged (int parameterIndex, float newValue) override;
+    void parameterGestureChanged (int parameterIndex, bool gestureIsStarting) override {};
     
 private:       
     //==============================================================================
@@ -65,6 +71,7 @@ private:
     ScopedPointer<AudioPluginFormatManager> formatManager;
  
     PlumeProcessor& owner;
+    GestureArray& gestArray;
     
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginWrapper)

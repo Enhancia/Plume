@@ -11,6 +11,7 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#define MAX_PARAMETER 4
 
 /**
  *  \class Gesture Gesture.h
@@ -19,7 +20,7 @@
  *
  *  Base class to create gestures, with virtual mehtods to create MIDI or map the gesture to a parameter.
  */
-class Gesture
+class Gesture   : public ChangeBroadcaster
 {
 public:
     //==============================================================================
@@ -37,6 +38,26 @@ public:
         wave,
         roll,
         numGestures
+    };
+    
+     /**
+     *  \struct MappedParameter
+     *
+     *  \brief Struct that holds a reference to an AudioProcessorParameter from the wrapped plugin and a range.
+     *
+     *  This struct is used by the Gesture class to control a parameter from the wrapped plugin, and the range of values that the
+     *  gesture should control. The Gesture class implements several methods to modify an array of MappedParameter that it holds.
+     */
+    struct MappedParameter
+    {
+        MappedParameter(AudioProcessorParameter& p, Range<float> pRange)
+            : parameter (p), range(pRange)
+        {}
+        
+        ~MappedParameter() {}
+        
+        AudioProcessorParameter& parameter; /**< \brief Reference to a mapped Parameter from the wrapped Plugin. */
+        Range<float> range; /**< \brief Range of values from the parameter that the Gesture controls. */
     };
     
     //==============================================================================
@@ -98,11 +119,10 @@ public:
     /**
      *  \brief Method that returns the value for a specific mapped parameter.
      *
-     *  Override this function in derived classes to return a float between 0.0f and 1.0f.
-     *
-     *  \param paramId Id of the parameter in the array of MappedParameter. 
+     *  Override this function in derived classes to return a float between whithin the specified range.
+     * 
      */
-    virtual float getValueForMappedParameter(int paramId) =0;
+    virtual float getValueForMappedParameter(Range<float> paramRange) =0;
     
     //==============================================================================
     /**
@@ -118,7 +138,7 @@ public:
      *  \brief Adds the gesture settings as parameters to the processor's parameters array.
      *
      */
-    virtual void addGestureParameters() =0;
+    virtual void addGestureParameters() {}
     
     //==============================================================================
     // Getters to get const references to the value and range of the gesture. Used by the display.
@@ -225,8 +245,48 @@ public:
     
     //==============================================================================
     // Parameter related methods
+    /**
+     *  \brief Creates a new MappedParameter.
+     */
+    void addParameter (AudioProcessorParameter& param)
+    {
+        if (parameterArray.size() < MAX_PARAMETER)
+        {
+            parameterArray.add ( new MappedParameter (param, Range<float> (0.0f, 1.0f)));
+            mapped = true;
+        }
+        sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
+    }
     
+    /**
+     *  \brief Deletes a MappedParameter.
+     */
+    void deleteParameter(int paramId)
+    {
+        parameterArray.remove (paramId);
+        
+        if (parameterArray.isEmpty()) mapped = false;
+        
+        sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
+    }
     
+    /**
+     *  \brief Deletes all MappedParameter in the array.
+     */
+    void clearAllParameters()
+    {
+        parameterArray.clear();
+        mapped = false;
+        sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
+    }
+    
+    /**
+     *  \brief Gets a reference to the parameter array.
+     */
+    OwnedArray<MappedParameter>& getParameterArray()
+    {
+        return parameterArray;
+    }
     
     //==============================================================================
     const String name; /**< Specific name of the gesture. By default [gesture_type]_default */
@@ -292,7 +352,7 @@ protected:
      *  \param value  Current value inside the range
      *  \param paramRange Range used by the parameter
      */
-    static float mapParam (float value, float minVal, float maxVal, Range<float> paramRange)
+    static float mapParameter (float value, float minVal, float maxVal, Range<float> paramRange)
     {
         // Prevents dividing by 0
         if (minVal == maxVal) return paramRange.getStart();
@@ -317,26 +377,5 @@ protected:
     float value; /**< \brief Parameter that holds the current "raw" value of the gesture. Should be used and updated by subclasses. */
     Range<float> range; /**< \brief Attribute that holds the maximum range of values that the attribute "value" can take. */
     
-    //OwnedArray<MappedParameter> parameterArray;  /**< \brief Array of all the MappedParameter that the gesture controls. */
-
-private:
-    /**
-     *  \struct MappedParameter
-     *
-     *  \brief Struct that holds a reference to an AudioProcessorParameter from the wrapped plugin and a range.
-     *
-     *  This struct is used by the Gesture class to control a parameter from the wrapped plugin, and the range of values that the
-     *  gesture should control. The Gesture class implements several methods to modify an array of MappedParameter that it holds.
-     */
-    struct MappedParameter
-    {
-        MappedParameter(const AudioProcessorParameter& p, Range<float> pRange)
-            : parameter (p), parameterRange(pRange)
-        {}
-        
-        ~MappedParameter() {}
-        
-        const AudioProcessorParameter& parameter; /**< \brief Reference to a mapped Parameter from the wrapped Plugin. */
-        Range<float> parameterRange; /**< \brief Range of values from the parameter that the Gesture controls. */
-    };
+    OwnedArray<MappedParameter> parameterArray;  /**< \brief Array of all the MappedParameter that the gesture controls. */
 };

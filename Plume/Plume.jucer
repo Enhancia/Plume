@@ -3,7 +3,7 @@
 <JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" jucerVersion="5.3.1"
               pluginFormats="buildVST,buildStandalone" version="0.1" companyName="Enhancia"
               buildVST="1" buildVST3="0" buildAU="0" buildAUv3="0" buildRTAS="0"
-              buildAAX="0" enableIAA="0" pluginCharacteristicsValue="pluginIsMidiEffectPlugin,pluginProducesMidiOut,pluginWantsMidiIn"
+              buildAAX="0" enableIAA="0" pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
               pluginManufacturer="Enhancia" pluginName="Plume" pluginDesc="Enhancia's Plume. Wraps other plugins and provides customizable and mappable gestures to use with Neova."
               binaryDataNamespace="PlumeData">
   <MAINGROUP id="RYgD59" name="Plume">
@@ -51,7 +51,14 @@
       </GROUP>
       <GROUP id="{EB1FE939-C694-02C5-E97F-E17B6084B07C}" name="Ui">
         <GROUP id="{3CFEC0E3-E11C-6973-B8F6-2519E7B63825}" name="Gesture">
-          <GROUP id="{6AF40B7D-7CAB-7E83-301F-B50F2A1EF68A}" name="Mapper"/>
+          <GROUP id="{6AF40B7D-7CAB-7E83-301F-B50F2A1EF68A}" name="Mapper">
+            <FILE id="Y4L9JA" name="MappedParameterComponent.h" compile="0" resource="0"
+                  file="Source/Ui/Gesture/Mapper/MappedParameterComponent.h"/>
+            <FILE id="EvACj5" name="MapperComponent.cpp" compile="1" resource="0"
+                  file="Source/Ui/Gesture/Mapper/MapperComponent.cpp"/>
+            <FILE id="zvBlwR" name="MapperComponent.h" compile="0" resource="0"
+                  file="Source/Ui/Gesture/Mapper/MapperComponent.h"/>
+          </GROUP>
           <GROUP id="{027C4BCF-8809-483D-C6DA-16DDB0E6F69A}" name="Tuner">
             <FILE id="p4jPAQ" name="GesturesTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/GesturesTuner.h"/>
             <FILE id="lWYww1" name="OneRangeTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/OneRangeTuner.h"/>
@@ -84,6 +91,7 @@
       <GROUP id="{E197EADC-7951-2072-30F3-1E0791A4B2A7}" name="Images">
         <GROUP id="{5DAA9652-AC5A-272C-7445-2818971B7B55}" name="Backgrounds"/>
         <GROUP id="{E3B6538E-ABF7-74A3-09C1-5FA4BB791D93}" name="Gestures">
+          <FILE id="T0sQKI" name="Close.png" compile="0" resource="1" file="Ressources/Images/Gestures/Close.png"/>
           <FILE id="vG9nZk" name="pitchBend.png" compile="0" resource="1" file="Ressources/Images/Gestures/pitchBend.png"/>
           <FILE id="P5NmnU" name="OnOff.png" compile="0" resource="1" file="Ressources/Images/Gestures/OnOff.png"/>
           <FILE id="o90tE2" name="roll.png" compile="0" resource="1" file="Ressources/Images/Gestures/roll.png"/>
