@@ -15,10 +15,14 @@
 #define TOP_PANEL 80
 #define FRAMERATE 60
 
+
+#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 //==============================================================================
 PlumeEditor::PlumeEditor (PlumeProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
 {
+    TRACE_IN;
+    
     setSize (800, 600);
     
     // Creates the 3 main components
@@ -45,6 +49,8 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 
 PlumeEditor::~PlumeEditor()
 {
+    TRACE_IN;
+    
     wrapperComp = nullptr;
     presetComp = nullptr;
     gesturePanel = nullptr;
@@ -63,7 +69,11 @@ void PlumeEditor::resized()
 //==============================================================================
 void PlumeEditor::changeListenerCallback(ChangeBroadcaster* source)
 {
-    updateFullInterface();
+    if (source == &processor) updateFullInterface();
+    else
+    {
+        
+    }
 }
 
 //==============================================================================

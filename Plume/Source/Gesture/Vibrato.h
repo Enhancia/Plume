@@ -24,7 +24,7 @@
 class Vibrato : public Gesture
 {
 public:
-    Vibrato (String gestName);
+    Vibrato (String gestName, float val = 400.0f);
     ~Vibrato();
     
     //==============================================================================
@@ -43,10 +43,10 @@ public:
     // Might want to replace them with audio processor parameters in the future.
     
     float threshold = 40.0f; /**< threshold used to trigger the effect*/
-    float gain = 400.0f; /**< Sensibility of the vibrato. From 0.0 (no effect) to 500.0 (maximum effect)*/
+    float gain; /**< Sensibility of the vibrato. From 0.0 (no effect) to 500.0 (maximum effect)*/
     
 private:
-    float intensity = 0.0f; /**< Boolean to know if the gesture sent midi in the last buffer*/
+    float intensity = 0.0f; /**< Value that will be checked to trigger the vibrato if higher than the treshold */
     
     // Booleans that represent the state of the vibrato
     bool send = false; /**< \brief Boolean to know if the gesture should send midi */

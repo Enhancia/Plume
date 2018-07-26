@@ -11,15 +11,19 @@
 #include "../../../JuceLibraryCode/JuceHeader.h"
 #include "Ui/Wrapper/WrapperComponent.h"
 
+#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 //==============================================================================
 WrapperComponent::WrapperComponent(PluginWrapper& wrap)
     : wrapper (wrap)
 {
+    TRACE_IN;
     // Loads all the images for the component
-    File f ("D:/Workspace/GitWorkspace/Plume/Plume/Ressources/Images/Wrapper/folder.png");
+    String PlumeDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getFullPathName();
+    
+    File f (PlumeDir + "/Resources/Images/Wrapper/folder.png");
     Image scan = ImageFileFormat::loadFrom (f);
     
-    f = File ("D:/Workspace/GitWorkspace/Plume/Plume/Ressources/Images/Wrapper/eye.png");
+    f = File (PlumeDir + "/Resources/Images/Wrapper/eye.png");
     Image editor = ImageFileFormat::loadFrom (f);
     
     // Creates the buttons and the label
@@ -48,6 +52,7 @@ WrapperComponent::WrapperComponent(PluginWrapper& wrap)
 
 WrapperComponent::~WrapperComponent()
 {
+    TRACE_IN;
 }
 
 //==============================================================================
@@ -58,8 +63,11 @@ void WrapperComponent::paint (Graphics& g)
     {
         //g.setColour (Colours::black);
         int width = getHeight()*2/3, height = getHeight()*2/3, x = 20, y = getHeight()/6;
-        File f ("D:/Workspace/GitWorkspace/Plume/Plume/Ressources/Images/Logo/Logo_ENHANCIA_Round.png");
+        
+        String PlumeDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getFullPathName();
+        File f (PlumeDir + "/Resources/Images/Logo/Logo_ENHANCIA_Round.png");
         Image logo = ImageFileFormat::loadFrom (f);
+        
         g.drawImage (logo,
                      x, y, width, height,
                      0, 0, logo.getWidth(), logo.getHeight());
@@ -92,6 +100,7 @@ void WrapperComponent::buttonClicked (Button* bttn)
 //==============================================================================
 void WrapperComponent::scanPlugin()
 {
+    TRACE_IN;
     // Lets the user chose a file, and changes the plugin path accordingly
     FileChooser pluginScanner ("Select the plugin you want to load.",
                                File::getSpecialLocation (File::currentApplicationFile),

@@ -11,8 +11,11 @@
 #include "Plugin/PluginProcessor.h"
 #include "Ui/Presets/PresetComponent.h"
 
+#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
+
 PresetComponent::PresetComponent(PlumeProcessor& p)  : processor (p)
-{   
+{
+    TRACE_IN;
     addAndMakeVisible (nameLabel = new Label ("nameLabel", TRANS ("No current preset")));
     nameLabel->setJustificationType (Justification::centred);
     nameLabel->setEditable (false, false, false);
@@ -33,6 +36,7 @@ PresetComponent::PresetComponent(PlumeProcessor& p)  : processor (p)
 
 PresetComponent::~PresetComponent()
 {
+    TRACE_IN;
     nameLabel  = nullptr;
     saveButton = nullptr;
     loadButton = nullptr;
@@ -64,10 +68,14 @@ void PresetComponent::buttonClicked (Button* bttn)
 
 void PresetComponent::savePreset()
 {
+    TRACE_IN;
     // Lets the user chose the location and name to save a preset file
+    String PlumeDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getFullPathName();
+    File f (PlumeDir + "/Presets/");
+    
     FileChooser presetSaver ("Select the folder you want the preset to be saved to.",
-                             File::getSpecialLocation (File::currentApplicationFile).getParentDirectory(),
-                             ".xml");
+                             f,
+                             "*.xml");
         
     if (presetSaver.browseForFileToSave(true))
     {
@@ -91,9 +99,13 @@ void PresetComponent::savePreset()
 
 void PresetComponent::loadPreset()
 {
+    TRACE_IN;
+    String PlumeDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getFullPathName();
+    File f (PlumeDir + "/Presets/");
+    
     // Lets the user chose a preset file to load
     FileChooser presetLoader ("Select the preset file to load.",
-                              File::getSpecialLocation (File::currentApplicationFile).getParentDirectory(),
+                              f,
                               "*.xml");
                               
     if (presetLoader.browseForFileToOpen())

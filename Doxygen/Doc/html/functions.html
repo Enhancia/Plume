@@ -77,26 +77,52 @@ $(function() {
 , <a class="el" href="class_wave.html#af31edbc0020fc0d33a889f88d7c90b58">Wave</a>
 </li>
 <li>addGestureMidiToBuffer()
-: <a class="el" href="class_gesture_array.html#a020d7e2bb3fec80fe006a9ed14930515">GestureArray</a>
+: <a class="el" href="class_gesture_array.html#a22bc03ddab4143a622541eaed9bbb2fc">GestureArray</a>
 </li>
 <li>addGestureParameters()
-: <a class="el" href="class_gesture.html#a01f7e63c1f14a21a50a67f0ed0bfb777">Gesture</a>
+: <a class="el" href="class_gesture.html#ab03ba7145ee4f0261984fad92f2b8d1a">Gesture</a>
 , <a class="el" href="class_pitch_bend.html#a6f98a5dc2b983d36774eddfc7d256cc2">PitchBend</a>
 , <a class="el" href="class_roll.html#ae4458b0757009f4963af1b01a0fd0fb1">Roll</a>
 , <a class="el" href="class_tilt.html#aeb49b72259fdf7b5ded034ac8c3f830a">Tilt</a>
 , <a class="el" href="class_vibrato.html#a1f038fb865e4c4b57785c67d5a1b1ded">Vibrato</a>
 , <a class="el" href="class_wave.html#aac62286709fdb2050ef79ed11a788138">Wave</a>
 </li>
+<li>addParameter()
+: <a class="el" href="class_gesture.html#a4cdc09c30873af5f368483b58e9ae1b2">Gesture</a>
+</li>
+<li>addParameterToMapModeGesture()
+: <a class="el" href="class_gesture_array.html#a3fab58ea058de4b0e831f171513998b5">GestureArray</a>
+</li>
+<li>affectsPitch()
+: <a class="el" href="class_gesture.html#a7101f502fcf200653748ead88057ce72">Gesture</a>
+</li>
 </ul>
 
 
 <h3><a id="index_c"></a>- c -</h3><ul>
+<li>cancelMapMode()
+: <a class="el" href="class_gesture_array.html#a60a0e8dbe2881981294f563d571fece4">GestureArray</a>
+</li>
 <li>changeListenerCallback()
 : <a class="el" href="class_gesture_array.html#a02e8d70ea77c890d99c0c081cb487138">GestureArray</a>
 , <a class="el" href="class_plume_editor.html#a5d593b33e5e4e33827928dbcdc272416">PlumeEditor</a>
 </li>
+<li>checkPitchMerging()
+: <a class="el" href="class_gesture_array.html#a99e0f66b296dffa599ee01733a2f4428">GestureArray</a>
+</li>
 <li>clearAllGestures()
 : <a class="el" href="class_gesture_array.html#a6abfbb6562201738337aa55c7a513e83">GestureArray</a>
+</li>
+<li>clearAllParameters()
+: <a class="el" href="class_gesture.html#af596ffe9f29e5dd41ad728eca17f5316">Gesture</a>
+, <a class="el" href="class_gesture_array.html#a0659e1133d89282934e918914fd1c7da">GestureArray</a>
+</li>
+</ul>
+
+
+<h3><a id="index_d"></a>- d -</h3><ul>
+<li>deleteParameter()
+: <a class="el" href="class_gesture.html#afb27ff3a66bf75cff6671084c3ff7574">Gesture</a>
 </li>
 </ul>
 
@@ -106,7 +132,7 @@ $(function() {
 : <a class="el" href="class_vibrato.html#aaf26878102d32fefee7192cbdb9045e4">Vibrato</a>
 </li>
 <li>Gesture()
-: <a class="el" href="class_gesture.html#a6772c784cbda5c074e044203b0d10f9c">Gesture</a>
+: <a class="el" href="class_gesture.html#a07f2b489f238989cfaba9cf6b7f64f4b">Gesture</a>
 </li>
 <li>GestureType
 : <a class="el" href="class_gesture.html#ac7ff06ee7a8af577b810d2561a6aed3b">Gesture</a>
@@ -134,6 +160,9 @@ $(function() {
 , <a class="el" href="class_vibrato.html#a1ff1d9a84e1c4bc333294ca56e637d14">Vibrato</a>
 , <a class="el" href="class_wave.html#ae2bb78cc9de227f2c44e6792edb7a2e8">Wave</a>
 </li>
+<li>getParameterArray()
+: <a class="el" href="class_gesture.html#a75d7b813c760931d1b743b0e7353ba57">Gesture</a>
+</li>
 <li>getRangeReference()
 : <a class="el" href="class_gesture.html#afdd175a19babedf616ae5d4b6b6006ef">Gesture</a>
 </li>
@@ -144,31 +173,18 @@ $(function() {
 : <a class="el" href="class_gesture.html#ae087500997575e49a8cf470ec6e6cb7d">Gesture</a>
 </li>
 <li>getValueForMappedParameter()
-: <a class="el" href="class_gesture.html#a43d47b2aceb20f55acf351db8d81ab49">Gesture</a>
-, <a class="el" href="class_pitch_bend.html#ab8b85389ae78e1b1362964b511c0ff3e">PitchBend</a>
-, <a class="el" href="class_roll.html#ae0e343f9be6e4ec254606b4b3de8b40e">Roll</a>
-, <a class="el" href="class_tilt.html#a521466316dbbff7f128225bf2fb1980d">Tilt</a>
-, <a class="el" href="class_vibrato.html#af04352c8709b549917b17d9230918332">Vibrato</a>
-, <a class="el" href="class_wave.html#a84d952d1b89f332b8ff247250f59b30f">Wave</a>
+: <a class="el" href="class_gesture.html#a19e237cb331dba490c2460bf4a33ea78">Gesture</a>
+, <a class="el" href="class_pitch_bend.html#a8c4329afce727141120148c3fc72c418">PitchBend</a>
+, <a class="el" href="class_roll.html#a3b8c96afdd3aa782536b5d2998dc5e9d">Roll</a>
+, <a class="el" href="class_tilt.html#ad23375652e3bfdfde8378ee99e6feb10">Tilt</a>
+, <a class="el" href="class_vibrato.html#aaad8250bf9d059c04a430d9294bf50e2">Vibrato</a>
+, <a class="el" href="class_wave.html#a9577213c1b40630786ac8a17593967df">Wave</a>
 </li>
 <li>getValueReference()
 : <a class="el" href="class_gesture.html#ab6336c3144aff6d04bfe018b16797f55">Gesture</a>
 </li>
 <li>getWrapper()
 : <a class="el" href="class_plume_processor.html#a6ec4d89f181beea78034b81911c59aa8">PlumeProcessor</a>
-</li>
-</ul>
-
-
-<h3><a id="index_h"></a>- h -</h3><ul>
-<li>hHigh
-: <a class="el" href="class_pitch_bend.html#a4e71c06600762d7c99720a10f85376d3">PitchBend</a>
-</li>
-<li>high
-: <a class="el" href="class_tilt.html#a166baa55b5b87f14e1027bdcdc309aac">Tilt</a>
-</li>
-<li>hLow
-: <a class="el" href="class_pitch_bend.html#a6db2bc37277a193ad4e112ff2c50af87">PitchBend</a>
 </li>
 </ul>
 
@@ -184,14 +200,8 @@ $(function() {
 
 
 <h3><a id="index_l"></a>- l -</h3><ul>
-<li>lHigh
-: <a class="el" href="class_pitch_bend.html#af19564027832d18d421abdfb1415613f">PitchBend</a>
-</li>
-<li>lLow
-: <a class="el" href="class_pitch_bend.html#a934775b77d10fafbd53e954f0dc7bd0e">PitchBend</a>
-</li>
-<li>low
-: <a class="el" href="class_tilt.html#a9c5c01ab359485d4d70ae5ec8728bc9a">Tilt</a>
+<li>loadFromXml()
+: <a class="el" href="class_gesture_array.html#a18b70d1473c6fd085d06bdaa6e47e739">GestureArray</a>
 </li>
 </ul>
 
@@ -200,8 +210,18 @@ $(function() {
 <li>map()
 : <a class="el" href="class_gesture.html#ac744c9528f7c60466e89c7b028ffadb5">Gesture</a>
 </li>
+<li>mapModeOn
+: <a class="el" href="class_gesture.html#ae5bf035652df073f28c9e83ccc42e383">Gesture</a>
+, <a class="el" href="class_gesture_array.html#ac0e0c79f791139f26041ff100ebdd3d5">GestureArray</a>
+</li>
+<li>mapParameter()
+: <a class="el" href="class_gesture.html#a65c129bcf6890aabd5afe38b07207136">Gesture</a>
+</li>
 <li>mapped
 : <a class="el" href="class_gesture.html#a41ab5f3fc2461d681f429b4dd1475755">Gesture</a>
+</li>
+<li>midiMap
+: <a class="el" href="class_gesture.html#a5c42091ebcec7899bca5d3e6964f8971">Gesture</a>
 </li>
 </ul>
 
@@ -227,18 +247,39 @@ $(function() {
 <li>paint()
 : <a class="el" href="class_plume_editor.html#a3b31e2023faf921f446b132b24a917c0">PlumeEditor</a>
 </li>
+<li>parameter
+: <a class="el" href="struct_gesture_1_1_mapped_parameter.html#a119a2ae9f2c34966cf04cb5aaf66b05d">Gesture::MappedParameter</a>
+</li>
+<li>parameterArray
+: <a class="el" href="class_gesture.html#adc3fe890c22507349bd250694b349028">Gesture</a>
+</li>
+<li>parameterIsMapped()
+: <a class="el" href="class_gesture.html#a99bb85a362572bb5d8da09bbae9634d8">Gesture</a>
+, <a class="el" href="class_gesture_array.html#aa2a4dc6e923185398133c064bca3077f">GestureArray</a>
+</li>
 <li>PlumeEditor()
 : <a class="el" href="class_plume_editor.html#a0b9b4a952769836ca43c49ed020951f9">PlumeEditor</a>
 </li>
 <li>PlumeProcessor()
 : <a class="el" href="class_plume_processor.html#a1462b7f98f4677da0dab2d98dd8da1e1">PlumeProcessor</a>
 </li>
+<li>process()
+: <a class="el" href="class_gesture_array.html#ae53bed11600e00efbbbfc73f6220668a">GestureArray</a>
+</li>
 </ul>
 
 
 <h3><a id="index_r"></a>- r -</h3><ul>
 <li>range
-: <a class="el" href="class_gesture.html#abe39de10c618727081bc62933f498289">Gesture</a>
+: <a class="el" href="struct_gesture_1_1_mapped_parameter.html#a8cb577acb2b13c7226cb19499474add7">Gesture::MappedParameter</a>
+, <a class="el" href="class_gesture.html#abe39de10c618727081bc62933f498289">Gesture</a>
+, <a class="el" href="class_tilt.html#a33e378da0e0fbf95497d173a430f84ac">Tilt</a>
+</li>
+<li>rangeLeft
+: <a class="el" href="class_pitch_bend.html#a9815057e9dd2a48c4c6a6978333b2f23">PitchBend</a>
+</li>
+<li>rangeRight
+: <a class="el" href="class_pitch_bend.html#a876b07108a0f5730a1d54d9414741407">PitchBend</a>
 </li>
 <li>resized()
 : <a class="el" href="class_plume_editor.html#aa42064f898f3a543173c5b29c7b2932c">PlumeEditor</a>
@@ -249,9 +290,6 @@ $(function() {
 <h3><a id="index_s"></a>- s -</h3><ul>
 <li>setActive()
 : <a class="el" href="class_gesture.html#a6c58ba7f0da4fa26d1d6cccac170bb6f">Gesture</a>
-</li>
-<li>setMapMode()
-: <a class="el" href="class_gesture_array.html#a4e7964a43e9b21542012420c75c72515">GestureArray</a>
 </li>
 <li>setMapped()
 : <a class="el" href="class_gesture.html#ad0c46a4aab80d398bf0dcd6962f7829d">Gesture</a>

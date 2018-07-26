@@ -15,6 +15,8 @@
 #include "Ui/Presets/PresetComponent.h"
 #include "Ui/Gesture/GesturePanel.h"
 
+//#define TRACE_IN  Logger::writeToLog ("[FNC] Entering function: " + __FUNCTION__);
+//#define TRACE_OUT Logger::writeToLog ("[FNC] Entering function: " + __FUNCTION__);
 //==============================================================================
 /**
 */

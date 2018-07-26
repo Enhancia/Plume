@@ -10,6 +10,7 @@
 
 #include "Gesture/GestureArray.h"
 
+#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 
 GestureArray::GestureArray(DataReader& reader)  : dataReader (reader)
 {
@@ -70,6 +71,8 @@ void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages)
 
 void GestureArray::updateAllMappedParameters()
 {
+    // calls updateMappedParameters for every gestures that isn't in
+    // mapMode (to prevent the parameter from changing) and is mapped
     for (auto* g : gestures)
     {
         if (mapModeOn == false && g->isMapped())
@@ -84,6 +87,7 @@ void GestureArray::updateAllValues()
 {
     Array<float> rawData;
     
+    // Gets the rawData in the array, and calls updateValue for each gesture
     if (dataReader.getRawDataAsFloatArray(rawData))
     {
         for (auto* g : gestures)
@@ -99,6 +103,7 @@ void GestureArray::updateAllValues()
 //==============================================================================
 Gesture* GestureArray::getGestureByName (const String nameToSearch)
 {
+    // Browses every gesture to compare their name with nameToSearch
     for (auto* g : gestures)
     {
         if (g->name.compare(nameToSearch) == 0)
@@ -130,6 +135,16 @@ OwnedArray<Gesture>& GestureArray::getArray()
 int GestureArray::size()
 {
     return gestures.size();
+}
+
+bool GestureArray::parameterIsMapped (int parameterId)
+{
+    for (auto* g : gestures)
+    {
+        if (g->parameterIsMapped (parameterId)) return true;
+    }
+    
+    return false;
 }
 
 //==============================================================================
@@ -168,11 +183,14 @@ void GestureArray::addGesture (String gestureName, int gestureType)
     gestures.getLast()->setActive(true);
     
     checkPitchMerging();
-    
 }
 
 void GestureArray::addParameterToMapModeGesture (AudioProcessorParameter& param)
 {
+    // Does nothing if the parameter is already mapped to any gesture
+    if (parameterIsMapped (param.getParameterIndex())) return;
+    
+    // else adds the parameter and cancels mapMode
     for (auto* g : gestures)
     {
         if (g->mapModeOn == true)
@@ -181,6 +199,20 @@ void GestureArray::addParameterToMapModeGesture (AudioProcessorParameter& param)
             cancelMapMode();
             return;
         }
+    }
+}
+
+void GestureArray::addAndSetParameter (AudioProcessorParameter& param, int gestureId, float start, float end)
+{
+    // Does nothing if the parameter is already mapped to any gesture
+    if (parameterIsMapped (param.getParameterIndex())) return;
+    
+    // else adds the parameter and cancels mapMode
+    if (gestureId < size())
+    {
+        gestures[gestureId]->addParameter(param);
+        gestures[gestureId]->getParameterArray().getLast()->range.setStart(start);
+        gestures[gestureId]->getParameterArray().getLast()->range.setEnd(end);
     }
 }
 
@@ -250,4 +282,118 @@ void GestureArray::addMergedPitchMessage (MidiBuffer& midiMessages)
 	// Creates the midi message and adds it to the buffer
 	MidiMessage message = MidiMessage::pitchWheel (1, pitchVal);
     midiMessages.addEvent(message, 1);
+}
+
+//==============================================================================
+void GestureArray::addGestureFromXml (XmlElement& gesture)
+{
+    switch (gesture.getIntAttribute("type", -1))
+    {
+        case Gesture::vibrato:
+            gestures.add (new Vibrato (gesture.getTagName(), float (gesture.getDoubleAttribute("gain", 400.0f)) ));
+            break;
+        
+        case Gesture::pitchBend:
+            gestures.add (new PitchBend (gesture.getTagName(), float (gesture.getDoubleAttribute("startLeft", -50.0f)),
+                                                               float (gesture.getDoubleAttribute("endLeft", -20.0f)),
+                                                               float (gesture.getDoubleAttribute("startRight", 30.0f)),
+                                                               float (gesture.getDoubleAttribute("endRight", 60.0f))));
+            break;
+            
+        case Gesture::tilt:
+            gestures.add (new Tilt (gesture.getTagName(), float (gesture.getDoubleAttribute("start", 0.0f)),
+                                                          float (gesture.getDoubleAttribute("end", 50.0f))));
+            break;
+        /*    
+        case Gesture::wave:
+            gestures.add (new Wave (gesture.getTagName(), float (gesture.getDoubleAttribute("start", 0.0f)),
+                                                          float (gesture.getDoubleAttribute("end", 50.0f))));
+            break;
+            
+        case Gesture::roll:
+            gestures.add (new Roll (gesture.getTagName(), float (gesture.getDoubleAttribute("start", 0.0f)),
+                                                          float (gesture.getDoubleAttribute("end", 50.0f))));
+            break;
+        */
+        
+        default:
+            return;
+    }
+    
+    gestures.getLast()->setActive(gesture.getBoolAttribute("on", true));
+    gestures.getLast()->setMapped(gesture.getBoolAttribute("mapped", false));
+    //gestures.getLast()->setMidiMap(gesture.getBoolAttribute("midiMap", false));
+    
+    checkPitchMerging();
+}
+
+void GestureArray::createGestureXml (XmlElement& gesturesData)
+{
+    for (auto* g : gestures)
+    {
+        auto gestXml = new XmlElement (g->name);
+        
+        // General attributes
+        gestXml->setAttribute ("type", g->type);
+        gestXml->setAttribute ("on", g->isActive());
+        gestXml->setAttribute ("mapped", g->isMapped());
+        //gestXml->setAttribute ("midiMap", g->isMidiMapActive());
+        
+        // Gesture Specific attributes
+        if      (g->type == Gesture::vibrato)
+        {
+            Vibrato& v = dynamic_cast<Vibrato&> (*g);
+            gestXml->setAttribute ("gain", double (v.gain));
+        }
+        
+        else if (g->type == Gesture::pitchBend)
+        {
+            PitchBend& pb = dynamic_cast<PitchBend&> (*g);
+            gestXml->setAttribute ("startLeft", double (pb.rangeLeft.getStart()));
+            gestXml->setAttribute ("endLeft", double (pb.rangeLeft.getEnd()));
+            
+            gestXml->setAttribute ("startRight", double (pb.rangeRight.getStart()));
+            gestXml->setAttribute ("endRight", double (pb.rangeRight.getEnd()));
+        }
+        
+        else if (g->type == Gesture::tilt)
+        {
+            Tilt& t = dynamic_cast<Tilt&> (*g);
+            gestXml->setAttribute ("start", double (t.range.getStart()));
+            gestXml->setAttribute ("end", double (t.range.getEnd()));
+        }
+        /*
+        else if (g->type == Gesture::wave)
+        {
+            Roll& r = dynamic_cast<Roll&> (*g);
+            gestXml->setAttribute ("start", double (r.range.getStart()));
+            gestXml->setAttribute ("end", double (r.range.getEnd()));
+        }
+        
+        else if (g->type == Gesture::roll)
+        {
+            Wave& w = dynamic_cast<Wave&> (*g);
+            gestXml->setAttribute ("start", double (w.range.getStart()));
+            gestXml->setAttribute ("end", double (w.range.getEnd()));
+        }
+        */
+        
+		createParameterXml (*gestXml, g->getParameterArray());
+        
+        gesturesData.addChildElement (gestXml); // Adds the element
+    }
+}
+
+void GestureArray::createParameterXml(XmlElement& gestureXml, OwnedArray<Gesture::MappedParameter>& mParams)
+{
+    for (auto* mParam : mParams)
+    {
+        auto paramXml = new XmlElement (mParam->parameter.getName(30));
+        
+        paramXml->setAttribute ("id", mParam->parameter.getParameterIndex());
+        paramXml->setAttribute ("start", mParam->range.getStart());
+        paramXml->setAttribute ("end", mParam->range.getEnd());
+        
+        gestureXml.addChildElement (paramXml); // Adds the element
+    }
 }

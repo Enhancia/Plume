@@ -17,15 +17,18 @@
 #define MARGIN 8
 #define NUM_GEST 3
 
+#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 //==============================================================================
 class  GesturePanel::GestureComponent   : public Component,
-										  private Button::Listener
+										  private Button::Listener,
+										  private ChangeBroadcaster
 {
 public:
     GestureComponent(Gesture& gest, GestureArray& gestArray): gesture (gest), gestureArray (gestArray)
     {
         // Creates the on/off button
-        Image onOff = ImageFileFormat::loadFrom (File ("D:/Workspace/GitWorkspace/Plume/Plume/Ressources/Images/Gestures/onOff.png"));
+        String PlumeDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getFullPathName();
+        Image onOff = ImageFileFormat::loadFrom (File (PlumeDir + "/Resources/Images/Gestures/OnOff.png"));
     
         addAndMakeVisible (onOffButton = new ImageButton ("On Off Button"));
         onOffButton->setImages (false, true, true,
@@ -47,6 +50,8 @@ public:
     ~GestureComponent()
     {
         onOffButton = nullptr;
+        gestMapper = nullptr;
+        gestTuner = nullptr;
     }
     
     void paint (Graphics& g) override
@@ -75,9 +80,10 @@ public:
             width = tunerWidth/8 - 2*MARGIN;
             height = getHeight() - 2*MARGIN;
 
-            Image gest = ImageFileFormat::loadFrom (File ("D:/Workspace/GitWorkspace/Plume/Plume/Ressources/Images/Gestures/"+
-                                                    gesture.getTypeString()+
-                                                    ".png"));
+            String PlumeDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getFullPathName();
+            File f = File (PlumeDir + "/Ressources/Images/Gestures/" + gesture.getTypeString() + ".png");
+            
+            Image gest = ImageFileFormat::loadFrom (f);
 			g.drawImageWithin(gest, x, y, width, height,
 							  RectanglePlacement(RectanglePlacement::centred));
         }
@@ -164,7 +170,7 @@ public:
     void updateDisplay()
     {
         if (gesture.isActive()) gestTuner->updateDisplay();
-        //if (gesture.isMapped()) gestMapper->updateDisplay();
+        if (gesture.isMapped()) gestMapper->updateDisplay();
     }
     
 private:
@@ -216,11 +222,13 @@ private:
 //==============================================================================
 GesturePanel::GesturePanel(GestureArray& gestArray, int freqHz) : gestureArray (gestArray)
 {
+    TRACE_IN;
     startTimerHz (freqHz);
 }
 
 GesturePanel::~GesturePanel()
 {
+    TRACE_IN;
 }
 
 void GesturePanel::paint (Graphics& g)

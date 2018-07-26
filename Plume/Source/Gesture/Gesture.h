@@ -13,6 +13,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #define MAX_PARAMETER 4
 
+#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 /**
  *  \class Gesture Gesture.h
  *
@@ -83,7 +84,10 @@ public:
     /**
      *  \brief Destructor.
      */
-    ~Gesture() {}
+    ~Gesture()
+    {
+        clearAllParameters();
+    }
 
     //==============================================================================
     // virtual getters used by the processor and the editor
@@ -250,6 +254,7 @@ public:
      */
     void addParameter (AudioProcessorParameter& param)
     {
+        TRACE_IN;
         if (parameterArray.size() < MAX_PARAMETER)
         {
             parameterArray.add ( new MappedParameter (param, Range<float> (0.0f, 1.0f)));
@@ -288,6 +293,21 @@ public:
         return parameterArray;
     }
     
+    /**
+     *  \brief Checks if a specific parameter is already mapped to the gesture.
+     *  
+     *  \return True if the parameter is found for this gesture.
+     */
+    bool parameterIsMapped (int parameterId)
+    {
+        for (auto* param : parameterArray)
+        {
+            if (param->parameter.getParameterIndex() == parameterId) return true;
+        }
+        
+        return false;
+    }
+    
     //==============================================================================
     const String name; /**< Specific name of the gesture. By default [gesture_type]_default */
     const int type; /**< Type of Gesture. Int value from gestureType enum */
@@ -307,9 +327,11 @@ protected:
      */
     static int normalizeMidi (float minVal, float maxVal, float value)
     {
+        if (minVal == maxVal && value == minVal) return 0;
+        
         int norm;
         float a, b;
-  
+        
         a = 127.0f / (maxVal - minVal);
         b = -a * minVal;
   
@@ -334,7 +356,7 @@ protected:
      */
     static int map (float value, float minVal, float maxVal, int minNew, int maxNew)
     {
-        if (minVal == maxVal) return 0;
+        if (minVal == maxVal && value == minVal) return minNew;
     
         if (value < minVal) return minNew;
         if (value > maxVal) return maxNew;
@@ -355,7 +377,7 @@ protected:
     static float mapParameter (float value, float minVal, float maxVal, Range<float> paramRange)
     {
         // Prevents dividing by 0
-        if (minVal == maxVal) return paramRange.getStart();
+        if (minVal == maxVal && value == minVal) return paramRange.getStart();
         
         // Forces the interval to [0.0f 1.0f]
         if (paramRange.getStart() < 0.0f) paramRange.setStart (0.0f);
@@ -364,7 +386,7 @@ protected:
         // Checks out of bounds values
         if (value < minVal) return paramRange.getStart();
         if (value > maxVal) return paramRange.getEnd();
-    
+        
         return (paramRange.getStart() + paramRange.getLength()*(value - minVal)/(maxVal - minVal));
     }
     

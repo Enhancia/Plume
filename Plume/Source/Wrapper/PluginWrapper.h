@@ -14,7 +14,6 @@
 
 #include "Gesture/GestureArray.h"
 #include "Wrapper/WrapperEditor.h"
-
 /**
  *  \class PluginWrapper PluginWrapper.h
  *
@@ -51,6 +50,7 @@ public:
     
     //==============================================================================
     void fillInPluginDescription (PluginDescription& pd);
+    void addParametersToGestureFromXml (XmlElement& gesture, int gestureNum);
     
     //==============================================================================
     void parameterValueChanged (int parameterIndex, float newValue) override;

@@ -14,9 +14,13 @@
  #error "If you're building the wrapper, you probably want to enable VST and/or AU support"
 #endif
 
+
+#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
+
 PluginWrapper::PluginWrapper (PlumeProcessor& p, GestureArray& gArr)
     : owner (p), gestArray (gArr)
 {
+    TRACE_IN;
     // Initializes the booleans
     hasWrappedInstance = false;
     hasOpenedEditor = false;
@@ -29,6 +33,7 @@ PluginWrapper::PluginWrapper (PlumeProcessor& p, GestureArray& gArr)
 
 PluginWrapper::~PluginWrapper()
 {
+    TRACE_IN;
     wrapperEditor = nullptr;
     wrappedInstance = nullptr;
     wrapperProcessor = nullptr;
@@ -41,6 +46,7 @@ PluginWrapper::~PluginWrapper()
 //==============================================================================
 bool PluginWrapper::wrapPlugin (File pluginFile)
 {   
+    TRACE_IN;
     if (pluginFile.getFullPathName() == (File::getSpecialLocation (File::currentExecutableFile)).getFullPathName())
     {
         DBG ("Can't wrap yourself can you?");
@@ -95,6 +101,7 @@ bool PluginWrapper::wrapPlugin (File pluginFile)
 
 void PluginWrapper::unwrapPlugin()
 {
+    TRACE_IN;
     if (hasWrappedInstance == false)
     {
         return;
@@ -127,6 +134,8 @@ bool PluginWrapper::isWrapping()
 //==============================================================================
 void PluginWrapper::createWrapperEditor()
 {
+    TRACE_IN;
+    
     jassert(wrapperProcessor != nullptr);
     
     if (wrapperProcessor == nullptr)
@@ -153,6 +162,7 @@ void PluginWrapper::createWrapperEditor()
 
 void PluginWrapper::clearWrapperEditor()
 {
+    
     if (hasWrappedInstance && hasOpenedEditor)
     {
         wrapperEditor.reset();
@@ -189,9 +199,25 @@ void PluginWrapper::fillInPluginDescription (PluginDescription& pd)
     }
 }
 
+
+void PluginWrapper::addParametersToGestureFromXml (XmlElement& gesture, int gestureNum)
+{
+    if (hasWrappedInstance)
+    {
+        forEachXmlChildElement (gesture, paramXml)
+        {
+            gestArray.addAndSetParameter (wrapperProcessor->getWrappedParameter (paramXml->getIntAttribute("id")),
+                                          gestureNum,
+                                          float (paramXml->getDoubleAttribute("start", 0.0f)),
+                                          float (paramXml->getDoubleAttribute("end", 1.0f)));
+        }
+    }
+}
+
 //==============================================================================
 void PluginWrapper::parameterValueChanged (int parameterIndex, float newValue)
 {
+    TRACE_IN;
     if (gestArray.mapModeOn)
     {
 	    gestArray.addParameterToMapModeGesture (wrapperProcessor->getWrappedParameter (parameterIndex));

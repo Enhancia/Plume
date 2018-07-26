@@ -12,9 +12,11 @@
 #include "../../../../JuceLibraryCode/JuceHeader.h"
 #include "Ui/Gesture/Mapper/MapperComponent.h"
 
+#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 //==============================================================================
 MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr)  : gesture (gest), gestureArray (gestArr)
 {
+    TRACE_IN;
     // map button
     addAndMakeVisible (mapButton = new TextButton ("Map Button"));
     mapButton->setButtonText ("Map");
@@ -23,7 +25,7 @@ MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr)  : gestu
     
     // clear map button
     addAndMakeVisible (clearMapButton = new TextButton ("Clear Map Button"));
-    clearMapButton->setButtonText ("clear map");
+    clearMapButton->setButtonText ("Clear map");
     clearMapButton->addListener (this);
     clearMapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
     
@@ -47,19 +49,10 @@ void MapperComponent::resized()
 {
     int bttnPanW = getWidth()/3, bttnPanH = getHeight()/2;
     
-    mapButton->setBounds (getWidth()*2/3 + bttnPanW/8, bttnPanH/8, bttnPanW*3/4, bttnPanH/4);
-    clearMapButton->setBounds (getWidth()*2/3 + bttnPanW/4, bttnPanH*5/8, bttnPanW/2, bttnPanH/4);
+    mapButton->setBounds (getWidth()*2/3 + bttnPanW/8, bttnPanH/8, bttnPanW*3/4, bttnPanH/3);
+    clearMapButton->setBounds (getWidth()*2/3 + bttnPanW/4, bttnPanH*5/8, bttnPanW/2, bttnPanH/3);
 	
-    int w = getWidth()*2/6, h = getHeight()*3/8;
-    
-    // sets bounds depending on the value in the array
-    for (int i=0; i<paramCompArray.size(); i++)
-    {
-        int x = (i%2) * w;
-        int y = (i/2) * h + getHeight()/4;
-        
-        paramCompArray[i]->setBounds(x, y, w, h);
-    }
+    resizeArray();
     
 	repaint();
 }
@@ -67,14 +60,18 @@ void MapperComponent::resized()
 //==============================================================================
 void MapperComponent::buttonClicked (Button* bttn)
 {
+    TRACE_IN;
     if (bttn == mapButton)
     {
+        // Map: clears mapMode for every other gesture, puts it on for the right one and chages the button color.
         if (gesture.mapModeOn == false)
         {
+            gestureArray.cancelMapMode();
             gesture.mapModeOn = true;
             gestureArray.mapModeOn = true;
             mapButton->setColour (TextButton::buttonColourId, Colour (0xff943cb0));
         }
+        
         else
         {
             gestureArray.cancelMapMode();
@@ -84,8 +81,9 @@ void MapperComponent::buttonClicked (Button* bttn)
     
     else if (bttn == clearMapButton)
     {
+        // Clear all parameters and cancels map for the gesture.
         gesture.clearAllParameters();
-        gestureArray.cancelMapMode();
+        gesture.mapModeOn = false;
         
         paramCompArray.clear();
         mapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
@@ -94,20 +92,12 @@ void MapperComponent::buttonClicked (Button* bttn)
 
 void MapperComponent::changeListenerCallback(ChangeBroadcaster* source)
 {
+    TRACE_IN;
     // clears then redraws the array.
     paramCompArray.clear();
     initializeParamCompArray();
     
-    int w = getWidth()*2/6, h = getHeight()*3/8;
-    
-    // sets bounds depending on the value in the array
-    for (int i=0; i<paramCompArray.size(); i++)
-    {
-        int x = (i%2) * w;
-        int y = (i/2) * h + getHeight()/4;
-        
-        paramCompArray[i]->setBounds(x, y, w, h);
-    }
+    resizeArray();
     
     mapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
 }
@@ -117,15 +107,17 @@ void MapperComponent::updateDisplay()
 {
     for (auto* comp : paramCompArray)
     {
+        comp->updateDisplay();
     }
 }
 
 void MapperComponent::initializeParamCompArray()
 {
+	int i = 0;
     // adds a MappedParameterComponent for each parameter of the gesture, and makes them visible.
     for (auto* gestureParam : gesture.getParameterArray())
     {
-        paramCompArray.add (new MappedParameterComponent (*gestureParam));
+        paramCompArray.add (new MappedParameterComponent (gesture, *gestureParam, i++));
         addAndMakeVisible (paramCompArray.getLast());
     }
 }
@@ -140,5 +132,14 @@ void MapperComponent::addAndMakeArrayVisible()
 
 void MapperComponent::resizeArray()
 {
+    int w = getWidth()*2/6, h = getHeight()*3/8;
     
+    // sets bounds depending on the value in the array
+    for (int i=0; i<paramCompArray.size(); i++)
+    {
+        int x = (i%2) * w;
+        int y = (i/2) * h + getHeight()/4;
+        
+        paramCompArray[i]->setBounds(x, y, w, h);
+    }
 }

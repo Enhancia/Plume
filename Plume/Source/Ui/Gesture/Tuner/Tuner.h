@@ -16,6 +16,7 @@
 #define W getWidth()
 #define H getHeight()
 
+#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 //==============================================================================
 /*
 */
@@ -26,6 +27,7 @@ public:
     Tuner(const float& val, const Range<float>& totRange, const String unit = "")
         :   value (val), totalRange (totRange), valueUnit (unit)
     {
+        TRACE_IN;
         yCursor = getHeight()/3 - CURSOR_SIZE;
         
         addAndMakeVisible(valueLabel = new Label("value Label"));
@@ -40,6 +42,7 @@ public:
 
     ~Tuner()
     {
+        TRACE_IN;
     }
 
     

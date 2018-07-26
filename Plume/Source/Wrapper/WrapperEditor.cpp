@@ -10,6 +10,7 @@
 
 #include "Wrapper/PluginWrapper.h"
 
+#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 //==============================================================================
 WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc)
        : DocumentWindow (wrapProc.getName(),
@@ -17,6 +18,7 @@ WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc)
                          DocumentWindow::minimiseButton | DocumentWindow::closeButton),
          wrapperProcessor (wrapProc)
 {
+    TRACE_IN;
     setSize (400, 300);
 
     if (auto* ui = createProcessorEditor (wrapperProcessor.getWrappedInstance()))

@@ -10,6 +10,9 @@
 
 #include "Wrapper/PluginWrapper.h"
 
+
+#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
+
 //==============================================================================
 /*class that wraps a parameter from the plugin, forwarding it's methods to the wrapperProcessor*/
 
@@ -50,11 +53,13 @@ WrapperProcessor::WrapperProcessor(AudioPluginInstance& wrappedPlugin, PluginWra
       plugin (wrappedPlugin),
       owner (ownerWrapper)
 {
+    TRACE_IN;
     initWrappedParameters();
 }
 
 WrapperProcessor::~WrapperProcessor()
 {
+    TRACE_IN;
     auto& params = plugin.getParameters();
     
     for (auto* param : params)
@@ -90,6 +95,7 @@ void WrapperProcessor::initWrappedParameters()
 
 AudioProcessorParameter& WrapperProcessor::getWrappedParameter (int id)
 {
+    TRACE_IN;
     auto& params = plugin.getParameters();
     
     return *(params[id]);

@@ -106,14 +106,18 @@ public:
      */
     int size();
     
-    // Pitch message issue handler methods
     /**
      *  \brief Helper method to know if a pitch merge is needed.
-     *
      *  
      */
     void checkPitchMerging();
     
+    /**
+     *  \brief Helper method to know if a specific parameter is already mapped.
+     *
+     *  \return True if the parameter is found in any of the gestures.
+     */
+    bool parameterIsMapped (int parameterId);
      
     
     //==============================================================================
@@ -128,11 +132,16 @@ public:
     void addGesture (String gestureName, int gestureType);
     
     /**
-     *  \brief Method to add a parameter to the right gesture.
+     *  \brief Method to add a parameter to the gesture in mapMode.
      *
-     *  
      */
     void addParameterToMapModeGesture (AudioProcessorParameter& param);
+    
+    /**
+     *  \brief Method to add a parameter to the gesture in mapMode.
+     *
+     */
+    void addAndSetParameter (AudioProcessorParameter& param, int gestureId, float start, float end);
     
     /**
      *  \brief Deletes all gestures in the array.
@@ -155,12 +164,26 @@ public:
      */
     void cancelMapMode();
     
+    //==============================================================================
+    // Xml related methods
+    
     /**
-     *  \brief Loader method allowing to initialize the array using.
-     *
+     *  \brief Loader method allowing to initialize the array using an Xml Element.
      *  
      */
-    void loadFromXml();
+    void addGestureFromXml(XmlElement& gestureXml);
+    
+    /**
+     *  \brief Method that creates an Xml element for all the gestures and adds it to the parameter element.
+     *  
+     */
+    void createGestureXml(XmlElement& gesturesData);
+    
+    /**
+     *  \brief Helper method that creates an Xml element for all the parameters of a gesture.
+     *  
+     */
+    void createParameterXml(XmlElement& gestureXml, OwnedArray<Gesture::MappedParameter>& mParams);
     
     //==============================================================================
     //Callbacks 
