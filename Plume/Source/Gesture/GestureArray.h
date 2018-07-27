@@ -16,6 +16,7 @@
 #include "Gesture/Vibrato.h"
 #include "Gesture/PitchBend.h"
 #include "Gesture/Tilt.h"
+#include "Gesture/Roll.h"
 
 /**
  *  \class GestureArray GestureArray.h
@@ -23,7 +24,8 @@
  *  \brief Class that holds an array of Gesture, with several methods to use them.
  *
  */
-class GestureArray	: public ChangeListener
+class GestureArray	: public ChangeListener,
+                      public ChangeBroadcaster
 {
 public:
     GestureArray(DataReader& reader);

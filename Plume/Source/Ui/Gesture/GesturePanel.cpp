@@ -20,8 +20,7 @@
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 //==============================================================================
 class  GesturePanel::GestureComponent   : public Component,
-										  private Button::Listener,
-										  private ChangeBroadcaster
+										  private Button::Listener
 {
 public:
     GestureComponent(Gesture& gest, GestureArray& gestArray): gesture (gest), gestureArray (gestArray)
@@ -199,12 +198,12 @@ private:
             Wave& wave = dynamic_cast<Wave&> (gesture);
             addAndMakeVisible (gestTuner = new WaveTuner (wave));
         }
+        */
         else if (gesture.type == Gesture::roll)
         {
             Roll& roll = dynamic_cast<Roll&> (gesture);
             addAndMakeVisible (gestTuner = new RollTuner (roll));
         }
-        */
         else
         {
             DBG ("Unknown Gesture type. No tuner was created.");

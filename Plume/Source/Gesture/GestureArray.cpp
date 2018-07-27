@@ -11,6 +11,7 @@
 #include "Gesture/GestureArray.h"
 
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
+#define TRACE_OUT Logger::writeToLog ("[-FNC]  Leaving: " + String(__FUNCTION__))
 
 GestureArray::GestureArray(DataReader& reader)  : dataReader (reader)
 {
@@ -173,11 +174,10 @@ void GestureArray::addGesture (String gestureName, int gestureType)
         case Gesture::wave:
             gestures.add (new Wave (gestureName));
             break;
-            
+        */
         case Gesture::roll:
             gestures.add (new Roll (gestureName));
             break;
-        */
     }
     
     gestures.getLast()->setActive(true);
@@ -196,7 +196,7 @@ void GestureArray::addParameterToMapModeGesture (AudioProcessorParameter& param)
         if (g->mapModeOn == true)
         {
             g->addParameter(param);
-            cancelMapMode();
+            //cancelMapMode();
             return;
         }
     }
@@ -218,12 +218,14 @@ void GestureArray::addAndSetParameter (AudioProcessorParameter& param, int gestu
 
 void GestureArray::clearAllGestures()
 {
+    TRACE_IN;
     gestures.clear();
     shouldMergePitch = false;
 }
 
 void GestureArray::clearAllParameters()
 {
+    TRACE_IN;
     for (auto* g : gestures)
     {
         g->mapModeOn = false;
@@ -233,11 +235,15 @@ void GestureArray::clearAllParameters()
 
 void GestureArray::cancelMapMode()
 {
+    TRACE_IN;
     for (auto* g : gestures)
     {
         g->mapModeOn = false;
     }
     mapModeOn = false;
+    sendChangeMessage();
+    
+    TRACE_OUT;
 }
 
 //==============================================================================
@@ -309,12 +315,11 @@ void GestureArray::addGestureFromXml (XmlElement& gesture)
             gestures.add (new Wave (gesture.getTagName(), float (gesture.getDoubleAttribute("start", 0.0f)),
                                                           float (gesture.getDoubleAttribute("end", 50.0f))));
             break;
-            
-        case Gesture::roll:
-            gestures.add (new Roll (gesture.getTagName(), float (gesture.getDoubleAttribute("start", 0.0f)),
-                                                          float (gesture.getDoubleAttribute("end", 50.0f))));
-            break;
         */
+        case Gesture::roll:
+            gestures.add (new Roll (gesture.getTagName(), float (gesture.getDoubleAttribute("start", -30.0f)),
+                                                          float (gesture.getDoubleAttribute("end", 30.0f))));
+            break;
         
         default:
             return;
@@ -365,18 +370,17 @@ void GestureArray::createGestureXml (XmlElement& gesturesData)
         /*
         else if (g->type == Gesture::wave)
         {
-            Roll& r = dynamic_cast<Roll&> (*g);
-            gestXml->setAttribute ("start", double (r.range.getStart()));
-            gestXml->setAttribute ("end", double (r.range.getEnd()));
-        }
-        
-        else if (g->type == Gesture::roll)
-        {
             Wave& w = dynamic_cast<Wave&> (*g);
             gestXml->setAttribute ("start", double (w.range.getStart()));
             gestXml->setAttribute ("end", double (w.range.getEnd()));
         }
         */
+        else if (g->type == Gesture::roll)
+        {
+            Roll& r = dynamic_cast<Roll&> (*g);
+            gestXml->setAttribute ("start", double (r.range.getStart()));
+            gestXml->setAttribute ("end", double (r.range.getEnd()));
+        }
         
 		createParameterXml (*gestXml, g->getParameterArray());
         

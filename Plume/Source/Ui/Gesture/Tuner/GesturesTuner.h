@@ -74,6 +74,7 @@ public:
     ~WaveTuner()
     {}
 };
+*/
 
 //==============================================================================
 class RollTuner: public OneRangeTuner
@@ -87,4 +88,3 @@ public:
     ~RollTuner()
     {}
 };
-*/

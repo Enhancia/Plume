@@ -30,8 +30,7 @@ void PitchBend::addGestureMidi (MidiBuffer& midiMessages)
     if (send == true)
     {
         // Creates the pitchwheel message
-        MidiMessage message = MidiMessage::pitchWheel (1, pbVal);
-        midiMessages.addEvent(message, 1);
+        addEventAndMergePitchToBuffer (midiMessages, pbVal, 1);
     }
 }
 
@@ -64,9 +63,9 @@ void PitchBend::updateMappedParameters()
     {
         paramVal = getValueForMappedParameter (param->range);
         
-        if (send == true)
+        if (send == true && paramVal != param->parameter.getValue())
         {
-            param->parameter.setValueNotifyingHost (paramVal);	
+            param->parameter.setValueNotifyingHost (paramVal);
         }
     }
 }

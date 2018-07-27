@@ -14,6 +14,7 @@
 #define MAX_PARAMETER 4
 
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
+#define TRACE_OUT Logger::writeToLog ("[-FNC]  Leaving: " + String(__FUNCTION__))
 /**
  *  \class Gesture Gesture.h
  *
@@ -145,6 +146,80 @@ public:
     virtual void addGestureParameters() {}
     
     //==============================================================================
+    // Static Methods to merge messages in a MidiBuffer
+    
+    /**
+     *  \brief Helper function to prevent concurrent pitchWheel MIDI messages in a buffer.
+     *
+     *  First, the method will add an pitchWheel midi event to the buffer at time 1 (for a vibrato or pitchBend).
+     *  Additionnaly, goes through the buffer to change all pitchWheel messages. This method will change their
+     *  values by adding the difference to a neutral pitch value (8192).
+     *
+     *  \param midiMessages Reference to a MidiBuffer in which the pitch messages will be changed. 
+     */
+    static void addEventAndMergePitchToBuffer (MidiBuffer& midiMessages, int midiValue, int channel)
+    {
+        MidiBuffer newBuff;
+        int time;
+        MidiMessage m;
+        
+        for (MidiBuffer::Iterator i (midiMessages); i.getNextEvent (m, time);)
+        {
+            if (m.isPitchWheel()) // checks for pitch wheel events
+            {
+                // Creates a pitch message with the right value
+                int newVal = m.getPitchWheelValue() - 8192 + midiValue;
+                if (newVal < 0) newVal = 0;
+                else if (newVal > 16383) newVal = 16383;
+                
+                m = MidiMessage::pitchWheel (m.getChannel(), newVal);
+            }
+            
+            newBuff.addEvent (m, time);
+        }
+        
+        // Adds gesture's initial midi message
+        newBuff.addEvent (MidiMessage::pitchWheel (channel, midiValue), 1);
+        
+        midiMessages.swapWith (newBuff);
+    }
+    
+    /**
+     *  \brief Helper function to prevent concurrent cc (mostly modWheel) MIDI messages in a buffer.
+     *
+     *  First, the method will add an cc midi event to the buffer at time 1 (for a tilt or any midiMapped gesture).
+     *  Additionnaly, goes through the buffer to change all the "ccValue" messages. This method will change their
+     *  values by adding the parameter midiValue.
+     *
+     *  \param midiMessages Reference to a MidiBuffer in which the modWheel messages will be changed.
+     */
+    static void addEventAndMergeCCToBuffer (MidiBuffer& midiMessages, int midiValue, int ccValue, int channel)
+    {
+        MidiBuffer newBuff;
+        int time;
+        MidiMessage m;
+        
+        for (MidiBuffer::Iterator i (midiMessages); i.getNextEvent (m, time);)
+        {
+            if (m.isControllerOfType (ccValue)) // checks for modwheel events
+            {
+                // Creates a cc message with the new value
+                int newVal = m.getControllerValue() + midiValue;
+                if (newVal > 127) newVal = 127;
+                
+                m = MidiMessage::controllerEvent (m.getChannel(), ccValue, newVal);
+            }
+            
+            newBuff.addEvent (m, time);
+        }
+        
+        // Adds gesture's initial cc message
+        newBuff.addEvent (MidiMessage::controllerEvent (channel, ccValue, midiValue), 1);
+        
+        midiMessages.swapWith (newBuff);
+    }
+    
+    //==============================================================================
     // Getters to get const references to the value and range of the gesture. Used by the display.
     
     /**
@@ -255,12 +330,20 @@ public:
     void addParameter (AudioProcessorParameter& param)
     {
         TRACE_IN;
+        Logger::writeToLog ("param name: " + String(param.getName(30)));
+		Logger::writeToLog ("Gesture: " + String(name) + "\nArray size before: " + String(parameterArray.size()));
+                                        
         if (parameterArray.size() < MAX_PARAMETER)
         {
             parameterArray.add ( new MappedParameter (param, Range<float> (0.0f, 1.0f)));
             mapped = true;
         }
+        
+        Logger::writeToLog ("Array size after: " + String(parameterArray.size()));
+        Logger::writeToLog ("Map mode state: " + mapped ? "true" : "false");
+        
         sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
+        TRACE_OUT;
     }
     
     /**

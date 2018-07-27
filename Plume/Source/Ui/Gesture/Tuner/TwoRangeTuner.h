@@ -130,6 +130,7 @@ public:
         else if (lbl == rangeLabelMaxLeft)  // Max left
         {
             if ( val < parameterRangeLeft.getStart()) val = parameterRangeLeft.getStart();
+            else if (val > (parameterMax.getStart() + parameterMax.getEnd())/2) val = (parameterMax.getStart() + parameterMax.getEnd())/2;
             
             parameterRangeLeft.setEnd (val);
             rangeSliderLeft->setMaxValue (parameterRangeLeft.getEnd(), dontSendNotification);
@@ -138,6 +139,7 @@ public:
         else if (lbl == rangeLabelMinRight)   // Min right
         {
             if ( val > parameterRangeRight.getEnd()) val = parameterRangeRight.getEnd();
+            else if (val < (parameterMax.getStart() + parameterMax.getEnd())/2) val = (parameterMax.getStart() + parameterMax.getEnd())/2;
             
             parameterRangeRight.setStart (val);
             rangeSliderRight->setMinValue (parameterRangeRight.getStart(), dontSendNotification);

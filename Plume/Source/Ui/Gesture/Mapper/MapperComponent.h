@@ -21,7 +21,8 @@
 */
 class MapperComponent    : public Component,
                            private Button::Listener,
-                           private ChangeListener
+                           private ChangeListener,
+                           private ChangeBroadcaster
 {
 public:
     //==============================================================================

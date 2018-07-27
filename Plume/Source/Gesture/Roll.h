@@ -24,7 +24,7 @@
 class Roll : public Gesture
 {
 public:
-    Roll (String gestName);
+    Roll (String gestName, float lowValue = -30.0f, float highValue = 30.0f);
     ~Roll();
     
     //==============================================================================
@@ -38,5 +38,9 @@ public:
     void updateValue (const Array<float> rawData) override;
     void addGestureParameters() override;
     
-private:
+    //==============================================================================
+    // Attributes that will be referenced to the Tuner component.
+    // Might want to replace them with audio processor parameters in the future.
+    
+    Range<float> range; /**< \brief Roll's range. The full effect will happend between the two values. */
 };

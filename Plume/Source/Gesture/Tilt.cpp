@@ -29,8 +29,7 @@ void Tilt::addGestureMidi (MidiBuffer& midiMessages)
         return;
     }
     
-    MidiMessage message = MidiMessage::controllerEvent (1, 1, getMidiValue());
-    midiMessages.addEvent(message, 1);
+    addEventAndMergeCCToBuffer (midiMessages, getMidiValue(), 1, 1);
 }
 
 int Tilt::getMidiValue()
@@ -48,7 +47,8 @@ void Tilt::updateMappedParameters()
     
     // Goes through the parameterArray to update each value
     for (auto* param : parameterArray)
-    {                
+    {   
+        
         param->parameter.setValueNotifyingHost (getValueForMappedParameter (param->range));
     }
 }

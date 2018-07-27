@@ -19,7 +19,7 @@
         <FILE id="YDOuks" name="GestureArray.h" compile="0" resource="0" file="Source/Gesture/GestureArray.h"/>
         <FILE id="cfxsRe" name="PitchBend.cpp" compile="1" resource="0" file="Source/Gesture/PitchBend.cpp"/>
         <FILE id="ssQH2e" name="PitchBend.h" compile="0" resource="0" file="Source/Gesture/PitchBend.h"/>
-        <FILE id="sbjn3K" name="Roll.cpp" compile="0" resource="0" file="Source/Gesture/Roll.cpp"/>
+        <FILE id="sbjn3K" name="Roll.cpp" compile="1" resource="0" file="Source/Gesture/Roll.cpp"/>
         <FILE id="mOZW5h" name="Roll.h" compile="0" resource="0" file="Source/Gesture/Roll.h"/>
         <FILE id="b96diG" name="Tilt.cpp" compile="1" resource="0" file="Source/Gesture/Tilt.cpp"/>
         <FILE id="OBb6KF" name="Tilt.h" compile="0" resource="0" file="Source/Gesture/Tilt.h"/>

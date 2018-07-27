@@ -217,9 +217,11 @@ void PluginWrapper::addParametersToGestureFromXml (XmlElement& gesture, int gest
 //==============================================================================
 void PluginWrapper::parameterValueChanged (int parameterIndex, float newValue)
 {
-    TRACE_IN;
     if (gestArray.mapModeOn)
     {
+        TRACE_IN;
+        Logger::writeToLog ("param index:" + String(parameterIndex));
+        
 	    gestArray.addParameterToMapModeGesture (wrapperProcessor->getWrappedParameter (parameterIndex));
     }
 }

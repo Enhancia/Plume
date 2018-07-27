@@ -91,6 +91,7 @@ public:
         
         parameter = val;
         
+        lbl->setText (String (int (parameter)), dontSendNotification);
         symmetricalSlider->setMinValue(-parameter, dontSendNotification);
         symmetricalSlider->setMaxValue(parameter, dontSendNotification);
     }

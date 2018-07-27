@@ -13,6 +13,7 @@
 #include "Ui/Gesture/Mapper/MapperComponent.h"
 
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
+#define TRACE_OUT Logger::writeToLog ("[-FNC]  Leaving: " + String(__FUNCTION__))
 //==============================================================================
 MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr)  : gesture (gest), gestureArray (gestArr)
 {
@@ -30,6 +31,7 @@ MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr)  : gestu
     clearMapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
     
     gesture.addChangeListener (this);
+    gestureArray.addChangeListener (this);
     
     initializeParamCompArray();
 }
@@ -61,6 +63,9 @@ void MapperComponent::resized()
 void MapperComponent::buttonClicked (Button* bttn)
 {
     TRACE_IN;
+    if (gesture.mapModeOn) Logger::writeToLog ("Gesture " + gesture.name + " map mode state: true");
+    else Logger::writeToLog ("Gesture " + gesture.name + " map mode state: false");
+    
     if (bttn == mapButton)
     {
         // Map: clears mapMode for every other gesture, puts it on for the right one and chages the button color.
@@ -88,18 +93,30 @@ void MapperComponent::buttonClicked (Button* bttn)
         paramCompArray.clear();
         mapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
     }
+    TRACE_OUT;
 }
 
 void MapperComponent::changeListenerCallback(ChangeBroadcaster* source)
 {
     TRACE_IN;
+    
+    if (source == &gestureArray && gestureArray.mapModeOn && gesture.mapModeOn == false)
+    {
+        Logger::writeToLog ("By array");
+        mapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
+        return;
+    }
+    
+    if (gesture.mapModeOn) Logger::writeToLog ("Gesture " + gesture.name + " map mode state: true");
+    else Logger::writeToLog ("Gesture " + gesture.name + " map mode state: false");
+    
+    
     // clears then redraws the array.
     paramCompArray.clear();
     initializeParamCompArray();
-    
     resizeArray();
     
-    mapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
+    TRACE_OUT;
 }
 
 //==============================================================================
@@ -113,6 +130,8 @@ void MapperComponent::updateDisplay()
 
 void MapperComponent::initializeParamCompArray()
 {
+    TRACE_IN;
+    
 	int i = 0;
     // adds a MappedParameterComponent for each parameter of the gesture, and makes them visible.
     for (auto* gestureParam : gesture.getParameterArray())
