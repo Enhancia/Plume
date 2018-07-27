@@ -23,17 +23,20 @@ PlumeProcessor::PlumeProcessor()
 #endif
 {   
     TRACE_IN;
-    dataReader = new DataReader();
-    gestureArray = new GestureArray (*dataReader);
-    wrapper = new PluginWrapper (*this, *gestureArray);
-    dataReader->addChangeListener(gestureArray);
-	
-	Time t;
+    
+    Time t;
     plumeLogger = FileLogger::createDefaultAppLogger ("PlumeLogs",
                                                       "plumeLog.txt",
                                                       "Plume Log "+String(t.getYear())+String(t.getMonth())+String(t.getDayOfMonth()));
 
     Logger::setCurrentLogger (plumeLogger);
+    
+    dataReader = new DataReader();
+    gestureArray = new GestureArray (*dataReader);
+    wrapper = new PluginWrapper (*this, *gestureArray);
+    dataReader->addChangeListener(gestureArray);
+	
+	
 }
 
 PlumeProcessor::~PlumeProcessor()
@@ -169,14 +172,14 @@ void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
     // Gestures configuration loading
     if (wrapperData->getChildByName ("GESTURES") != nullptr)
     {
+        sendActionMessage("blockInterface");
         loadGestureXml (*(wrapperData->getChildByName ("GESTURES")));
         notifyEditor = true;
     }
     
     
-    
     // Sends a change message to the editor so it can update its interface.
-    if (notifyEditor) sendChangeMessage();
+    if (notifyEditor) sendActionMessage("updateInterface");
 
     wrapperData = nullptr;
 }

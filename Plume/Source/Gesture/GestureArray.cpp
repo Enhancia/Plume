@@ -188,7 +188,11 @@ void GestureArray::addGesture (String gestureName, int gestureType)
 void GestureArray::addParameterToMapModeGesture (AudioProcessorParameter& param)
 {
     // Does nothing if the parameter is already mapped to any gesture
-    if (parameterIsMapped (param.getParameterIndex())) return;
+    if (parameterIsMapped (param.getParameterIndex()))
+    {
+        cancelMapMode();
+        return;
+    }
     
     // else adds the parameter and cancels mapMode
     for (auto* g : gestures)
@@ -196,7 +200,7 @@ void GestureArray::addParameterToMapModeGesture (AudioProcessorParameter& param)
         if (g->mapModeOn == true)
         {
             g->addParameter(param);
-            //cancelMapMode();
+            cancelMapMode();
             return;
         }
     }
@@ -238,7 +242,7 @@ void GestureArray::cancelMapMode()
     TRACE_IN;
     for (auto* g : gestures)
     {
-        g->mapModeOn = false;
+        if (g->mapModeOn) g->mapModeOn = false;
     }
     mapModeOn = false;
     sendChangeMessage();
@@ -286,8 +290,7 @@ void GestureArray::addMergedPitchMessage (MidiBuffer& midiMessages)
     else if (pitchVal < 0) pitchVal = 0;
     
 	// Creates the midi message and adds it to the buffer
-	MidiMessage message = MidiMessage::pitchWheel (1, pitchVal);
-    midiMessages.addEvent(message, 1);
+    Gesture::addEventAndMergePitchToBuffer (midiMessages, pitchVal, 1);
 }
 
 //==============================================================================

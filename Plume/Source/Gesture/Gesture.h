@@ -351,6 +351,7 @@ public:
      */
     void deleteParameter(int paramId)
     {
+        TRACE_IN;
         parameterArray.remove (paramId);
         
         if (parameterArray.isEmpty()) mapped = false;
@@ -363,6 +364,7 @@ public:
      */
     void clearAllParameters()
     {
+        TRACE_IN;
         parameterArray.clear();
         mapped = false;
         sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui

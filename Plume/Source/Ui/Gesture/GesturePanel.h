@@ -31,6 +31,7 @@ public:
     
 private:
     class GestureComponent;
+    int freq;
     
     OwnedArray<GestureComponent> gestureComponents;
     GestureArray& gestureArray;

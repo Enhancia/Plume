@@ -39,6 +39,8 @@ public:
     void addGestureParameters() override;
     
     //==============================================================================
+    bool getSend();
+    //==============================================================================
     // Attributes that will be referenced to the Tuner component.
     // Might want to replace them with audio processor parameters in the future.
     

@@ -222,7 +222,7 @@ private:
 GesturePanel::GesturePanel(GestureArray& gestArray, int freqHz) : gestureArray (gestArray)
 {
     TRACE_IN;
-    startTimerHz (freqHz);
+    freq = freqHz;
 }
 
 GesturePanel::~GesturePanel()
@@ -240,6 +240,8 @@ void GesturePanel::resized()
 
 void GesturePanel::initialize()
 {  
+    startTimerHz (freq);
+    
     int gestureHeight = (getHeight() - (NUM_GEST - 1) * 2*MARGIN) / NUM_GEST; // gets the height of each gesture component
     
     for (int i=0; i<NUM_GEST && i<gestureArray.size(); i++)

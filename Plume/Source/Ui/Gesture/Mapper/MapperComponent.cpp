@@ -38,6 +38,8 @@ MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr)  : gestu
 
 MapperComponent::~MapperComponent()
 {
+    gesture.removeChangeListener (this);
+    gestureArray.removeChangeListener (this);
     mapButton = nullptr;
     clearMapButton = nullptr;
 }
@@ -63,8 +65,8 @@ void MapperComponent::resized()
 void MapperComponent::buttonClicked (Button* bttn)
 {
     TRACE_IN;
-    if (gesture.mapModeOn) Logger::writeToLog ("Gesture " + gesture.name + " map mode state: true");
-    else Logger::writeToLog ("Gesture " + gesture.name + " map mode state: false");
+    if (gesture.mapModeOn) Logger::writeToLog ("bttn pressed - Gesture " + gesture.name + " map mode state: true");
+    else Logger::writeToLog ("bttn pressed - Gesture " + gesture.name + " map mode state: false");
     
     if (bttn == mapButton)
     {
@@ -102,19 +104,23 @@ void MapperComponent::changeListenerCallback(ChangeBroadcaster* source)
     
     if (source == &gestureArray && gestureArray.mapModeOn && gesture.mapModeOn == false)
     {
-        Logger::writeToLog ("By array");
+        Logger::writeToLog ("callback - By array");
         mapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
         return;
     }
     
-    if (gesture.mapModeOn) Logger::writeToLog ("Gesture " + gesture.name + " map mode state: true");
-    else Logger::writeToLog ("Gesture " + gesture.name + " map mode state: false");
+    else if (source == &gesture)
+    {
+        if (gesture.mapModeOn) Logger::writeToLog ("callback - Gesture " + gesture.name + " map mode state: true");
+        else Logger::writeToLog ("callback - Gesture " + gesture.name + " map mode state: false");
     
+        if (gesture.mapModeOn == false) mapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
     
-    // clears then redraws the array.
-    paramCompArray.clear();
-    initializeParamCompArray();
-    resizeArray();
+        // clears then redraws the array.
+        paramCompArray.clear();
+        initializeParamCompArray();
+        resizeArray();
+    }
     
     TRACE_OUT;
 }

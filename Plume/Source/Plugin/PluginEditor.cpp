@@ -37,7 +37,7 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	gesturePanel->initialize();
 	
     // Adds itself as a change listener for plume's processor
-    processor.addChangeListener (this);
+    processor.addActionListener (this);
     
     //====================================================================
     // Creates the data reader component, might need to be deleted in the future
@@ -51,6 +51,7 @@ PlumeEditor::~PlumeEditor()
 {
     TRACE_IN;
     
+    processor.removeActionListener (this);
     wrapperComp = nullptr;
     presetComp = nullptr;
     gesturePanel = nullptr;
@@ -67,12 +68,19 @@ void PlumeEditor::resized()
 }
 
 //==============================================================================
-void PlumeEditor::changeListenerCallback(ChangeBroadcaster* source)
+void PlumeEditor::actionListenerCallback(const String &message)
 {
-    if (source == &processor) updateFullInterface();
-    else
+    TRACE_IN;
+    
+    if (message.compare("updateInterface") == 0)
     {
-        
+        updateFullInterface();
+    }
+    
+    else if (message.compare("blockInterface") == 0)
+    {
+        gesturePanel->stopTimer();
+        gesturePanel.reset();
     }
 }
 
@@ -85,6 +93,12 @@ PlumeProcessor& PlumeEditor::getProcessor()
 //==============================================================================
 void PlumeEditor::updateFullInterface()
 {
+    TRACE_IN;
+        
     wrapperComp->update();
     presetComp->update();
+    
+    addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), FRAMERATE));
+	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 4*MARGIN, getWidth() - 4*MARGIN, getHeight() - TOP_PANEL - 50 - 8*MARGIN);
+	gesturePanel->initialize();
 }
