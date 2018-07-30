@@ -93,6 +93,12 @@ float Vibrato::getValueForMappedParameter (Range<float> paramRange)
 }
 
 //==============================================================================
+bool Vibrato::getSend()
+{
+    return send;
+}
+
+//==============================================================================
 void Vibrato::updateValue (const Array<float> rawData)
 {
     intensity = rawData[1];

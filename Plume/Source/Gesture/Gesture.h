@@ -54,9 +54,14 @@ public:
     {
         MappedParameter(AudioProcessorParameter& p, Range<float> pRange)
             : parameter (p), range(pRange)
-        {}
+        {
+            TRACE_IN;
+        }
         
-        ~MappedParameter() {}
+        ~MappedParameter()
+        {
+            TRACE_IN;
+        }
         
         AudioProcessorParameter& parameter; /**< \brief Reference to a mapped Parameter from the wrapped Plugin. */
         Range<float> range; /**< \brief Range of values from the parameter that the Gesture controls. */
@@ -75,6 +80,7 @@ public:
      */
     Gesture(String gestName, int gestType, Range<float> maxRange, float defaultValue = 0.0f)	: name (gestName), type (gestType)
     {
+        TRACE_IN;
         on = false;
         mapped = false;
         midiMap = false;
@@ -330,8 +336,6 @@ public:
     void addParameter (AudioProcessorParameter& param)
     {
         TRACE_IN;
-        Logger::writeToLog ("param name: " + String(param.getName(30)));
-		Logger::writeToLog ("Gesture: " + String(name) + "\nArray size before: " + String(parameterArray.size()));
                                         
         if (parameterArray.size() < MAX_PARAMETER)
         {
@@ -339,11 +343,7 @@ public:
             mapped = true;
         }
         
-        Logger::writeToLog ("Array size after: " + String(parameterArray.size()));
-        Logger::writeToLog ("Map mode state: " + mapped ? "true" : "false");
-        
         sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
-        TRACE_OUT;
     }
     
     /**

@@ -162,7 +162,6 @@ void PluginWrapper::createWrapperEditor()
 
 void PluginWrapper::clearWrapperEditor()
 {
-    
     if (hasWrappedInstance && hasOpenedEditor)
     {
         wrapperEditor.reset();
@@ -219,9 +218,6 @@ void PluginWrapper::parameterValueChanged (int parameterIndex, float newValue)
 {
     if (gestArray.mapModeOn)
     {
-        TRACE_IN;
-        Logger::writeToLog ("param index:" + String(parameterIndex));
-        
 	    gestArray.addParameterToMapModeGesture (wrapperProcessor->getWrappedParameter (parameterIndex));
     }
 }

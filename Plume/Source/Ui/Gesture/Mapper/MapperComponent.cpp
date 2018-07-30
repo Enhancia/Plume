@@ -15,7 +15,8 @@
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 #define TRACE_OUT Logger::writeToLog ("[-FNC]  Leaving: " + String(__FUNCTION__))
 //==============================================================================
-MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr)  : gesture (gest), gestureArray (gestArr)
+MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr, PluginWrapper& wrap)
+    :   gesture (gest), gestureArray (gestArr), wrapper (wrap)
 {
     TRACE_IN;
     // map button
@@ -38,6 +39,7 @@ MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr)  : gestu
 
 MapperComponent::~MapperComponent()
 {
+    TRACE_IN;
     gesture.removeChangeListener (this);
     gestureArray.removeChangeListener (this);
     mapButton = nullptr;
@@ -65,8 +67,6 @@ void MapperComponent::resized()
 void MapperComponent::buttonClicked (Button* bttn)
 {
     TRACE_IN;
-    if (gesture.mapModeOn) Logger::writeToLog ("bttn pressed - Gesture " + gesture.name + " map mode state: true");
-    else Logger::writeToLog ("bttn pressed - Gesture " + gesture.name + " map mode state: false");
     
     if (bttn == mapButton)
     {
@@ -77,6 +77,7 @@ void MapperComponent::buttonClicked (Button* bttn)
             gesture.mapModeOn = true;
             gestureArray.mapModeOn = true;
             mapButton->setColour (TextButton::buttonColourId, Colour (0xff943cb0));
+            wrapper.createWrapperEditor();
         }
         
         else
@@ -95,25 +96,18 @@ void MapperComponent::buttonClicked (Button* bttn)
         paramCompArray.clear();
         mapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
     }
-    TRACE_OUT;
 }
 
 void MapperComponent::changeListenerCallback(ChangeBroadcaster* source)
-{
-    TRACE_IN;
-    
+{   
     if (source == &gestureArray && gestureArray.mapModeOn && gesture.mapModeOn == false)
     {
-        Logger::writeToLog ("callback - By array");
         mapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
         return;
     }
     
     else if (source == &gesture)
     {
-        if (gesture.mapModeOn) Logger::writeToLog ("callback - Gesture " + gesture.name + " map mode state: true");
-        else Logger::writeToLog ("callback - Gesture " + gesture.name + " map mode state: false");
-    
         if (gesture.mapModeOn == false) mapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
     
         // clears then redraws the array.
@@ -121,8 +115,6 @@ void MapperComponent::changeListenerCallback(ChangeBroadcaster* source)
         initializeParamCompArray();
         resizeArray();
     }
-    
-    TRACE_OUT;
 }
 
 //==============================================================================

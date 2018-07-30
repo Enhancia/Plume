@@ -55,7 +55,11 @@ public:
         
         //g.drawRect(0, 0, getWidth(), getHeight()); // outline
         //g.drawRect(W*3/4, 0, 1, getHeight()); // boundary slider|values
-        drawCursor(g);
+        
+        if (value > totalRange.getStart() && value < totalRange.getEnd())
+        {
+            drawCursor(g);
+        }
     }
 
     virtual void resized() override
@@ -71,7 +75,26 @@ public:
     //==============================================================================
     void updateDisplay()
     {
-        valueLabel->setText (String(int (value))+valueUnit, dontSendNotification);
+		/*
+        // Value under min value for first time
+        if (value <= totalRange.getStart() &&
+            valueLabel->getText().upToFirstOccurrenceOf (valueUnit, false, false).getIntValue() != int(totalRange.getStart()) )
+        {
+            valueLabel->setText (String (int (totalRange.getStart()))+valueUnit, dontSendNotification);
+        }
+        // Value over max value for first time
+        else if (value >= totalRange.getEnd() &&
+                 valueLabel->getText().upToFirstOccurrenceOf (valueUnit, false, false).getIntValue() != int(totalRange.getEnd()) )
+        {
+            valueLabel->setText (String (int (totalRange.getStart()))+valueUnit, dontSendNotification);
+        }
+		*/
+        
+        // Normal case
+        if (value >= totalRange.getStart() && value <= totalRange.getEnd())
+        {
+            valueLabel->setText (String(int (value))+valueUnit, dontSendNotification);
+        }
         repaint();
     }
     
@@ -84,20 +107,24 @@ private:
     void drawCursor(Graphics& g)
     {
         int xCursor;
+		int valueLab;
+		
+		if (valueUnit != "") valueLab = valueLabel->getText().upToFirstOccurrenceOf(valueUnit, false, false).getIntValue();
+		else                 valueLab = valueLabel->getText().getIntValue();
         
         // Regular cursor placement
-        if (value > totalRange.getStart() && value < totalRange.getEnd())
+        if (valueLab > totalRange.getStart() && valueLab < totalRange.getEnd())
         {
             // Formula: x = length * (val - start)/(end - start) + x0;
-            xCursor = (sliderPlacement.getLength() - 10)*(value-totalRange.getStart())/(totalRange.getEnd()-totalRange.getStart())
+            xCursor = (sliderPlacement.getLength() - 10)*(valueLab-totalRange.getStart())/(totalRange.getEnd()-totalRange.getStart())
                       + sliderPlacement.getStart()+5;
         }
         
         // Placement if value exceeds limits
         else 
         {
-            if (value < totalRange.getStart())      xCursor = sliderPlacement.getStart() + 5;
-            else if (value > totalRange.getEnd())   xCursor = sliderPlacement.getEnd() - 5;
+            if (valueLab < totalRange.getStart())      xCursor = sliderPlacement.getStart() + 5;
+            else if (valueLab > totalRange.getEnd())   xCursor = sliderPlacement.getEnd() - 5;
         }
         
         g.drawRect (xCursor, yCursor, 1, CURSOR_SIZE);

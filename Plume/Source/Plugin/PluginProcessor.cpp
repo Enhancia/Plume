@@ -36,7 +36,6 @@ PlumeProcessor::PlumeProcessor()
     wrapper = new PluginWrapper (*this, *gestureArray);
     dataReader->addChangeListener(gestureArray);
 	
-	
 }
 
 PlumeProcessor::~PlumeProcessor()
