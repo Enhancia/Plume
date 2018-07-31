@@ -4,35 +4,35 @@
          ToolsVersion="15.0"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|x64">
-      <Configuration>Debug</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{951628DD-D2C2-8BD0-921E-D62F7FAD4E5C}</ProjectGuid>
+    <ProjectGuid>{209DD6AF-FCD6-F52E-A4F3-BC8C9A28210A}</ProjectGuid>
     <PlatformToolset>v141</PlatformToolset>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props"/>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"
-                 Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <WholeProgramOptimization>false</WholeProgramOptimization>
-    <PlatformToolset>v141</PlatformToolset>
-    <PlatformToolset>v141</PlatformToolset>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'"
                  Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"
+                 Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
     <PlatformToolset>v141</PlatformToolset>
     <PlatformToolset>v141</PlatformToolset>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
@@ -51,59 +51,17 @@
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
     <TargetExt>.lib</TargetExt>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)$(Platform)\$(Configuration)\Shared Code\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\Shared Code\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Plume</TargetName>
-    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)$(Platform)\$(Configuration)\Shared Code\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\Shared Code\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Plume</TargetName>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)$(Platform)\$(Configuration)\Shared Code\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\Shared Code\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Plume</TargetName>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
     <PlatformToolset>v141</PlatformToolset>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <Midl>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TargetEnvironment>Win32</TargetEnvironment>
-      <HeaderFileName/>
-    </Midl>
-    <ClCompile>
-      <Optimization>Disabled</Optimization>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\..\..\..\..\Programmes\JUCE\modules;D:\Workspace\GitWorkspace\Plume\Plume\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2017_78A5024=1;JUCE_APP_VERSION=0.1;JUCE_APP_VERSION_HEX=0x100;JucePlugin_Build_VST=1;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=1;JUCE_SHARED_CODE=1;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <PrecompiledHeader/>
-      <AssemblerListingLocation>$(IntDir)\</AssemblerListingLocation>
-      <ObjectFileName>$(IntDir)\</ObjectFileName>
-      <ProgramDataBaseFileName>$(IntDir)\</ProgramDataBaseFileName>
-      <WarningLevel>Level4</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp14</LanguageStandard>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ResourceCompile>
-    <Link>
-      <OutputFile>$(OutDir)\Plume.lib</OutputFile>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <IgnoreSpecificDefaultLibraries>libcmt.lib; msvcrt.lib;;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>$(IntDir)\Plume.pdb</ProgramDatabaseFile>
-      <SubSystem>Windows</SubSystem>
-      <LargeAddressAware>true</LargeAddressAware>
-    </Link>
-    <Bscmake>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>$(IntDir)\Plume.bsc</OutputFile>
-    </Bscmake>
-    <Lib/>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -147,8 +105,56 @@
     </Bscmake>
     <Lib/>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <HeaderFileName/>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\..\..\..\..\Programmes\JUCE\modules;D:\Workspace\GitWorkspace\Plume\Plume\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2017_78A5024=1;JUCE_APP_VERSION=0.1;JUCE_APP_VERSION_HEX=0x100;JucePlugin_Build_VST=1;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=1;JUCE_SHARED_CODE=1;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader/>
+      <AssemblerListingLocation>$(IntDir)\</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)\</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)\</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <OutputFile>$(OutDir)\Plume.lib</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib; msvcrt.lib;;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(IntDir)\Plume.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <LargeAddressAware>true</LargeAddressAware>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>$(IntDir)\Plume.bsc</OutputFile>
+    </Bscmake>
+    <Lib/>
+  </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Source\Gesture\Gesture.cpp">
+    <ClCompile Include="..\..\Source\DataReader\DataReader.cpp"/>
+    <ClCompile Include="..\..\Source\Gesture\GestureArray.cpp"/>
+    <ClCompile Include="..\..\Source\Gesture\PitchBend.cpp"/>
+    <ClCompile Include="..\..\Source\Gesture\Roll.cpp"/>
+    <ClCompile Include="..\..\Source\Gesture\Tilt.cpp"/>
+    <ClCompile Include="..\..\Source\Gesture\Vibrato.cpp"/>
+    <ClCompile Include="..\..\Source\Gesture\Wave.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\Source\Plugin\PluginEditor.cpp"/>
@@ -156,6 +162,8 @@
     <ClCompile Include="..\..\Source\Wrapper\PluginWrapper.cpp"/>
     <ClCompile Include="..\..\Source\Wrapper\WrapperEditor.cpp"/>
     <ClCompile Include="..\..\Source\Wrapper\WrapperProcessor.cpp"/>
+    <ClCompile Include="..\..\Source\Ui\Gesture\Mapper\MapperComponent.cpp"/>
+    <ClCompile Include="..\..\Source\Ui\Gesture\GesturePanel.cpp"/>
     <ClCompile Include="..\..\Source\Ui\Presets\PresetComponent.cpp"/>
     <ClCompile Include="..\..\Source\Ui\Wrapper\WrapperComponent.cpp"/>
     <ClCompile Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_audio_basics\buffers\juce_AudioChannelSet.cpp">
@@ -1892,12 +1900,27 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_video.cpp"/>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\DataReader\DataReader.h"/>
     <ClInclude Include="..\..\Source\Gesture\Gesture.h"/>
+    <ClInclude Include="..\..\Source\Gesture\GestureArray.h"/>
+    <ClInclude Include="..\..\Source\Gesture\PitchBend.h"/>
+    <ClInclude Include="..\..\Source\Gesture\Roll.h"/>
+    <ClInclude Include="..\..\Source\Gesture\Tilt.h"/>
+    <ClInclude Include="..\..\Source\Gesture\Vibrato.h"/>
+    <ClInclude Include="..\..\Source\Gesture\Wave.h"/>
     <ClInclude Include="..\..\Source\Plugin\PluginEditor.h"/>
     <ClInclude Include="..\..\Source\Plugin\PluginProcessor.h"/>
     <ClInclude Include="..\..\Source\Wrapper\PluginWrapper.h"/>
     <ClInclude Include="..\..\Source\Wrapper\WrapperEditor.h"/>
     <ClInclude Include="..\..\Source\Wrapper\WrapperProcessor.h"/>
+    <ClInclude Include="..\..\Source\Ui\Gesture\Mapper\MappedParameterComponent.h"/>
+    <ClInclude Include="..\..\Source\Ui\Gesture\Mapper\MapperComponent.h"/>
+    <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\GesturesTuner.h"/>
+    <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\OneRangeTuner.h"/>
+    <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\SymmetricalTuner.h"/>
+    <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\Tuner.h"/>
+    <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\TwoRangeTuner.h"/>
+    <ClInclude Include="..\..\Source\Ui\Gesture\GesturePanel.h"/>
     <ClInclude Include="..\..\Source\Ui\Presets\PresetComponent.h"/>
     <ClInclude Include="..\..\Source\Ui\Wrapper\WrapperComponent.h"/>
     <ClInclude Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h"/>
@@ -2569,6 +2592,13 @@
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h"/>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Ressources\Images\Gestures\Close.png"/>
+    <None Include="..\..\Ressources\Images\Gestures\pitchBend.png"/>
+    <None Include="..\..\Ressources\Images\Gestures\OnOff.png"/>
+    <None Include="..\..\Ressources\Images\Gestures\roll.png"/>
+    <None Include="..\..\Ressources\Images\Gestures\tilt.png"/>
+    <None Include="..\..\Ressources\Images\Gestures\vibrato.png"/>
+    <None Include="..\..\Ressources\Images\Gestures\wave.png"/>
     <None Include="..\..\Ressources\Images\Logo\Logo_ENHANCIA_Round.png"/>
     <None Include="..\..\Ressources\Images\Wrapper\eye.png"/>
     <None Include="..\..\Ressources\Images\Wrapper\folder.png"/>

@@ -57,6 +57,9 @@ public:
     void clearEditor();
     
     //==============================================================================
+    AudioProcessorParameter& getWrappedParameter (int id);
+    
+    //==============================================================================
     PluginWrapper& getOwnerWrapper();
     AudioPluginInstance& getWrappedInstance();
     

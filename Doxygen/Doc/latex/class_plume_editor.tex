@@ -28,7 +28,14 @@ void \mbox{\hyperlink{class_plume_editor_a3b31e2023faf921f446b132b24a917c0}{pain
 \begin{DoxyCompactList}\small\item\em J\+U\+CE Components\textquotesingle{} paint method. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{class_plume_editor_aa42064f898f3a543173c5b29c7b2932c}\label{class_plume_editor_aa42064f898f3a543173c5b29c7b2932c}} 
 void \mbox{\hyperlink{class_plume_editor_aa42064f898f3a543173c5b29c7b2932c}{resized}} () override
-\begin{DoxyCompactList}\small\item\em J\+U\+CE Components\textquotesingle{} resized method. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em J\+U\+CE Components\textquotesingle{} resized method. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_plume_editor_a5d593b33e5e4e33827928dbcdc272416}{change\+Listener\+Callback}} (Change\+Broadcaster $\ast$source) override
+\begin{DoxyCompactList}\small\item\em Callback to a change message sent by the processor. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_plume_editor_a3d5df58d658438a09a9823b3a06d101d}\label{class_plume_editor_a3d5df58d658438a09a9823b3a06d101d}} 
+\mbox{\hyperlink{class_plume_processor}{Plume\+Processor}} \& {\bfseries get\+Processor} ()
+\item 
+void \mbox{\hyperlink{class_plume_editor_acddc96d095aeb53f7a4ee6cf1f3265e6}{update\+Full\+Interface}} ()
+\begin{DoxyCompactList}\small\item\em Method that sets a full interface update. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
@@ -55,6 +62,29 @@ Draws the background, calls the subcomponents and sets their bounds accordingly.
 \hline
 \end{DoxyParams}
 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_plume_editor_a5d593b33e5e4e33827928dbcdc272416}\label{class_plume_editor_a5d593b33e5e4e33827928dbcdc272416}} 
+\index{Plume\+Editor@{Plume\+Editor}!change\+Listener\+Callback@{change\+Listener\+Callback}}
+\index{change\+Listener\+Callback@{change\+Listener\+Callback}!Plume\+Editor@{Plume\+Editor}}
+\subsubsection{\texorpdfstring{change\+Listener\+Callback()}{changeListenerCallback()}}
+{\footnotesize\ttfamily void Plume\+Editor\+::change\+Listener\+Callback (\begin{DoxyParamCaption}\item[{Change\+Broadcaster $\ast$}]{source }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}}
+
+
+
+Callback to a change message sent by the processor. 
+
+This method is called by the processor when it needs the interface to be fully updated. It calls the method update\+Full\+Interface. sets the right current wrapped plugin, preset and gestures. \mbox{\Hypertarget{class_plume_editor_acddc96d095aeb53f7a4ee6cf1f3265e6}\label{class_plume_editor_acddc96d095aeb53f7a4ee6cf1f3265e6}} 
+\index{Plume\+Editor@{Plume\+Editor}!update\+Full\+Interface@{update\+Full\+Interface}}
+\index{update\+Full\+Interface@{update\+Full\+Interface}!Plume\+Editor@{Plume\+Editor}}
+\subsubsection{\texorpdfstring{update\+Full\+Interface()}{updateFullInterface()}}
+{\footnotesize\ttfamily void Plume\+Editor\+::update\+Full\+Interface (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Method that sets a full interface update. 
+
+This method is called after a change message is sent by the processor. It sets the right current wrapped plugin, preset and gestures. 
 
 The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
 \item 

@@ -10,6 +10,9 @@
 
 #include "Wrapper/PluginWrapper.h"
 
+
+#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
+
 //==============================================================================
 /*class that wraps a parameter from the plugin, forwarding it's methods to the wrapperProcessor*/
 
@@ -50,23 +53,25 @@ WrapperProcessor::WrapperProcessor(AudioPluginInstance& wrappedPlugin, PluginWra
       plugin (wrappedPlugin),
       owner (ownerWrapper)
 {
+    TRACE_IN;
     initWrappedParameters();
 }
 
 WrapperProcessor::~WrapperProcessor()
 {
+    TRACE_IN;
     auto& params = plugin.getParameters();
     
     for (auto* param : params)
     {
-        //param->removeListener (this);
+        param->removeListener (&getOwnerWrapper());
     }
 }
 
 //==============================================================================
 void WrapperProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-    // Clears the audioBuffer if not needed
+    // Clears the audioBuffer if its not needed
     if (plugin.getMainBusNumInputChannels() == 0)
     {
         buffer.clear();
@@ -84,8 +89,16 @@ void WrapperProcessor::initWrappedParameters()
     for (auto* param : params)
     {
         addParameter(new WrappedParameter(*param));
-        //param->addListener (this);
+        param->addListener (&getOwnerWrapper());
     }
+}
+
+AudioProcessorParameter& WrapperProcessor::getWrappedParameter (int id)
+{
+    TRACE_IN;
+    auto& params = plugin.getParameters();
+    
+    return *(params[id]);
 }
 
 PluginWrapper& WrapperProcessor::getOwnerWrapper()

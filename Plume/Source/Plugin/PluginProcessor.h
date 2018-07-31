@@ -12,7 +12,10 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
+#include "Gesture/GestureArray.h"
 #include "Wrapper/PluginWrapper.h"
+#include "Gesture/Gesture.h"
+#include "DataReader/DataReader.h"
 
 //==============================================================================
 /**
@@ -28,7 +31,7 @@
  */
  
 class PlumeProcessor  : public AudioProcessor,
-                        public ChangeBroadcaster
+                        public ActionBroadcaster
 {
 public:
     //==============================================================================
@@ -99,13 +102,34 @@ public:
     void loadGestureXml(const XmlElement& gestureData);
     
     //==============================================================================
+    // Getters to the main function objects
+    
+    /**
+     * \brief PluginWrapper getter.
+     *
+     * \return Reference to the PluginWrapper object.
+     */
     PluginWrapper& getWrapper();
+    /**
+     * \brief DataReader getter.
+     *
+     * \return Reference to the DataReader object.
+     */
+    DataReader* getDataReader();
+    /**
+     * \brief GestureArray getter.
+     *
+     * \return Reference to the GestureArray object.
+     */
+    GestureArray& getGestureArray();
     
 
 private:
     //==============================================================================
-    ScopedPointer<FileLogger> plumeLogger;
-    ScopedPointer<PluginWrapper> wrapper;
+    ScopedPointer<FileLogger> plumeLogger; /**< \brief Logger object. Allows to write logs for testing purposes. */
+    ScopedPointer<PluginWrapper> wrapper; /**< \brief PluginWrapper object. Handles the plugin wrapping. */
+    ScopedPointer<DataReader> dataReader; /**< \brief DataReader object. Recieves the data from the ring. */
+    ScopedPointer<GestureArray> gestureArray; /**< \brief GestureArray object. Stores all current gesture objects. */
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeProcessor)

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['resized',['resized',['../class_plume_editor.html#aa42064f898f3a543173c5b29c7b2932c',1,'PlumeEditor']]]
+  ['datareader',['DataReader',['../class_data_reader.html',1,'']]],
+  ['deleteparameter',['deleteParameter',['../class_gesture.html#afb27ff3a66bf75cff6671084c3ff7574',1,'Gesture']]]
 ];

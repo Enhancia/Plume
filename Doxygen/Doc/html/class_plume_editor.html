@@ -100,6 +100,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_plume_editor.html#aa42064f898f3a543173c5b29c7b2932c">resized</a> () override</td></tr>
 <tr class="memdesc:aa42064f898f3a543173c5b29c7b2932c"><td class="mdescLeft">&#160;</td><td class="mdescRight">JUCE Components' resized method. <br /></td></tr>
 <tr class="separator:aa42064f898f3a543173c5b29c7b2932c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d593b33e5e4e33827928dbcdc272416"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_plume_editor.html#a5d593b33e5e4e33827928dbcdc272416">changeListenerCallback</a> (ChangeBroadcaster *source) override</td></tr>
+<tr class="memdesc:a5d593b33e5e4e33827928dbcdc272416"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback to a change message sent by the processor.  <a href="#a5d593b33e5e4e33827928dbcdc272416">More...</a><br /></td></tr>
+<tr class="separator:a5d593b33e5e4e33827928dbcdc272416"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d5df58d658438a09a9823b3a06d101d"><td class="memItemLeft" align="right" valign="top"><a id="a3d5df58d658438a09a9823b3a06d101d"></a>
+<a class="el" href="class_plume_processor.html">PlumeProcessor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getProcessor</b> ()</td></tr>
+<tr class="separator:a3d5df58d658438a09a9823b3a06d101d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acddc96d095aeb53f7a4ee6cf1f3265e6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_plume_editor.html#acddc96d095aeb53f7a4ee6cf1f3265e6">updateFullInterface</a> ()</td></tr>
+<tr class="memdesc:acddc96d095aeb53f7a4ee6cf1f3265e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method that sets a full interface update.  <a href="#acddc96d095aeb53f7a4ee6cf1f3265e6">More...</a><br /></td></tr>
+<tr class="separator:acddc96d095aeb53f7a4ee6cf1f3265e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Plume's editor component. Holds the ui of the plugin. </p>
@@ -129,6 +138,56 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a5d593b33e5e4e33827928dbcdc272416"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d593b33e5e4e33827928dbcdc272416">&#9670;&nbsp;</a></span>changeListenerCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void PlumeEditor::changeListenerCallback </td>
+          <td>(</td>
+          <td class="paramtype">ChangeBroadcaster *&#160;</td>
+          <td class="paramname"><em>source</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Callback to a change message sent by the processor. </p>
+<p>This method is called by the processor when it needs the interface to be fully updated. It calls the method updateFullInterface. sets the right current wrapped plugin, preset and gestures. </p>
+
+</div>
+</div>
+<a id="acddc96d095aeb53f7a4ee6cf1f3265e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acddc96d095aeb53f7a4ee6cf1f3265e6">&#9670;&nbsp;</a></span>updateFullInterface()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void PlumeEditor::updateFullInterface </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Method that sets a full interface update. </p>
+<p>This method is called after a change message is sent by the processor. It sets the right current wrapped plugin, preset and gestures. </p>
 
 </div>
 </div>
