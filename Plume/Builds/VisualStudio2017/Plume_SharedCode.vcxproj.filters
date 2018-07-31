@@ -35,20 +35,20 @@
     <Filter Include="Plume\Source">
       <UniqueIdentifier>{7756C8A7-AA0B-9AB4-D33E-2FA83717A3D6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Plume\Ressources\Images\Gestures">
-      <UniqueIdentifier>{C0D8C767-3C06-866B-ADE9-8C94CFEA9737}</UniqueIdentifier>
+    <Filter Include="Plume\Resources\Images\Gestures">
+      <UniqueIdentifier>{9741F92D-9C13-C643-B36C-10B12336DD25}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Plume\Ressources\Images\Logo">
-      <UniqueIdentifier>{0062098B-B196-08C8-54A5-4C39F05928E5}</UniqueIdentifier>
+    <Filter Include="Plume\Resources\Images\Logo">
+      <UniqueIdentifier>{788AB414-F5EA-EF20-C2CD-63A501479B95}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Plume\Ressources\Images\Wrapper">
-      <UniqueIdentifier>{51003CD9-4808-4D69-8D8B-D9F2CBD2CD4D}</UniqueIdentifier>
+    <Filter Include="Plume\Resources\Images\Wrapper">
+      <UniqueIdentifier>{3AB7E932-3FC1-6630-7BA1-C11BFB93FB00}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Plume\Ressources\Images">
-      <UniqueIdentifier>{A7BE827C-CAEE-0EB9-286F-EAE5A20BACC9}</UniqueIdentifier>
+    <Filter Include="Plume\Resources\Images">
+      <UniqueIdentifier>{C8C38539-F13B-FA68-1031-F0A612B7B533}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Plume\Ressources">
-      <UniqueIdentifier>{641FC332-43B6-170F-0C5A-349CF9C2F295}</UniqueIdentifier>
+    <Filter Include="Plume\Resources">
+      <UniqueIdentifier>{8846710D-5C05-AF3A-5770-9D8CF6F45B15}</UniqueIdentifier>
     </Filter>
     <Filter Include="Plume">
       <UniqueIdentifier>{508F6719-B0C1-9F4F-DB9B-B7E9F582C968}</UniqueIdentifier>
@@ -4449,34 +4449,34 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Ressources\Images\Gestures\Close.png">
-      <Filter>Plume\Ressources\Images\Gestures</Filter>
+      <Filter>Plume\Resources\Images\Gestures</Filter>
     </None>
     <None Include="..\..\Ressources\Images\Gestures\pitchBend.png">
-      <Filter>Plume\Ressources\Images\Gestures</Filter>
+      <Filter>Plume\Resources\Images\Gestures</Filter>
     </None>
     <None Include="..\..\Ressources\Images\Gestures\OnOff.png">
-      <Filter>Plume\Ressources\Images\Gestures</Filter>
+      <Filter>Plume\Resources\Images\Gestures</Filter>
     </None>
     <None Include="..\..\Ressources\Images\Gestures\roll.png">
-      <Filter>Plume\Ressources\Images\Gestures</Filter>
+      <Filter>Plume\Resources\Images\Gestures</Filter>
     </None>
     <None Include="..\..\Ressources\Images\Gestures\tilt.png">
-      <Filter>Plume\Ressources\Images\Gestures</Filter>
+      <Filter>Plume\Resources\Images\Gestures</Filter>
     </None>
     <None Include="..\..\Ressources\Images\Gestures\vibrato.png">
-      <Filter>Plume\Ressources\Images\Gestures</Filter>
+      <Filter>Plume\Resources\Images\Gestures</Filter>
     </None>
     <None Include="..\..\Ressources\Images\Gestures\wave.png">
-      <Filter>Plume\Ressources\Images\Gestures</Filter>
+      <Filter>Plume\Resources\Images\Gestures</Filter>
     </None>
     <None Include="..\..\Ressources\Images\Logo\Logo_ENHANCIA_Round.png">
-      <Filter>Plume\Ressources\Images\Logo</Filter>
+      <Filter>Plume\Resources\Images\Logo</Filter>
     </None>
     <None Include="..\..\Ressources\Images\Wrapper\eye.png">
-      <Filter>Plume\Ressources\Images\Wrapper</Filter>
+      <Filter>Plume\Resources\Images\Wrapper</Filter>
     </None>
     <None Include="..\..\Ressources\Images\Wrapper\folder.png">
-      <Filter>Plume\Ressources\Images\Wrapper</Filter>
+      <Filter>Plume\Resources\Images\Wrapper</Filter>
     </None>
     <None Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_audio_formats\codecs\flac\Flac Licence.txt">
       <Filter>JUCE Modules\juce_audio_formats\codecs\flac</Filter>

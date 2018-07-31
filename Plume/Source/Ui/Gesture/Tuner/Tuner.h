@@ -94,8 +94,8 @@ public:
         if (value >= totalRange.getStart() && value <= totalRange.getEnd())
         {
             valueLabel->setText (String(int (value))+valueUnit, dontSendNotification);
+            repaint();
         }
-        repaint();
     }
     
 protected:

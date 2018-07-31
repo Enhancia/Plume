@@ -91,7 +91,7 @@ void MapperComponent::buttonClicked (Button* bttn)
     {
         // Clear all parameters and cancels map for the gesture.
         gesture.clearAllParameters();
-        gesture.mapModeOn = false;
+        if (gesture.mapModeOn) gestureArray.cancelMapMode();
         
         paramCompArray.clear();
         mapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));

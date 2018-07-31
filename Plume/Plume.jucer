@@ -86,7 +86,7 @@
         </GROUP>
       </GROUP>
     </GROUP>
-    <GROUP id="{1DA701B0-86B1-D555-94AE-9A6D72F4225B}" name="Ressources">
+    <GROUP id="{1DA701B0-86B1-D555-94AE-9A6D72F4225B}" name="Resources">
       <GROUP id="{0A88E0E6-0AAA-1A53-7038-4FEE4168F5B2}" name="Fonts"/>
       <GROUP id="{E197EADC-7951-2072-30F3-1E0791A4B2A7}" name="Images">
         <GROUP id="{5DAA9652-AC5A-272C-7445-2818971B7B55}" name="Backgrounds"/>
