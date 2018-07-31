@@ -14,6 +14,7 @@
 #include "Ui/Gesture/Tuner/GesturesTuner.h"
 #include "Ui/Gesture/Mapper/MapperComponent.h"
 
+
 #define MARGIN 8
 #define NUM_GEST 3
 
@@ -23,8 +24,9 @@ class  GesturePanel::GestureComponent   : public Component,
 										  private Button::Listener
 {
 public:
-    GestureComponent(Gesture& gest, GestureArray& gestArray): gesture (gest), gestureArray (gestArray)
+    GestureComponent(Gesture& gest, GestureArray& gestArray, PluginWrapper& wrap): gesture (gest), gestureArray (gestArray), wrapper (wrap)
     {
+        TRACE_IN;
         // Creates the on/off button
         String PlumeDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getFullPathName();
         Image onOff = ImageFileFormat::loadFrom (File (PlumeDir + "/Resources/Images/Gestures/OnOff.png"));
@@ -43,11 +45,12 @@ public:
         createTuner();
         
         // Creates the mapper object
-        addAndMakeVisible( gestMapper = new MapperComponent(gesture, gestureArray));
+        addAndMakeVisible( gestMapper = new MapperComponent(gesture, gestureArray, wrapper));
     }
     
     ~GestureComponent()
     {
+        TRACE_IN;
         onOffButton = nullptr;
         gestMapper = nullptr;
         gestTuner = nullptr;
@@ -80,7 +83,7 @@ public:
             height = getHeight() - 2*MARGIN;
 
             String PlumeDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getFullPathName();
-            File f = File (PlumeDir + "/Ressources/Images/Gestures/" + gesture.getTypeString() + ".png");
+            File f = File (PlumeDir + "/Resources/Images/Gestures/" + gesture.getTypeString() + ".png");
             
             Image gest = ImageFileFormat::loadFrom (f);
 			g.drawImageWithin(gest, x, y, width, height,
@@ -212,6 +215,7 @@ private:
     
     Gesture& gesture;
     GestureArray& gestureArray;
+    PluginWrapper& wrapper;
     ScopedPointer<ImageButton> onOffButton;
     
     ScopedPointer<Tuner> gestTuner;
@@ -219,10 +223,10 @@ private:
 };
 
 //==============================================================================
-GesturePanel::GesturePanel(GestureArray& gestArray, int freqHz) : gestureArray (gestArray)
+GesturePanel::GesturePanel(GestureArray& gestArray, PluginWrapper& wrap, int freqHz) : gestureArray (gestArray), wrapper (wrap)
 {
     TRACE_IN;
-    startTimerHz (freqHz);
+    freq = freqHz;
 }
 
 GesturePanel::~GesturePanel()
@@ -240,12 +244,14 @@ void GesturePanel::resized()
 
 void GesturePanel::initialize()
 {  
+    startTimerHz (freq);
+    
     int gestureHeight = (getHeight() - (NUM_GEST - 1) * 2*MARGIN) / NUM_GEST; // gets the height of each gesture component
     
     for (int i=0; i<NUM_GEST && i<gestureArray.size(); i++)
     {
         // Loop that creates and places a gestureComponent for each existing gesture.
-        gestureComponents.add (new GestureComponent (*gestureArray.getGestureById (i), gestureArray));
+        gestureComponents.add (new GestureComponent (*gestureArray.getGestureById (i), gestureArray, wrapper));
         addAndMakeVisible (gestureComponents[i]);
         gestureComponents[i]->setBounds (0, i*(gestureHeight + MARGIN), getWidth(), gestureHeight);
     }

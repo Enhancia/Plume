@@ -34,6 +34,7 @@ WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc)
 
 WrapperEditorWindow::~WrapperEditorWindow()
 {
+    TRACE_IN;
 }
 
 void WrapperEditorWindow::closeButtonPressed()

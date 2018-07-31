@@ -19,19 +19,19 @@ PresetComponent::PresetComponent(PlumeProcessor& p)  : processor (p)
     addAndMakeVisible (nameLabel = new Label ("nameLabel", TRANS ("No current preset")));
     nameLabel->setJustificationType (Justification::centred);
     nameLabel->setEditable (false, false, false);
-    nameLabel->setColour (Label::backgroundColourId, Colour (0xff505050));
+    nameLabel->setColour (Label::backgroundColourId, Colour (0xff323232));
     nameLabel->setColour (Label::textColourId, Colour (0xffffffff));
     nameLabel->setColour (Label::outlineColourId, Colour (0x00000000));
         
     addAndMakeVisible (saveButton = new TextButton ("saveButton"));
     saveButton->setButtonText ("Save");
     saveButton->addListener (this);
-    saveButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
+    saveButton->setColour (TextButton::buttonColourId, Colour (0xff323232));
         
     addAndMakeVisible (loadButton = new TextButton ("loadButton"));
     loadButton->setButtonText ("Load");
     loadButton->addListener (this);
-    loadButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
+    loadButton->setColour (TextButton::buttonColourId, Colour (0xff323232));
 }
 
 PresetComponent::~PresetComponent()

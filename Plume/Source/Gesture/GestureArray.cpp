@@ -15,12 +15,14 @@
 
 GestureArray::GestureArray(DataReader& reader)  : dataReader (reader)
 {
+    TRACE_IN;
     initializeGestures();
     cancelMapMode();
 }
 
 GestureArray::~GestureArray()
 {
+    TRACE_IN;
     gestures.clear();
 }
 
@@ -188,7 +190,11 @@ void GestureArray::addGesture (String gestureName, int gestureType)
 void GestureArray::addParameterToMapModeGesture (AudioProcessorParameter& param)
 {
     // Does nothing if the parameter is already mapped to any gesture
-    if (parameterIsMapped (param.getParameterIndex())) return;
+    if (parameterIsMapped (param.getParameterIndex()))
+    {
+        cancelMapMode();
+        return;
+    }
     
     // else adds the parameter and cancels mapMode
     for (auto* g : gestures)
@@ -196,7 +202,7 @@ void GestureArray::addParameterToMapModeGesture (AudioProcessorParameter& param)
         if (g->mapModeOn == true)
         {
             g->addParameter(param);
-            //cancelMapMode();
+            cancelMapMode();
             return;
         }
     }
@@ -235,10 +241,9 @@ void GestureArray::clearAllParameters()
 
 void GestureArray::cancelMapMode()
 {
-    TRACE_IN;
     for (auto* g : gestures)
     {
-        g->mapModeOn = false;
+        if (g->mapModeOn) g->mapModeOn = false;
     }
     mapModeOn = false;
     sendChangeMessage();
@@ -271,23 +276,52 @@ void GestureArray::checkPitchMerging()
 void GestureArray::addMergedPitchMessage (MidiBuffer& midiMessages)
 {
     int pitchVal = 8192;
+    bool send = false;
     
     // Creates a sum of pitch values, centered around 8192
     for (auto* g : gestures)
     {
+        // First check: gesture is active and affects pitch
         if (g->affectsPitch() && g->isActive())
         {
-            pitchVal = pitchVal + g->getMidiValue() - 8192;
+            // Checks if each specific gesture should send a midi signal, before adding it to pitchVal
+            int gestValue;
+            
+            // Vibrato
+            if (g->type == Gesture::vibrato)
+            {
+                Vibrato* vib = dynamic_cast <Vibrato*> (g);
+                gestValue = vib->getMidiValue();
+                
+                if (vib->getSend() == true)
+                {
+                    send = true;
+                    pitchVal += gestValue - 8192;
+                }
+            }
+            
+            // Pitch Bend
+            else if (g->type == Gesture::pitchBend)
+            {
+                PitchBend* pb = dynamic_cast <PitchBend*> (g);
+                gestValue = pb->getMidiValue();
+                
+                if (pb->getSend() == true)
+                {
+                    send = true;
+                    pitchVal += gestValue - 8192;
+                }
+            }
         }
     }
+    if (send == false) return; // Does nothing if no pitch midi should be sent
     
     // Limits the value to be inbounds
     if (pitchVal > 16383) pitchVal = 16383;
     else if (pitchVal < 0) pitchVal = 0;
     
 	// Creates the midi message and adds it to the buffer
-	MidiMessage message = MidiMessage::pitchWheel (1, pitchVal);
-    midiMessages.addEvent(message, 1);
+    Gesture::addEventAndMergePitchToBuffer (midiMessages, pitchVal, 1);
 }
 
 //==============================================================================

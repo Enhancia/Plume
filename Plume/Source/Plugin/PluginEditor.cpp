@@ -13,7 +13,7 @@
 
 #define MARGIN 8
 #define TOP_PANEL 80
-#define FRAMERATE 60
+#define FRAMERATE 80
 
 
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
@@ -32,12 +32,12 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     addAndMakeVisible (presetComp = new PresetComponent (processor));
 	presetComp->setBounds(wrapperComp->getWidth() + 3*MARGIN, 2*MARGIN, getWidth() - wrapperComp->getWidth() - 5*MARGIN, TOP_PANEL);
 	
-	addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), FRAMERATE));
+	addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(), FRAMERATE));
 	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 4*MARGIN, getWidth() - 4*MARGIN, getHeight() - TOP_PANEL - 50 - 8*MARGIN);
 	gesturePanel->initialize();
 	
     // Adds itself as a change listener for plume's processor
-    processor.addChangeListener (this);
+    processor.addActionListener (this);
     
     //====================================================================
     // Creates the data reader component, might need to be deleted in the future
@@ -51,6 +51,7 @@ PlumeEditor::~PlumeEditor()
 {
     TRACE_IN;
     
+    processor.removeActionListener (this);
     wrapperComp = nullptr;
     presetComp = nullptr;
     gesturePanel = nullptr;
@@ -67,12 +68,19 @@ void PlumeEditor::resized()
 }
 
 //==============================================================================
-void PlumeEditor::changeListenerCallback(ChangeBroadcaster* source)
+void PlumeEditor::actionListenerCallback(const String &message)
 {
-    if (source == &processor) updateFullInterface();
-    else
+    TRACE_IN;
+    
+    if (message.compare("updateInterface") == 0)
     {
-        
+        updateFullInterface();
+    }
+    
+    else if (message.compare("blockInterface") == 0)
+    {
+        gesturePanel->stopTimer();
+        gesturePanel.reset();
     }
 }
 
@@ -85,6 +93,12 @@ PlumeProcessor& PlumeEditor::getProcessor()
 //==============================================================================
 void PlumeEditor::updateFullInterface()
 {
+    TRACE_IN;
+        
     wrapperComp->update();
     presetComp->update();
+    
+    addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(), FRAMERATE));
+	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 4*MARGIN, getWidth() - 4*MARGIN, getHeight() - TOP_PANEL - 50 - 8*MARGIN);
+	gesturePanel->initialize();
 }

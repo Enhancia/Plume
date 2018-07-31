@@ -30,7 +30,7 @@
  *  interface blocks: wrapper, presets, and gestures.
  */
 class PlumeEditor  : public AudioProcessorEditor,
-                     public ChangeListener
+                     public ActionListener
 {
 public:
     /**
@@ -64,7 +64,7 @@ public:
      * This method is called by the processor when it needs the interface to be fully updated.
      * It calls the method updateFullInterface. sets the right current wrapped plugin, preset and gestures.
      */
-    void changeListenerCallback(ChangeBroadcaster* source) override;
+    void actionListenerCallback(const String &message) override;
     
     //==============================================================================
     PlumeProcessor& getProcessor();

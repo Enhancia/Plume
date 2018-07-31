@@ -15,7 +15,6 @@
 #include "Gesture/Gesture.h"
 #include "Ui/Gesture/Mapper/MappedParameterComponent.h"
 
-
 //==============================================================================
 /*
 */
@@ -26,7 +25,7 @@ class MapperComponent    : public Component,
 {
 public:
     //==============================================================================
-    MapperComponent(Gesture& gest, GestureArray& gestArr);
+    MapperComponent(Gesture& gest, GestureArray& gestArr, PluginWrapper& wrap);
     ~MapperComponent();
     
     //==============================================================================
@@ -52,6 +51,7 @@ private:
     //==============================================================================
     Gesture& gesture;
     GestureArray& gestureArray;
+    PluginWrapper& wrapper;
     
     //==============================================================================
     ScopedPointer<TextButton> mapButton;

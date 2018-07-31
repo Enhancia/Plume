@@ -91,7 +91,13 @@ float PitchBend::getValueForMappedParameter (Range<float> paramRange)
     send = false;
     return paramRange.getStart() + paramRange.getLength()/2;
 }
-    
+
+//==============================================================================
+bool PitchBend::getSend()
+{
+    return send;
+}
+
 //==============================================================================
 void PitchBend::updateValue (const Array<float> rawData)
 {

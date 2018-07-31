@@ -31,7 +31,7 @@
  */
  
 class PlumeProcessor  : public AudioProcessor,
-                        public ChangeBroadcaster
+                        public ActionBroadcaster
 {
 public:
     //==============================================================================

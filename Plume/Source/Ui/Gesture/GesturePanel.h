@@ -11,6 +11,7 @@
 #pragma once
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
+#include "Wrapper/PluginWrapper.h"
 
 //==============================================================================
 /*
@@ -19,7 +20,7 @@ class GesturePanel    : public Component,
                         public Timer
 {
 public:
-    GesturePanel (GestureArray& gestureArray, int freqHz);
+    GesturePanel (GestureArray& gestureArray, PluginWrapper& wrap, int freqHz);
     ~GesturePanel();
 
     void paint (Graphics&) override;
@@ -31,9 +32,11 @@ public:
     
 private:
     class GestureComponent;
+    int freq;
     
     OwnedArray<GestureComponent> gestureComponents;
     GestureArray& gestureArray;
+    PluginWrapper& wrapper;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GesturePanel)
 };
