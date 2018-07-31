@@ -29,8 +29,8 @@ WrapperComponent::WrapperComponent(PluginWrapper& wrap)
     // Creates the buttons and the label
     addAndMakeVisible (scanButton = new ImageButton ("Scan Plugin Button"));
     scanButton->setImages (false, true, false, 
-                           scan, 1.0f, Colour (0x98000000),
-                           scan, 0.7f, Colour (0x10ffffff),
+                           scan, 1.0f, Colour (0x00000000),
+                           scan, 0.7f, Colour (0x00000000),
                            scan, 0.7f, Colour (0x501600f0));
     scanButton->addListener (this);
     
@@ -38,7 +38,7 @@ WrapperComponent::WrapperComponent(PluginWrapper& wrap)
     pluginNameLabel->setFont (Font (15.00f, Font::bold).withTypefaceStyle ("Regular"));
     pluginNameLabel->setJustificationType (Justification::centred);
     pluginNameLabel->setEditable (false, false, false);
-    pluginNameLabel->setColour (Label::backgroundColourId, Colour (0xff505050));
+    pluginNameLabel->setColour (Label::backgroundColourId, Colour (0xff323232));
     pluginNameLabel->setColour (Label::textColourId, Colour (0xffffffff));
     pluginNameLabel->setColour (Label::outlineColourId, Colour (0x00000000));
     
@@ -78,7 +78,7 @@ void WrapperComponent::resized()
 {
     int h = getHeight(), w = getWidth();
     
-	scanButton->setBounds (w*3/16, h/3, w/16, h/3);
+	scanButton->setBounds (w*3/16 + 2, h/3, w/16, h/3);
     pluginNameLabel->setBounds (w*1/4, h/3, w*7/16, h/3);
 	openEditorButton->setBounds (w*23/32, h/4, w/4, h/2);
 }

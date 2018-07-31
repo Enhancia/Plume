@@ -116,9 +116,9 @@
   <EXPORTFORMATS>
     <VS2017 targetFolder="Builds/VisualStudio2017">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" headerPath="D:\Workspace\GitWorkspace\Plume\Plume\Source"
-                       useRuntimeLibDLL="0"/>
         <CONFIGURATION isDebug="0" name="Release" headerPath="D:\Workspace\GitWorkspace\Plume\Plume\Source"
+                       useRuntimeLibDLL="0"/>
+        <CONFIGURATION isDebug="1" name="Debug" headerPath="D:\Workspace\GitWorkspace\Plume\Plume\Source"
                        useRuntimeLibDLL="0"/>
       </CONFIGURATIONS>
       <MODULEPATHS>

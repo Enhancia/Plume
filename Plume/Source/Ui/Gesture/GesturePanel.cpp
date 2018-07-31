@@ -50,6 +50,7 @@ public:
     
     ~GestureComponent()
     {
+        TRACE_IN;
         onOffButton = nullptr;
         gestMapper = nullptr;
         gestTuner = nullptr;
