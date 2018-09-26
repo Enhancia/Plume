@@ -24,7 +24,8 @@
  */
 class PlumeProcessor;
 
-class PluginWrapper : public AudioProcessorParameter::Listener
+class PluginWrapper : public AudioProcessorParameter::Listener,
+                      public ChangeBroadcaster
 {
 public:
     //==============================================================================

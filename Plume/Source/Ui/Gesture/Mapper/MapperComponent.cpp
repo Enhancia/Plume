@@ -33,6 +33,7 @@ MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr, PluginWr
     
     gesture.addChangeListener (this);
     gestureArray.addChangeListener (this);
+    wrapper.addChangeListener (this);
     
     initializeParamCompArray();
 }
@@ -42,6 +43,8 @@ MapperComponent::~MapperComponent()
     TRACE_IN;
     gesture.removeChangeListener (this);
     gestureArray.removeChangeListener (this);
+    wrapper.removeChangeListener (this);
+    
     mapButton = nullptr;
     clearMapButton = nullptr;
 }
@@ -70,7 +73,7 @@ void MapperComponent::buttonClicked (Button* bttn)
     
     if (bttn == mapButton)
     {
-        // Map: clears mapMode for every other gesture, puts it on for the right one and chages the button color.
+        // Map: clears mapMode for every other gesture, puts it on for the right one and changes the button color.
         if (gesture.mapModeOn == false)
         {
             gestureArray.cancelMapMode();
@@ -100,12 +103,16 @@ void MapperComponent::buttonClicked (Button* bttn)
 
 void MapperComponent::changeListenerCallback(ChangeBroadcaster* source)
 {   
+    // if Another gesture wants to be mapped
+    // Draws the map button in non-map colour
     if (source == &gestureArray && gestureArray.mapModeOn && gesture.mapModeOn == false)
     {
         mapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
         return;
     }
     
+    // If gesture mapping changed
+    // Recreates the array of parameterComponent, and redraws the mapperComponent
     else if (source == &gesture)
     {
         if (gesture.mapModeOn == false) mapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
@@ -114,6 +121,14 @@ void MapperComponent::changeListenerCallback(ChangeBroadcaster* source)
         paramCompArray.clear();
         initializeParamCompArray();
         resizeArray();
+    }
+    
+    // If the editor is closed with map mode still on
+    // Cancels map mode and colors map button to non-map
+    else if (source == &wrapper && gesture.mapModeOn)
+    {
+        gestureArray.cancelMapMode();
+        mapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
     }
 }
 
@@ -157,6 +172,6 @@ void MapperComponent::resizeArray()
         int x = (i%2) * w;
         int y = (i/2) * h + getHeight()/4;
         
-        paramCompArray[i]->setBounds(x, y, w, h);
+        paramCompArray[i]->setBounds (x, y, w, h);
     }
 }

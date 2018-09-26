@@ -166,6 +166,9 @@ void PluginWrapper::clearWrapperEditor()
     {
         wrapperEditor.reset();
         hasOpenedEditor = false;
+        
+        // Message for the components needing an update upon closing the wrapped editor (ie mapper components)
+        sendChangeMessage();
     }
 }
 //==============================================================================
