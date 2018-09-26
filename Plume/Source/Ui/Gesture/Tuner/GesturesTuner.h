@@ -25,7 +25,7 @@ class VibratoTuner: public SymmetricalTuner
 {
 public:
     VibratoTuner(Vibrato& vib)
-        :   SymmetricalTuner (vib.getValueReference(), vib.getRangeReference(), vib.gain, 500.0f)
+        :   SymmetricalTuner (vib.getValueReference(), vib.getRangeReference(), vib.gain, 500.0f, "", false)
     {}
     
     ~VibratoTuner()

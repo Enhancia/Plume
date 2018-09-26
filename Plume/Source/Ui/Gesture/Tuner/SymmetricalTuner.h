@@ -23,8 +23,9 @@ class SymmetricalTuner:    public Component,
 {
 public:
     //==============================================================================
-    SymmetricalTuner(const float& val, const Range<float>& totRange, float& param, float paramMax, const String unit = "")
-        :   Tuner (val, totRange, unit), parameter (param), parameterMax (paramMax)
+    SymmetricalTuner(const float& val, const Range<float>& totRange, float& param, float paramMax,
+                     const String unit = "", bool show = true)
+        :   Tuner (val, totRange, unit, show), parameter (param), parameterMax (paramMax)
     {
         Component::setBounds (Tuner::getBounds());
         createSlider();
@@ -84,7 +85,7 @@ public:
         
         // Gets the float value of the text 
         if (valueUnit != "" && lbl->getText().endsWith(valueUnit)) val = lbl->getText().upToFirstOccurrenceOf(valueUnit, false, false).getFloatValue();
-        else                                             val = lbl->getText().getFloatValue();
+        else                                                       val = lbl->getText().getFloatValue();
         
         if (val < 0.0f) val = 0.0f;
         else if (val > parameterMax) val = parameterMax;

@@ -25,8 +25,8 @@ public:
     //==============================================================================
     TwoRangeTuner(const float& val, const Range<float>& totRange,
                   Range<float>& paramRangeLeft, Range<float>& paramRangeRight, const Range<float> paramMax,
-                  const String unit = "")
-        :   Tuner (val, totRange, unit), parameterRangeLeft (paramRangeLeft), parameterRangeRight (paramRangeRight), parameterMax (paramMax)
+                  const String unit = "", bool show = true)
+        :   Tuner (val, totRange, unit, show), parameterRangeLeft (paramRangeLeft), parameterRangeRight (paramRangeRight), parameterMax (paramMax)
     {
         Component::setBounds (Tuner::getBounds());
         createSliders();

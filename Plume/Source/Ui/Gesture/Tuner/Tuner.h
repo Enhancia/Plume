@@ -24,18 +24,28 @@ class Tuner    : public Component
 {
 public:
     //==============================================================================
-    Tuner(const float& val, const Range<float>& totRange, const String unit = "")
-        :   value (val), totalRange (totRange), valueUnit (unit)
+    Tuner(const float& val, const Range<float>& totRange, const String unit = "", bool show = true)
+        :   value (val), totalRange (totRange), valueUnit (unit), showValue (show)
     {
         TRACE_IN;
         yCursor = getHeight()/3 - CURSOR_SIZE;
         
         addAndMakeVisible(valueLabel = new Label("value Label"));
         valueLabel->setEditable (false, false, false);
-        valueLabel->setText (String(value), dontSendNotification);
+        valueLabel->setText (String(int (value)), dontSendNotification);
         valueLabel->setFont (Font (13.0f, Font::plain));
-        valueLabel->setColour (Label::textColourId, Colour(0xffffffff));
-        valueLabel->setColour (Label::backgroundColourId, Colour(0xff000000));
+        
+        if (showValue)
+        {
+            valueLabel->setColour (Label::textColourId, Colour(0xffffffff));
+            valueLabel->setColour (Label::backgroundColourId, Colour(0xff000000));
+        }
+        else
+        {
+            valueLabel->setColour (Label::textColourId, Colour(0x00000000));
+            valueLabel->setColour (Label::backgroundColourId, Colour(0x00000000));
+        }
+            
         valueLabel->setJustificationType (Justification::centred);
         valueLabel->setBounds ( (W*3/4)*3/8, H*2/3, (W*3/4)/4, H/6);
     }
@@ -93,7 +103,7 @@ public:
         // Normal case
         if (value >= totalRange.getStart() && value <= totalRange.getEnd())
         {
-            valueLabel->setText (String(int (value))+valueUnit, dontSendNotification);
+            if (showValue)   valueLabel->setText (String(int (value))+valueUnit, dontSendNotification);
             repaint();
         }
     }
@@ -107,10 +117,10 @@ private:
     void drawCursor(Graphics& g)
     {
         int xCursor;
-		int valueLab;
+		int valueLab = int (value);
 		
-		if (valueUnit != "") valueLab = valueLabel->getText().upToFirstOccurrenceOf(valueUnit, false, false).getIntValue();
-		else                 valueLab = valueLabel->getText().getIntValue();
+		//if (valueUnit != "") valueLab = valueLabel->getText().upToFirstOccurrenceOf(valueUnit, false, false).getIntValue();
+		//else                 valueLab = valueLabel->getText().getIntValue();
         
         // Regular cursor placement
         if (valueLab > totalRange.getStart() && valueLab < totalRange.getEnd())
@@ -133,6 +143,7 @@ private:
     //==============================================================================
     const float& value;
     const Range<float>& totalRange;
+    const bool showValue;
     
     int yCursor;
     //ScopedPointer<Path> displayTriangle;

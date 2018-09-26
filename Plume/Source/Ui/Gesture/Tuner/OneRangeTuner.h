@@ -23,8 +23,9 @@ class OneRangeTuner:    public Component,
 {
 public:
     //==============================================================================
-    OneRangeTuner(const float& val, const Range<float>& totRange, Range<float>& paramRange, const Range<float> paramMax, const String unit = "")
-        :   Tuner (val, totRange, unit), parameterRange (paramRange), parameterMax (paramMax)
+    OneRangeTuner(const float& val, const Range<float>& totRange, Range<float>& paramRange, const Range<float> paramMax,
+                  const String unit = "", bool show = true)
+        :   Tuner (val, totRange, unit, show), parameterRange (paramRange), parameterMax (paramMax)
     {
         Component::setBounds (Tuner::getBounds());
         createSlider();
