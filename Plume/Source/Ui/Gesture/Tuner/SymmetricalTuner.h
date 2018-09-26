@@ -16,8 +16,7 @@
 #define W Component::getWidth()
 #define H Component::getHeight()
 
-class SymmetricalTuner:    public Component,
-						   public Tuner,
+class SymmetricalTuner:    public Tuner,
                            private Slider::Listener,
                            private Label::Listener
 {

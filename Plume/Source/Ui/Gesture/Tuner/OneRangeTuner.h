@@ -16,8 +16,7 @@
 #define W Component::getWidth()
 #define H Component::getHeight()
 
-class OneRangeTuner:    public Component,
-						public Tuner,
+class OneRangeTuner:    public Tuner,
                         private Slider::Listener,
                         private Label::Listener
 {
