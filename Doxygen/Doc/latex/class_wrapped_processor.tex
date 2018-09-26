@@ -1,0 +1,91 @@
+\hypertarget{class_wrapped_processor}{}\section{Wrapped\+Processor Class Reference}
+\label{class_wrapped_processor}\index{Wrapped\+Processor@{Wrapped\+Processor}}
+Inheritance diagram for Wrapped\+Processor\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_wrapped_processor}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_wrapped_processor_ac8457b0e4a82db249d1e74badfe3bef7}\label{class_wrapped_processor_ac8457b0e4a82db249d1e74badfe3bef7}} 
+{\bfseries Wrapped\+Processor} (Audio\+Plugin\+Instance \&, Basic\+Wrapper\+Audio\+Processor \&)
+\item 
+\mbox{\Hypertarget{class_wrapped_processor_acc45968faccac42a4780d0661be7a531}\label{class_wrapped_processor_acc45968faccac42a4780d0661be7a531}} 
+void {\bfseries prepare\+To\+Play} (double sample\+Rate, int samples\+Per\+Block) override
+\item 
+\mbox{\Hypertarget{class_wrapped_processor_aff68c9eae9c718e95dc3963ac89eb1b2}\label{class_wrapped_processor_aff68c9eae9c718e95dc3963ac89eb1b2}} 
+void {\bfseries release\+Resources} () override
+\item 
+\mbox{\Hypertarget{class_wrapped_processor_a94ac5c874a70f234880e162041d91521}\label{class_wrapped_processor_a94ac5c874a70f234880e162041d91521}} 
+void {\bfseries process\+Block} (Audio\+Buffer$<$ float $>$ \&buffer, Midi\+Buffer \&midi\+Messages) override
+\item 
+\mbox{\Hypertarget{class_wrapped_processor_a5da71fec0a084134d5c33d5aebc2222a}\label{class_wrapped_processor_a5da71fec0a084134d5c33d5aebc2222a}} 
+Audio\+Processor\+Editor $\ast$ {\bfseries create\+Editor} () override
+\item 
+\mbox{\Hypertarget{class_wrapped_processor_a3b3491ccd414fefe541fb9ea578aeb15}\label{class_wrapped_processor_a3b3491ccd414fefe541fb9ea578aeb15}} 
+bool {\bfseries has\+Editor} () const override
+\item 
+\mbox{\Hypertarget{class_wrapped_processor_ac1f6b81543d073b4c9a7576279d48874}\label{class_wrapped_processor_ac1f6b81543d073b4c9a7576279d48874}} 
+const String {\bfseries get\+Name} () const override
+\item 
+\mbox{\Hypertarget{class_wrapped_processor_a8b14113d9c911f443e4ab447339fd0b3}\label{class_wrapped_processor_a8b14113d9c911f443e4ab447339fd0b3}} 
+bool {\bfseries accepts\+Midi} () const override
+\item 
+\mbox{\Hypertarget{class_wrapped_processor_a14110afef56aeb867adbaa33ea5358c3}\label{class_wrapped_processor_a14110afef56aeb867adbaa33ea5358c3}} 
+bool {\bfseries produces\+Midi} () const override
+\item 
+\mbox{\Hypertarget{class_wrapped_processor_a59c97dad39e2277bab451cea9af1b726}\label{class_wrapped_processor_a59c97dad39e2277bab451cea9af1b726}} 
+bool {\bfseries is\+Midi\+Effect} () const override
+\item 
+\mbox{\Hypertarget{class_wrapped_processor_a0edf29836ba61c8cb66633dad6c5830c}\label{class_wrapped_processor_a0edf29836ba61c8cb66633dad6c5830c}} 
+double {\bfseries get\+Tail\+Length\+Seconds} () const override
+\item 
+\mbox{\Hypertarget{class_wrapped_processor_a50aa2997c5c87fac02127e547b53babe}\label{class_wrapped_processor_a50aa2997c5c87fac02127e547b53babe}} 
+int {\bfseries get\+Num\+Programs} () override
+\item 
+\mbox{\Hypertarget{class_wrapped_processor_a279ec13fdc234dbe3ba6850d93829ba7}\label{class_wrapped_processor_a279ec13fdc234dbe3ba6850d93829ba7}} 
+int {\bfseries get\+Current\+Program} () override
+\item 
+\mbox{\Hypertarget{class_wrapped_processor_a7f287cb51a79f739f0f4db5e4189d83a}\label{class_wrapped_processor_a7f287cb51a79f739f0f4db5e4189d83a}} 
+void {\bfseries set\+Current\+Program} (int index) override
+\item 
+\mbox{\Hypertarget{class_wrapped_processor_a20264224c9a06f3eb77dd4d1ae2dd60a}\label{class_wrapped_processor_a20264224c9a06f3eb77dd4d1ae2dd60a}} 
+const String {\bfseries get\+Program\+Name} (int index) override
+\item 
+\mbox{\Hypertarget{class_wrapped_processor_a00c519e9cb9bca4e5e23b1143fbeef33}\label{class_wrapped_processor_a00c519e9cb9bca4e5e23b1143fbeef33}} 
+void {\bfseries change\+Program\+Name} (int index, const String \&new\+Name) override
+\item 
+\mbox{\Hypertarget{class_wrapped_processor_a2f8d12fe4fefeeccd742830c58cab2ab}\label{class_wrapped_processor_a2f8d12fe4fefeeccd742830c58cab2ab}} 
+void {\bfseries get\+State\+Information} (Memory\+Block \&dest\+Data) override
+\item 
+\mbox{\Hypertarget{class_wrapped_processor_a51a5e6561b9aabc743f9f5a1f509afd0}\label{class_wrapped_processor_a51a5e6561b9aabc743f9f5a1f509afd0}} 
+void {\bfseries set\+State\+Information} (const void $\ast$data, int size\+In\+Bytes) override
+\item 
+\mbox{\Hypertarget{class_wrapped_processor_a28ba91aa153d66683fca2394300444fd}\label{class_wrapped_processor_a28ba91aa153d66683fca2394300444fd}} 
+void {\bfseries parameter\+Value\+Changed} (int parameter\+Index, float new\+Value) override
+\item 
+\mbox{\Hypertarget{class_wrapped_processor_abc34c75cfbe64fc93ae8b5d9c7d06a88}\label{class_wrapped_processor_abc34c75cfbe64fc93ae8b5d9c7d06a88}} 
+void {\bfseries parameter\+Gesture\+Changed} (int parameter\+Index, bool gesture\+Is\+Starting) override
+\item 
+\mbox{\Hypertarget{class_wrapped_processor_a415eda87f6181310052dea859e97f67d}\label{class_wrapped_processor_a415eda87f6181310052dea859e97f67d}} 
+void {\bfseries clear\+Editor} ()
+\item 
+\mbox{\Hypertarget{class_wrapped_processor_acca9a7946bd802f6238e61c80f07cbfe}\label{class_wrapped_processor_acca9a7946bd802f6238e61c80f07cbfe}} 
+Basic\+Wrapper\+Audio\+Processor \& {\bfseries get\+Owner\+Processor} ()
+\item 
+\mbox{\Hypertarget{class_wrapped_processor_a84c7f82c147f66e83d30691ab6fc7648}\label{class_wrapped_processor_a84c7f82c147f66e83d30691ab6fc7648}} 
+Audio\+Plugin\+Instance \& {\bfseries get\+Wrapped\+Instance} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_wrapped_processor_a646ab07ba0dc0d9f9a299f8845c5ade3}\label{class_wrapped_processor_a646ab07ba0dc0d9f9a299f8845c5ade3}} 
+bool {\bfseries has\+Opened\+Editor}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Workspace/\+Git\+Workspace/\+Plume/\+Plume/\+Source/\+Wrapper/Wrapper\+Processor.\+h\end{DoxyCompactItemize}

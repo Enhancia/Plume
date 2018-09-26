@@ -2,8 +2,53 @@
 
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Plume\Plugin">
-      <UniqueIdentifier>{7B763B05-C198-85EB-FBD6-83A821DF927F}</UniqueIdentifier>
+    <Filter Include="Plume\Source\DataReader">
+      <UniqueIdentifier>{345C7276-CC70-5981-6545-105A4398AAE5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plume\Source\Gesture">
+      <UniqueIdentifier>{1A7522EE-1AC7-DA8D-D6C5-24E2583B9D18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plume\Source\Plugin">
+      <UniqueIdentifier>{F4C25BF4-97EA-1A50-96C1-5F96C33405FA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plume\Source\Wrapper">
+      <UniqueIdentifier>{54B958E2-D16A-3EC6-B53B-D453AC38EE7B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plume\Source\Ui\Gesture\Mapper">
+      <UniqueIdentifier>{93908EBD-6240-CEF4-445A-6977B48ECC80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plume\Source\Ui\Gesture\Tuner">
+      <UniqueIdentifier>{AC26F104-E97E-C471-EBFE-C31FB7251ECE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plume\Source\Ui\Gesture">
+      <UniqueIdentifier>{141C7E17-A49E-5E1B-9C2A-59FE9AE979E4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plume\Source\Ui\Presets">
+      <UniqueIdentifier>{07DF8710-99F0-310A-B747-D8BE926CC05F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plume\Source\Ui\Wrapper">
+      <UniqueIdentifier>{D0C8CA7B-2487-8A16-B897-27C74F41B6B6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plume\Source\Ui">
+      <UniqueIdentifier>{28CEA2CD-D009-9C6A-9AA3-7A8FF56F1542}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plume\Source">
+      <UniqueIdentifier>{7756C8A7-AA0B-9AB4-D33E-2FA83717A3D6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plume\Resources\Images\Gestures">
+      <UniqueIdentifier>{9741F92D-9C13-C643-B36C-10B12336DD25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plume\Resources\Images\Logo">
+      <UniqueIdentifier>{788AB414-F5EA-EF20-C2CD-63A501479B95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plume\Resources\Images\Wrapper">
+      <UniqueIdentifier>{3AB7E932-3FC1-6630-7BA1-C11BFB93FB00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plume\Resources\Images">
+      <UniqueIdentifier>{C8C38539-F13B-FA68-1031-F0A612B7B533}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plume\Resources">
+      <UniqueIdentifier>{8846710D-5C05-AF3A-5770-9D8CF6F45B15}</UniqueIdentifier>
     </Filter>
     <Filter Include="Plume">
       <UniqueIdentifier>{508F6719-B0C1-9F4F-DB9B-B7E9F582C968}</UniqueIdentifier>
@@ -391,11 +436,53 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\DataReader\DataReader.cpp">
+      <Filter>Plume\Source\DataReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Gesture\GestureArray.cpp">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Gesture\PitchBend.cpp">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Gesture\Roll.cpp">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Gesture\Tilt.cpp">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Gesture\Vibrato.cpp">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Gesture\Wave.cpp">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Plugin\PluginEditor.cpp">
-      <Filter>Plume\Plugin</Filter>
+      <Filter>Plume\Source\Plugin</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Plugin\PluginProcessor.cpp">
-      <Filter>Plume\Plugin</Filter>
+      <Filter>Plume\Source\Plugin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Wrapper\PluginWrapper.cpp">
+      <Filter>Plume\Source\Wrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Wrapper\WrapperEditor.cpp">
+      <Filter>Plume\Source\Wrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Wrapper\WrapperProcessor.cpp">
+      <Filter>Plume\Source\Wrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Ui\Gesture\Mapper\MapperComponent.cpp">
+      <Filter>Plume\Source\Ui\Gesture\Mapper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Ui\Gesture\GesturePanel.cpp">
+      <Filter>Plume\Source\Ui\Gesture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Ui\Presets\PresetComponent.cpp">
+      <Filter>Plume\Source\Ui\Presets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Ui\Wrapper\WrapperComponent.cpp">
+      <Filter>Plume\Source\Ui\Wrapper</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_audio_basics\buffers\juce_AudioChannelSet.cpp">
       <Filter>JUCE Modules\juce_audio_basics\buffers</Filter>
@@ -2239,6 +2326,9 @@
     <ClCompile Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_video\juce_video.mm">
       <Filter>JUCE Modules\juce_video</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\BinaryData.cpp">
+      <Filter>JUCE Library Code</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_basics.cpp">
       <Filter>JUCE Library Code</Filter>
     </ClCompile>
@@ -2286,11 +2376,74 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\DataReader\DataReader.h">
+      <Filter>Plume\Source\DataReader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Gesture\Gesture.h">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Gesture\GestureArray.h">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Gesture\PitchBend.h">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Gesture\Roll.h">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Gesture\Tilt.h">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Gesture\Vibrato.h">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Gesture\Wave.h">
+      <Filter>Plume\Source\Gesture</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Plugin\PluginEditor.h">
-      <Filter>Plume\Plugin</Filter>
+      <Filter>Plume\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Plugin\PluginProcessor.h">
-      <Filter>Plume\Plugin</Filter>
+      <Filter>Plume\Source\Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Wrapper\PluginWrapper.h">
+      <Filter>Plume\Source\Wrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Wrapper\WrapperEditor.h">
+      <Filter>Plume\Source\Wrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Wrapper\WrapperProcessor.h">
+      <Filter>Plume\Source\Wrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Ui\Gesture\Mapper\MappedParameterComponent.h">
+      <Filter>Plume\Source\Ui\Gesture\Mapper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Ui\Gesture\Mapper\MapperComponent.h">
+      <Filter>Plume\Source\Ui\Gesture\Mapper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\GesturesTuner.h">
+      <Filter>Plume\Source\Ui\Gesture\Tuner</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\OneRangeTuner.h">
+      <Filter>Plume\Source\Ui\Gesture\Tuner</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\SymmetricalTuner.h">
+      <Filter>Plume\Source\Ui\Gesture\Tuner</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\Tuner.h">
+      <Filter>Plume\Source\Ui\Gesture\Tuner</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\TwoRangeTuner.h">
+      <Filter>Plume\Source\Ui\Gesture\Tuner</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Ui\Gesture\GesturePanel.h">
+      <Filter>Plume\Source\Ui\Gesture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Ui\Presets\PresetComponent.h">
+      <Filter>Plume\Source\Ui\Presets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Ui\Wrapper\WrapperComponent.h">
+      <Filter>Plume\Source\Ui\Wrapper</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h">
       <Filter>JUCE Modules\juce_audio_basics\audio_play_head</Filter>
@@ -4287,11 +4440,44 @@
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h">
       <Filter>JUCE Library Code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\BinaryData.h">
+      <Filter>JUCE Library Code</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h">
       <Filter>JUCE Library Code</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Ressources\Images\Gestures\Close.png">
+      <Filter>Plume\Resources\Images\Gestures</Filter>
+    </None>
+    <None Include="..\..\Ressources\Images\Gestures\pitchBend.png">
+      <Filter>Plume\Resources\Images\Gestures</Filter>
+    </None>
+    <None Include="..\..\Ressources\Images\Gestures\OnOff.png">
+      <Filter>Plume\Resources\Images\Gestures</Filter>
+    </None>
+    <None Include="..\..\Ressources\Images\Gestures\roll.png">
+      <Filter>Plume\Resources\Images\Gestures</Filter>
+    </None>
+    <None Include="..\..\Ressources\Images\Gestures\tilt.png">
+      <Filter>Plume\Resources\Images\Gestures</Filter>
+    </None>
+    <None Include="..\..\Ressources\Images\Gestures\vibrato.png">
+      <Filter>Plume\Resources\Images\Gestures</Filter>
+    </None>
+    <None Include="..\..\Ressources\Images\Gestures\wave.png">
+      <Filter>Plume\Resources\Images\Gestures</Filter>
+    </None>
+    <None Include="..\..\Ressources\Images\Logo\Logo_ENHANCIA_Round.png">
+      <Filter>Plume\Resources\Images\Logo</Filter>
+    </None>
+    <None Include="..\..\Ressources\Images\Wrapper\eye.png">
+      <Filter>Plume\Resources\Images\Wrapper</Filter>
+    </None>
+    <None Include="..\..\Ressources\Images\Wrapper\folder.png">
+      <Filter>Plume\Resources\Images\Wrapper</Filter>
+    </None>
     <None Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_audio_formats\codecs\flac\Flac Licence.txt">
       <Filter>JUCE Modules\juce_audio_formats\codecs\flac</Filter>
     </None>

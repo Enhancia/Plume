@@ -1,0 +1,195 @@
+\hypertarget{class_plume_processor}{}\section{Plume\+Processor Class Reference}
+\label{class_plume_processor}\index{Plume\+Processor@{Plume\+Processor}}
+
+
+Plume\textquotesingle{}s processor object.  
+
+
+
+
+{\ttfamily \#include $<$Plugin\+Processor.\+h$>$}
+
+Inheritance diagram for Plume\+Processor\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_plume_processor}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_plume_processor_a1462b7f98f4677da0dab2d98dd8da1e1}{Plume\+Processor}} ()
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_plume_processor_a3ff1acd929c81502079017721525a2df}\label{class_plume_processor_a3ff1acd929c81502079017721525a2df}} 
+\mbox{\hyperlink{class_plume_processor_a3ff1acd929c81502079017721525a2df}{$\sim$\+Plume\+Processor}} ()
+\begin{DoxyCompactList}\small\item\em Destructor. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_plume_processor_a86a4085b844401c13d952e3936605b78}\label{class_plume_processor_a86a4085b844401c13d952e3936605b78}} 
+void {\bfseries prepare\+To\+Play} (double sample\+Rate, int samples\+Per\+Block) override
+\item 
+\mbox{\Hypertarget{class_plume_processor_ac85f0efc3d2dcd25d805c3d096c5fad8}\label{class_plume_processor_ac85f0efc3d2dcd25d805c3d096c5fad8}} 
+void {\bfseries release\+Resources} () override
+\item 
+\mbox{\Hypertarget{class_plume_processor_a8f659b42f6d4f2fe00c9feec53f9f5b7}\label{class_plume_processor_a8f659b42f6d4f2fe00c9feec53f9f5b7}} 
+bool {\bfseries is\+Buses\+Layout\+Supported} (const Buses\+Layout \&layouts) const override
+\item 
+\mbox{\Hypertarget{class_plume_processor_aa47e4738eae67255b42533566bca5f6b}\label{class_plume_processor_aa47e4738eae67255b42533566bca5f6b}} 
+void {\bfseries process\+Block} (Audio\+Buffer$<$ float $>$ \&, Midi\+Buffer \&) override
+\item 
+\mbox{\Hypertarget{class_plume_processor_ad8a4c43c38f0be73c8c5845a3d42a011}\label{class_plume_processor_ad8a4c43c38f0be73c8c5845a3d42a011}} 
+Audio\+Processor\+Editor $\ast$ {\bfseries create\+Editor} () override
+\item 
+\mbox{\Hypertarget{class_plume_processor_acd298ef63a793a2a713048a758d6aa7c}\label{class_plume_processor_acd298ef63a793a2a713048a758d6aa7c}} 
+bool {\bfseries has\+Editor} () const override
+\item 
+\mbox{\Hypertarget{class_plume_processor_ae94a4572fc37682092a145a62606b0bb}\label{class_plume_processor_ae94a4572fc37682092a145a62606b0bb}} 
+const String {\bfseries get\+Name} () const override
+\item 
+\mbox{\Hypertarget{class_plume_processor_a9dfd593b13b864f6d646600453b983bc}\label{class_plume_processor_a9dfd593b13b864f6d646600453b983bc}} 
+bool {\bfseries accepts\+Midi} () const override
+\item 
+\mbox{\Hypertarget{class_plume_processor_af53ebafbc9dbb53b5f417f06814e5753}\label{class_plume_processor_af53ebafbc9dbb53b5f417f06814e5753}} 
+bool {\bfseries produces\+Midi} () const override
+\item 
+\mbox{\Hypertarget{class_plume_processor_a92025e451d25175363b38f5fa1f99e8a}\label{class_plume_processor_a92025e451d25175363b38f5fa1f99e8a}} 
+bool {\bfseries is\+Midi\+Effect} () const override
+\item 
+\mbox{\Hypertarget{class_plume_processor_ae85b56bdc30fc398bdc3e6a9b40c733a}\label{class_plume_processor_ae85b56bdc30fc398bdc3e6a9b40c733a}} 
+double {\bfseries get\+Tail\+Length\+Seconds} () const override
+\item 
+\mbox{\Hypertarget{class_plume_processor_acc125f472abf81a2273f7aafe75302ec}\label{class_plume_processor_acc125f472abf81a2273f7aafe75302ec}} 
+int {\bfseries get\+Num\+Programs} () override
+\item 
+\mbox{\Hypertarget{class_plume_processor_a5bf89a890c12f02dd352a523c1a88f64}\label{class_plume_processor_a5bf89a890c12f02dd352a523c1a88f64}} 
+int {\bfseries get\+Current\+Program} () override
+\item 
+\mbox{\Hypertarget{class_plume_processor_a909a5331670eb7b2e722498e755bf890}\label{class_plume_processor_a909a5331670eb7b2e722498e755bf890}} 
+void {\bfseries set\+Current\+Program} (int index) override
+\item 
+\mbox{\Hypertarget{class_plume_processor_ac16c6d0751467defa92a523ffb6af939}\label{class_plume_processor_ac16c6d0751467defa92a523ffb6af939}} 
+const String {\bfseries get\+Program\+Name} (int index) override
+\item 
+\mbox{\Hypertarget{class_plume_processor_a28ce5f77d4e4871ff57ade3e730b5cd9}\label{class_plume_processor_a28ce5f77d4e4871ff57ade3e730b5cd9}} 
+void {\bfseries change\+Program\+Name} (int index, const String \&new\+Name) override
+\item 
+void \mbox{\hyperlink{class_plume_processor_ae06dd312c3dc3ba7389ce44fd74cbc18}{get\+State\+Information}} (Memory\+Block \&dest\+Data) override
+\begin{DoxyCompactList}\small\item\em State save method. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_plume_processor_aa7ab9da73c37f6db69ea6c7e1e4a0211}{set\+State\+Information}} (const void $\ast$data, int size\+In\+Bytes) override
+\begin{DoxyCompactList}\small\item\em State load method. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_plume_processor_ad29b07ddcd526e44529e361374c8c99e}\label{class_plume_processor_ad29b07ddcd526e44529e361374c8c99e}} 
+void {\bfseries create\+Plugin\+Xml} (Xml\+Element \&wrapper\+Data)
+\item 
+\mbox{\Hypertarget{class_plume_processor_a14455799e2ddefd50b860d4492845509}\label{class_plume_processor_a14455799e2ddefd50b860d4492845509}} 
+void {\bfseries create\+Gesture\+Xml} (Xml\+Element \&wrapper\+Data)
+\item 
+\mbox{\Hypertarget{class_plume_processor_a08587fb2663557a8250132502785205c}\label{class_plume_processor_a08587fb2663557a8250132502785205c}} 
+void {\bfseries load\+Plugin\+Xml} (const Xml\+Element \&plugin\+Data)
+\item 
+\mbox{\Hypertarget{class_plume_processor_a988e2a3ce47486bd8dfc5d5702420a7e}\label{class_plume_processor_a988e2a3ce47486bd8dfc5d5702420a7e}} 
+void {\bfseries load\+Gesture\+Xml} (const Xml\+Element \&gesture\+Data)
+\item 
+\mbox{\hyperlink{class_plugin_wrapper}{Plugin\+Wrapper}} \& \mbox{\hyperlink{class_plume_processor_a6ec4d89f181beea78034b81911c59aa8}{get\+Wrapper}} ()
+\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{class_plugin_wrapper}{Plugin\+Wrapper}} getter. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_data_reader}{Data\+Reader}} $\ast$ \mbox{\hyperlink{class_plume_processor_ab24c4b6857ca26d462fce6be9e23cedd}{get\+Data\+Reader}} ()
+\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{class_data_reader}{Data\+Reader}} getter. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_gesture_array}{Gesture\+Array}} \& \mbox{\hyperlink{class_plume_processor_a691a2f342167e257fabf74d0bb76a563}{get\+Gesture\+Array}} ()
+\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{class_gesture_array}{Gesture\+Array}} getter. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Plume\textquotesingle{}s processor object. 
+
+The object that runs plume. Most of it\textquotesingle{}s functions are held by objects instanciated in this object. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_plume_processor_a1462b7f98f4677da0dab2d98dd8da1e1}\label{class_plume_processor_a1462b7f98f4677da0dab2d98dd8da1e1}} 
+\index{Plume\+Processor@{Plume\+Processor}!Plume\+Processor@{Plume\+Processor}}
+\index{Plume\+Processor@{Plume\+Processor}!Plume\+Processor@{Plume\+Processor}}
+\subsubsection{\texorpdfstring{Plume\+Processor()}{PlumeProcessor()}}
+{\footnotesize\ttfamily Plume\+Processor\+::\+Plume\+Processor (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Constructor. 
+
+Instanciates the objects used by the processor. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_plume_processor_ab24c4b6857ca26d462fce6be9e23cedd}\label{class_plume_processor_ab24c4b6857ca26d462fce6be9e23cedd}} 
+\index{Plume\+Processor@{Plume\+Processor}!get\+Data\+Reader@{get\+Data\+Reader}}
+\index{get\+Data\+Reader@{get\+Data\+Reader}!Plume\+Processor@{Plume\+Processor}}
+\subsubsection{\texorpdfstring{get\+Data\+Reader()}{getDataReader()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_data_reader}{Data\+Reader}} $\ast$ Plume\+Processor\+::get\+Data\+Reader (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+\mbox{\hyperlink{class_data_reader}{Data\+Reader}} getter. 
+
+\begin{DoxyReturn}{Returns}
+Reference to the \mbox{\hyperlink{class_data_reader}{Data\+Reader}} object. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_plume_processor_a691a2f342167e257fabf74d0bb76a563}\label{class_plume_processor_a691a2f342167e257fabf74d0bb76a563}} 
+\index{Plume\+Processor@{Plume\+Processor}!get\+Gesture\+Array@{get\+Gesture\+Array}}
+\index{get\+Gesture\+Array@{get\+Gesture\+Array}!Plume\+Processor@{Plume\+Processor}}
+\subsubsection{\texorpdfstring{get\+Gesture\+Array()}{getGestureArray()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_gesture_array}{Gesture\+Array}} \& Plume\+Processor\+::get\+Gesture\+Array (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+\mbox{\hyperlink{class_gesture_array}{Gesture\+Array}} getter. 
+
+\begin{DoxyReturn}{Returns}
+Reference to the \mbox{\hyperlink{class_gesture_array}{Gesture\+Array}} object. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_plume_processor_ae06dd312c3dc3ba7389ce44fd74cbc18}\label{class_plume_processor_ae06dd312c3dc3ba7389ce44fd74cbc18}} 
+\index{Plume\+Processor@{Plume\+Processor}!get\+State\+Information@{get\+State\+Information}}
+\index{get\+State\+Information@{get\+State\+Information}!Plume\+Processor@{Plume\+Processor}}
+\subsubsection{\texorpdfstring{get\+State\+Information()}{getStateInformation()}}
+{\footnotesize\ttfamily void Plume\+Processor\+::get\+State\+Information (\begin{DoxyParamCaption}\item[{Memory\+Block \&}]{dest\+Data }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}}
+
+
+
+State save method. 
+
+Creates the data representing the current state of the plugin. It will call both create\+Wrapper\+Xml and create\+Gestures\+Xml, then save the data in the specified memory block.
+
+
+\begin{DoxyParams}{Parameters}
+{\em dest\+Data} & The memory block in which the data will be saved. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_plume_processor_a6ec4d89f181beea78034b81911c59aa8}\label{class_plume_processor_a6ec4d89f181beea78034b81911c59aa8}} 
+\index{Plume\+Processor@{Plume\+Processor}!get\+Wrapper@{get\+Wrapper}}
+\index{get\+Wrapper@{get\+Wrapper}!Plume\+Processor@{Plume\+Processor}}
+\subsubsection{\texorpdfstring{get\+Wrapper()}{getWrapper()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_plugin_wrapper}{Plugin\+Wrapper}} \& Plume\+Processor\+::get\+Wrapper (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+\mbox{\hyperlink{class_plugin_wrapper}{Plugin\+Wrapper}} getter. 
+
+\begin{DoxyReturn}{Returns}
+Reference to the \mbox{\hyperlink{class_plugin_wrapper}{Plugin\+Wrapper}} object. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_plume_processor_aa7ab9da73c37f6db69ea6c7e1e4a0211}\label{class_plume_processor_aa7ab9da73c37f6db69ea6c7e1e4a0211}} 
+\index{Plume\+Processor@{Plume\+Processor}!set\+State\+Information@{set\+State\+Information}}
+\index{set\+State\+Information@{set\+State\+Information}!Plume\+Processor@{Plume\+Processor}}
+\subsubsection{\texorpdfstring{set\+State\+Information()}{setStateInformation()}}
+{\footnotesize\ttfamily void Plume\+Processor\+::set\+State\+Information (\begin{DoxyParamCaption}\item[{const void $\ast$}]{data,  }\item[{int}]{size\+In\+Bytes }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}}
+
+
+
+State load method. 
+
+Reads the specified data and changes the state of the plugin accordingly.
+
+
+\begin{DoxyParams}{Parameters}
+{\em dest\+Data} & The memory block in which the data will be saved. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Workspace/\+Git\+Workspace/\+Plume/\+Plume/\+Source/\+Plugin/Plugin\+Processor.\+h\item 
+D\+:/\+Workspace/\+Git\+Workspace/\+Plume/\+Plume/\+Source/\+Plugin/Plugin\+Processor.\+cpp\end{DoxyCompactItemize}

@@ -1,0 +1,4 @@
+var searchData=
+[
+  ['deleteparameter',['deleteParameter',['../class_gesture.html#afb27ff3a66bf75cff6671084c3ff7574',1,'Gesture']]]
+];
