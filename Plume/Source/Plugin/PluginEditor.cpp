@@ -101,6 +101,6 @@ void PlumeEditor::updateFullInterface()
     presetComp->update();
     
     addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(), FRAMERATE));
-	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 4*MARGIN, getWidth() - 4*MARGIN, getHeight() - TOP_PANEL - 50 - 8*MARGIN);
+	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 4*MARGIN, getWidth() - 4*MARGIN, getHeight() - TOP_PANEL - 4*MARGIN);
 	gesturePanel->initialize();
 }
