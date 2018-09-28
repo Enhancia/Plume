@@ -23,7 +23,7 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 {
     TRACE_IN;
     
-    setSize (800, 600);
+    setSize (800, 540);
     
     // Creates the 3 main components
     addAndMakeVisible (wrapperComp = new WrapperComponent (processor.getWrapper()));
@@ -33,7 +33,7 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	presetComp->setBounds(wrapperComp->getWidth() + 3*MARGIN, 2*MARGIN, getWidth() - wrapperComp->getWidth() - 5*MARGIN, TOP_PANEL);
 	
 	addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(), FRAMERATE));
-	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 4*MARGIN, getWidth() - 4*MARGIN, getHeight() - TOP_PANEL - 50 - 8*MARGIN);
+	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 4*MARGIN, getWidth() - 4*MARGIN, getHeight() - TOP_PANEL - 4*MARGIN);
 	gesturePanel->initialize();
 	
     // Adds itself as a change listener for plume's processor
@@ -41,10 +41,12 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     
     //====================================================================
     // Creates the data reader component, might need to be deleted in the future
+    /*
 	auto* dataReader = processor.getDataReader();
     addAndMakeVisible (dataReader);
     dataReader->setTopLeftPosition (Point<int> (getWidth()  - dataReader->getWidth()  - 2*MARGIN,
 												getHeight() - dataReader->getHeight() - 2*MARGIN));
+	*/
 }
 
 PlumeEditor::~PlumeEditor()
