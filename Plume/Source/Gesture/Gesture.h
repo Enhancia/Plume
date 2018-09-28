@@ -15,6 +15,7 @@
 
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 #define TRACE_OUT Logger::writeToLog ("[-FNC]  Leaving: " + String(__FUNCTION__))
+
 /**
  *  \class Gesture Gesture.h
  *
@@ -163,7 +164,7 @@ public:
      *
      *  \param midiMessages Reference to a MidiBuffer in which the pitch messages will be changed. 
      */
-    static void addEventAndMergePitchToBuffer (MidiBuffer& midiMessages, int midiValue, int channel)
+    static void addEventAndMergePitchToBuffer (MidiBuffer& midiMessages, int midiValue, int channel/*, int& basePitch*/)
     {
         MidiBuffer newBuff;
         int time;
@@ -173,16 +174,29 @@ public:
         {
             if (m.isPitchWheel()) // checks for pitch wheel events
             {
+                // Changes the reference to the event's pitch message value
+                //basePitch = m.getPitchWheelValue();
+                
                 // Creates a pitch message with the right value
+                //int newVal = basePitch - 8192 + midiValue;
+                
                 int newVal = m.getPitchWheelValue() - 8192 + midiValue;
                 if (newVal < 0) newVal = 0;
                 else if (newVal > 16383) newVal = 16383;
+                
+                DBG ("OldVal = " << m.getPitchWheelValue() << "| NewVal = " << newVal);
                 
                 m = MidiMessage::pitchWheel (m.getChannel(), newVal);
             }
             
             newBuff.addEvent (m, time);
         }
+        /*
+        // Computes the right value (uses midi value along with basePitch)
+        midiValue = basePitch - 8192 + midiValue;
+        if (midiValue < 0) midiValue = 0;
+        else if (midiValue > 16383) midiValue = 16383;
+        */
         
         // Adds gesture's initial midi message
         newBuff.addEvent (MidiMessage::pitchWheel (channel, midiValue), 1);
@@ -207,7 +221,7 @@ public:
         
         for (MidiBuffer::Iterator i (midiMessages); i.getNextEvent (m, time);)
         {
-            if (m.isControllerOfType (ccValue)) // checks for modwheel events
+            if (m.isControllerOfType (ccValue)) // checks if right event
             {
                 // Creates a cc message with the new value
                 int newVal = m.getControllerValue() + midiValue;
@@ -483,6 +497,7 @@ protected:
     //==============================================================================
     float value; /**< \brief Parameter that holds the current "raw" value of the gesture. Should be used and updated by subclasses. */
     Range<float> range; /**< \brief Attribute that holds the maximum range of values that the attribute "value" can take. */
+	int pitchReference = 8192; /**< \brief Base pitch value, that comes from external midi controllers */
     
     OwnedArray<MappedParameter> parameterArray;  /**< \brief Array of all the MappedParameter that the gesture controls. */
 };

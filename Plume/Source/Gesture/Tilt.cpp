@@ -48,7 +48,6 @@ void Tilt::updateMappedParameters()
     // Goes through the parameterArray to update each value
     for (auto* param : parameterArray)
     {   
-        
         param->parameter.setValueNotifyingHost (getValueForMappedParameter (param->range));
     }
 }

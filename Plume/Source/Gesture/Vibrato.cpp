@@ -28,7 +28,7 @@ void Vibrato::addGestureMidi (MidiBuffer& midiMessages)
     if (send == true)
     {
         // Creates the pitchwheel message
-        addEventAndMergePitchToBuffer (midiMessages, vibVal, 1);
+        addEventAndMergePitchToBuffer (midiMessages, vibVal, 1 /*, pitchReference*/);
     }
 }
 

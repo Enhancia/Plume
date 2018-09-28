@@ -100,7 +100,7 @@ void GestureArray::updateAllValues()
         return;
     }
     
-	DBG ("couldn't get the float values. No vaues were updated.");
+	DBG ("couldn't get the float values. No value was updated.");
 }
 
 //==============================================================================

@@ -30,19 +30,19 @@ void PitchBend::addGestureMidi (MidiBuffer& midiMessages)
     if (send == true)
     {
         // Creates the pitchwheel message
-        addEventAndMergePitchToBuffer (midiMessages, pbVal, 1);
+        addEventAndMergePitchToBuffer (midiMessages, pbVal, 1/*, pitchReference*/);
     }
 }
 
 int PitchBend::getMidiValue()
 {
-    if (value>= 0.0f && value < 140.0f && !(rangeRight.isEmpty()))
+    if (value>= rangeRight.getStart() && value < 140.0f && !(rangeRight.isEmpty()))
     {
         send = true;
         return (Gesture::map (value, rangeRight.getStart(), rangeRight.getEnd(), 8192, 16383));
     }
     
-    else if (value < 0.0f && value > -140.0f && !(rangeLeft.isEmpty()))
+    else if (value < rangeLeft.getEnd() && value > -140.0f && !(rangeLeft.isEmpty()))
     {
         send = true;
         return (Gesture::map (value, rangeLeft.getStart(), rangeLeft.getEnd(), 0, 8191));
