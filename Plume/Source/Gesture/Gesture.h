@@ -79,7 +79,8 @@ public:
      *  \param maxRange The maximum values that the gesture's value can take.
      *  \param defaultValue The default value of the gesture's value attribute.
      */
-    Gesture(String gestName, int gestType, Range<float> maxRange, float defaultValue = 0.0f)	: name (gestName), type (gestType)
+    Gesture(String gestName, int gestType, Range<float> maxRange,
+            float defaultValue = 0.0f, int defaultCc = 1)	: name (gestName), type (gestType)
     {
         TRACE_IN;
         on = false;
@@ -87,6 +88,7 @@ public:
         midiMap = false;
         range = maxRange;
         value = defaultValue;
+        cc = defaultCc;
     }
     
     /**
@@ -280,11 +282,39 @@ public:
     }
     
     /**
+     *  \brief Setter for the "midiMap" boolean value.
+     *
+     *  \param shouldBeMidiMapped The boolean value to set.
+     */
+    void setMidiMap (bool shouldBeMidiMapped)
+    {
+        midiMap = shouldBeMidiMapped;
+    }
+    
+    /**
+     *  \brief Setter for the "cc" integer value.
+     *
+     *  \param ccValue The integer value to set.
+     */
+    void setCc (int ccValue)
+    {
+        cc = ccValue;
+    }
+    
+    /**
      *  \brief Getter for the "mapped" boolean value.
      */
     bool isMapped()
     {
         return mapped;
+    }
+    
+    /**
+     *  \brief Getter for the "midiMap" boolean value.
+     */
+    bool isMidiMapped()
+    {
+        return midiMap;
     }
     
     /**
@@ -493,11 +523,12 @@ protected:
     bool on; /**< \brief Boolean that represents if the gesture is active or not. */
     bool mapped; /**< \brief Boolean that represents if the gesture is mapped or not. */
     bool midiMap; /**< \brief Boolean that tells if the gesture is currently in midiMap mode */
+    int cc; /**< \brief Integer value that represent the CC used for the gesture in midiMap mode (default 1: modwheel) */
     
     //==============================================================================
     float value; /**< \brief Parameter that holds the current "raw" value of the gesture. Should be used and updated by subclasses. */
     Range<float> range; /**< \brief Attribute that holds the maximum range of values that the attribute "value" can take. */
-	int pitchReference = 8192; /**< \brief Base pitch value, that comes from external midi controllers */
+	//int pitchReference = 8192; /**< \brief Base pitch value, that comes from external midi controllers */
     
     OwnedArray<MappedParameter> parameterArray;  /**< \brief Array of all the MappedParameter that the gesture controls. */
 };

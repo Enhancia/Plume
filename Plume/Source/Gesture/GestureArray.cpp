@@ -49,7 +49,7 @@ void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages)
         // Adds non-pitch midi
         for (auto* g : gestures)
         {
-            if (g->affectsPitch() == false && g->isMapped() == false)
+            if (g->affectsPitch() == false && ( g->isMapped() == false || g->isMidiMapped() == true))
             {
                 g->addGestureMidi (midiMessages);
             }
@@ -64,7 +64,7 @@ void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages)
         // Adds all midi
         for (auto* g : gestures)
         {
-            if (g->isMapped() == false)
+            if (g->isMapped() == false || g->isMidiMapped() == true)
             {
                 g->addGestureMidi (midiMessages);
             }
@@ -78,7 +78,7 @@ void GestureArray::updateAllMappedParameters()
     // mapMode (to prevent the parameter from changing) and is mapped
     for (auto* g : gestures)
     {
-        if (mapModeOn == false && g->isMapped())
+        if (mapModeOn == false && g->isMapped() && g->isMidiMapped() == false)
         {
             g->updateMappedParameters();
         }

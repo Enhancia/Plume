@@ -12,7 +12,7 @@
 
 PitchBend::PitchBend (String gestName, float leftLow, float leftHigh, float rightLow, float rightHigh)
     : Gesture (gestName, Gesture::pitchBend, Range<float> (-90.0f, 90.0f), 0.0f),
-      rangeLeft (Range<float> (leftLow, leftHigh)), rangeRight (Range<float> (rightLow, rightHigh)) 
+      rangeLeft (Range<float> (leftLow, leftHigh)), rangeRight (Range<float> (rightLow, rightHigh))
 {
 }
 
@@ -30,7 +30,14 @@ void PitchBend::addGestureMidi (MidiBuffer& midiMessages)
     if (send == true)
     {
         // Creates the pitchwheel message
-        addEventAndMergePitchToBuffer (midiMessages, pbVal, 1/*, pitchReference*/);
+        if (midiMap)
+        {
+            addEventAndMergeCCToBuffer (midiMessages, pbVal, cc, 1);
+        }
+        else
+        {
+            addEventAndMergePitchToBuffer (midiMessages, pbVal, 1/*, pitchReference*/);
+        }
     }
 }
 
@@ -39,17 +46,19 @@ int PitchBend::getMidiValue()
     if (value>= rangeRight.getStart() && value < 140.0f && !(rangeRight.isEmpty()))
     {
         send = true;
-        return (Gesture::map (value, rangeRight.getStart(), rangeRight.getEnd(), 8192, 16383));
+        return (midiMap ? Gesture::normalizeMidi (rangeRight.getStart(), rangeRight.getEnd(), value)
+                        : Gesture::map (value, rangeRight.getStart(), rangeRight.getEnd(), 8192, 16383));
     }
     
     else if (value < rangeLeft.getEnd() && value > -140.0f && !(rangeLeft.isEmpty()))
     {
         send = true;
-        return (Gesture::map (value, rangeLeft.getStart(), rangeLeft.getEnd(), 0, 8191));
+        return (midiMap ? Gesture::normalizeMidi (rangeLeft.getStart(), rangeLeft.getEnd(), value)
+                        : Gesture::map (value, rangeLeft.getStart(), rangeLeft.getEnd(), 0, 8191));
     }
     
     send = false;
-    return 8192;
+    return (midiMap ? 64 : 8192);
 }
    
 void PitchBend::updateMappedParameters()
@@ -72,7 +81,7 @@ void PitchBend::updateMappedParameters()
 
 float PitchBend::getValueForMappedParameter (Range<float> paramRange)
 {
-    if (value>= 0.0f && value < 140.0f && !(rangeRight.isEmpty()))
+    if (value>= rangeRight.getStart() && value < 140.0f && !(rangeRight.isEmpty()))
     {
         send = true;
         return (Gesture::mapParameter (value, rangeRight.getStart(), rangeRight.getEnd(),
@@ -80,7 +89,7 @@ float PitchBend::getValueForMappedParameter (Range<float> paramRange)
                                                      paramRange.getEnd())));
     }
     
-    else if (value < 0.0f && value > -140.0f && !(rangeLeft.isEmpty()))
+    else if (value < rangeRight.getStart() && value > -140.0f && !(rangeLeft.isEmpty()))
     {
         send = true;
         return (Gesture::mapParameter (value, rangeLeft.getStart(), rangeLeft.getEnd(),

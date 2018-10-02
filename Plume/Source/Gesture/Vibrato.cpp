@@ -27,8 +27,16 @@ void Vibrato::addGestureMidi (MidiBuffer& midiMessages)
     
     if (send == true)
     {
+        // Creates the control change message
+        if (midiMap)
+        {
+            addEventAndMergeCCToBuffer (midiMessages, vibVal, cc, 1);
+        }
         // Creates the pitchwheel message
-        addEventAndMergePitchToBuffer (midiMessages, vibVal, 1 /*, pitchReference*/);
+        else
+        {
+            addEventAndMergePitchToBuffer (midiMessages, vibVal, 1/*, pitchReference*/);
+        }
     }
 }
 
@@ -40,7 +48,8 @@ int Vibrato::getMidiValue()
     {
         vibLast = true;
         send = true;
-        return (Gesture::map (value, -(500.0f - gain), (500.01f - gain), 0, 16383));
+        return (midiMap ? Gesture::normalizeMidi (-(500.0f - gain), (500.01f - gain), value)
+                        : Gesture::map (value, -(500.0f - gain), (500.01f - gain), 0, 16383));
     }
     else if (vibTrig != vibLast && vibTrig == false)
     {
