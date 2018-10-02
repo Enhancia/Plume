@@ -91,55 +91,35 @@ public:
         }
         
         // Gesture Name text
-        {
-            x = tunerWidth/8 + 2*MARGIN;
-            y = 0;
-            width = (tunerWidth - tunerWidth/8 - 2*MARGIN)*3/4;
-            height = getHeight()/4;
-
-            if (onOffButton->getToggleState() == true)	fillColour = Colour(0xffffffff);
-			else										fillColour = Colour(0x80ffffff);
-            g.setColour (fillColour);
-                            
-            String text (TRANS(gesture.name));
-            g.setFont (Font (15.0f, Font::plain).withTypefaceStyle ("Regular"));
-            g.drawText (text, x, y, width, height,
-                        Justification::centred, true);
-        }
+        drawGestureText(g, gesture.name,
+                        tunerWidth/8 + 2*MARGIN,
+                        0,
+                        (tunerWidth - tunerWidth/8 - 2*MARGIN)*3/4,
+                        getHeight()/4);
         
         // "Values" text
-        {
-            x = tunerWidth*3/4 + (tunerWidth/8 + 2*MARGIN)/4;
-            y = 0;
-            width = (tunerWidth - tunerWidth/8 - 2*MARGIN)/4;
-            height = getHeight()/4;
-            
-            if (onOffButton->getToggleState() == true)	fillColour = Colour(0xffffffff);
-			else										fillColour = Colour(0x80ffffff);
-            g.setColour (fillColour);
-            
-            String text (TRANS("Values"));
-            g.setFont (Font (15.0f, Font::plain).withTypefaceStyle ("Regular"));
-            g.drawText (text, x, y, width, height,
-                        Justification::centred, true);
-        }
+        drawGestureText(g, "Values",
+                        tunerWidth*3/4 + (tunerWidth/8 + 2*MARGIN)/4,
+                        0,
+                        (tunerWidth - tunerWidth/8 - 2*MARGIN)/4,
+                        getHeight()/4);
         
-        // "Parameters" text
-        {
-            x = getWidth()*5/8 + MARGIN;
-            y = 0;
-            width = mapperWidth*3/4;
-            height = getHeight()/4;
-                
-            if (onOffButton->getToggleState() == true)	fillColour = Colour(0xffffffff);
-			else										fillColour = Colour(0x80ffffff);
-            g.setColour (fillColour);
-            
-            String text (TRANS("Parameters"));
-            g.setFont (Font (15.0f, Font::plain).withTypefaceStyle ("Regular"));
-            g.drawText (text, x, y, width, height,
-                        Justification::centred, true);
-        }
+        // "Parameters" text        
+        drawGestureText(g, "Parameters",
+                        getWidth()*5/8 + MARGIN,
+                        0,
+                        mapperWidth*3/4,
+                        getHeight()/4);
+        
+                        /*
+        // "MIDI Mode" text        
+        drawGestureText(g, "Parameters",
+                        getWidth()*5/8 + MARGIN,
+                        0,
+                        mapperWidth*3/4,
+                        getHeight()/4);
+                        */
+        
     }
     
     void resized() override
@@ -211,6 +191,16 @@ private:
         {
             DBG ("Unknown Gesture type. No tuner was created.");
         }
+    }
+    
+    void drawGestureText(Graphics& g, String text, int x, int y, int width, int height)
+    {
+        if (onOffButton->getToggleState() == true)	g.setColour (Colour(0xffffffff));
+	    else										g.setColour (Colour(0x80ffffff));
+                            
+        g.setFont (Font (15.0f, Font::plain).withTypefaceStyle ("Regular"));
+        g.drawText (TRANS(text), x, y, width, height,
+                    Justification::centred, true);
     }
     
     Gesture& gesture;

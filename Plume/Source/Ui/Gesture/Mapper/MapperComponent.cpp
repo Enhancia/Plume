@@ -164,7 +164,7 @@ void MapperComponent::addAndMakeArrayVisible()
 
 void MapperComponent::resizeArray()
 {
-    int w = getWidth()*2/6, h = getHeight()*3/8;
+    int w = getWidth()*1/3, h = getHeight()*3/8;
     
     // sets bounds depending on the value in the array
     for (int i=0; i<paramCompArray.size(); i++)
