@@ -42,6 +42,8 @@ public:
     void initializeParamCompArray();
     void addAndMakeArrayVisible();
     void resizeArray();
+    
+    //==============================================================================
     void setAlphas();
     
     //==============================================================================
@@ -51,6 +53,10 @@ public:
     bool mapModeOn;
 
 private:
+    //==============================================================================
+    void drawMapperText (Graphics& g, String text, int x, int y, int width, int height,
+                         bool opaqueWhenMidiMode = false, float fontSize = 15.0f);
+    
     //==============================================================================
     Gesture& gesture;
     GestureArray& gestureArray;

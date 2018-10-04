@@ -67,8 +67,7 @@ public:
         
         // Fills the area for the Tuner and Mapper
         { 
-			if (onOffButton->getToggleState() == true)	g.setColour(Colour(0xffa0a0a0));
-			else										g.setColour(Colour(0xff606060));
+			g.setColour(Colour(0xffa0a0a0));
 
             g.fillRect (0, 0, tunerWidth, getHeight());
             g.fillRect (tunerWidth+2*MARGIN, 0, mapperWidth, getHeight());
@@ -105,29 +104,25 @@ public:
                         (tunerWidth - tunerWidth/8 - 2*MARGIN)/4,
                         getHeight()/4);
         
-        // "Parameters" text        
-        drawGestureText(g, "Parameters",
-                        getWidth()*5/8 + MARGIN,
-                        0,
-                        mapperWidth*3/4,
-                        getHeight()/4);
-        
-        // "MIDI Mode" text        
-        drawGestureText(g, "MIDI Mode",
-                        getWidth()*5/8 + MARGIN + mapperWidth*7/9,
-                        getHeight()/2,
-                        mapperWidth*2/9,
-                        getHeight()/8,
-                        11.0f);
+    }
+    
+    void paintOverChildren (Graphics& g) override
+    {
+		if (getWidth() == 0) return; // Nothing is painted if the component isn't set to it's right size
+
+		int tunerWidth = getWidth() * 5 / 8 - MARGIN;
+		int mapperWidth = getWidth() * 3 / 8 - MARGIN;
                         
-        // "CC" text        
-        drawGestureText(g, "CC",
-                        getWidth()*5/8 + MARGIN + mapperWidth*3/4,
-                        getHeight()*2/3,
-                        mapperWidth/6,
-                        getHeight()/12,
-                        14.0f);
+        if (onOffButton->getToggleState() == false)
+        {
+			g.setColour(Colour(0x90606060));
+
+            g.fillRect (0, 0, tunerWidth, getHeight());
+            g.fillRect (tunerWidth+2*MARGIN, 0, mapperWidth, getHeight());
+            g.fillRect (tunerWidth, getHeight()*9/20, 2*MARGIN, getHeight()/10);
+        }
         
+        onOffButton->repaint();
     }
     
     void resized() override
@@ -203,9 +198,7 @@ private:
     
     void drawGestureText(Graphics& g, String text, int x, int y, int width, int height, float fontSize = 15.0f)
     {
-        if (onOffButton->getToggleState() == true)	g.setColour (Colour(0xffffffff));
-	    else										g.setColour (Colour(0x80ffffff));
-                            
+        g.setColour (Colour(0xffffffff));                    
         g.setFont (Font (fontSize, Font::plain).withTypefaceStyle ("Regular"));
         g.drawText (TRANS(text), x, y, width, height,
                     Justification::centred, true);

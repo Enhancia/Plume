@@ -359,9 +359,10 @@ void GestureArray::addGestureFromXml (XmlElement& gesture)
             return;
     }
     
-    gestures.getLast()->setActive(gesture.getBoolAttribute("on", true));
-    gestures.getLast()->setMapped(gesture.getBoolAttribute("mapped", false));
-    //gestures.getLast()->setMidiMap(gesture.getBoolAttribute("midiMap", false));
+    gestures.getLast()->setActive (gesture.getBoolAttribute ("on", true));
+    gestures.getLast()->setMapped (gesture.getBoolAttribute ("mapped", false));
+    gestures.getLast()->setMidiMapped (gesture.getBoolAttribute ("midiMap", false));
+    gestures.getLast()->setCc (gesture.getIntAttribute ("cc", 1));
     
     checkPitchMerging();
 }
@@ -376,7 +377,8 @@ void GestureArray::createGestureXml (XmlElement& gesturesData)
         gestXml->setAttribute ("type", g->type);
         gestXml->setAttribute ("on", g->isActive());
         gestXml->setAttribute ("mapped", g->isMapped());
-        //gestXml->setAttribute ("midiMap", g->isMidiMapActive());
+        gestXml->setAttribute ("midiMap", g->isMidiMapped());
+        gestXml->setAttribute ("cc", g->getCc());
         
         // Gesture Specific attributes
         if      (g->type == Gesture::vibrato)
