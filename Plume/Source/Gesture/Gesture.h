@@ -286,7 +286,7 @@ public:
      *
      *  \param shouldBeMidiMapped The boolean value to set.
      */
-    void setMidiMap (bool shouldBeMidiMapped)
+    void setMidiMapped (bool shouldBeMidiMapped)
     {
         midiMap = shouldBeMidiMapped;
     }
@@ -299,6 +299,16 @@ public:
     void setCc (int ccValue)
     {
         cc = ccValue;
+    }
+    
+    /**
+     *  \brief Getter for the "cc" integer value.
+     *
+     *  \returns The cc value used by the gesture.
+     */
+    int getCc()
+    {
+        return cc;
     }
     
     /**

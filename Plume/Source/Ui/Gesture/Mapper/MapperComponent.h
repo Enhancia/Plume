@@ -20,6 +20,7 @@
 */
 class MapperComponent    : public Component,
                            private Button::Listener,
+                           private Label::Listener,
                            private ChangeListener,
                            private ChangeBroadcaster
 {
@@ -34,12 +35,14 @@ public:
     
     //==============================================================================
     void buttonClicked (Button* bttn) override;
+    void labelTextChanged (Label* lbl) override;
     
     //==============================================================================
     void updateDisplay();
     void initializeParamCompArray();
     void addAndMakeArrayVisible();
     void resizeArray();
+    void setAlphas();
     
     //==============================================================================
     void changeListenerCallback(ChangeBroadcaster* source) override;
@@ -56,7 +59,12 @@ private:
     //==============================================================================
     ScopedPointer<TextButton> mapButton;
     ScopedPointer<TextButton> clearMapButton;
+    ScopedPointer<ImageButton> midiMapButton;
     
+    //==============================================================================
+    ScopedPointer<Label> ccLabel;
+    
+    //==============================================================================
     OwnedArray<MappedParameterComponent> paramCompArray;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MapperComponent)

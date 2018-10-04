@@ -55,11 +55,11 @@ int Vibrato::getMidiValue()
     {
         vibLast = false;
         send = true;
-        return 8192;
+        return (midiMap ? 64 : 8192);
     }
     
     send = false;
-    return 8192;
+    return (midiMap ? 64 : 8192);
 }
 
 void Vibrato::updateMappedParameters()

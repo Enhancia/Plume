@@ -46,14 +46,14 @@ int PitchBend::getMidiValue()
     if (value>= rangeRight.getStart() && value < 140.0f && !(rangeRight.isEmpty()))
     {
         send = true;
-        return (midiMap ? Gesture::normalizeMidi (rangeRight.getStart(), rangeRight.getEnd(), value)
+        return (midiMap ? Gesture::map (value, rangeRight.getStart(), rangeRight.getEnd(), 64, 127)
                         : Gesture::map (value, rangeRight.getStart(), rangeRight.getEnd(), 8192, 16383));
     }
     
     else if (value < rangeLeft.getEnd() && value > -140.0f && !(rangeLeft.isEmpty()))
     {
         send = true;
-        return (midiMap ? Gesture::normalizeMidi (rangeLeft.getStart(), rangeLeft.getEnd(), value)
+        return (midiMap ? Gesture::map (value, rangeLeft.getStart(), rangeLeft.getEnd(), 0, 64)
                         : Gesture::map (value, rangeLeft.getStart(), rangeLeft.getEnd(), 0, 8191));
     }
     

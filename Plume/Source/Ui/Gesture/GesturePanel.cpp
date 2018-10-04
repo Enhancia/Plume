@@ -95,7 +95,8 @@ public:
                         tunerWidth/8 + 2*MARGIN,
                         0,
                         (tunerWidth - tunerWidth/8 - 2*MARGIN)*3/4,
-                        getHeight()/4);
+                        getHeight()/4,
+                        19.0f);
         
         // "Values" text
         drawGestureText(g, "Values",
@@ -111,14 +112,21 @@ public:
                         mapperWidth*3/4,
                         getHeight()/4);
         
-                        /*
         // "MIDI Mode" text        
-        drawGestureText(g, "Parameters",
-                        getWidth()*5/8 + MARGIN,
-                        0,
-                        mapperWidth*3/4,
-                        getHeight()/4);
-                        */
+        drawGestureText(g, "MIDI Mode",
+                        getWidth()*5/8 + MARGIN + mapperWidth*7/9,
+                        getHeight()/2,
+                        mapperWidth*2/9,
+                        getHeight()/8,
+                        11.0f);
+                        
+        // "CC" text        
+        drawGestureText(g, "CC",
+                        getWidth()*5/8 + MARGIN + mapperWidth*3/4,
+                        getHeight()*2/3,
+                        mapperWidth/6,
+                        getHeight()/12,
+                        14.0f);
         
     }
     
@@ -193,12 +201,12 @@ private:
         }
     }
     
-    void drawGestureText(Graphics& g, String text, int x, int y, int width, int height)
+    void drawGestureText(Graphics& g, String text, int x, int y, int width, int height, float fontSize = 15.0f)
     {
         if (onOffButton->getToggleState() == true)	g.setColour (Colour(0xffffffff));
 	    else										g.setColour (Colour(0x80ffffff));
                             
-        g.setFont (Font (15.0f, Font::plain).withTypefaceStyle ("Regular"));
+        g.setFont (Font (fontSize, Font::plain).withTypefaceStyle ("Regular"));
         g.drawText (TRANS(text), x, y, width, height,
                     Justification::centred, true);
     }
