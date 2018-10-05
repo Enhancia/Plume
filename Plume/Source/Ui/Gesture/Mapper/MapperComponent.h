@@ -71,6 +71,9 @@ private:
     ScopedPointer<Label> ccLabel;
     
     //==============================================================================
+    bool allowDisplayUpdate = true;
+    
+    //==============================================================================
     OwnedArray<MappedParameterComponent> paramCompArray;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MapperComponent)

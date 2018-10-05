@@ -109,6 +109,7 @@ public:
     void buttonClicked (Button* bttn) override
     {
         gesture.deleteParameter (paramId);
+        allowDisplayUpdate = false;
     }
     
     void labelTextChanged (Label* lbl) override
@@ -157,9 +158,12 @@ public:
     
     void updateDisplay()
     {
-        valueLabel->setText (String (mappedParameter.parameter.getValue(), 2), dontSendNotification);
-        modifyValueCursor();
-		repaint();
+        if (allowDisplayUpdate)
+        {
+            valueLabel->setText (String (mappedParameter.parameter.getValue(), 2), dontSendNotification);
+            modifyValueCursor();
+		    repaint();
+        }
     }
     
 private:
@@ -223,6 +227,9 @@ private:
     Gesture& gesture;
     Gesture::MappedParameter& mappedParameter;
     const int paramId;
+    
+    //==============================================================================
+    bool allowDisplayUpdate = true;
 
     //==============================================================================
     ScopedPointer<ImageButton> closeButton;

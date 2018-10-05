@@ -192,7 +192,7 @@ void GestureArray::addParameterToMapModeGesture (AudioProcessorParameter& param)
     // Does nothing if the parameter is already mapped to any gesture
     if (parameterIsMapped (param.getParameterIndex()))
     {
-        cancelMapMode();
+        //cancelMapMode();
         return;
     }
     
