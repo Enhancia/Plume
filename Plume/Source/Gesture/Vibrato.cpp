@@ -42,7 +42,7 @@ void Vibrato::addGestureMidi (MidiBuffer& midiMessages)
 
 int Vibrato::getMidiValue()
 {
-    bool vibTrig = (intensity > 40.0f);
+    bool vibTrig = (intensity > threshold);
     
     if (vibTrig && gain != 0.0f)
     {
@@ -82,7 +82,7 @@ void Vibrato::updateMappedParameters()
 
 float Vibrato::getValueForMappedParameter (Range<float> paramRange)
 {
-    bool vibTrig = (intensity > 40.0f);
+    bool vibTrig = (intensity > threshold);
     
     if (vibTrig && gain != 0.0f)
     {

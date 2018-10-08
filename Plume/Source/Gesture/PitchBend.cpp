@@ -46,15 +46,23 @@ int PitchBend::getMidiValue()
     if (value>= rangeRight.getStart() && value < 140.0f && !(rangeRight.isEmpty()))
     {
         send = true;
+        pbLast = true;
         return (midiMap ? Gesture::map (value, rangeRight.getStart(), rangeRight.getEnd(), 64, 127)
                         : Gesture::map (value, rangeRight.getStart(), rangeRight.getEnd(), 8192, 16383));
     }
-    
     else if (value < rangeLeft.getEnd() && value > -140.0f && !(rangeLeft.isEmpty()))
     {
         send = true;
+        pbLast = true;
         return (midiMap ? Gesture::map (value, rangeLeft.getStart(), rangeLeft.getEnd(), 0, 64)
                         : Gesture::map (value, rangeLeft.getStart(), rangeLeft.getEnd(), 0, 8191));
+    }
+    // If back to central zone
+    else if (value > rangeLeft.getEnd() && value < rangeRight.getStart() && pbLast == true)
+    {
+        send = true;
+        pbLast = false;
+        return (midiMap ? 64 : 8192);
     }
     
     send = false;
@@ -67,14 +75,17 @@ void PitchBend::updateMappedParameters()
     
     float paramVal;
     
-    // Goes through the parameterArray to update each value
-    for (auto* param : parameterArray)
+    if (send == true)
     {
-        paramVal = getValueForMappedParameter (param->range);
-        
-        if (send == true && paramVal != param->parameter.getValue())
+        // Goes through the parameterArray to update each value
+        for (auto* param : parameterArray)
         {
-            param->parameter.setValueNotifyingHost (paramVal);
+            paramVal = getValueForMappedParameter (param->range);
+        
+            if (send == true && paramVal != param->parameter.getValue())
+            {
+                param->parameter.setValueNotifyingHost (paramVal);
+            }
         }
     }
 }
@@ -84,6 +95,7 @@ float PitchBend::getValueForMappedParameter (Range<float> paramRange)
     if (value>= rangeRight.getStart() && value < 140.0f && !(rangeRight.isEmpty()))
     {
         send = true;
+		pbLast = true;
         return (Gesture::mapParameter (value, rangeRight.getStart(), rangeRight.getEnd(),
                                        Range<float> (paramRange.getStart() + paramRange.getLength()/2,
                                                      paramRange.getEnd())));
@@ -92,9 +104,18 @@ float PitchBend::getValueForMappedParameter (Range<float> paramRange)
     else if (value < rangeRight.getStart() && value > -140.0f && !(rangeLeft.isEmpty()))
     {
         send = true;
+        pbLast = true;
         return (Gesture::mapParameter (value, rangeLeft.getStart(), rangeLeft.getEnd(),
                                        Range<float> (paramRange.getStart(),
                                                      paramRange.getStart() + paramRange.getLength()/2)));
+    }
+    
+    // If back to central zone
+    else if (value > rangeLeft.getEnd() && value < rangeRight.getStart() && pbLast == true)
+    {
+        send = true;
+        pbLast = false;
+        return (midiMap ? 64 : 8192);
     }
     
     send = false;

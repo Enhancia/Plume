@@ -23,7 +23,10 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 {
     TRACE_IN;
     
+    // Base size and resize settings
     setSize (800, 540);
+    //setResizable (true, true);
+    //setResizeLimits (200, 200, 2000, 2000);
     
     // Creates the 3 main components
     addAndMakeVisible (wrapperComp = new WrapperComponent (processor.getWrapper()));
