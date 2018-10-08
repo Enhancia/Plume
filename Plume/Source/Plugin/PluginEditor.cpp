@@ -23,7 +23,10 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 {
     TRACE_IN;
     
+    // Base size and resize settings
     setSize (800, 540);
+    //setResizable (true, true);
+    //setResizeLimits (200, 200, 2000, 2000);
     
     // Creates the 3 main components
     addAndMakeVisible (wrapperComp = new WrapperComponent (processor.getWrapper()));
@@ -62,7 +65,15 @@ PlumeEditor::~PlumeEditor()
 //==============================================================================
 void PlumeEditor::paint (Graphics& g)
 {
+    // Background
     g.fillAll (Colour (0xffe0e0e0));
+    
+    // Version Text
+    g.setColour (Colour (0xff000000));
+    g.setFont (Font (10.0f, Font::italic).withTypefaceStyle ("Regular"));
+    g.drawText ("Plume " + String(JucePlugin_VersionString),
+                getWidth() - 100, getHeight() - MARGIN, 100, MARGIN,
+                Justification::centredRight, true);
 }
 
 void PlumeEditor::resized()

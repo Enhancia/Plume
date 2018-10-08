@@ -27,30 +27,39 @@ void Vibrato::addGestureMidi (MidiBuffer& midiMessages)
     
     if (send == true)
     {
+        // Creates the control change message
+        if (midiMap)
+        {
+            addEventAndMergeCCToBuffer (midiMessages, vibVal, cc, 1);
+        }
         // Creates the pitchwheel message
-        addEventAndMergePitchToBuffer (midiMessages, vibVal, 1 /*, pitchReference*/);
+        else
+        {
+            addEventAndMergePitchToBuffer (midiMessages, vibVal, 1/*, pitchReference*/);
+        }
     }
 }
 
 int Vibrato::getMidiValue()
 {
-    bool vibTrig = (intensity > 40.0f);
+    bool vibTrig = (intensity > threshold);
     
     if (vibTrig && gain != 0.0f)
     {
         vibLast = true;
         send = true;
-        return (Gesture::map (value, -(500.0f - gain), (500.01f - gain), 0, 16383));
+        return (midiMap ? Gesture::normalizeMidi (-(500.0f - gain), (500.01f - gain), value)
+                        : Gesture::map (value, -(500.0f - gain), (500.01f - gain), 0, 16383));
     }
     else if (vibTrig != vibLast && vibTrig == false)
     {
         vibLast = false;
         send = true;
-        return 8192;
+        return (midiMap ? 64 : 8192);
     }
     
     send = false;
-    return 8192;
+    return (midiMap ? 64 : 8192);
 }
 
 void Vibrato::updateMappedParameters()
@@ -73,7 +82,7 @@ void Vibrato::updateMappedParameters()
 
 float Vibrato::getValueForMappedParameter (Range<float> paramRange)
 {
-    bool vibTrig = (intensity > 40.0f);
+    bool vibTrig = (intensity > threshold);
     
     if (vibTrig && gain != 0.0f)
     {

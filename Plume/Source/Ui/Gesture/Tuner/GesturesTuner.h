@@ -21,19 +21,6 @@
 #include "Gesture/Roll.h"
 
 //==============================================================================
-class VibratoTuner: public SymmetricalTuner
-{
-public:
-    VibratoTuner(Vibrato& vib)
-        :   SymmetricalTuner (vib.getValueReference(), vib.getRangeReference(), vib.gain, 500.0f, "", false)
-    {}
-    
-    ~VibratoTuner()
-    {}
-private:
-};
-
-//==============================================================================
 class PitchBendTuner: public TwoRangeTuner
 {
 public:
@@ -45,6 +32,9 @@ public:
     
     ~PitchBendTuner()
     {}
+
+private:
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PitchBendTuner)
 };
 
 
@@ -59,6 +49,9 @@ public:
     
     ~TiltTuner()
     {}
+
+private:
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TiltTuner)
 };
 
 /*
@@ -73,6 +66,9 @@ public:
     
     ~WaveTuner()
     {}
+
+private:
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WaveTuner)
 };
 */
 
@@ -87,4 +83,89 @@ public:
     
     ~RollTuner()
     {}
+
+private:
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RollTuner)
+};
+
+//==============================================================================
+class VibratoTuner: public SymmetricalTuner
+{
+public:
+    VibratoTuner(Vibrato& vib)
+        :   SymmetricalTuner (vib.getValueReference(), vib.getRangeReference(), vib.gain, 500.0f, "", false),
+            threshold (vib.threshold)
+    {
+        addAndMakeVisible(threshLabel = new Label("Threshold Label"));
+        threshLabel->setEditable (true, false, false);
+        threshLabel->setText (String(int (threshold)), dontSendNotification);
+        threshLabel->setFont (Font (13.0f, Font::plain));
+        threshLabel->setColour (Label::textColourId, Colour(0xffffffff));
+        threshLabel->setColour (Label::backgroundColourId, Colour(0xff000000));
+        threshLabel->setJustificationType (Justification::centred);
+        threshLabel->addListener (this);
+    }
+    
+    ~VibratoTuner()
+    {
+        threshLabel->removeListener (this);
+        threshLabel = nullptr;
+    }
+    
+    //==============================================================================
+    void paint (Graphics& g) override
+    {
+        SymmetricalTuner::paint(g); // SuperClass method call
+        
+        // Writes the "threshold" text
+        int x = W*3/4,
+            y = H*1/2,
+            width = W/4,
+            height = H/4;
+                
+        String text (TRANS("Threshold"));
+        g.drawText (text, x, y, width, height,
+                    Justification::centred, true);
+    }
+    
+    void resized() override
+    {
+        SymmetricalTuner::resized();
+        
+        threshLabel->setBounds (W*3/4+W/16, H*3/4, W/8, H/5);
+        repaint();
+    }
+    
+    //==============================================================================
+    void labelTextChanged (Label* lbl) override
+    {
+        SymmetricalTuner::labelTextChanged(lbl); // SuperClass method call
+        
+        if (lbl == threshLabel)
+        {
+            // checks that the string is numbers only
+            if (lbl->getText().containsOnly ("0123456789") == false)
+            {
+                lbl->setText (String (int (threshold)), dontSendNotification);
+                return;
+            }
+            
+            float val = lbl->getText().getFloatValue();
+        
+            if (val < 0.0f) val = 0.0f;
+            else if (val > 300.0f) val = 300.0f;
+        
+            threshold = val;
+            lbl->setText (String (int(val)), dontSendNotification);
+        }
+    }
+    
+private:
+    //==============================================================================
+    ScopedPointer<Label> threshLabel;
+    
+    float& threshold; /**< \brief Vibrato's threshold reference, used by the label to modify the right vibrato parameter */
+
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VibratoTuner)
 };

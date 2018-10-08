@@ -67,8 +67,7 @@ public:
         
         // Fills the area for the Tuner and Mapper
         { 
-			if (onOffButton->getToggleState() == true)	g.setColour(Colour(0xffa0a0a0));
-			else										g.setColour(Colour(0xff606060));
+			g.setColour(Colour(0xffa0a0a0));
 
             g.fillRect (0, 0, tunerWidth, getHeight());
             g.fillRect (tunerWidth+2*MARGIN, 0, mapperWidth, getHeight());
@@ -91,55 +90,39 @@ public:
         }
         
         // Gesture Name text
-        {
-            x = tunerWidth/8 + 2*MARGIN;
-            y = 0;
-            width = (tunerWidth - tunerWidth/8 - 2*MARGIN)*3/4;
-            height = getHeight()/4;
-
-            if (onOffButton->getToggleState() == true)	fillColour = Colour(0xffffffff);
-			else										fillColour = Colour(0x80ffffff);
-            g.setColour (fillColour);
-                            
-            String text (TRANS(gesture.name));
-            g.setFont (Font (15.0f, Font::plain).withTypefaceStyle ("Regular"));
-            g.drawText (text, x, y, width, height,
-                        Justification::centred, true);
-        }
+        drawGestureText(g, gesture.name,
+                        tunerWidth/8 + 2*MARGIN,
+                        0,
+                        (tunerWidth - tunerWidth/8 - 2*MARGIN)*3/4,
+                        getHeight()/4,
+                        19.0f);
         
         // "Values" text
+        drawGestureText(g, "Values",
+                        tunerWidth*3/4 + (tunerWidth/8 + 2*MARGIN)/4,
+                        0,
+                        (tunerWidth - tunerWidth/8 - 2*MARGIN)/4,
+                        getHeight()/4);
+        
+    }
+    
+    void paintOverChildren (Graphics& g) override
+    {
+		if (getWidth() == 0) return; // Nothing is painted if the component isn't set to it's right size
+
+		int tunerWidth = getWidth() * 5 / 8 - MARGIN;
+		int mapperWidth = getWidth() * 3 / 8 - MARGIN;
+                        
+        if (onOffButton->getToggleState() == false)
         {
-            x = tunerWidth*3/4 + (tunerWidth/8 + 2*MARGIN)/4;
-            y = 0;
-            width = (tunerWidth - tunerWidth/8 - 2*MARGIN)/4;
-            height = getHeight()/4;
-            
-            if (onOffButton->getToggleState() == true)	fillColour = Colour(0xffffffff);
-			else										fillColour = Colour(0x80ffffff);
-            g.setColour (fillColour);
-            
-            String text (TRANS("Values"));
-            g.setFont (Font (15.0f, Font::plain).withTypefaceStyle ("Regular"));
-            g.drawText (text, x, y, width, height,
-                        Justification::centred, true);
+			g.setColour(Colour(0x90606060));
+
+            g.fillRect (0, 0, tunerWidth, getHeight());
+            g.fillRect (tunerWidth+2*MARGIN, 0, mapperWidth, getHeight());
+            g.fillRect (tunerWidth, getHeight()*9/20, 2*MARGIN, getHeight()/10);
         }
         
-        // "Parameters" text
-        {
-            x = getWidth()*5/8 + MARGIN;
-            y = 0;
-            width = mapperWidth*3/4;
-            height = getHeight()/4;
-                
-            if (onOffButton->getToggleState() == true)	fillColour = Colour(0xffffffff);
-			else										fillColour = Colour(0x80ffffff);
-            g.setColour (fillColour);
-            
-            String text (TRANS("Parameters"));
-            g.setFont (Font (15.0f, Font::plain).withTypefaceStyle ("Regular"));
-            g.drawText (text, x, y, width, height,
-                        Justification::centred, true);
-        }
+        onOffButton->repaint();
     }
     
     void resized() override
@@ -211,6 +194,14 @@ private:
         {
             DBG ("Unknown Gesture type. No tuner was created.");
         }
+    }
+    
+    void drawGestureText(Graphics& g, String text, int x, int y, int width, int height, float fontSize = 15.0f)
+    {
+        g.setColour (Colour(0xffffffff));                    
+        g.setFont (Font (fontSize, Font::plain).withTypefaceStyle ("Regular"));
+        g.drawText (TRANS(text), x, y, width, height,
+                    Justification::centred, true);
     }
     
     Gesture& gesture;

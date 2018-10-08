@@ -29,7 +29,14 @@ void Roll::addGestureMidi (MidiBuffer& midiMessages)
         return;
     }
     
-    addEventAndMergeCCToBuffer (midiMessages, getMidiValue(), 1, 1);
+    if (midiMap)
+    {
+        addEventAndMergeCCToBuffer (midiMessages, getMidiValue(), cc, 1);
+    }
+    else
+    {
+        addEventAndMergeCCToBuffer (midiMessages, getMidiValue(), 1, 1);
+    }
 }
 
 int Roll::getMidiValue()
