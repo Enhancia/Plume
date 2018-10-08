@@ -65,7 +65,15 @@ PlumeEditor::~PlumeEditor()
 //==============================================================================
 void PlumeEditor::paint (Graphics& g)
 {
+    // Background
     g.fillAll (Colour (0xffe0e0e0));
+    
+    // Version Text
+    g.setColour (Colour (0xff000000));
+    g.setFont (Font (10.0f, Font::italic).withTypefaceStyle ("Regular"));
+    g.drawText ("Plume " + String(JucePlugin_VersionString),
+                getWidth() - 100, getHeight() - MARGIN, 100, MARGIN,
+                Justification::centredRight, true);
 }
 
 void PlumeEditor::resized()
