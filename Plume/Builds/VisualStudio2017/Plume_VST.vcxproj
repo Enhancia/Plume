@@ -14,7 +14,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{6D8D1AB8-2909-B2D4-BC87-F4CA1747E8ED}</ProjectGuid>
+    <ProjectGuid>{C40FE952-CF3C-3F09-805F-81D99FF25F70}</ProjectGuid>
     <PlatformToolset>v141</PlatformToolset>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -159,6 +159,9 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_plugin_client_VST2.cpp"/>
   </ItemGroup>
   <ItemGroup/>
+  <ItemGroup>
+    <None Include=".\icon.ico"/>
+  </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include=".\resources.rc"/>
   </ItemGroup>

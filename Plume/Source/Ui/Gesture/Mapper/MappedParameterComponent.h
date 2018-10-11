@@ -160,7 +160,7 @@ public:
     {
         if (allowDisplayUpdate)
         {
-            valueLabel->setText (String (mappedParameter.parameter.getValue(), 2), dontSendNotification);
+            valueLabel->setText (String (mappedParameter.parameter.getValue(), 4), dontSendNotification);
             modifyValueCursor();
 		    repaint();
         }

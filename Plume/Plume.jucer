@@ -114,7 +114,7 @@
     <WINDOWS/>
   </LIVE_SETTINGS>
   <EXPORTFORMATS>
-    <VS2017 targetFolder="Builds/VisualStudio2017">
+    <VS2017 targetFolder="Builds/VisualStudio2017" bigIcon="YXx8Ce">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="0" name="Release" headerPath="D:\Workspace\GitWorkspace\Plume\Plume\Source"
                        useRuntimeLibDLL="0"/>
