@@ -121,8 +121,6 @@ public:
             g.fillRect (tunerWidth+2*MARGIN, 0, mapperWidth, getHeight());
             g.fillRect (tunerWidth, getHeight()*9/20, 2*MARGIN, getHeight()/10);
         }
-        
-        onOffButton->repaint();
     }
     
     void resized() override

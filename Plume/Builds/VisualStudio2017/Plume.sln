@@ -1,17 +1,17 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2017
 
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Plume - Standalone Plugin", "Plume_StandalonePlugin.vcxproj", "{895566B5-B35B-1903-E2CF-43CC294EBE65}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Plume - Standalone Plugin", "Plume_StandalonePlugin.vcxproj", "{21A3764C-1574-8032-F4C6-7557F9B8991C}"
 	ProjectSection(ProjectDependencies) = postProject
-		{109046BC-019F-2515-C9EE-6ED687A656CC} = {109046BC-019F-2515-C9EE-6ED687A656CC}
+		{95EB0EF6-0B3F-8622-F2B1-BA8BB1D63551} = {95EB0EF6-0B3F-8622-F2B1-BA8BB1D63551}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Plume - VST", "Plume_VST.vcxproj", "{250C47EA-2616-595C-820E-142A9F67DE8C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Plume - VST", "Plume_VST.vcxproj", "{93281171-7B66-F389-8A65-CFFF3E86E588}"
 	ProjectSection(ProjectDependencies) = postProject
-		{109046BC-019F-2515-C9EE-6ED687A656CC} = {109046BC-019F-2515-C9EE-6ED687A656CC}
+		{95EB0EF6-0B3F-8622-F2B1-BA8BB1D63551} = {95EB0EF6-0B3F-8622-F2B1-BA8BB1D63551}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Plume - Shared Code", "Plume_SharedCode.vcxproj", "{109046BC-019F-2515-C9EE-6ED687A656CC}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Plume - Shared Code", "Plume_SharedCode.vcxproj", "{95EB0EF6-0B3F-8622-F2B1-BA8BB1D63551}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,18 +19,18 @@ Global
 		Debug|x64 = Debug|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{250C47EA-2616-595C-820E-142A9F67DE8C}.Release|x64.ActiveCfg = Release|x64
-		{250C47EA-2616-595C-820E-142A9F67DE8C}.Release|x64.Build.0 = Release|x64
-		{250C47EA-2616-595C-820E-142A9F67DE8C}.Debug|x64.ActiveCfg = Debug|x64
-		{250C47EA-2616-595C-820E-142A9F67DE8C}.Debug|x64.Build.0 = Debug|x64
-		{895566B5-B35B-1903-E2CF-43CC294EBE65}.Release|x64.ActiveCfg = Release|x64
-		{895566B5-B35B-1903-E2CF-43CC294EBE65}.Release|x64.Build.0 = Release|x64
-		{895566B5-B35B-1903-E2CF-43CC294EBE65}.Debug|x64.ActiveCfg = Debug|x64
-		{895566B5-B35B-1903-E2CF-43CC294EBE65}.Debug|x64.Build.0 = Debug|x64
-		{109046BC-019F-2515-C9EE-6ED687A656CC}.Release|x64.ActiveCfg = Release|x64
-		{109046BC-019F-2515-C9EE-6ED687A656CC}.Release|x64.Build.0 = Release|x64
-		{109046BC-019F-2515-C9EE-6ED687A656CC}.Debug|x64.ActiveCfg = Debug|x64
-		{109046BC-019F-2515-C9EE-6ED687A656CC}.Debug|x64.Build.0 = Debug|x64
+		{93281171-7B66-F389-8A65-CFFF3E86E588}.Release|x64.ActiveCfg = Release|x64
+		{93281171-7B66-F389-8A65-CFFF3E86E588}.Release|x64.Build.0 = Release|x64
+		{93281171-7B66-F389-8A65-CFFF3E86E588}.Debug|x64.ActiveCfg = Debug|x64
+		{93281171-7B66-F389-8A65-CFFF3E86E588}.Debug|x64.Build.0 = Debug|x64
+		{21A3764C-1574-8032-F4C6-7557F9B8991C}.Release|x64.ActiveCfg = Release|x64
+		{21A3764C-1574-8032-F4C6-7557F9B8991C}.Release|x64.Build.0 = Release|x64
+		{21A3764C-1574-8032-F4C6-7557F9B8991C}.Debug|x64.ActiveCfg = Debug|x64
+		{21A3764C-1574-8032-F4C6-7557F9B8991C}.Debug|x64.Build.0 = Debug|x64
+		{95EB0EF6-0B3F-8622-F2B1-BA8BB1D63551}.Release|x64.ActiveCfg = Release|x64
+		{95EB0EF6-0B3F-8622-F2B1-BA8BB1D63551}.Release|x64.Build.0 = Release|x64
+		{95EB0EF6-0B3F-8622-F2B1-BA8BB1D63551}.Debug|x64.ActiveCfg = Debug|x64
+		{95EB0EF6-0B3F-8622-F2B1-BA8BB1D63551}.Debug|x64.Build.0 = Debug|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

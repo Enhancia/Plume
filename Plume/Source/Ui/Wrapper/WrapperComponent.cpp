@@ -105,7 +105,7 @@ void WrapperComponent::scanPlugin()
     FileChooser pluginScanner ("Select the plugin you want to load.",
                                File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getParentDirectory(),
                                "*.dll;*.vst;*.so",
-                               false);
+                               true);
                                
     if (pluginScanner.browseForFileToOpen())
     {

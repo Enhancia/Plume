@@ -76,7 +76,7 @@ void PresetComponent::savePreset()
     FileChooser presetSaver ("Select the folder you want the preset to be saved to.",
                              f,
                              "*.xml",
-                             false);
+                             true);
         
     if (presetSaver.browseForFileToSave(true))
     {
@@ -108,7 +108,7 @@ void PresetComponent::loadPreset()
     FileChooser presetLoader ("Select the preset file to load.",
                               f,
                               "*.xml",
-                              false);
+                              true);
                               
     if (presetLoader.browseForFileToOpen())
     {
