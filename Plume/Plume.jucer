@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" jucerVersion="5.3.1"
-              pluginFormats="buildVST,buildStandalone" version="1.1.0" companyName="Enhancia"
+              pluginFormats="buildVST,buildStandalone" version="1.1.1" companyName="Enhancia"
               buildVST="1" buildVST3="0" buildAU="0" buildAUv3="0" buildRTAS="0"
               buildAAX="0" enableIAA="0" pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
               pluginManufacturer="Enhancia" pluginName="Plume" pluginDesc="Enhancia's Plume. Wraps other plugins and provides customizable and mappable gestures to use with Neova."
@@ -137,6 +137,29 @@
         <MODULEPATH id="juce_audio_utils" path="../../../../Programmes/JUCE/modules"/>
       </MODULEPATHS>
     </VS2017>
+    <XCODE_MAC targetFolder="Builds/MacOSX">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" headerPath="/Users/macbook/Documents/Dev Plume/Plume/Plume/Source"/>
+        <CONFIGURATION isDebug="0" name="Release" headerPath="/Users/macbook/Documents/Dev Plume/Plume/Plume/Source"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_video" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_opengl" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../../../Programmes/JUCE/modules"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
   </EXPORTFORMATS>
   <MODULES>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
