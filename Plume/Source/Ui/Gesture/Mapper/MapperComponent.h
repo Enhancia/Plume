@@ -20,6 +20,7 @@
 */
 class MapperComponent    : public Component,
                            private Button::Listener,
+                           private Label::Listener,
                            private ChangeListener,
                            private ChangeBroadcaster
 {
@@ -34,12 +35,16 @@ public:
     
     //==============================================================================
     void buttonClicked (Button* bttn) override;
+    void labelTextChanged (Label* lbl) override;
     
     //==============================================================================
     void updateDisplay();
     void initializeParamCompArray();
     void addAndMakeArrayVisible();
     void resizeArray();
+    
+    //==============================================================================
+    void setAlphas();
     
     //==============================================================================
     void changeListenerCallback(ChangeBroadcaster* source) override;
@@ -49,6 +54,10 @@ public:
 
 private:
     //==============================================================================
+    void drawMapperText (Graphics& g, String text, int x, int y, int width, int height,
+                         bool opaqueWhenMidiMode = false, float fontSize = 15.0f);
+    
+    //==============================================================================
     Gesture& gesture;
     GestureArray& gestureArray;
     PluginWrapper& wrapper;
@@ -56,7 +65,15 @@ private:
     //==============================================================================
     ScopedPointer<TextButton> mapButton;
     ScopedPointer<TextButton> clearMapButton;
+    ScopedPointer<ImageButton> midiMapButton;
     
+    //==============================================================================
+    ScopedPointer<Label> ccLabel;
+    
+    //==============================================================================
+    bool allowDisplayUpdate = true;
+    
+    //==============================================================================
     OwnedArray<MappedParameterComponent> paramCompArray;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MapperComponent)

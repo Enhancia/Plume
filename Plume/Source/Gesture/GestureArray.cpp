@@ -32,6 +32,7 @@ void GestureArray::initializeGestures()
     addGesture ("Vibrato_Default", Gesture::vibrato);
     addGesture ("PitchBend_Default", Gesture::pitchBend);
     addGesture ("Tilt_Default", Gesture::tilt);
+    //addGesture ("Roll_Default", Gesture::roll);
 }
 
 //==============================================================================
@@ -49,7 +50,7 @@ void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages)
         // Adds non-pitch midi
         for (auto* g : gestures)
         {
-            if (g->affectsPitch() == false && g->isMapped() == false)
+            if (g->affectsPitch() == false && ( g->isMapped() == false || g->isMidiMapped() == true))
             {
                 g->addGestureMidi (midiMessages);
             }
@@ -64,7 +65,7 @@ void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages)
         // Adds all midi
         for (auto* g : gestures)
         {
-            if (g->isMapped() == false)
+            if (g->isMapped() == false || g->isMidiMapped() == true)
             {
                 g->addGestureMidi (midiMessages);
             }
@@ -78,7 +79,7 @@ void GestureArray::updateAllMappedParameters()
     // mapMode (to prevent the parameter from changing) and is mapped
     for (auto* g : gestures)
     {
-        if (mapModeOn == false && g->isMapped())
+        if (mapModeOn == false && g->isMapped() && g->isMidiMapped() == false)
         {
             g->updateMappedParameters();
         }
@@ -100,7 +101,7 @@ void GestureArray::updateAllValues()
         return;
     }
     
-	DBG ("couldn't get the float values. No vaues were updated.");
+	DBG ("couldn't get the float values. No value was updated.");
 }
 
 //==============================================================================
@@ -192,7 +193,7 @@ void GestureArray::addParameterToMapModeGesture (AudioProcessorParameter& param)
     // Does nothing if the parameter is already mapped to any gesture
     if (parameterIsMapped (param.getParameterIndex()))
     {
-        cancelMapMode();
+        //cancelMapMode();
         return;
     }
     
@@ -359,9 +360,10 @@ void GestureArray::addGestureFromXml (XmlElement& gesture)
             return;
     }
     
-    gestures.getLast()->setActive(gesture.getBoolAttribute("on", true));
-    gestures.getLast()->setMapped(gesture.getBoolAttribute("mapped", false));
-    //gestures.getLast()->setMidiMap(gesture.getBoolAttribute("midiMap", false));
+    gestures.getLast()->setActive (gesture.getBoolAttribute ("on", true));
+    gestures.getLast()->setMapped (gesture.getBoolAttribute ("mapped", false));
+    gestures.getLast()->setMidiMapped (gesture.getBoolAttribute ("midiMap", false));
+    gestures.getLast()->setCc (gesture.getIntAttribute ("cc", 1));
     
     checkPitchMerging();
 }
@@ -376,7 +378,8 @@ void GestureArray::createGestureXml (XmlElement& gesturesData)
         gestXml->setAttribute ("type", g->type);
         gestXml->setAttribute ("on", g->isActive());
         gestXml->setAttribute ("mapped", g->isMapped());
-        //gestXml->setAttribute ("midiMap", g->isMidiMapActive());
+        gestXml->setAttribute ("midiMap", g->isMidiMapped());
+        gestXml->setAttribute ("cc", g->getCc());
         
         // Gesture Specific attributes
         if      (g->type == Gesture::vibrato)

@@ -46,7 +46,7 @@ public:
     // Might want to replace them with audio processor parameters in the future.
     
     float threshold = 40.0f; /**< threshold used to trigger the effect*/
-    float gain; /**< Sensibility of the vibrato. From 0.0 (no effect) to 500.0 (maximum effect)*/
+    float gain; /**< Sensibility of the vibrato. From 0.0f (no effect) to 500.0f (maximum effect)*/
     
 private:
     float intensity = 0.0f; /**< Value that will be checked to trigger the vibrato if higher than the treshold */

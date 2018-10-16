@@ -12,6 +12,9 @@
 #include "../../../../JuceLibraryCode/JuceHeader.h"
 #include "Ui/Gesture/Mapper/MapperComponent.h"
 
+#define W getWidth()
+#define H getHeight()
+
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 #define TRACE_OUT Logger::writeToLog ("[-FNC]  Leaving: " + String(__FUNCTION__))
 //==============================================================================
@@ -31,11 +34,37 @@ MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr, PluginWr
     clearMapButton->addListener (this);
     clearMapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
     
+    // midiMode button
+    String PlumeDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getFullPathName();
+    Image midiOn = ImageFileFormat::loadFrom (File (PlumeDir + "/Resources/Images/Gestures/OnOff.png"));
+    
+    addAndMakeVisible (midiMapButton = new ImageButton ("Midi Mode Button"));
+    midiMapButton->setImages (false, true, true,
+								midiOn, 1.0f, Colour (0xffffffff),
+								midiOn, 0.5f, Colour (0x80ffffff),
+								midiOn, 1.0f, Colour (0x00000000));
+    midiMapButton->setToggleState (gesture.isMidiMapped(), dontSendNotification);
+    midiMapButton->setClickingTogglesState (true);
+	midiMapButton->setState(gesture.isMidiMapped() ? Button::buttonDown
+	                                               : Button::buttonNormal);
+    midiMapButton->addListener (this);
+    
+    // CC label
+    addAndMakeVisible (ccLabel = new Label ("CC Label", TRANS (String(gesture.getCc()))));
+    ccLabel->setEditable (true, false, false);
+    ccLabel->setFont (Font (13.0f, Font::plain));
+    ccLabel->setColour (Label::textColourId, Colour(0xffffffff));
+    ccLabel->setColour (Label::backgroundColourId, Colour(0xff000000));
+    ccLabel->setJustificationType (Justification::centred);
+    ccLabel->addListener (this);
+    
+    // Adding the mapper as a change listener
     gesture.addChangeListener (this);
     gestureArray.addChangeListener (this);
     wrapper.addChangeListener (this);
     
     initializeParamCompArray();
+    setAlphas();
 }
 
 MapperComponent::~MapperComponent()
@@ -45,21 +74,71 @@ MapperComponent::~MapperComponent()
     gestureArray.removeChangeListener (this);
     wrapper.removeChangeListener (this);
     
+    mapButton->removeListener (this);
+    clearMapButton->removeListener (this);
+    midiMapButton->removeListener (this);
+    ccLabel->removeListener (this);
+    
     mapButton = nullptr;
     clearMapButton = nullptr;
+    midiMapButton = nullptr;
+    ccLabel = nullptr;
 }
 
 //==============================================================================
 void MapperComponent::paint (Graphics& g)
 {
+    // Interface colour depending on MIDI Mode state
+    Colour c1, c2;
+    
+    if (midiMapButton->getToggleState() == false)
+    {
+        c1 = Colour(0xffa0a0a0);
+        c2 = Colour(0xff606060);
+    }
+    else
+    {
+        c1 = Colour(0xff606060);
+        c2 = Colour(0xffa0a0a0);
+    }
+    
+    g.setColour (c1);
+    g.fillRect (0, 0, W, H);
+    g.setColour (c2);
+    g.fillRect (W*2/3, H/2, W/3, H/2);
+    
+    // "Parameters" text        
+    drawMapperText (g, "Parameters",
+                    0,
+                    0,
+                    W*3/4,
+                    H/4);
+                        
+    // "MIDI Mode" text
+    drawMapperText (g, "MIDI Mode",
+                    W*7/9,
+                    H/2,
+                    W*2/9,
+                    H/8,
+                    true, 11.0f);
+                        
+    // "CC" text
+    drawMapperText (g, "CC",
+                    W*3/4,
+                    H*2/3,
+                    W/6,
+                    H/12,
+                    true, 14.0f);
 }
 
 void MapperComponent::resized()
 {
-    int bttnPanW = getWidth()/3, bttnPanH = getHeight()/2;
+    int bttnPanW = W/3, bttnPanH = H/2;
     
-    mapButton->setBounds (getWidth()*2/3 + bttnPanW/8, bttnPanH/8, bttnPanW*3/4, bttnPanH/3);
-    clearMapButton->setBounds (getWidth()*2/3 + bttnPanW/4, bttnPanH*5/8, bttnPanW/2, bttnPanH/3);
+    mapButton->setBounds (W*2/3 + bttnPanW/8, bttnPanH/8, bttnPanW*3/4, bttnPanH/3);
+    clearMapButton->setBounds (W*2/3 + bttnPanW/4, bttnPanH*5/8, bttnPanW/2, bttnPanH/3);
+    midiMapButton->setBounds (W*2/3, bttnPanH, bttnPanW/3, bttnPanH/4);
+    ccLabel->setBounds (W*3/4, H*3/4 + 2, bttnPanW/2, bttnPanH/3);
 	
     resizeArray();
     
@@ -83,6 +162,7 @@ void MapperComponent::buttonClicked (Button* bttn)
             wrapper.createWrapperEditor();
         }
         
+        // Cancels map mode for the gesture and colours it accordingly
         else
         {
             gestureArray.cancelMapMode();
@@ -99,6 +179,44 @@ void MapperComponent::buttonClicked (Button* bttn)
         paramCompArray.clear();
         mapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
     }
+    
+    else if (bttn == midiMapButton)
+    {
+        if (midiMapButton->getToggleState() == false) // midiMap off
+        {
+            gesture.setMidiMapped (false);
+            gesture.setMapped (!(paramCompArray.isEmpty()));
+            ccLabel->setEditable (false, false, false);
+        }
+        else // midiMapOn
+        {
+            gesture.setMidiMapped (true);
+            gesture.setMapped (true);
+            ccLabel->setEditable (true, false, false);
+        }
+        
+        setAlphas();
+        repaint();
+    }
+}
+
+void MapperComponent::labelTextChanged (Label* lbl)
+{
+    // checks that the string is numbers only
+    if (lbl->getText().containsOnly ("0123456789") == false)
+    {
+        lbl->setText (String (gesture.getCc()), dontSendNotification);
+        return;
+    }
+    
+    int val = lbl->getText().getIntValue();
+        
+    if (val < 0) val = 0;
+    else if (val > 127) val = 127;
+        
+    gesture.setCc(val);
+    
+    lbl->setText (String(val), dontSendNotification);
 }
 
 void MapperComponent::changeListenerCallback(ChangeBroadcaster* source)
@@ -164,7 +282,7 @@ void MapperComponent::addAndMakeArrayVisible()
 
 void MapperComponent::resizeArray()
 {
-    int w = getWidth()*2/6, h = getHeight()*3/8;
+    int w = getWidth()*1/3, h = getHeight()*3/8;
     
     // sets bounds depending on the value in the array
     for (int i=0; i<paramCompArray.size(); i++)
@@ -174,4 +292,42 @@ void MapperComponent::resizeArray()
         
         paramCompArray[i]->setBounds (x, y, w, h);
     }
+}
+
+
+void MapperComponent::setAlphas()
+{
+    if (midiMapButton->getToggleState() == false)
+    {
+        mapButton->setAlpha (1.0f);
+        clearMapButton->setAlpha (1.0f);
+        for (auto* comp : paramCompArray)
+        {
+            comp->setAlpha (1.0f);
+        }
+    
+        ccLabel->setAlpha (0.5f);
+        
+    }
+    else
+    {
+        mapButton->setAlpha (0.5f);
+        clearMapButton->setAlpha (0.5f);
+        for (auto* comp : paramCompArray)
+        {
+            comp->setAlpha (0.5f);
+        }
+        
+        ccLabel->setAlpha (1.0f);
+    }
+}
+
+void MapperComponent::drawMapperText (Graphics& g, String text, int x, int y, int width, int height, bool opaqueWhenMidiMode, float fontSize)
+{
+    if (opaqueWhenMidiMode)     g.setColour (gesture.isMidiMapped() ? Colour (0xffffffff) : Colour (0x80ffffff));
+    else                        g.setColour (gesture.isMidiMapped() ? Colour (0x80ffffff) : Colour (0xffffffff));
+    
+    g.setFont (Font (fontSize, Font::plain).withTypefaceStyle ("Regular"));
+    g.drawText (TRANS(text), x, y, width, height,
+                Justification::centred, true);
 }

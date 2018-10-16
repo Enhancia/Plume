@@ -13,11 +13,10 @@
 #include "../../../../JuceLibraryCode/JuceHeader.h"
 #include "Ui/Gesture/Tuner/Tuner.h"
 
-#define W Component::getWidth()
-#define H Component::getHeight()
+#define W getWidth()
+#define H getHeight()
 
-class OneRangeTuner:    public Component,
-						public Tuner,
+class OneRangeTuner:    public Tuner,
                         private Slider::Listener,
                         private Label::Listener
 {
@@ -27,7 +26,6 @@ public:
                   const String unit = "", bool show = true)
         :   Tuner (val, totRange, unit, show), parameterRange (paramRange), parameterMax (paramMax)
     {
-        Component::setBounds (Tuner::getBounds());
         createSlider();
         createLabels();
     }
@@ -73,11 +71,11 @@ public:
         Tuner::resized(); // Base class resized
         
         // Sets bounds and changes the slider and labels position
-        Component::setBounds (Tuner::getBounds());
+        setBounds (Tuner::getBounds());
         rangeSlider->setBounds (Tuner::sliderPlacement.getStart(), H/3 - 6, Tuner::sliderPlacement.getLength(), 15);
         rangeLabelMin->setBounds (W*3/4+W/16, H/4, W/8, H/5);
         rangeLabelMax->setBounds (W*3/4+W/16, H*3/4, W/8, H/5);
-        Component::repaint();
+        repaint();
     }
     
     //==============================================================================

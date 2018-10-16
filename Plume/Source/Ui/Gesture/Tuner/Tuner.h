@@ -66,7 +66,7 @@ public:
         //g.drawRect(0, 0, getWidth(), getHeight()); // outline
         //g.drawRect(W*3/4, 0, 1, getHeight()); // boundary slider|values
         
-        if (value > totalRange.getStart() && value < totalRange.getEnd())
+        if (showValue && value > totalRange.getStart() && value < totalRange.getEnd())
         {
             drawCursor(g);
         }
@@ -131,7 +131,7 @@ private:
         }
         
         // Placement if value exceeds limits
-        else 
+        else
         {
             if (valueLab < totalRange.getStart())      xCursor = sliderPlacement.getStart() + 5;
             else if (valueLab > totalRange.getEnd())   xCursor = sliderPlacement.getEnd() - 5;

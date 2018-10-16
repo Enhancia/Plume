@@ -93,8 +93,7 @@ bool PlumeProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 
 void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {   
-    //gestureArray->updateAllValues();
-    
+    // if wrapped plugin, processes all MIDI / parameter values
     if (wrapper->isWrapping())
     {
         // Adds the gesture's MIDI messages to the buffer

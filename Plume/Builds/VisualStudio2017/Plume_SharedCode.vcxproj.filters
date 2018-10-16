@@ -4448,34 +4448,34 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Ressources\Images\Gestures\Close.png">
+    <None Include="..\..\Resources\Images\Gestures\Close.png">
       <Filter>Plume\Resources\Images\Gestures</Filter>
     </None>
-    <None Include="..\..\Ressources\Images\Gestures\pitchBend.png">
+    <None Include="..\..\Resources\Images\Gestures\OnOff.png">
       <Filter>Plume\Resources\Images\Gestures</Filter>
     </None>
-    <None Include="..\..\Ressources\Images\Gestures\OnOff.png">
+    <None Include="..\..\Resources\Images\Gestures\pitchBend.png">
       <Filter>Plume\Resources\Images\Gestures</Filter>
     </None>
-    <None Include="..\..\Ressources\Images\Gestures\roll.png">
+    <None Include="..\..\Resources\Images\Gestures\roll.png">
       <Filter>Plume\Resources\Images\Gestures</Filter>
     </None>
-    <None Include="..\..\Ressources\Images\Gestures\tilt.png">
+    <None Include="..\..\Resources\Images\Gestures\tilt.png">
       <Filter>Plume\Resources\Images\Gestures</Filter>
     </None>
-    <None Include="..\..\Ressources\Images\Gestures\vibrato.png">
+    <None Include="..\..\Resources\Images\Gestures\vibrato.png">
       <Filter>Plume\Resources\Images\Gestures</Filter>
     </None>
-    <None Include="..\..\Ressources\Images\Gestures\wave.png">
+    <None Include="..\..\Resources\Images\Gestures\wave.png">
       <Filter>Plume\Resources\Images\Gestures</Filter>
     </None>
-    <None Include="..\..\Ressources\Images\Logo\Logo_ENHANCIA_Round.png">
+    <None Include="..\..\Resources\Images\Logo\Logo_ENHANCIA_Round.png">
       <Filter>Plume\Resources\Images\Logo</Filter>
     </None>
-    <None Include="..\..\Ressources\Images\Wrapper\eye.png">
+    <None Include="..\..\Resources\Images\Wrapper\eye.png">
       <Filter>Plume\Resources\Images\Wrapper</Filter>
     </None>
-    <None Include="..\..\Ressources\Images\Wrapper\folder.png">
+    <None Include="..\..\Resources\Images\Wrapper\folder.png">
       <Filter>Plume\Resources\Images\Wrapper</Filter>
     </None>
     <None Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_audio_formats\codecs\flac\Flac Licence.txt">
@@ -4489,6 +4489,9 @@
     </None>
     <None Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_graphics\image_formats\pnglib\libpng_readme.txt">
       <Filter>JUCE Modules\juce_graphics\image_formats\pnglib</Filter>
+    </None>
+    <None Include=".\icon.ico">
+      <Filter>JUCE Library Code</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

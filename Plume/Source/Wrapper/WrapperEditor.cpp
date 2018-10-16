@@ -25,10 +25,12 @@ WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc)
     {
         setContentOwned (ui, true);
     }
-            
-    setTopLeftPosition (/*wrapperProcessor.getOwnerProcessor().getActiveEditor() == nullptr ?*/
-                        Point<int> (0,0)/* :
-                        wrapperProcessor.getOwnerProcessor().getActiveEditor()->getPosition()*/);
+    
+    //centreAroundComponent (wrapperProcessor.getOwnerWrapper().getOwner().getActiveEditor(), getWidth(), getHeight());
+    //setTopLeftPosition (/*wrapperProcessor.getOwnerProcessor().getActiveEditor() == nullptr ?*/
+    //                    Point<int> (0,0)/* :
+    //                    wrapperProcessor.getOwnerProcessor().getActiveEditor()->getPosition()*/);
+                        
     setVisible (true);
 }
 

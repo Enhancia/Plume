@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" jucerVersion="5.3.1"
-              pluginFormats="buildVST,buildStandalone" version="0.1" companyName="Enhancia"
+              pluginFormats="buildVST,buildStandalone" version="1.1.1" companyName="Enhancia"
               buildVST="1" buildVST3="0" buildAU="0" buildAUv3="0" buildRTAS="0"
               buildAAX="0" enableIAA="0" pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
               pluginManufacturer="Enhancia" pluginName="Plume" pluginDesc="Enhancia's Plume. Wraps other plugins and provides customizable and mappable gestures to use with Neova."
@@ -86,26 +86,26 @@
         </GROUP>
       </GROUP>
     </GROUP>
-    <GROUP id="{1DA701B0-86B1-D555-94AE-9A6D72F4225B}" name="Resources">
-      <GROUP id="{0A88E0E6-0AAA-1A53-7038-4FEE4168F5B2}" name="Fonts"/>
-      <GROUP id="{E197EADC-7951-2072-30F3-1E0791A4B2A7}" name="Images">
-        <GROUP id="{5DAA9652-AC5A-272C-7445-2818971B7B55}" name="Backgrounds"/>
-        <GROUP id="{E3B6538E-ABF7-74A3-09C1-5FA4BB791D93}" name="Gestures">
-          <FILE id="T0sQKI" name="Close.png" compile="0" resource="1" file="Ressources/Images/Gestures/Close.png"/>
-          <FILE id="vG9nZk" name="pitchBend.png" compile="0" resource="1" file="Ressources/Images/Gestures/pitchBend.png"/>
-          <FILE id="P5NmnU" name="OnOff.png" compile="0" resource="1" file="Ressources/Images/Gestures/OnOff.png"/>
-          <FILE id="o90tE2" name="roll.png" compile="0" resource="1" file="Ressources/Images/Gestures/roll.png"/>
-          <FILE id="zaqIaF" name="tilt.png" compile="0" resource="1" file="Ressources/Images/Gestures/tilt.png"/>
-          <FILE id="WxnGzF" name="vibrato.png" compile="0" resource="1" file="Ressources/Images/Gestures/vibrato.png"/>
-          <FILE id="fezwkn" name="wave.png" compile="0" resource="1" file="Ressources/Images/Gestures/wave.png"/>
+    <GROUP id="{546D02F0-3AB6-3299-2C87-A268693EF763}" name="Resources">
+      <GROUP id="{27E3E65B-7279-1B0D-BCF6-0DB2823FEC54}" name="Fonts"/>
+      <GROUP id="{C68567B8-DFE3-8FC9-B013-03678584A057}" name="Images">
+        <GROUP id="{3FD5E2A0-1ED1-28E0-6BB9-5FF273A9EF0B}" name="Backgrounds"/>
+        <GROUP id="{20DFADED-00CA-0C8D-0252-C1692DB76059}" name="Gestures">
+          <FILE id="imHDAT" name="Close.png" compile="0" resource="1" file="Resources/Images/Gestures/Close.png"/>
+          <FILE id="CXrCc0" name="OnOff.png" compile="0" resource="1" file="Resources/Images/Gestures/OnOff.png"/>
+          <FILE id="OyT0Q1" name="pitchBend.png" compile="0" resource="1" file="Resources/Images/Gestures/pitchBend.png"/>
+          <FILE id="crL2PT" name="roll.png" compile="0" resource="1" file="Resources/Images/Gestures/roll.png"/>
+          <FILE id="oFcoGt" name="tilt.png" compile="0" resource="1" file="Resources/Images/Gestures/tilt.png"/>
+          <FILE id="iUhiZn" name="vibrato.png" compile="0" resource="1" file="Resources/Images/Gestures/vibrato.png"/>
+          <FILE id="npAAWO" name="wave.png" compile="0" resource="1" file="Resources/Images/Gestures/wave.png"/>
         </GROUP>
-        <GROUP id="{818D20DD-E3FE-ED79-E2C1-85201F3EC29D}" name="Logo">
-          <FILE id="tNIIf1" name="Logo_ENHANCIA_Round.png" compile="0" resource="1"
-                file="Ressources/Images/Logo/Logo_ENHANCIA_Round.png"/>
+        <GROUP id="{F93B62CD-63A5-A9FA-49F9-786C5A767BCC}" name="Logo">
+          <FILE id="YXx8Ce" name="Logo_ENHANCIA_Round.png" compile="0" resource="1"
+                file="Resources/Images/Logo/Logo_ENHANCIA_Round.png"/>
         </GROUP>
-        <GROUP id="{AB57C5A1-AAC9-FB9E-461C-410B09E3DA75}" name="Wrapper">
-          <FILE id="IedX1u" name="eye.png" compile="0" resource="1" file="Ressources/Images/Wrapper/eye.png"/>
-          <FILE id="n2RDNf" name="folder.png" compile="0" resource="1" file="Ressources/Images/Wrapper/folder.png"/>
+        <GROUP id="{F6FAAEE0-96DB-E95C-4118-7E49BA1F7C90}" name="Wrapper">
+          <FILE id="eMeLtE" name="eye.png" compile="0" resource="1" file="Resources/Images/Wrapper/eye.png"/>
+          <FILE id="rrePb0" name="folder.png" compile="0" resource="1" file="Resources/Images/Wrapper/folder.png"/>
         </GROUP>
       </GROUP>
     </GROUP>
@@ -114,12 +114,10 @@
     <WINDOWS/>
   </LIVE_SETTINGS>
   <EXPORTFORMATS>
-    <VS2017 targetFolder="Builds/VisualStudio2017">
+    <VS2017 targetFolder="Builds/VisualStudio2017" bigIcon="YXx8Ce">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="0" name="Release" headerPath="D:\Workspace\GitWorkspace\Plume\Plume\Source"
-                       useRuntimeLibDLL="0"/>
-        <CONFIGURATION isDebug="1" name="Debug" headerPath="D:\Workspace\GitWorkspace\Plume\Plume\Source"
-                       useRuntimeLibDLL="0"/>
+        <CONFIGURATION isDebug="0" name="Release" headerPath="D:\Workspace\GitWorkspace\Plume\Plume\Source"/>
+        <CONFIGURATION isDebug="1" name="Debug" headerPath="D:\Workspace\GitWorkspace\Plume\Plume\Source"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../../../Programmes/JUCE/modules"/>
@@ -139,6 +137,29 @@
         <MODULEPATH id="juce_audio_utils" path="../../../../Programmes/JUCE/modules"/>
       </MODULEPATHS>
     </VS2017>
+    <XCODE_MAC targetFolder="Builds/MacOSX">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" headerPath="/Users/macbook/Documents/Dev Plume/Plume/Plume/Source"/>
+        <CONFIGURATION isDebug="0" name="Release" headerPath="/Users/macbook/Documents/Dev Plume/Plume/Plume/Source"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_video" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_opengl" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../../../Programmes/JUCE/modules"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
   </EXPORTFORMATS>
   <MODULES>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>

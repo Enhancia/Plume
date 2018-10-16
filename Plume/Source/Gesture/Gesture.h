@@ -15,6 +15,7 @@
 
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 #define TRACE_OUT Logger::writeToLog ("[-FNC]  Leaving: " + String(__FUNCTION__))
+
 /**
  *  \class Gesture Gesture.h
  *
@@ -78,7 +79,8 @@ public:
      *  \param maxRange The maximum values that the gesture's value can take.
      *  \param defaultValue The default value of the gesture's value attribute.
      */
-    Gesture(String gestName, int gestType, Range<float> maxRange, float defaultValue = 0.0f)	: name (gestName), type (gestType)
+    Gesture(String gestName, int gestType, Range<float> maxRange,
+            float defaultValue = 0.0f, int defaultCc = 1)	: name (gestName), type (gestType)
     {
         TRACE_IN;
         on = false;
@@ -86,6 +88,7 @@ public:
         midiMap = false;
         range = maxRange;
         value = defaultValue;
+        cc = defaultCc;
     }
     
     /**
@@ -163,7 +166,7 @@ public:
      *
      *  \param midiMessages Reference to a MidiBuffer in which the pitch messages will be changed. 
      */
-    static void addEventAndMergePitchToBuffer (MidiBuffer& midiMessages, int midiValue, int channel)
+    static void addEventAndMergePitchToBuffer (MidiBuffer& midiMessages, int midiValue, int channel/*, int& basePitch*/)
     {
         MidiBuffer newBuff;
         int time;
@@ -173,16 +176,29 @@ public:
         {
             if (m.isPitchWheel()) // checks for pitch wheel events
             {
+                // Changes the reference to the event's pitch message value
+                //basePitch = m.getPitchWheelValue();
+                
                 // Creates a pitch message with the right value
+                //int newVal = basePitch - 8192 + midiValue;
+                
                 int newVal = m.getPitchWheelValue() - 8192 + midiValue;
                 if (newVal < 0) newVal = 0;
                 else if (newVal > 16383) newVal = 16383;
+                
+                DBG ("OldVal = " << m.getPitchWheelValue() << "| NewVal = " << newVal);
                 
                 m = MidiMessage::pitchWheel (m.getChannel(), newVal);
             }
             
             newBuff.addEvent (m, time);
         }
+        /*
+        // Computes the right value (uses midi value along with basePitch)
+        midiValue = basePitch - 8192 + midiValue;
+        if (midiValue < 0) midiValue = 0;
+        else if (midiValue > 16383) midiValue = 16383;
+        */
         
         // Adds gesture's initial midi message
         newBuff.addEvent (MidiMessage::pitchWheel (channel, midiValue), 1);
@@ -207,7 +223,7 @@ public:
         
         for (MidiBuffer::Iterator i (midiMessages); i.getNextEvent (m, time);)
         {
-            if (m.isControllerOfType (ccValue)) // checks for modwheel events
+            if (m.isControllerOfType (ccValue)) // checks if right event
             {
                 // Creates a cc message with the new value
                 int newVal = m.getControllerValue() + midiValue;
@@ -266,11 +282,49 @@ public:
     }
     
     /**
+     *  \brief Setter for the "midiMap" boolean value.
+     *
+     *  \param shouldBeMidiMapped The boolean value to set.
+     */
+    void setMidiMapped (bool shouldBeMidiMapped)
+    {
+        midiMap = shouldBeMidiMapped;
+    }
+    
+    /**
+     *  \brief Setter for the "cc" integer value.
+     *
+     *  \param ccValue The integer value to set.
+     */
+    void setCc (int ccValue)
+    {
+        cc = ccValue;
+    }
+    
+    /**
+     *  \brief Getter for the "cc" integer value.
+     *
+     *  \returns The cc value used by the gesture.
+     */
+    int getCc()
+    {
+        return cc;
+    }
+    
+    /**
      *  \brief Getter for the "mapped" boolean value.
      */
     bool isMapped()
     {
         return mapped;
+    }
+    
+    /**
+     *  \brief Getter for the "midiMap" boolean value.
+     */
+    bool isMidiMapped()
+    {
+        return midiMap;
     }
     
     /**
@@ -479,10 +533,12 @@ protected:
     bool on; /**< \brief Boolean that represents if the gesture is active or not. */
     bool mapped; /**< \brief Boolean that represents if the gesture is mapped or not. */
     bool midiMap; /**< \brief Boolean that tells if the gesture is currently in midiMap mode */
+    int cc; /**< \brief Integer value that represent the CC used for the gesture in midiMap mode (default 1: modwheel) */
     
     //==============================================================================
     float value; /**< \brief Parameter that holds the current "raw" value of the gesture. Should be used and updated by subclasses. */
     Range<float> range; /**< \brief Attribute that holds the maximum range of values that the attribute "value" can take. */
+	//int pitchReference = 8192; /**< \brief Base pitch value, that comes from external midi controllers */
     
     OwnedArray<MappedParameter> parameterArray;  /**< \brief Array of all the MappedParameter that the gesture controls. */
 };

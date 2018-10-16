@@ -23,7 +23,10 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 {
     TRACE_IN;
     
-    setSize (800, 600);
+    // Base size and resize settings
+    setSize (800, 540);
+    //setResizable (true, true);
+    //setResizeLimits (200, 200, 2000, 2000);
     
     // Creates the 3 main components
     addAndMakeVisible (wrapperComp = new WrapperComponent (processor.getWrapper()));
@@ -33,7 +36,7 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	presetComp->setBounds(wrapperComp->getWidth() + 3*MARGIN, 2*MARGIN, getWidth() - wrapperComp->getWidth() - 5*MARGIN, TOP_PANEL);
 	
 	addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(), FRAMERATE));
-	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 4*MARGIN, getWidth() - 4*MARGIN, getHeight() - TOP_PANEL - 50 - 8*MARGIN);
+	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 4*MARGIN, getWidth() - 4*MARGIN, getHeight() - TOP_PANEL - 4*MARGIN);
 	gesturePanel->initialize();
 	
     // Adds itself as a change listener for plume's processor
@@ -41,10 +44,12 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     
     //====================================================================
     // Creates the data reader component, might need to be deleted in the future
+    /*
 	auto* dataReader = processor.getDataReader();
     addAndMakeVisible (dataReader);
     dataReader->setTopLeftPosition (Point<int> (getWidth()  - dataReader->getWidth()  - 2*MARGIN,
 												getHeight() - dataReader->getHeight() - 2*MARGIN));
+	*/
 }
 
 PlumeEditor::~PlumeEditor()
@@ -60,7 +65,15 @@ PlumeEditor::~PlumeEditor()
 //==============================================================================
 void PlumeEditor::paint (Graphics& g)
 {
+    // Background
     g.fillAll (Colour (0xffe0e0e0));
+    
+    // Version Text
+    g.setColour (Colour (0xff000000));
+    g.setFont (Font (10.0f, Font::italic).withTypefaceStyle ("Regular"));
+    g.drawText ("Plume " + String(JucePlugin_VersionString),
+                getWidth() - 100, getHeight() - MARGIN, 100, MARGIN,
+                Justification::centredRight, true);
 }
 
 void PlumeEditor::resized()
@@ -99,6 +112,6 @@ void PlumeEditor::updateFullInterface()
     presetComp->update();
     
     addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(), FRAMERATE));
-	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 4*MARGIN, getWidth() - 4*MARGIN, getHeight() - TOP_PANEL - 50 - 8*MARGIN);
+	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 4*MARGIN, getWidth() - 4*MARGIN, getHeight() - TOP_PANEL - 4*MARGIN);
 	gesturePanel->initialize();
 }

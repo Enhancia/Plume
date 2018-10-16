@@ -14,7 +14,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{26910EAF-2498-E52E-B1D0-F36C46D2EE82}</ProjectGuid>
+    <ProjectGuid>{DC533E04-2F4B-451D-19B9-BC82E6493EAB}</ProjectGuid>
     <PlatformToolset>v141</PlatformToolset>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -73,8 +73,8 @@
     <ClCompile>
       <Optimization>Full</Optimization>
       <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\..\..\..\..\Programmes\JUCE\modules;D:\Workspace\GitWorkspace\Plume\Plume\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;JUCER_VS2017_78A5024=1;JUCE_APP_VERSION=0.1;JUCE_APP_VERSION_HEX=0x100;JucePlugin_Build_VST=1;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=1;JUCE_SHARED_CODE=1;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;JUCER_VS2017_78A5024=1;JUCE_APP_VERSION=1.1.1;JUCE_APP_VERSION_HEX=0x10101;JucePlugin_Build_VST=1;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=1;JUCE_SHARED_CODE=1;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader/>
       <AssemblerListingLocation>$(IntDir)\</AssemblerListingLocation>
@@ -117,8 +117,8 @@
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\..\..\..\..\Programmes\JUCE\modules;D:\Workspace\GitWorkspace\Plume\Plume\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2017_78A5024=1;JUCE_APP_VERSION=0.1;JUCE_APP_VERSION_HEX=0x100;JucePlugin_Build_VST=1;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=1;JUCE_SHARED_CODE=1;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2017_78A5024=1;JUCE_APP_VERSION=1.1.1;JUCE_APP_VERSION_HEX=0x10101;JucePlugin_Build_VST=1;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=1;JUCE_SHARED_CODE=1;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader/>
       <AssemblerListingLocation>$(IntDir)\</AssemblerListingLocation>
@@ -2592,20 +2592,21 @@
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h"/>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Ressources\Images\Gestures\Close.png"/>
-    <None Include="..\..\Ressources\Images\Gestures\pitchBend.png"/>
-    <None Include="..\..\Ressources\Images\Gestures\OnOff.png"/>
-    <None Include="..\..\Ressources\Images\Gestures\roll.png"/>
-    <None Include="..\..\Ressources\Images\Gestures\tilt.png"/>
-    <None Include="..\..\Ressources\Images\Gestures\vibrato.png"/>
-    <None Include="..\..\Ressources\Images\Gestures\wave.png"/>
-    <None Include="..\..\Ressources\Images\Logo\Logo_ENHANCIA_Round.png"/>
-    <None Include="..\..\Ressources\Images\Wrapper\eye.png"/>
-    <None Include="..\..\Ressources\Images\Wrapper\folder.png"/>
+    <None Include="..\..\Resources\Images\Gestures\Close.png"/>
+    <None Include="..\..\Resources\Images\Gestures\OnOff.png"/>
+    <None Include="..\..\Resources\Images\Gestures\pitchBend.png"/>
+    <None Include="..\..\Resources\Images\Gestures\roll.png"/>
+    <None Include="..\..\Resources\Images\Gestures\tilt.png"/>
+    <None Include="..\..\Resources\Images\Gestures\vibrato.png"/>
+    <None Include="..\..\Resources\Images\Gestures\wave.png"/>
+    <None Include="..\..\Resources\Images\Logo\Logo_ENHANCIA_Round.png"/>
+    <None Include="..\..\Resources\Images\Wrapper\eye.png"/>
+    <None Include="..\..\Resources\Images\Wrapper\folder.png"/>
     <None Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_audio_formats\codecs\flac\Flac Licence.txt"/>
     <None Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_audio_formats\codecs\oggvorbis\Ogg Vorbis Licence.txt"/>
     <None Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_graphics\image_formats\jpglib\changes to libjpeg for JUCE.txt"/>
     <None Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_graphics\image_formats\pnglib\libpng_readme.txt"/>
+    <None Include=".\icon.ico"/>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include=".\resources.rc"/>

@@ -29,7 +29,14 @@ void Roll::addGestureMidi (MidiBuffer& midiMessages)
         return;
     }
     
-    addEventAndMergeCCToBuffer (midiMessages, getMidiValue(), 1, 1);
+    if (midiMap)
+    {
+        addEventAndMergeCCToBuffer (midiMessages, getMidiValue(), cc, 1);
+    }
+    else
+    {
+        //addEventAndMergeCCToBuffer (midiMessages, getMidiValue(), 1, 1);
+    }
 }
 
 int Roll::getMidiValue()
@@ -48,7 +55,6 @@ void Roll::updateMappedParameters()
     // Goes through the parameterArray to update each value
     for (auto* param : parameterArray)
     {   
-        
         param->parameter.setValueNotifyingHost (getValueForMappedParameter (param->range));
     }
 }
@@ -61,7 +67,7 @@ float Roll::getValueForMappedParameter (Range<float> paramRange)
 //==============================================================================
 void Roll::updateValue (const Array<float> rawData)
 {
-    value = rawData[4];
+    value = -rawData[5];
 }
 
 void Roll::addGestureParameters()

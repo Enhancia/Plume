@@ -16,10 +16,9 @@
 #define W Component::getWidth()
 #define H Component::getHeight()
 
-class SymmetricalTuner:    public Component,
-						   public Tuner,
+class SymmetricalTuner:    public Tuner,
                            private Slider::Listener,
-                           private Label::Listener
+                           protected Label::Listener
 {
 public:
     //==============================================================================
@@ -65,36 +64,39 @@ public:
         Tuner::resized(); // Base class resized
         
         // Sets bounds and changes the slider position
-        Component::setBounds (Tuner::getBounds());
+        setBounds (Tuner::getBounds());
         symmetricalSlider->setBounds (Tuner::sliderPlacement.getStart(), H/3 - 6, Tuner::sliderPlacement.getLength(), 15);
         rangeLabel->setBounds (W*3/4+W/16, H/4, W/8, H/5);
-        Component::repaint();
+        repaint();
     }
     
     //==============================================================================
     void labelTextChanged (Label* lbl) override
     {
-        // checks that the string is numbers only
-        if (lbl->getText().containsOnly ("-0123456789"+valueUnit) == false)
+        if (lbl == rangeLabel)
         {
-            lbl->setText (String (int (parameter)), dontSendNotification);
-            return;
-        }
+            // checks that the string is numbers only
+            if (lbl->getText().containsOnly ("-0123456789"+valueUnit) == false)
+            {
+                lbl->setText (String (int (parameter)), dontSendNotification);
+                return;
+            }
             
-        float val;
+            float val;
         
-        // Gets the float value of the text 
-        if (valueUnit != "" && lbl->getText().endsWith(valueUnit)) val = lbl->getText().upToFirstOccurrenceOf(valueUnit, false, false).getFloatValue();
-        else                                                       val = lbl->getText().getFloatValue();
+            // Gets the float value of the text 
+            if (valueUnit != "" && lbl->getText().endsWith(valueUnit)) val = lbl->getText().upToFirstOccurrenceOf(valueUnit, false, false).getFloatValue();
+            else                                                       val = lbl->getText().getFloatValue();
         
-        if (val < 0.0f) val = 0.0f;
-        else if (val > parameterMax) val = parameterMax;
+            if (val < 0.0f) val = 0.0f;
+            else if (val > parameterMax) val = parameterMax;
         
-        parameter = val;
+            parameter = val;
         
-        lbl->setText (String (int (parameter)), dontSendNotification);
-        symmetricalSlider->setMinValue(-parameter, dontSendNotification);
-        symmetricalSlider->setMaxValue(parameter, dontSendNotification);
+            lbl->setText (String (int (parameter)), dontSendNotification);
+            symmetricalSlider->setMinValue(-parameter, dontSendNotification);
+            symmetricalSlider->setMaxValue(parameter, dontSendNotification);
+        }
     }
     
     void sliderValueChanged (Slider* sldr) override
