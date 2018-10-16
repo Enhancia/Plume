@@ -64,10 +64,10 @@ public:
         Tuner::resized(); // Base class resized
         
         // Sets bounds and changes the slider position
-        Component::setBounds (Tuner::getBounds());
+        setBounds (Tuner::getBounds());
         symmetricalSlider->setBounds (Tuner::sliderPlacement.getStart(), H/3 - 6, Tuner::sliderPlacement.getLength(), 15);
         rangeLabel->setBounds (W*3/4+W/16, H/4, W/8, H/5);
-        Component::repaint();
+        repaint();
     }
     
     //==============================================================================

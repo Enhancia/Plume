@@ -32,6 +32,7 @@ void GestureArray::initializeGestures()
     addGesture ("Vibrato_Default", Gesture::vibrato);
     addGesture ("PitchBend_Default", Gesture::pitchBend);
     addGesture ("Tilt_Default", Gesture::tilt);
+    //addGesture ("Roll_Default", Gesture::roll);
 }
 
 //==============================================================================

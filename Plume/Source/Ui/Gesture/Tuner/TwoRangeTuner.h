@@ -90,7 +90,7 @@ public:
         rangeLabelMaxLeft->setBounds  (W*7/8+2, H/4, W/8-4, H/5);
         rangeLabelMinRight->setBounds (W*3/4+2, H*3/4, W/8-4, H/5);
         rangeLabelMaxRight->setBounds (W*7/8+2, H*3/4, W/8-4, H/5);
-        Component::repaint();
+        repaint();
     }
     
     //==============================================================================

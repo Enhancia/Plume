@@ -103,8 +103,9 @@ void WrapperComponent::scanPlugin()
     TRACE_IN;
     // Lets the user chose a file, and changes the plugin path accordingly
     FileChooser pluginScanner ("Select the plugin you want to load.",
-                               File::getSpecialLocation (File::currentApplicationFile).getParentDirectory(),
-                               "*.dll;*.vst;*.so");
+                               File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getParentDirectory(),
+                               "*.dll;*.vst;*.so",
+                               false);
                                
     if (pluginScanner.browseForFileToOpen())
     {

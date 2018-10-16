@@ -48,18 +48,23 @@ int Vibrato::getMidiValue()
     {
         vibLast = true;
         send = true;
-        return (midiMap ? Gesture::normalizeMidi (-(500.0f - gain), (500.01f - gain), value)
-                        : Gesture::map (value, -(500.0f - gain), (500.01f - gain), 0, 16383));
+        
+        if (midiMap) return Gesture::normalizeMidi (-(500.0f - gain), (500.01f - gain), value);
+        else         return Gesture::map (value, -(500.0f - gain), (500.01f - gain), 0, 16383);
     }
+    
     else if (vibTrig != vibLast && vibTrig == false)
     {
         vibLast = false;
         send = true;
-        return (midiMap ? 64 : 8192);
+        
+        if (midiMap) return 64;
+        else         return 8192;
     }
     
     send = false;
-    return (midiMap ? 64 : 8192);
+    if (midiMap) return 64;
+    else         return 8192;
 }
 
 void Vibrato::updateMappedParameters()
