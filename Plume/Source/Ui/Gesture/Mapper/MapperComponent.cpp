@@ -34,6 +34,9 @@ MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr, PluginWr
     clearMapButton->addListener (this);
     clearMapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
     
+    // midiMode Component
+    addAndMakeVisible (midiModeComp = new MidiModeComponent (gesture));
+    
     // midiMode button
     String PlumeDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getFullPathName();
     Image midiOn = ImageFileFormat::loadFrom (File (PlumeDir + "/Resources/Images/Gestures/OnOff.png"));
@@ -49,6 +52,7 @@ MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr, PluginWr
 	                                               : Button::buttonNormal);
     midiMapButton->addListener (this);
     
+    /*
     // CC label
     addAndMakeVisible (ccLabel = new Label ("CC Label", TRANS (String(gesture.getCc()))));
     ccLabel->setEditable (true, false, false);
@@ -57,6 +61,7 @@ MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr, PluginWr
     ccLabel->setColour (Label::backgroundColourId, Colour(0xff000000));
     ccLabel->setJustificationType (Justification::centred);
     ccLabel->addListener (this);
+    */
     
     // Adding the mapper as a change listener
     gesture.addChangeListener (this);
@@ -77,12 +82,14 @@ MapperComponent::~MapperComponent()
     mapButton->removeListener (this);
     clearMapButton->removeListener (this);
     midiMapButton->removeListener (this);
-    ccLabel->removeListener (this);
+    //ccLabel->removeListener (this);
     
     mapButton = nullptr;
     clearMapButton = nullptr;
     midiMapButton = nullptr;
-    ccLabel = nullptr;
+    //ccLabel = nullptr;
+    
+    midiModeComp = nullptr;
 }
 
 //==============================================================================
@@ -121,7 +128,8 @@ void MapperComponent::paint (Graphics& g)
                     W*2/9,
                     H/8,
                     true, 11.0f);
-                        
+    
+    /*
     // "CC" text
     drawMapperText (g, "CC",
                     W*3/4,
@@ -129,6 +137,7 @@ void MapperComponent::paint (Graphics& g)
                     W/6,
                     H/12,
                     true, 14.0f);
+     */
 }
 
 void MapperComponent::resized()
@@ -138,7 +147,8 @@ void MapperComponent::resized()
     mapButton->setBounds (W*2/3 + bttnPanW/8, bttnPanH/8, bttnPanW*3/4, bttnPanH/3);
     clearMapButton->setBounds (W*2/3 + bttnPanW/4, bttnPanH*5/8, bttnPanW/2, bttnPanH/3);
     midiMapButton->setBounds (W*2/3, bttnPanH, bttnPanW/3, bttnPanH/4);
-    ccLabel->setBounds (W*3/4, H*3/4 + 2, bttnPanW/2, bttnPanH/3);
+    //ccLabel->setBounds (W*3/4, H*3/4 + 2, bttnPanW/2, bttnPanH/3);
+    midiModeComp->setBounds (W*2/3, bttnPanH, bttnPanW, bttnPanH);
 	
     resizeArray();
     
@@ -186,13 +196,13 @@ void MapperComponent::buttonClicked (Button* bttn)
         {
             gesture.setMidiMapped (false);
             gesture.setMapped (!(paramCompArray.isEmpty()));
-            ccLabel->setEditable (false, false, false);
+            //ccLabel->setEditable (false, false, false);
         }
         else // midiMapOn
         {
             gesture.setMidiMapped (true);
             gesture.setMapped (true);
-            ccLabel->setEditable (true, false, false);
+            //ccLabel->setEditable (true, false, false);
         }
         
         setAlphas();
@@ -210,10 +220,10 @@ void MapperComponent::labelTextChanged (Label* lbl)
     }
     
     int val = lbl->getText().getIntValue();
-        
+    
     if (val < 0) val = 0;
     else if (val > 127) val = 127;
-        
+    
     gesture.setCc(val);
     
     lbl->setText (String(val), dontSendNotification);
@@ -289,7 +299,7 @@ void MapperComponent::resizeArray()
     {
         int x = (i%2) * w;
         int y = (i/2) * h + getHeight()/4;
-        
+    
         paramCompArray[i]->setBounds (x, y, w, h);
     }
 }
@@ -305,9 +315,9 @@ void MapperComponent::setAlphas()
         {
             comp->setAlpha (1.0f);
         }
-    
-        ccLabel->setAlpha (0.5f);
         
+        //ccLabel->setAlpha (0.5f);
+    
     }
     else
     {
@@ -318,7 +328,7 @@ void MapperComponent::setAlphas()
             comp->setAlpha (0.5f);
         }
         
-        ccLabel->setAlpha (1.0f);
+        //ccLabel->setAlpha (1.0f);
     }
 }
 

@@ -14,6 +14,7 @@
 #include "Wrapper/PluginWrapper.h"
 #include "Gesture/Gesture.h"
 #include "Ui/Gesture/Mapper/MappedParameterComponent.h"
+#include "Ui/Gesture/Mapper/MidiModeComponent.h"
 
 //==============================================================================
 /*
@@ -74,6 +75,7 @@ private:
     bool allowDisplayUpdate = true;
     
     //==============================================================================
+    ScopedPointer<MidiModeComponent> midiModeComp;
     OwnedArray<MappedParameterComponent> paramCompArray;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MapperComponent)

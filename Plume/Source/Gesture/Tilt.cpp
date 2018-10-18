@@ -31,7 +31,7 @@ void Tilt::addGestureMidi (MidiBuffer& midiMessages)
     
     if (midiMap)
     {
-        addEventAndMergeCCToBuffer (midiMessages, getMidiValue(), cc, 1);
+        addMidiModeSignalToBuffer (midiMessages, getMidiValue(), 0, 127, 1);
     }
     else
     {

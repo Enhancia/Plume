@@ -14,7 +14,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{DC533E04-2F4B-451D-19B9-BC82E6493EAB}</ProjectGuid>
+    <ProjectGuid>{019C475C-B6F5-1592-1788-E1E890F4184F}</ProjectGuid>
     <PlatformToolset>v141</PlatformToolset>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -73,7 +73,7 @@
     <ClCompile>
       <Optimization>Full</Optimization>
       <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\..\..\..\..\Programmes\JUCE\modules;D:\Workspace\GitWorkspace\Plume\Plume\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;JUCER_VS2017_78A5024=1;JUCE_APP_VERSION=1.1.1;JUCE_APP_VERSION_HEX=0x10101;JucePlugin_Build_VST=1;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=1;JUCE_SHARED_CODE=1;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;JUCER_VS2017_78A5024=1;JUCE_APP_VERSION=1.1.2;JUCE_APP_VERSION_HEX=0x10102;JucePlugin_Build_VST=1;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=1;JUCE_SHARED_CODE=1;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader/>
@@ -117,7 +117,7 @@
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\..\..\..\..\Programmes\JUCE\modules;D:\Workspace\GitWorkspace\Plume\Plume\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2017_78A5024=1;JUCE_APP_VERSION=1.1.1;JUCE_APP_VERSION_HEX=0x10101;JucePlugin_Build_VST=1;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=1;JUCE_SHARED_CODE=1;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2017_78A5024=1;JUCE_APP_VERSION=1.1.2;JUCE_APP_VERSION_HEX=0x10102;JucePlugin_Build_VST=1;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=1;JUCE_SHARED_CODE=1;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader/>
@@ -162,8 +162,8 @@
     <ClCompile Include="..\..\Source\Wrapper\PluginWrapper.cpp"/>
     <ClCompile Include="..\..\Source\Wrapper\WrapperEditor.cpp"/>
     <ClCompile Include="..\..\Source\Wrapper\WrapperProcessor.cpp"/>
-    <ClCompile Include="..\..\Source\Ui\Gesture\Mapper\MapperComponent.cpp"/>
     <ClCompile Include="..\..\Source\Ui\Gesture\GesturePanel.cpp"/>
+    <ClCompile Include="..\..\Source\Ui\Gesture\Mapper\MapperComponent.cpp"/>
     <ClCompile Include="..\..\Source\Ui\Presets\PresetComponent.cpp"/>
     <ClCompile Include="..\..\Source\Ui\Wrapper\WrapperComponent.cpp"/>
     <ClCompile Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_audio_basics\buffers\juce_AudioChannelSet.cpp">
@@ -1913,14 +1913,15 @@
     <ClInclude Include="..\..\Source\Wrapper\PluginWrapper.h"/>
     <ClInclude Include="..\..\Source\Wrapper\WrapperEditor.h"/>
     <ClInclude Include="..\..\Source\Wrapper\WrapperProcessor.h"/>
-    <ClInclude Include="..\..\Source\Ui\Gesture\Mapper\MappedParameterComponent.h"/>
+    <ClInclude Include="..\..\Source\Ui\Gesture\GesturePanel.h"/>
     <ClInclude Include="..\..\Source\Ui\Gesture\Mapper\MapperComponent.h"/>
+    <ClInclude Include="..\..\Source\Ui\Gesture\Mapper\MappedParameterComponent.h"/>
+    <ClInclude Include="..\..\Source\Ui\Gesture\Mapper\MidiModeComponent.h"/>
     <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\GesturesTuner.h"/>
     <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\OneRangeTuner.h"/>
     <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\SymmetricalTuner.h"/>
     <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\Tuner.h"/>
     <ClInclude Include="..\..\Source\Ui\Gesture\Tuner\TwoRangeTuner.h"/>
-    <ClInclude Include="..\..\Source\Ui\Gesture\GesturePanel.h"/>
     <ClInclude Include="..\..\Source\Ui\Presets\PresetComponent.h"/>
     <ClInclude Include="..\..\Source\Ui\Wrapper\WrapperComponent.h"/>
     <ClInclude Include="..\..\..\..\..\..\Programmes\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h"/>

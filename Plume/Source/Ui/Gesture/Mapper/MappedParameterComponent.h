@@ -85,7 +85,7 @@ public:
 			int x = 2,
 				y = H/3 - 3,
 				width = W*2/3 - 4,
-				height = 2;
+				height = 1;
 				
             g.setColour (Colours::black);    
             g.fillRect(x, y, width, height);
