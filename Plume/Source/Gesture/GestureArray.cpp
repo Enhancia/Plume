@@ -328,42 +328,47 @@ void GestureArray::addMergedPitchMessage (MidiBuffer& midiMessages)
 //==============================================================================
 void GestureArray::addGestureFromXml (XmlElement& gesture)
 {
-    switch (gesture.getIntAttribute("type", -1))
+    // Adds the right gesture
+    switch (gesture.getIntAttribute ("type", -1))
     {
         case Gesture::vibrato:
-            gestures.add (new Vibrato (gesture.getTagName(), float (gesture.getDoubleAttribute("gain", 400.0f)) ));
+            gestures.add (new Vibrato (gesture.getTagName(), float(gesture.getDoubleAttribute ("gain", 400.0f)) ));
             break;
         
         case Gesture::pitchBend:
-            gestures.add (new PitchBend (gesture.getTagName(), float (gesture.getDoubleAttribute("startLeft", -50.0f)),
-                                                               float (gesture.getDoubleAttribute("endLeft", -20.0f)),
-                                                               float (gesture.getDoubleAttribute("startRight", 30.0f)),
-                                                               float (gesture.getDoubleAttribute("endRight", 60.0f))));
+            gestures.add (new PitchBend (gesture.getTagName(), float(gesture.getDoubleAttribute ("startLeft", -50.0f)),
+                                                               float(gesture.getDoubleAttribute ("endLeft", -20.0f)),
+                                                               float(gesture.getDoubleAttribute ("startRight", 30.0f)),
+                                                               float(gesture.getDoubleAttribute ("endRight", 60.0f))));
             break;
             
         case Gesture::tilt:
-            gestures.add (new Tilt (gesture.getTagName(), float (gesture.getDoubleAttribute("start", 0.0f)),
-                                                          float (gesture.getDoubleAttribute("end", 50.0f))));
+            gestures.add (new Tilt (gesture.getTagName(), float(gesture.getDoubleAttribute ("start", 0.0f)),
+                                                          float(gesture.getDoubleAttribute ("end", 50.0f))));
             break;
         /*    
         case Gesture::wave:
-            gestures.add (new Wave (gesture.getTagName(), float (gesture.getDoubleAttribute("start", 0.0f)),
-                                                          float (gesture.getDoubleAttribute("end", 50.0f))));
+            gestures.add (new Wave (gesture.getTagName(), float(gesture.getDoubleAttribute ("start", 0.0f)),
+                                                          float(gesture.getDoubleAttribute ("end", 50.0f))));
             break;
         */
         case Gesture::roll:
-            gestures.add (new Roll (gesture.getTagName(), float (gesture.getDoubleAttribute("start", -30.0f)),
-                                                          float (gesture.getDoubleAttribute("end", 30.0f))));
+            gestures.add (new Roll (gesture.getTagName(), float(gesture.getDoubleAttribute ("start", -30.0f)),
+                                                          float(gesture.getDoubleAttribute ("end", 30.0f))));
             break;
         
         default:
             return;
     }
     
+    // Sets the gesture parameters to the Xlm's values
     gestures.getLast()->setActive (gesture.getBoolAttribute ("on", true));
     gestures.getLast()->setMapped (gesture.getBoolAttribute ("mapped", false));
     gestures.getLast()->setMidiMapped (gesture.getBoolAttribute ("midiMap", false));
     gestures.getLast()->setCc (gesture.getIntAttribute ("cc", 1));
+    gestures.getLast()->midiRange.setStart ( float(gesture.getDoubleAttribute ("midiStart", 0.0)));
+    gestures.getLast()->midiRange.setEnd ( float(gesture.getDoubleAttribute ("midiEnd", 1.0)));
+    gestures.getLast()->midiType = gesture.getIntAttribute ("midiType", Gesture::controlChange);
     
     checkPitchMerging();
 }
@@ -380,9 +385,12 @@ void GestureArray::createGestureXml (XmlElement& gesturesData)
         gestXml->setAttribute ("mapped", g->isMapped());
         gestXml->setAttribute ("midiMap", g->isMidiMapped());
         gestXml->setAttribute ("cc", g->getCc());
+        gestXml->setAttribute ("midiStart", g->midiRange.getStart());
+        gestXml->setAttribute ("midiEnd", g->midiRange.getEnd());
+        gestXml->setAttribute ("midiType", g->midiType);
         
         // Gesture Specific attributes
-        if      (g->type == Gesture::vibrato)
+        if (g->type == Gesture::vibrato)
         {
             Vibrato& v = dynamic_cast<Vibrato&> (*g);
             gestXml->setAttribute ("gain", double (v.gain));

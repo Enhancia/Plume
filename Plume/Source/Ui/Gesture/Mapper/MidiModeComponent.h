@@ -25,16 +25,7 @@ class MidiModeComponent    : public Component,
 public:
     MidiModeComponent(Gesture& gest)    : gesture (gest)
     {
-        // MidiTypeBox
-        
-        addAndMakeVisible (midiTypeBox = new ComboBox ("midiTypeBox"));
-        midiTypeBox->addItem ("CC", Gesture::controlChange);
-        midiTypeBox->addItem ("Pitch", Gesture::pitch);
-        midiTypeBox->addItem ("AfterTouch", Gesture::afterTouch);
-        midiTypeBox->setSelectedId (gesture.midiType, dontSendNotification);
-        midiTypeBox->setJustificationType (Justification::centred);
-        midiTypeBox->addListener (this);
-        
+        createComboBox();
         createLabels();
     }
 
@@ -58,7 +49,7 @@ public:
 
     void resized() override
     {
-        midiTypeBox->setBounds (W/6 , H/4 + 1, W*2/3, H/4 - 2);
+        midiTypeBox->setBounds (4 , H/4 + 1, W - 8, H/4 - 2);
         ccLabel->setBounds (W/4 , H/2 + 1, W/2, H/4 - 2);
 	    rangeLabelMin->setBounds (2, H*3/4 + 2, W/2 - 4, H/4 - 4);
 	    rangeLabelMax->setBounds (W/2 + 2, H*3/4 + 2, W/2 - 4, H/4 - 4);
@@ -110,10 +101,8 @@ public:
                 if ( val > gesture.midiRange.getEnd()) val = gesture.midiRange.getEnd();
             
                 // Normal case
-                {
-                    gesture.midiRange.setStart(val);
-                    lbl->setText (String (gesture.midiRange.getStart(), 2), dontSendNotification);
-                }
+                gesture.midiRange.setStart(val);
+                lbl->setText (String (gesture.midiRange.getStart(), 2), dontSendNotification);
             }
             else if (lbl == rangeLabelMax)
             {
@@ -121,10 +110,8 @@ public:
                 if ( val < gesture.midiRange.getStart()) val = gesture.midiRange.getStart();
             
                 // Normal case
-                {
-				    gesture.midiRange.setEnd (val);
-                    lbl->setText (String (gesture.midiRange.getEnd(), 2), dontSendNotification);
-                }
+                gesture.midiRange.setEnd (val);
+                lbl->setText (String (gesture.midiRange.getEnd(), 2), dontSendNotification);
             }
         }
     }
@@ -146,6 +133,24 @@ public:
 
 private:
     //==============================================================================
+    void createComboBox()
+    {
+        addAndMakeVisible (midiTypeBox = new ComboBox ("midiTypeBox"));
+        midiTypeBox->addItem ("CC", Gesture::controlChange);
+        midiTypeBox->addItem ("Pitch", Gesture::pitch);
+        //midiTypeBox->addItem ("AfterTouch", Gesture::afterTouch);
+        midiTypeBox->setSelectedId (gesture.midiType, dontSendNotification);
+        
+        // ComboBox look
+        midiTypeBox->setColour (ComboBox::backgroundColourId, Colour (0x0000000));
+        midiTypeBox->setColour (ComboBox::textColourId, Colour (0xff000000));
+        midiTypeBox->setColour (ComboBox::arrowColourId, Colour (0xff000000));
+        midiTypeBox->setColour (ComboBox::outlineColourId, Colour (0xff000000));
+        midiTypeBox->setJustificationType (Justification::centred);
+        
+        midiTypeBox->addListener (this);
+    }
+    
     void createLabels()
     {
         //=== Midi Type label ===
@@ -157,6 +162,11 @@ private:
         ccLabel->setColour (Label::textColourId, Colour(0xffffffff));
         ccLabel->setColour (Label::backgroundColourId, Colour(0xff000000));
         ccLabel->setJustificationType (Justification::centred);
+        
+        // cc Label is visible & editable only if "CC" is selected
+        ccLabel->setEditable (midiTypeBox->getSelectedId() == Gesture::controlChange, false, false);
+        ccLabel->setVisible (midiTypeBox->getSelectedId() == Gesture::controlChange);
+        
         ccLabel->addListener (this);
         
         //=== range Control labels ===

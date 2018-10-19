@@ -82,12 +82,10 @@ MapperComponent::~MapperComponent()
     mapButton->removeListener (this);
     clearMapButton->removeListener (this);
     midiMapButton->removeListener (this);
-    //ccLabel->removeListener (this);
     
     mapButton = nullptr;
     clearMapButton = nullptr;
     midiMapButton = nullptr;
-    //ccLabel = nullptr;
     
     midiModeComp = nullptr;
 }
@@ -128,16 +126,6 @@ void MapperComponent::paint (Graphics& g)
                     W*2/9,
                     H/8,
                     true, 11.0f);
-    
-    /*
-    // "CC" text
-    drawMapperText (g, "CC",
-                    W*3/4,
-                    H*2/3,
-                    W/6,
-                    H/12,
-                    true, 14.0f);
-     */
 }
 
 void MapperComponent::resized()
@@ -147,7 +135,6 @@ void MapperComponent::resized()
     mapButton->setBounds (W*2/3 + bttnPanW/8, bttnPanH/8, bttnPanW*3/4, bttnPanH/3);
     clearMapButton->setBounds (W*2/3 + bttnPanW/4, bttnPanH*5/8, bttnPanW/2, bttnPanH/3);
     midiMapButton->setBounds (W*2/3, bttnPanH, bttnPanW/3, bttnPanH/4);
-    //ccLabel->setBounds (W*3/4, H*3/4 + 2, bttnPanW/2, bttnPanH/3);
     midiModeComp->setBounds (W*2/3, bttnPanH, bttnPanW, bttnPanH);
 	
     resizeArray();
@@ -196,13 +183,11 @@ void MapperComponent::buttonClicked (Button* bttn)
         {
             gesture.setMidiMapped (false);
             gesture.setMapped (!(paramCompArray.isEmpty()));
-            //ccLabel->setEditable (false, false, false);
         }
         else // midiMapOn
         {
             gesture.setMidiMapped (true);
             gesture.setMapped (true);
-            //ccLabel->setEditable (true, false, false);
         }
         
         setAlphas();
@@ -309,6 +294,7 @@ void MapperComponent::setAlphas()
 {
     if (midiMapButton->getToggleState() == false)
     {
+        // Sets midi mode panel to transparent
         mapButton->setAlpha (1.0f);
         clearMapButton->setAlpha (1.0f);
         for (auto* comp : paramCompArray)
@@ -316,11 +302,12 @@ void MapperComponent::setAlphas()
             comp->setAlpha (1.0f);
         }
         
-        //ccLabel->setAlpha (0.5f);
+        midiModeComp->setAlpha (0.5f);
     
     }
     else
     {
+        // Sets parameter panel and buttons to transparent
         mapButton->setAlpha (0.5f);
         clearMapButton->setAlpha (0.5f);
         for (auto* comp : paramCompArray)
@@ -328,7 +315,7 @@ void MapperComponent::setAlphas()
             comp->setAlpha (0.5f);
         }
         
-        //ccLabel->setAlpha (1.0f);
+        midiModeComp->setAlpha (1.0f);
     }
 }
 

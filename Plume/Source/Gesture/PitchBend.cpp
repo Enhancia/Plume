@@ -32,7 +32,7 @@ void PitchBend::addGestureMidi (MidiBuffer& midiMessages)
         // Creates the pitchwheel message
         if (midiMap)
         {
-            addEventAndMergeCCToBuffer (midiMessages, pbVal, cc, 1);
+            addMidiModeSignalToBuffer (midiMessages, pbVal, 0, 16383, 1);
         }
         else
         {

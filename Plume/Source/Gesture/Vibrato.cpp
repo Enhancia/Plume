@@ -30,7 +30,7 @@ void Vibrato::addGestureMidi (MidiBuffer& midiMessages)
         // Creates the control change message
         if (midiMap)
         {
-            addEventAndMergeCCToBuffer (midiMessages, vibVal, cc, 1);
+            addMidiModeSignalToBuffer (midiMessages, vibVal, 0, 16383, 1);
         }
         // Creates the pitchwheel message
         else

@@ -259,9 +259,9 @@ public:
     /**
      *  \brief Helper function to send after touch MIDI messages in a buffer.
      *
-     *  First, the method will add an after touch midi event to the buffer at time 1.
-     *  Additionnaly, goes through the buffer to change all the after touch messages. This method will change their
-     *  values by adding the parameter midiValue.
+     *  First, the method will add an channel midi event to the buffer at time 1.
+     *  Additionnaly, goes through the buffer to change all the aftertouch/channel pressure messages.
+     *  This method will change their values by adding the parameter midiValue.
      *
      *  \param midiMessages Reference to a MidiBuffer in which the modWheel messages will be changed.
      */
@@ -272,21 +272,33 @@ public:
         MidiMessage m;
         
         for (MidiBuffer::Iterator i (midiMessages); i.getNextEvent (m, time);)
-        {
-            if (m.isControllerOfType (ccValue)) // checks if right event
+        { 
+            // AfterTouchMessage
+            if (m.isAftertouch())
             {
                 // Creates a cc message with the new value
-                int newVal = m.getControllerValue() + midiValue;
+                int newVal = m.getAfterTouchValue() + midiValue;
                 if (newVal > 127) newVal = 127;
                 
-                m = MidiMessage::controllerEvent (m.getChannel(), ccValue, newVal);
+                m = MidiMessage::aftertouchChange (m.getChannel(), m.getNoteNumber(), newVal);
+            }
+            
+            // Channel pressure message (ie AT for all every note)
+            if (m.isChannelPressure())
+            {
+                // Creates a cc message with the new value
+                int newVal = m.getChannelPressureValue()  + midiValue;
+                if (newVal > 127) newVal = 127;
+                
+                m = MidiMessage::channelPressureChange (m.getChannel(), newVal);
             }
             
             newBuff.addEvent (m, time);
         }
         
         // Adds gesture's initial cc message
-        newBuff.addEvent (MidiMessage::controllerEvent (channel, ccValue, midiValue), 1);
+        newBuff.addEvent (MidiMessage::channelPressureChange (channel, midiValue), 1);
+        DBG ("AT Value: " << midiValue);
         
         midiMessages.swapWith (newBuff);
     }
@@ -617,7 +629,8 @@ protected:
      */
     void addMidiModeSignalToBuffer (MidiBuffer& midiMessages, int value, int midiMin, int midiMax, int channel)
     {
-        if (!midiMode)
+		if (!midiMap) return; //Does nothing if not in midi map mode
+
         int newMidi;
         
         // assigns the right midi value depending on the signal and the midiRange parameter, then adds message to buffer
@@ -644,7 +657,7 @@ protected:
                                   map (midiRange.getStart(), 0.0f, 1.0f, 0, 127),
                                   map (midiRange.getEnd(),   0.0f, 1.0f, 0, 127));
                                   
-                //addEventAndMergeAfterTouchToBuffer (midiMessages, newMidi, channel);
+                addEventAndMergeAfterTouchToBuffer (midiMessages, newMidi, channel);
                 break;
             
             default:
