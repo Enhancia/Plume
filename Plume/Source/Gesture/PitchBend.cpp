@@ -27,12 +27,12 @@ void PitchBend::addGestureMidi (MidiBuffer& midiMessages)
     
     int pbVal = getMidiValue();
     
-    if (send == true)
+    if (send == true || midiMap == true)
     {
         // Creates the pitchwheel message
         if (midiMap)
         {
-            addMidiModeSignalToBuffer (midiMessages, pbVal, 0, 16383, 1);
+            addMidiModeSignalToBuffer (midiMessages, pbVal, 0, 127, 1);
         }
         else
         {

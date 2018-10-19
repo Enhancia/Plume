@@ -50,7 +50,7 @@ void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages)
         // Adds non-pitch midi
         for (auto* g : gestures)
         {
-            if (g->affectsPitch() == false && ( g->isMapped() == false || g->isMidiMapped() == true))
+            if (g->affectsPitch() == false && ( g->isMapped() == false || (g->isMidiMapped() == true && g->midiType != Gesture::pitch)))
             {
                 g->addGestureMidi (midiMessages);
             }
@@ -261,12 +261,13 @@ void GestureArray::checkPitchMerging()
     {
         if (g->isActive() && g->affectsPitch())
         {
-            if (pitchGest == false) pitchGest = true;
-			else if (pitchGest == true)
+			if (pitchGest == true)
 			{
 				shouldMergePitch = true;
 				return;
 			}
+			
+			pitchGest = true;
         }
     }
     
@@ -288,8 +289,15 @@ void GestureArray::addMergedPitchMessage (MidiBuffer& midiMessages)
             // Checks if each specific gesture should send a midi signal, before adding it to pitchVal
             int gestValue;
             
+            // Midi mode on pitch
+            if (g->isMidiMapped() && g->midiType == Gesture::pitch /*&& g->getMidiValue() != 64*/)
+            {
+                send = true;
+                pitchVal += (16383*g->getMidiValue())/127 - 8192;
+            }
+            
             // Vibrato
-            if (g->type == Gesture::vibrato)
+            else if (g->type == Gesture::vibrato)
             {
                 Vibrato* vib = dynamic_cast <Vibrato*> (g);
                 gestValue = vib->getMidiValue();

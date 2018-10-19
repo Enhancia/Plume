@@ -436,7 +436,8 @@ public:
      */
     bool affectsPitch()
     {
-        if ((type == Gesture::vibrato || type == Gesture::pitchBend) && mapped == false)
+        // vibrato/pitchBend or any gesture with a pitch midi mode return true
+        if (((type == Gesture::vibrato || type == Gesture::pitchBend) && mapped == false) || (midiMap && (midiType == Gesture::pitch)))
         {
             return true;
         }
@@ -581,6 +582,7 @@ protected:
     static int mapInt (int value, int minVal, int maxVal, int minNew, int maxNew)
     {
         if (minVal == maxVal && value == minVal) return minNew;
+        else if (minVal == minNew && maxVal == maxNew) return value;
     
         if (value < minVal) return minNew;
         if (value > maxVal) return maxNew;
