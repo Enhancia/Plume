@@ -304,6 +304,27 @@ public:
     }
     
     //==============================================================================
+    // Getter to the midiValue taking the midi mode range into account
+    
+    /**
+     *  \brief Getter to the midi value taking the midiRange parameter into account.
+     */
+    int getRescaledMidiValue()
+    {
+        if (midiType == Gesture::pitch)
+        {
+            return mapInt (getMidiValue(), 0, 127, map (midiRange.getStart(), 0.0f, 1.0f, 0, 16383),
+                                          map (midiRange.getEnd(),   0.0f, 1.0f, 0, 16383));
+        }
+           
+        else
+        {
+            return mapInt (getMidiValue(), 0, 127, map (midiRange.getStart(), 0.0f, 1.0f, 0, 127),
+                                          map (midiRange.getEnd(),   0.0f, 1.0f, 0, 127));
+        }                          
+    }
+    
+    //==============================================================================
     // Getters to get const references to the value and range of the gesture. Used by the display.
     
     /**
@@ -323,6 +344,7 @@ public:
     }
     
     //==============================================================================
+    // Getters and setters for various parameters
     /**
      *  \brief Setter for the "on" boolean value.
      *

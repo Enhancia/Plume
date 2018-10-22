@@ -293,7 +293,7 @@ void GestureArray::addMergedPitchMessage (MidiBuffer& midiMessages)
             if (g->isMidiMapped() && g->midiType == Gesture::pitch /*&& g->getMidiValue() != 64*/)
             {
                 send = true;
-                pitchVal += (16383*g->getMidiValue())/127 - 8192;
+                pitchVal += g->getRescaledMidiValue() - 8192;
             }
             
             // Vibrato
