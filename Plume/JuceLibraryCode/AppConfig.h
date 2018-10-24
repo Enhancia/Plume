@@ -333,7 +333,7 @@
  #define JucePlugin_ManufacturerCode       0x4d616e75 // 'Manu'
 #endif
 #ifndef  JucePlugin_PluginCode
- #define JucePlugin_PluginCode             0x456e6974 // 'Enit'
+ #define JucePlugin_PluginCode             0x4a717076 // 'Jqpv'
 #endif
 #ifndef  JucePlugin_IsSynth
  #define JucePlugin_IsSynth                1

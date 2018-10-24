@@ -78,19 +78,14 @@ void PitchBend::updateMappedParameters()
 {
     if (on == false) return; // does nothing if the gesture is inactive
     
-    float paramVal;
-    
-    if (send == true)
+    // Goes through the parameterArray to update each value
+    for (auto* param : parameterArray)
     {
-        // Goes through the parameterArray to update each value
-        for (auto* param : parameterArray)
+		float paramVal = getValueForMappedParameter(param->range);
+
+        if (send == true && paramVal != param->parameter.getValue())
         {
-            paramVal = getValueForMappedParameter (param->range);
-        
-            if (send == true && paramVal != param->parameter.getValue())
-            {
-                param->parameter.setValueNotifyingHost (paramVal);
-            }
+            param->parameter.setValueNotifyingHost (paramVal);
         }
     }
 }
@@ -120,8 +115,8 @@ float PitchBend::getValueForMappedParameter (Range<float> paramRange)
     {
         send = true;
         pbLast = false;
-        if (midiMap) return 64.0f;
-        else         return 8192.0f;
+        
+        return paramRange.getStart() + paramRange.getLength()/2;
     }
     
     send = false;
