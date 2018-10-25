@@ -129,8 +129,8 @@ public:
 		int mapperWidth = getWidth() * 3/8 - MARGIN;
 
         onOffButton->setBounds (tunerWidth/8 + 2*MARGIN, MARGIN, 20, 20);
-        gestTuner->setBounds(tunerWidth/8 + 2*MARGIN, getHeight()/4, tunerWidth*7/8 - 2*MARGIN, getHeight()*3/4);
-        gestMapper->setBounds(getWidth() * 5/8 + MARGIN, 0, mapperWidth, getHeight());
+        gestTuner->setBounds (tunerWidth/8 + 2*MARGIN, getHeight()/4, tunerWidth*7/8 - 2*MARGIN, getHeight()*3/4);
+        gestMapper->setBounds (getWidth() * 5/8 + MARGIN, 0, mapperWidth, getHeight());
         repaint();
     }
     
@@ -229,17 +229,24 @@ void GesturePanel::paint (Graphics& g)
 
 void GesturePanel::resized()
 {
+    int gestureHeight = (getHeight() - (NUM_GEST - 1) * 2*MARGIN) / NUM_GEST; // gets the height of each gesture component
+    
+    for (int i=0; i<gestureComponents.size(); i++)
+    {
+        // Places the gestureComponent for each existing gesture.
+        gestureComponents[i]->setBounds (0, i*(gestureHeight + MARGIN), getWidth(), gestureHeight);
+    }
 }
 
 void GesturePanel::initialize()
 {  
     startTimerHz (freq);
-    
-    int gestureHeight = (getHeight() - (NUM_GEST - 1) * 2*MARGIN) / NUM_GEST; // gets the height of each gesture component
-    
+
+	int gestureHeight = (getHeight() - (NUM_GEST - 1) * 2 * MARGIN) / NUM_GEST; // gets the height of each gesture component
+
     for (int i=0; i<NUM_GEST && i<gestureArray.size(); i++)
     {
-        // Loop that creates and places a gestureComponent for each existing gesture.
+        // Creates a gestureComponent for each existing gesture.
         gestureComponents.add (new GestureComponent (*gestureArray.getGestureById (i), gestureArray, wrapper));
         addAndMakeVisible (gestureComponents[i]);
         gestureComponents[i]->setBounds (0, i*(gestureHeight + MARGIN), getWidth(), gestureHeight);

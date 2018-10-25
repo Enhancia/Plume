@@ -101,7 +101,7 @@ float PitchBend::getValueForMappedParameter (Range<float> paramRange)
                                                      paramRange.getEnd())));
     }
     
-    else if (value < rangeRight.getStart() && value > -140.0f && !(rangeLeft.isEmpty()))
+    else if (value < rangeLeft.getEnd() && value > -140.0f && !(rangeLeft.isEmpty()))
     {
         send = true;
         pbLast = true;

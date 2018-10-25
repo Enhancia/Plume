@@ -49,9 +49,9 @@ void PresetComponent::paint (Graphics& g)
 
 void PresetComponent::resized ()
 {
-    nameLabel->setBounds (0, 0, getWidth(), getHeight()/4);
-    saveButton->setBounds (getWidth()/7, getHeight()/2, getWidth()*2/7, getHeight()/4);
-    loadButton->setBounds (getWidth()*4/7, getHeight()/2, getWidth()*2/7, getHeight()/4);
+    nameLabel->setBounds (0, 0, getWidth(), getHeight()/3);
+    saveButton->setBounds (getWidth()/8, getHeight()/2, getWidth()/4, getHeight()/3);
+    loadButton->setBounds (getWidth()*5/8, getHeight()/2, getWidth()/4, getHeight()/3);
 }
 
 void PresetComponent::buttonClicked (Button* bttn)
@@ -126,7 +126,7 @@ void PresetComponent::loadPreset()
 		nameLabel->setText (TRANS (presetXml->getTagName()),
 							dontSendNotification);
 			    
-	    presetXml->deleteAllChildElements();
+	    presetXml->deleteAllChildElements(); // frees the memory
     }
 }
 
