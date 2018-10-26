@@ -12,6 +12,7 @@
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
 #include "Gesture/Gesture.h"
+#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
 
 #define W getWidth()
 #define H getHeight()
@@ -176,8 +177,7 @@ private:
         
         valueLabel->setEditable (false, false, false);
         valueLabel->setFont (Font (11.0f, Font::plain));
-        valueLabel->setColour (Label::textColourId, Colour(0xff000000));
-        valueLabel->setColour (Label::backgroundColourId, Colour(0x00000000));
+        valueLabel->setLookAndFeel (&plumeLookAndFeel);
         valueLabel->setJustificationType (Justification::centredBottom);
         
         valueLabel->setBounds (0, H/3, W*2/3, H/3 - 2);
@@ -191,15 +191,13 @@ private:
         // LabelMin style
         rangeLabelMin->setEditable (true, false, false);
         rangeLabelMin->setFont (Font (11.0f, Font::plain));
-        rangeLabelMin->setColour (Label::textColourId, Colour(0xffffffff));
-        rangeLabelMin->setColour (Label::backgroundColourId, Colour(0xff000000));
+        rangeLabelMin->setLookAndFeel (&plumeLookAndFeel);
         rangeLabelMin->setJustificationType (Justification::centred);
         
         // LabelMax style
         rangeLabelMax->setEditable (true, false, false);
         rangeLabelMax->setFont (Font (11.0f, Font::plain));
-        rangeLabelMax->setColour (Label::textColourId, Colour(0xffffffff));
-        rangeLabelMax->setColour (Label::backgroundColourId, Colour(0xff000000));
+        rangeLabelMax->setLookAndFeel (&plumeLookAndFeel);
         rangeLabelMax->setJustificationType (Justification::centred);
         
         // Labels settings
@@ -236,6 +234,9 @@ private:
     ScopedPointer<Label> valueLabel;
     ScopedPointer<Label> rangeLabelMin;
     ScopedPointer<Label> rangeLabelMax;
+    
+    //==============================================================================
+    PlumeLookAndFeel plumeLookAndFeel;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MappedParameterComponent)
 };

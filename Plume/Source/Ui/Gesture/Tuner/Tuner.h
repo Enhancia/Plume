@@ -11,6 +11,7 @@
 #pragma once
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
+#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
 
 #define CURSOR_SIZE 10
 #define W getWidth()
@@ -33,17 +34,12 @@ public:
         addAndMakeVisible(valueLabel = new Label("value Label"));
         valueLabel->setEditable (false, false, false);
         valueLabel->setText (String(int (value)), dontSendNotification);
-        valueLabel->setFont (Font (13.0f, Font::plain));
+        valueLabel->setFont (Font (13.0f, Font::plain));       
+        valueLabel->setLookAndFeel (&plumeLookAndFeel);
         
-        if (showValue)
+        if (!showValue)
         {
-            valueLabel->setColour (Label::textColourId, Colour(0xffffffff));
-            valueLabel->setColour (Label::backgroundColourId, Colour(0xff000000));
-        }
-        else
-        {
-            valueLabel->setColour (Label::textColourId, Colour(0x00000000));
-            valueLabel->setColour (Label::backgroundColourId, Colour(0x00000000));
+            valueLabel->setVisible (false);
         }
             
         valueLabel->setJustificationType (Justification::centred);
@@ -112,6 +108,9 @@ protected:
     Range<int> sliderPlacement = Range<int> ((W*3/4)/8, (W*3/4)*7/8);
     const String valueUnit;
     
+    //==============================================================================
+    PlumeLookAndFeel plumeLookAndFeel;
+    
 private:
     //==============================================================================
     void drawCursor(Graphics& g)
@@ -146,6 +145,8 @@ private:
     const bool showValue;
     
     int yCursor;
+    
+    //==============================================================================
     //ScopedPointer<Path> displayTriangle;
     ScopedPointer<Label> valueLabel;
     

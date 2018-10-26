@@ -14,6 +14,7 @@
 
 #define W getWidth()
 #define H getHeight()
+#define MARGIN 8
 
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 #define TRACE_OUT Logger::writeToLog ("[-FNC]  Leaving: " + String(__FUNCTION__))
@@ -26,13 +27,13 @@ MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr, PluginWr
     addAndMakeVisible (mapButton = new TextButton ("Map Button"));
     mapButton->setButtonText ("Map");
     mapButton->addListener (this);
-    mapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
+    mapButton->setLookAndFeel (&plumeLookAndFeel);
     
     // clear map button
     addAndMakeVisible (clearMapButton = new TextButton ("Clear Map Button"));
     clearMapButton->setButtonText ("Clear map");
     clearMapButton->addListener (this);
-    clearMapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
+    clearMapButton->setLookAndFeel (&plumeLookAndFeel);
     
     // midiMode Component
     addAndMakeVisible (midiModeComp = new MidiModeComponent (gesture));
@@ -108,9 +109,9 @@ void MapperComponent::paint (Graphics& g)
     }
     
     g.setColour (c1);
-    g.fillRect (0, 0, W, H);
+    g.fillRoundedRectangle (0, 0, W, H, MARGIN);
     g.setColour (c2);
-    g.fillRect (W*2/3, H/2, W/3, H/2);
+    g.fillRect (W*2/3, H/2, W - W*2/3, H/2);
     
     // "Parameters" text        
     drawMapperText (g, "Parameters",

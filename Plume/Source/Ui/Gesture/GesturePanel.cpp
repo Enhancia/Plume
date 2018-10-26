@@ -69,8 +69,8 @@ public:
         { 
 			g.setColour(Colour(0xffa0a0a0));
 
-            g.fillRect (0, 0, tunerWidth, getHeight());
-            g.fillRect (tunerWidth+2*MARGIN, 0, mapperWidth, getHeight());
+            g.fillRoundedRectangle (0, 0, tunerWidth, getHeight(), MARGIN);
+            g.fillRoundedRectangle (tunerWidth+2*MARGIN, 0, mapperWidth, getHeight(), MARGIN);
             g.fillRect (tunerWidth, getHeight()*9/20, 2*MARGIN, getHeight()/10);
         }
         
@@ -117,8 +117,8 @@ public:
         {
 			g.setColour(Colour(0x90606060));
 
-            g.fillRect (0, 0, tunerWidth, getHeight());
-            g.fillRect (tunerWidth+2*MARGIN, 0, mapperWidth, getHeight());
+            g.fillRoundedRectangle (0, 0, tunerWidth, getHeight(), MARGIN);
+            g.fillRoundedRectangle (tunerWidth+2*MARGIN, 0, mapperWidth, getHeight(), MARGIN);
             g.fillRect (tunerWidth, getHeight()*9/20, 2*MARGIN, getHeight()/10);
         }
     }

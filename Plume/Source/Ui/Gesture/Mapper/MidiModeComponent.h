@@ -11,6 +11,7 @@
 #pragma once
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
+#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
 
 #define W getWidth()
 #define H getHeight()
@@ -142,10 +143,7 @@ private:
         midiTypeBox->setSelectedId (gesture.midiType, dontSendNotification);
         
         // ComboBox look
-        midiTypeBox->setColour (ComboBox::backgroundColourId, Colour (0x0000000));
-        midiTypeBox->setColour (ComboBox::textColourId, Colour (0xff000000));
-        midiTypeBox->setColour (ComboBox::arrowColourId, Colour (0xff000000));
-        midiTypeBox->setColour (ComboBox::outlineColourId, Colour (0xff000000));
+        midiTypeBox->setLookAndFeel (&plumeLookAndFeel);
         midiTypeBox->setJustificationType (Justification::centred);
         
         midiTypeBox->addListener (this);
@@ -159,8 +157,7 @@ private:
         addAndMakeVisible (ccLabel = new Label ("CC Label", TRANS (String(gesture.getCc()))));
         ccLabel->setEditable ((midiTypeBox->getSelectedId() == Gesture::controlChange), false, false);
         ccLabel->setFont (Font (13.0f, Font::plain));
-        ccLabel->setColour (Label::textColourId, Colour(0xffffffff));
-        ccLabel->setColour (Label::backgroundColourId, Colour(0xff000000));
+        ccLabel->setLookAndFeel (&plumeLookAndFeel);
         ccLabel->setJustificationType (Justification::centred);
         
         // cc Label is visible & editable only if "CC" is selected
@@ -177,15 +174,13 @@ private:
         // LabelMin style
         rangeLabelMin->setEditable (true, false, false);
         rangeLabelMin->setFont (Font (11.0f, Font::plain));
-        rangeLabelMin->setColour (Label::textColourId, Colour(0xffffffff));
-        rangeLabelMin->setColour (Label::backgroundColourId, Colour(0xff000000));
+        rangeLabelMin->setLookAndFeel (&plumeLookAndFeel);
         rangeLabelMin->setJustificationType (Justification::centred);
         
         // LabelMax style
         rangeLabelMax->setEditable (true, false, false);
         rangeLabelMax->setFont (Font (11.0f, Font::plain));
-        rangeLabelMax->setColour (Label::textColourId, Colour(0xffffffff));
-        rangeLabelMax->setColour (Label::backgroundColourId, Colour(0xff000000));
+        rangeLabelMax->setLookAndFeel (&plumeLookAndFeel);
         rangeLabelMax->setJustificationType (Justification::centred);
         
         
@@ -198,6 +193,9 @@ private:
     ScopedPointer<Label> ccLabel;
     ScopedPointer<Label> rangeLabelMin;
     ScopedPointer<Label> rangeLabelMax;
+    
+    //==============================================================================
+    PlumeLookAndFeel plumeLookAndFeel;
     
     //==============================================================================
     Gesture& gesture;

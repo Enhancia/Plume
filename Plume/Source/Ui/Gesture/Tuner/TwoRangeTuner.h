@@ -199,16 +199,12 @@ private:
         
         // Slider style
         //Left
-        rangeSliderLeft->setColour (Slider::thumbColourId, Colour (0xffe6e6e6));
-        rangeSliderLeft->setColour (Slider::trackColourId, Colour (0xffb7b7b7));
-        rangeSliderLeft->setColour (Slider::backgroundColourId, Colour (0xff101010));
+        rangeSliderLeft->setLookAndFeel (&plumeLookAndFeel);
 	    rangeSliderLeft->setSliderStyle(Slider::TwoValueHorizontal);
         rangeSliderLeft->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
         
         //Right
-        rangeSliderRight->setColour (Slider::thumbColourId, Colour (0xffe6e6e6));
-        rangeSliderRight->setColour (Slider::trackColourId, Colour (0xffb7b7b7));
-        rangeSliderRight->setColour (Slider::backgroundColourId, Colour (0xff101010));
+        rangeSliderRight->setLookAndFeel (&plumeLookAndFeel);
 	    rangeSliderRight->setSliderStyle(Slider::TwoValueHorizontal);
         rangeSliderRight->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
 	    
@@ -237,29 +233,25 @@ private:
         // LabelMinLeft style
         rangeLabelMinLeft->setEditable (true, false, false);
         rangeLabelMinLeft->setFont (Font (13.0f, Font::plain));
-        rangeLabelMinLeft->setColour (Label::textColourId, Colour(0xffffffff));
-        rangeLabelMinLeft->setColour (Label::backgroundColourId, Colour(0xff000000));
+        rangeLabelMinLeft->setLookAndFeel (&plumeLookAndFeel);
         rangeLabelMinLeft->setJustificationType (Justification::centred);
         
         // LabelMaxLeft style
         rangeLabelMaxLeft->setEditable (true, false, false);
         rangeLabelMaxLeft->setFont (Font (13.0f, Font::plain));
-        rangeLabelMaxLeft->setColour (Label::textColourId, Colour(0xffffffff));
-        rangeLabelMaxLeft->setColour (Label::backgroundColourId, Colour(0xff000000));
+        rangeLabelMaxLeft->setLookAndFeel (&plumeLookAndFeel);
         rangeLabelMaxLeft->setJustificationType (Justification::centred);
         
         // LabelMinRight style
         rangeLabelMinRight->setEditable (true, false, false);
         rangeLabelMinRight->setFont (Font (13.0f, Font::plain));
-        rangeLabelMinRight->setColour (Label::textColourId, Colour(0xffffffff));
-        rangeLabelMinRight->setColour (Label::backgroundColourId, Colour(0xff000000));
+        rangeLabelMinRight->setLookAndFeel (&plumeLookAndFeel);
         rangeLabelMinRight->setJustificationType (Justification::centred);
         
         // LabelMaxRight style
         rangeLabelMaxRight->setEditable (true, false, false);
         rangeLabelMaxRight->setFont (Font (13.0f, Font::plain));
-        rangeLabelMaxRight->setColour (Label::textColourId, Colour(0xffffffff));
-        rangeLabelMaxRight->setColour (Label::backgroundColourId, Colour(0xff000000));
+        rangeLabelMaxRight->setLookAndFeel (&plumeLookAndFeel);
         rangeLabelMaxRight->setJustificationType (Justification::centred);
         
         // Labels settings

@@ -62,7 +62,10 @@ void WrapperComponent::paint (Graphics& g)
 
     {
         //g.setColour (Colours::black);
-        int width = getHeight()*2/3, height = getHeight()*2/3, x = 20, y = getHeight()/6;
+        int width = getWidth()/8 > getHeight()*2/3 ? getHeight()*2/3 : getWidth()/8,
+            height = width,
+            x = getWidth()/20,
+            y = getHeight()/6;
         
         String PlumeDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getFullPathName();
         File f (PlumeDir + "/Resources/Images/Logo/Logo_ENHANCIA_Round.png");

@@ -14,7 +14,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{CCF60A6E-6C70-1BB0-79AB-360A57DEDA1D}</ProjectGuid>
+    <ProjectGuid>{ED0AF2FF-B95A-4CAF-2F41-541B3C920F85}</ProjectGuid>
     <PlatformToolset>v141</PlatformToolset>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -1913,6 +1913,7 @@
     <ClInclude Include="..\..\Source\Wrapper\PluginWrapper.h"/>
     <ClInclude Include="..\..\Source\Wrapper\WrapperEditor.h"/>
     <ClInclude Include="..\..\Source\Wrapper\WrapperProcessor.h"/>
+    <ClInclude Include="..\..\Source\Ui\LookAndFeel\PlumeLookAndFeel.h"/>
     <ClInclude Include="..\..\Source\Ui\Gesture\GesturePanel.h"/>
     <ClInclude Include="..\..\Source\Ui\Gesture\Mapper\MapperComponent.h"/>
     <ClInclude Include="..\..\Source\Ui\Gesture\Mapper\MappedParameterComponent.h"/>
