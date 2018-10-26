@@ -51,6 +51,8 @@
       </GROUP>
       <GROUP id="{EB1FE939-C694-02C5-E97F-E17B6084B07C}" name="Ui">
         <GROUP id="{4CBB6F8D-0DE8-71C7-60AF-FF1213B7784A}" name="LookAndFeel">
+          <FILE id="mzqHep" name="OneRangeTunerLookAndFeel.h" compile="0" resource="0"
+                file="Source/Ui/LookAndFeel/OneRangeTunerLookAndFeel.h"/>
           <FILE id="OXmlbL" name="PlumeLookAndFeel.h" compile="0" resource="0"
                 file="Source/Ui/LookAndFeel/PlumeLookAndFeel.h"/>
         </GROUP>

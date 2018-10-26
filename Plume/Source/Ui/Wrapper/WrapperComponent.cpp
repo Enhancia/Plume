@@ -39,8 +39,6 @@ WrapperComponent::WrapperComponent(PluginWrapper& wrap)
     pluginNameLabel->setJustificationType (Justification::centred);
     pluginNameLabel->setEditable (false, false, false);
     pluginNameLabel->setColour (Label::backgroundColourId, Colour (0xff323232));
-    pluginNameLabel->setColour (Label::textColourId, Colour (0xffffffff));
-    pluginNameLabel->setColour (Label::outlineColourId, Colour (0x00000000));
     
     addAndMakeVisible (openEditorButton = new ImageButton ("Open Editor Button"));
     openEditorButton->setImages (false, true, false, 

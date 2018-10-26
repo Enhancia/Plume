@@ -22,6 +22,8 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
 {
     TRACE_IN;
+    
+    setLookAndFeel (&plumeLookAndFeel);
 
     // Creates the 3 main components
     addAndMakeVisible (wrapperComp = new WrapperComponent (processor.getWrapper()));
@@ -67,8 +69,8 @@ void PlumeEditor::paint (Graphics& g)
     g.setColour (Colour (0xff000000));
     g.setFont (Font (10.0f, Font::italic).withTypefaceStyle ("Regular"));
     g.drawText ("Plume " + String(JucePlugin_VersionString),
-                getWidth() - 100, getHeight() - MARGIN, 100, MARGIN,
-                Justification::centredRight, true);
+                0, getHeight() - MARGIN, 100, MARGIN,
+                Justification::centredLeft, true);
 }
 
 void PlumeEditor::resized()

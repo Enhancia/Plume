@@ -11,7 +11,6 @@
 #pragma once
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
-#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
 #include "Wrapper/PluginWrapper.h"
 
 //==============================================================================
@@ -47,9 +46,6 @@ private:
     
     //==============================================================================
     PluginWrapper& wrapper;
-    
-    //==============================================================================
-    PlumeLookAndFeel plumeLookAndFeel;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WrapperComponent)
 };

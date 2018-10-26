@@ -69,9 +69,11 @@ public:
         { 
 			g.setColour(Colour(0xffa0a0a0));
 
-            g.fillRoundedRectangle (0, 0, tunerWidth, getHeight(), MARGIN);
-            g.fillRoundedRectangle (tunerWidth+2*MARGIN, 0, mapperWidth, getHeight(), MARGIN);
-            g.fillRect (tunerWidth, getHeight()*9/20, 2*MARGIN, getHeight()/10);
+            g.fillRoundedRectangle (0, 0, tunerWidth, getHeight(), MARGIN/2);
+            g.fillRoundedRectangle (tunerWidth+2*MARGIN, 0, mapperWidth, getHeight(), MARGIN/2);
+            
+            // Visual link between tuner and mapper
+            if (gesture.isMapped() || gesture.isMidiMapped()) g.fillRect (tunerWidth, getHeight()*9/20, 2*MARGIN, getHeight()/10);
         }
         
         // Loads the gesture image
@@ -117,9 +119,11 @@ public:
         {
 			g.setColour(Colour(0x90606060));
 
-            g.fillRoundedRectangle (0, 0, tunerWidth, getHeight(), MARGIN);
-            g.fillRoundedRectangle (tunerWidth+2*MARGIN, 0, mapperWidth, getHeight(), MARGIN);
-            g.fillRect (tunerWidth, getHeight()*9/20, 2*MARGIN, getHeight()/10);
+            g.fillRoundedRectangle (0, 0, tunerWidth, getHeight(), MARGIN/2);
+            g.fillRoundedRectangle (tunerWidth+2*MARGIN, 0, mapperWidth, getHeight(), MARGIN/2);
+            
+            // Visual link between tuner and mapper
+            if (gesture.isMapped() || gesture.isMidiMapped()) g.fillRect (tunerWidth, getHeight()*9/20, 2*MARGIN, getHeight()/10);
         }
     }
     

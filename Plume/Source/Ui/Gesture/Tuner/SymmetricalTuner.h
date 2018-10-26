@@ -132,7 +132,6 @@ private:
         Tuner::addAndMakeVisible (symmetricalSlider = new Slider ("Symmetrical Slider"));
         
         // Slider style
-        symmetricalSlider->setLookAndFeel (&plumeLookAndFeel);
 	    symmetricalSlider->setSliderStyle(Slider::TwoValueHorizontal);
         symmetricalSlider->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
         
@@ -153,7 +152,6 @@ private:
         // Label style
         rangeLabel->setEditable (true, false, false);
         rangeLabel->setFont (Font (13.0f, Font::plain));
-        rangeLabel->setLookAndFeel (&plumeLookAndFeel);
         rangeLabel->setJustificationType (Justification::centred);
         
         rangeLabel->setBounds (W*(3/4+1/16), H/4, W/8, H/4);

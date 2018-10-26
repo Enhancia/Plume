@@ -143,7 +143,6 @@ private:
         Tuner::addAndMakeVisible (rangeSlider = new Slider ("Range Slider"));
         
         // Slider style
-        rangeSlider->setLookAndFeel (&plumeLookAndFeel);
 	    rangeSlider->setSliderStyle(Slider::TwoValueHorizontal);
         rangeSlider->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
 	    
@@ -164,13 +163,11 @@ private:
         // LabelMin style
         rangeLabelMin->setEditable (true, false, false);
         rangeLabelMin->setFont (Font (13.0f, Font::plain));
-        rangeLabelMin->setLookAndFeel (&plumeLookAndFeel);
         rangeLabelMin->setJustificationType (Justification::centred);
         
         // LabelMax style
         rangeLabelMax->setEditable (true, false, false);
         rangeLabelMax->setFont (Font (13.0f, Font::plain));
-        rangeLabelMax->setLookAndFeel (&plumeLookAndFeel);
         rangeLabelMax->setJustificationType (Justification::centred);
         
         // Labels settings

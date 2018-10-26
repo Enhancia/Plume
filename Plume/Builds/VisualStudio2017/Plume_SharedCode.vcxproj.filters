@@ -2418,6 +2418,9 @@
     <ClInclude Include="..\..\Source\Wrapper\WrapperProcessor.h">
       <Filter>Plume\Source\Wrapper</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Ui\LookAndFeel\OneRangeTunerLookAndFeel.h">
+      <Filter>Plume\Source\Ui\LookAndFeel</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Ui\LookAndFeel\PlumeLookAndFeel.h">
       <Filter>Plume\Source\Ui\LookAndFeel</Filter>
     </ClInclude>

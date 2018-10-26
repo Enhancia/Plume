@@ -23,17 +23,16 @@ MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr, PluginWr
     :   gesture (gest), gestureArray (gestArr), wrapper (wrap)
 {
     TRACE_IN;
+    
     // map button
     addAndMakeVisible (mapButton = new TextButton ("Map Button"));
     mapButton->setButtonText ("Map");
     mapButton->addListener (this);
-    mapButton->setLookAndFeel (&plumeLookAndFeel);
     
     // clear map button
     addAndMakeVisible (clearMapButton = new TextButton ("Clear Map Button"));
     clearMapButton->setButtonText ("Clear map");
     clearMapButton->addListener (this);
-    clearMapButton->setLookAndFeel (&plumeLookAndFeel);
     
     // midiMode Component
     addAndMakeVisible (midiModeComp = new MidiModeComponent (gesture));
@@ -109,7 +108,7 @@ void MapperComponent::paint (Graphics& g)
     }
     
     g.setColour (c1);
-    g.fillRoundedRectangle (0, 0, W, H, MARGIN);
+    g.fillRoundedRectangle (0, 0, W, H, MARGIN/2);
     g.setColour (c2);
     g.fillRect (W*2/3, H/2, W - W*2/3, H/2);
     
@@ -176,6 +175,8 @@ void MapperComponent::buttonClicked (Button* bttn)
         
         paramCompArray.clear();
         mapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
+        
+        getParentComponent()->repaint(); // repaints the whole gesture area
     }
     
     else if (bttn == midiMapButton)
@@ -192,7 +193,8 @@ void MapperComponent::buttonClicked (Button* bttn)
         }
         
         setAlphas();
-        repaint();
+        getParentComponent()->repaint(); // repaints the whole gesture area
+        repaint(); // repaints mapper component
     }
 }
 
@@ -235,6 +237,8 @@ void MapperComponent::changeListenerCallback(ChangeBroadcaster* source)
         paramCompArray.clear();
         initializeParamCompArray();
         resizeArray();
+        
+        getParentComponent()->repaint(); // repaints the whole gesture area
     }
     
     // If the editor is closed with map mode still on

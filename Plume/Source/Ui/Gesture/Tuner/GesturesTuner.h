@@ -100,7 +100,6 @@ public:
         threshLabel->setEditable (true, false, false);
         threshLabel->setText (String(int (threshold)), dontSendNotification);
         threshLabel->setFont (Font (13.0f, Font::plain));
-        threshLabel->setLookAndFeel(&plumeLookAndFeel);
         threshLabel->setJustificationType (Justification::centred);
         threshLabel->addListener (this);
     }

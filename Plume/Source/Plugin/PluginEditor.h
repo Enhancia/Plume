@@ -14,6 +14,7 @@
 #include "Ui/Wrapper/WrapperComponent.h"
 #include "Ui/Presets/PresetComponent.h"
 #include "Ui/Gesture/GesturePanel.h"
+#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
 
 //#define TRACE_IN  Logger::writeToLog ("[FNC] Entering function: " + __FUNCTION__);
 //#define TRACE_OUT Logger::writeToLog ("[FNC] Entering function: " + __FUNCTION__);
@@ -79,11 +80,14 @@ public:
     void updateFullInterface();
     
 private:
+    //==============================================================================
     PlumeProcessor& processor; /**< \brief Reference to Plume's processor object */
     ScopedPointer<WrapperComponent> wrapperComp; /**< \brief Object allowing to choose a plugin to wrap and use with neova */
     ScopedPointer<PresetComponent> presetComp; /**< \brief Object allowing to save or load presets, in the xml format */
     ScopedPointer<GesturePanel> gesturePanel; /**< \brief Object that handles the different gesture gui objects */
-    ComponentBoundsConstrainer constrainer;
+    
+    //==============================================================================
+    PlumeLookAndFeel plumeLookAndFeel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeEditor)
 };
