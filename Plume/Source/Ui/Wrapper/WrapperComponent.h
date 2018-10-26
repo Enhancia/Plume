@@ -12,6 +12,7 @@
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
 #include "Wrapper/PluginWrapper.h"
+#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
 
 //==============================================================================
 /*

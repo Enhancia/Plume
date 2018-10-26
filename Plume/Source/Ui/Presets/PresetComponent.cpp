@@ -48,8 +48,8 @@ void PresetComponent::paint (Graphics& g)
 void PresetComponent::resized ()
 {
     nameLabel->setBounds (0, 0, getWidth(), getHeight()/3);
-    saveButton->setBounds (getWidth()/8, getHeight()/2, getWidth()/4, getHeight()/3);
-    loadButton->setBounds (getWidth()*5/8, getHeight()/2, getWidth()/4, getHeight()/3);
+    saveButton->setBounds (getWidth()/16, getHeight()/2, getWidth()*3/8, getHeight()/3);
+    loadButton->setBounds (getWidth()*9/16, getHeight()/2, getWidth()*3/8, getHeight()/3);
 }
 
 void PresetComponent::buttonClicked (Button* bttn)

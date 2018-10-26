@@ -41,7 +41,6 @@ public:
         }
             
         valueLabel->setJustificationType (Justification::centred);
-        valueLabel->setBounds ( (W*3/4)*3/8, H*2/3, (W*3/4)/4, H/6);
     }
 
     ~Tuner()

@@ -12,8 +12,8 @@
 #include "Plugin/PluginEditor.h"
 
 #define MARGIN 8
-#define TOP_PANEL 75
-#define FRAMERATE 60
+#define TOP_PANEL 70
+#define FRAMERATE 100
 
 
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
@@ -35,18 +35,9 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     processor.addActionListener (this);
 
 	// Base size and resize settings
-	setSize (800, 540);
+	setSize (800, 450);
 	setResizable (true, true);
 	setResizeLimits (getWidth()*2/3, getHeight()*2/3, getWidth()*3, getHeight()*3);
-    
-    //====================================================================
-    // Creates the data reader component, might need to be deleted in the future
-    /*
-	auto* dataReader = processor.getDataReader();
-    addAndMakeVisible (dataReader);
-    dataReader->setTopLeftPosition (Point<int> (getWidth()  - dataReader->getWidth()  - 2*MARGIN,
-												getHeight() - dataReader->getHeight() - 2*MARGIN));
-	*/
 }
 
 PlumeEditor::~PlumeEditor()
@@ -57,19 +48,21 @@ PlumeEditor::~PlumeEditor()
     wrapperComp = nullptr;
     presetComp = nullptr;
     gesturePanel = nullptr;
+    
+    setLookAndFeel (nullptr);
 }
 
 //==============================================================================
 void PlumeEditor::paint (Graphics& g)
 {
     // Background
-    g.fillAll (Colour (0xffe0e0e0));
+    g.fillAll (plumeLookAndFeel.getPlumeColour (PlumeLookAndFeel::background));
     
     // Version Text
     g.setColour (Colour (0xff000000));
     g.setFont (Font (10.0f, Font::italic).withTypefaceStyle ("Regular"));
     g.drawText ("Plume " + String(JucePlugin_VersionString),
-                0, getHeight() - MARGIN, 100, MARGIN,
+                MARGIN, getHeight() - MARGIN, 100, MARGIN,
                 Justification::centredLeft, true);
 }
 

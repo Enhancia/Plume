@@ -57,7 +57,8 @@ WrapperComponent::~WrapperComponent()
 void WrapperComponent::paint (Graphics& g)
 {
     g.fillAll (Colour (0xff909090));
-
+    
+    // Draws Enhancia's Logo
     {
         //g.setColour (Colours::black);
         int width = getWidth()/8 > getHeight()*2/3 ? getHeight()*2/3 : getWidth()/8,
@@ -81,7 +82,7 @@ void WrapperComponent::resized()
     
 	scanButton->setBounds (w*3/16 + 2, h/3, w/16, h/3);
     pluginNameLabel->setBounds (w*1/4, h/3, w*7/16, h/3);
-	openEditorButton->setBounds (w*23/32, h/4, w/4, h/2);
+	openEditorButton->setBounds (w*3/4, h/4, w*3/16, h/2);
 }
 
 //==============================================================================
