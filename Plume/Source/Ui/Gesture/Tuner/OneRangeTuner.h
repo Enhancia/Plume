@@ -145,6 +145,7 @@ private:
         // Slider style
 	    rangeSlider->setSliderStyle(Slider::TwoValueHorizontal);
         rangeSlider->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
+        rangeSlider->setLookAndFeel (&oneRangeTunerLookAndFeel);
 	    
         // Slider values
         rangeSlider->setRange (double (parameterMax.getStart()), double (parameterMax.getEnd()), 1.0);
@@ -186,5 +187,9 @@ private:
     ScopedPointer<Label> rangeLabelMin;
     ScopedPointer<Label> rangeLabelMax;
     
+    //==============================================================================
+    OneRangeTunerLookAndFeel oneRangeTunerLookAndFeel;
+    
+    //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OneRangeTuner)
 };

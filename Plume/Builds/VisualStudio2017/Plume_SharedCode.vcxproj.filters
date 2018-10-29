@@ -475,6 +475,9 @@
     <ClCompile Include="..\..\Source\Wrapper\WrapperProcessor.cpp">
       <Filter>Plume\Source\Wrapper</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Ui\LookAndFeel\PlumeLookAndFeel.cpp">
+      <Filter>Plume\Source\Ui\LookAndFeel</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Ui\Gesture\GesturePanel.cpp">
       <Filter>Plume\Source\Ui\Gesture</Filter>
     </ClCompile>
@@ -2417,9 +2420,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Wrapper\WrapperProcessor.h">
       <Filter>Plume\Source\Wrapper</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Ui\LookAndFeel\OneRangeTunerLookAndFeel.h">
-      <Filter>Plume\Source\Ui\LookAndFeel</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Ui\LookAndFeel\PlumeLookAndFeel.h">
       <Filter>Plume\Source\Ui\LookAndFeel</Filter>

@@ -80,8 +80,8 @@ void WrapperComponent::resized()
 {
     int h = getHeight(), w = getWidth();
     
-	scanButton->setBounds (w*3/16 + 2, h/3, w/16, h/3);
-    pluginNameLabel->setBounds (w*1/4, h/3, w*7/16, h/3);
+	scanButton->setBounds (w*3/16, h/3, h/3, h/3);
+    pluginNameLabel->setBounds (w*3/16 + h/3, h/3, w*8/16 - h/3, h/3);
 	openEditorButton->setBounds (w*3/4, h/4, w*3/16, h/2);
 }
 

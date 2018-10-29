@@ -14,7 +14,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{67B62D5A-6F39-E690-C659-B98273A2EC35}</ProjectGuid>
+    <ProjectGuid>{D0B6AA8F-2A2E-EECE-42AA-95E2E07D0705}</ProjectGuid>
     <PlatformToolset>v141</PlatformToolset>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -162,6 +162,7 @@
     <ClCompile Include="..\..\Source\Wrapper\PluginWrapper.cpp"/>
     <ClCompile Include="..\..\Source\Wrapper\WrapperEditor.cpp"/>
     <ClCompile Include="..\..\Source\Wrapper\WrapperProcessor.cpp"/>
+    <ClCompile Include="..\..\Source\Ui\LookAndFeel\PlumeLookAndFeel.cpp"/>
     <ClCompile Include="..\..\Source\Ui\Gesture\GesturePanel.cpp"/>
     <ClCompile Include="..\..\Source\Ui\Gesture\Mapper\MapperComponent.cpp"/>
     <ClCompile Include="..\..\Source\Ui\Presets\PresetComponent.cpp"/>
@@ -1913,7 +1914,6 @@
     <ClInclude Include="..\..\Source\Wrapper\PluginWrapper.h"/>
     <ClInclude Include="..\..\Source\Wrapper\WrapperEditor.h"/>
     <ClInclude Include="..\..\Source\Wrapper\WrapperProcessor.h"/>
-    <ClInclude Include="..\..\Source\Ui\LookAndFeel\OneRangeTunerLookAndFeel.h"/>
     <ClInclude Include="..\..\Source\Ui\LookAndFeel\PlumeLookAndFeel.h"/>
     <ClInclude Include="..\..\Source\Ui\Gesture\GesturePanel.h"/>
     <ClInclude Include="..\..\Source\Ui\Gesture\Mapper\MapperComponent.h"/>

@@ -202,9 +202,14 @@ private:
 	    rangeSliderLeft->setSliderStyle(Slider::TwoValueHorizontal);
         rangeSliderLeft->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
         
+        rangeSliderLeft->setLookAndFeel (&leftLookAndFeel);
+        
         //Right
 	    rangeSliderRight->setSliderStyle(Slider::TwoValueHorizontal);
         rangeSliderRight->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
+        
+        rightLookAndFeel.setSliderLeft (false);
+        rangeSliderRight->setLookAndFeel (&rightLookAndFeel);
 	    
         // Slider values
         rangeSliderLeft->setRange (double (parameterMax.getStart()),
@@ -260,12 +265,17 @@ private:
     Range<float>& parameterRangeRight;
     const Range<float> parameterMax;
     
+    //==============================================================================
     ScopedPointer<Slider> rangeSliderLeft;
     ScopedPointer<Slider> rangeSliderRight;
     ScopedPointer<Label> rangeLabelMinLeft;
     ScopedPointer<Label> rangeLabelMaxLeft;
     ScopedPointer<Label> rangeLabelMinRight;
     ScopedPointer<Label> rangeLabelMaxRight;
+    
+    //==============================================================================
+    TwoRangeTunerLookAndFeel leftLookAndFeel;
+    TwoRangeTunerLookAndFeel rightLookAndFeel;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TwoRangeTuner)
 };
