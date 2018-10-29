@@ -35,8 +35,10 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     processor.addActionListener (this);
 
 	// Base size and resize settings
-	setSize (800, 450);
-	setResizable (true, true);
+	setResizable (true, false);
+	addAndMakeVisible (resizableCorner = new ResizableCornerComponent (this, getConstrainer()));
+	
+	setSize(800, 450);
 	setResizeLimits (getWidth()*2/3, getHeight()*2/3, getWidth()*3, getHeight()*3);
 }
 
@@ -48,6 +50,7 @@ PlumeEditor::~PlumeEditor()
     wrapperComp = nullptr;
     presetComp = nullptr;
     gesturePanel = nullptr;
+    resizableCorner = nullptr;
     
     setLookAndFeel (nullptr);
 }
@@ -71,6 +74,7 @@ void PlumeEditor::resized()
 	wrapperComp->setBounds(MARGIN, MARGIN, getWidth() * 3 / 4, TOP_PANEL);
 	presetComp->setBounds(getWidth() * 3 / 4 + 2 * MARGIN, MARGIN, getWidth() - getWidth() * 3 / 4 - 3 * MARGIN, TOP_PANEL);
 	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 3 * MARGIN, getWidth() - 4 * MARGIN, getHeight() - TOP_PANEL - 3 * MARGIN);
+	resizableCorner->setBounds (getWidth() - 20, getHeight() - 20, 20, 20);
 }
 
 //==============================================================================

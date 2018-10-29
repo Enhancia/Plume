@@ -38,7 +38,10 @@ public:
 	                        Colour (0xffa0a0a0),  // gestureActiveBackground 
 	                        Colour (0xff606060),  // gestureInactiveBackground
 	                        Colour (0xff943cb0)}; // gestureActiveMapButton
-	                    
+	    
+	    // Checks if there are enough colours in c[]
+	    jassert (sizeof(c)/sizeof(c[0]) == numColours);
+	        
 	    for (int i=0; i<numColours; i++)
 	    {
 	        plumePalette[i] = c[i];
