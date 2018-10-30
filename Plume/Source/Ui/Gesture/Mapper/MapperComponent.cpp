@@ -38,8 +38,7 @@ MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr, PluginWr
     addAndMakeVisible (midiModeComp = new MidiModeComponent (gesture));
     
     // midiMode button
-    String PlumeDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getFullPathName();
-    Image midiOn = ImageFileFormat::loadFrom (File (PlumeDir + "/Resources/Images/Gestures/OnOff.png"));
+    Image midiOn = ImageFileFormat::loadFrom (PlumeData::OnOff_png, PlumeData::OnOff_pngSize);
     
     addAndMakeVisible (midiMapButton = new ImageButton ("Midi Mode Button"));
     midiMapButton->setImages (false, true, true,
@@ -283,7 +282,7 @@ void MapperComponent::initializeParamCompArray()
 
 void MapperComponent::addAndMakeArrayVisible()
 {
-    for (int i=0; i++; i<paramCompArray.size())
+    for (int i=0; i<paramCompArray.size(); i++)
     {
         addAndMakeVisible (paramCompArray[i]);
     }

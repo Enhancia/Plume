@@ -18,13 +18,8 @@ WrapperComponent::WrapperComponent(PluginWrapper& wrap)
 {
     TRACE_IN;
     // Loads all the images for the component
-    String PlumeDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getFullPathName();
-    
-    File f (PlumeDir + "/Resources/Images/Wrapper/folder.png");
-    Image scan = ImageFileFormat::loadFrom (f);
-    
-    f = File (PlumeDir + "/Resources/Images/Wrapper/eye.png");
-    Image editor = ImageFileFormat::loadFrom (f);
+    Image scan = ImageFileFormat::loadFrom (PlumeData::folder_png, PlumeData::folder_pngSize);
+    Image editor = ImageFileFormat::loadFrom (PlumeData::eye_png, PlumeData::eye_pngSize);
     
     // Creates the buttons and the label
     addAndMakeVisible (scanButton = new ImageButton ("Scan Plugin Button"));
@@ -66,9 +61,7 @@ void WrapperComponent::paint (Graphics& g)
             x = getWidth()/20,
             y = getHeight()/6;
         
-        String PlumeDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getFullPathName();
-        File f (PlumeDir + "/Resources/Images/Logo/Logo_ENHANCIA_Round.png");
-        Image logo = ImageFileFormat::loadFrom (f);
+        Image logo = ImageFileFormat::loadFrom (PlumeData::Logo_ENHANCIA_Round_png, PlumeData::Logo_ENHANCIA_Round_pngSize);
         
         g.drawImage (logo,
                      x, y, width, height,

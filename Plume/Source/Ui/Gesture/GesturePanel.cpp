@@ -28,8 +28,7 @@ public:
     {
         TRACE_IN;
         // Creates the on/off button
-        String PlumeDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getFullPathName();
-        Image onOff = ImageFileFormat::loadFrom (File (PlumeDir + "/Resources/Images/Gestures/OnOff.png"));
+        Image onOff = ImageFileFormat::loadFrom (PlumeData::OnOff_png, PlumeData::OnOff_pngSize);
     
         addAndMakeVisible (onOffButton = new ImageButton ("On Off Button"));
         onOffButton->setImages (false, true, true,
@@ -86,10 +85,32 @@ public:
             width = tunerWidth/8 - 2*MARGIN;
             height = getHeight() - 2*MARGIN;
 
-            String PlumeDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getFullPathName();
-            File f = File (PlumeDir + "/Resources/Images/Gestures/" + gesture.getTypeString() + ".png");
+            Image gest;
             
-            Image gest = ImageFileFormat::loadFrom (f);
+            // Gets the gesture Image
+            switch (gesture.type)
+            {
+                case Gesture::vibrato:
+                    gest = ImageFileFormat::loadFrom (PlumeData::vibrato_png, PlumeData::vibrato_pngSize);
+                    break;
+            
+                case Gesture::pitchBend:
+                    gest = ImageFileFormat::loadFrom (PlumeData::pitchBend_png, PlumeData::pitchBend_pngSize);
+                    break;
+            
+                case Gesture::tilt:
+                    gest = ImageFileFormat::loadFrom (PlumeData::tilt_png, PlumeData::tilt_pngSize);
+                    break;
+              
+                case Gesture::wave:
+                    gest = ImageFileFormat::loadFrom (PlumeData::wave_png, PlumeData::wave_pngSize);
+                    break;
+            
+                case Gesture::roll:
+                    gest = ImageFileFormat::loadFrom (PlumeData::roll_png, PlumeData::roll_pngSize);
+                    break;
+            }
+            
 			g.drawImageWithin(gest, x, y, width, height,
 							  RectanglePlacement(RectanglePlacement::centred));
         }

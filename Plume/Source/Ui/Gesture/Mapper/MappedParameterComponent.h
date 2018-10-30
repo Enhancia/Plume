@@ -32,8 +32,7 @@ public:
     {
         TRACE_IN;
         // Creates the close button
-        String PlumeDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getFullPathName();
-        Image close = ImageFileFormat::loadFrom (File (PlumeDir + "/Resources/Images/Gestures/Close.png"));
+        Image close = ImageFileFormat::loadFrom (PlumeData::Close_png, PlumeData::Close_pngSize);;
     
         addAndMakeVisible (closeButton = new ImageButton ("Close Button"));
         closeButton->setImages (false, true, true,
@@ -49,10 +48,10 @@ public:
     ~MappedParameterComponent()
     {
         TRACE_IN;
-        closeButton == nullptr;
-        valueLabel == nullptr;
-        rangeLabelMin == nullptr;
-        rangeLabelMax == nullptr;
+        closeButton = nullptr;
+        valueLabel = nullptr;
+        rangeLabelMin = nullptr;
+        rangeLabelMax = nullptr;
     }
 
     //==============================================================================
