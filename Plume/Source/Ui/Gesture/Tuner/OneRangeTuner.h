@@ -121,20 +121,21 @@ public:
     
     void sliderValueChanged (Slider* sldr) override
     {
-        // min value changed
-		if (float (sldr->getMinValue()) != parameterRange.getStart())
+        // min value changed by user
+		if (sldr->getThumbBeingDragged() == 1)
 		{
 			parameterRange.setStart (float (sldr->getMinValue()));
 		    rangeLabelMin->setText (String (int (parameterRange.getStart())) + valueUnit, dontSendNotification);
+			rangeLabelMax->setText (String (int (parameterRange.getEnd())) + valueUnit, dontSendNotification);
 		}
 
-		// max value changed
-		else if (float (sldr->getMaxValue()) != parameterRange.getEnd())
+		// max value changed by user
+		else if (sldr->getThumbBeingDragged() == 2)
 		{
 			parameterRange.setEnd (float (sldr->getMaxValue()));
 		    rangeLabelMax->setText (String (int (parameterRange.getEnd())) + valueUnit, dontSendNotification);
+			rangeLabelMin->setText (String (int (parameterRange.getStart())) + valueUnit, dontSendNotification);
 		}
-        
     }
     
 private:

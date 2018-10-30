@@ -13,7 +13,7 @@
 #include "../../../../JuceLibraryCode/JuceHeader.h"
 #include "Ui/LookAndFeel/PlumeLookAndFeel.h"
 
-#define CURSOR_SIZE 10
+#define CURSOR_SIZE 4
 #define W getWidth()
 #define H getHeight()
 
@@ -29,7 +29,7 @@ public:
         :   value (val), totalRange (totRange), valueUnit (unit), showValue (show)
     {
         TRACE_IN;
-        yCursor = getHeight()/3 - CURSOR_SIZE;
+        yCursor = getHeight()/3 - CURSOR_SIZE - 2;
         
         addAndMakeVisible(valueLabel = new Label("value Label"));
         valueLabel->setEditable (false, false, false);
@@ -68,7 +68,7 @@ public:
 
     virtual void resized() override
     {
-        yCursor = H/3 - CURSOR_SIZE;
+        yCursor = H/3 - CURSOR_SIZE - 2;
         sliderPlacement.setStart ((W*3/4)/8);
         sliderPlacement.setEnd ((W*3/4)*7/8);
         
@@ -131,7 +131,15 @@ private:
             else if (valueLab > totalRange.getEnd())   xCursor = sliderPlacement.getEnd() - 5;
         }
         
-        g.drawRect (xCursor, yCursor, 1, CURSOR_SIZE);
+        // draws the cursor
+        Path cursorPath;
+        
+        cursorPath.startNewSubPath (xCursor - CURSOR_SIZE, yCursor);
+        cursorPath.lineTo (xCursor, yCursor + CURSOR_SIZE);
+        cursorPath.lineTo (xCursor + CURSOR_SIZE, yCursor);
+        
+		g.setColour (getLookAndFeel().findColour (Slider::backgroundColourId));
+		g.strokePath (cursorPath, { 2.0f, PathStrokeType::curved, PathStrokeType::rounded });
     }
     
     //==============================================================================

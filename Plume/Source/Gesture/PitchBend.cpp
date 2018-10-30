@@ -43,23 +43,34 @@ void PitchBend::addGestureMidi (MidiBuffer& midiMessages)
 
 int PitchBend::getMidiValue()
 {
-    if (value>= rangeRight.getStart() && value < 140.0f && !(rangeRight.isEmpty()))
+    // Right side
+    if (value>= rangeRight.getStart() && value < 140.0f)
     {
         send = true;
         pbLast = true;
         
+        // if the range is empty just returns the max value
+        if (rangeRight.isEmpty()) return midiMap ? 127 : 16383;
+        
+        // Normal case, maps to an interval from neutral to max pitch
         if (midiMap) return Gesture::map (value, rangeRight.getStart(), rangeRight.getEnd(), 64, 127);
         else         return Gesture::map (value, rangeRight.getStart(), rangeRight.getEnd(), 8192, 16383);
     }
     
-    else if (value < rangeLeft.getEnd() && value > -140.0f && !(rangeLeft.isEmpty()))
+    // Left side
+    else if (value < rangeLeft.getEnd() && value > -140.0f)
     {
         send = true;
         pbLast = true;
         
+        // if the range is empty just returns the min value
+        if (rangeRight.isEmpty()) return 0;
+        
+        // Normal case, maps to an interval from min pitch to neutral
         if (midiMap) return Gesture::map (value, rangeLeft.getStart(), rangeLeft.getEnd(), 0, 64);
         else         return Gesture::map (value, rangeLeft.getStart(), rangeLeft.getEnd(), 0, 8191);
     }
+    
     // If back to central zone
     else if (value > rangeLeft.getEnd() && value < rangeRight.getStart() && pbLast == true)
     {
@@ -92,19 +103,31 @@ void PitchBend::updateMappedParameters()
 
 float PitchBend::getValueForMappedParameter (Range<float> paramRange)
 {
-    if (value>= rangeRight.getStart() && value < 140.0f && !(rangeRight.isEmpty()))
+    // Right side
+    if (value>= rangeRight.getStart() && value < 140.0f)
     {
         send = true;
 		pbLast = true;
+		
+		// if the range is empty just returns the max value
+        if (rangeRight.isEmpty()) return paramRange.getEnd();
+        
+        // Normal case, maps to an interval from neutral to max
         return (Gesture::mapParameter (value, rangeRight.getStart(), rangeRight.getEnd(),
                                        Range<float> (paramRange.getStart() + paramRange.getLength()/2,
                                                      paramRange.getEnd())));
     }
     
-    else if (value < rangeLeft.getEnd() && value > -140.0f && !(rangeLeft.isEmpty()))
+    // Left side
+    else if (value < rangeLeft.getEnd() && value > -140.0f)
     {
         send = true;
         pbLast = true;
+        
+        // if the range is empty just returns the min value
+        if (rangeRight.isEmpty()) return paramRange.getStart();
+        
+        // Normal case, maps to an interval from min to neutral
         return (Gesture::mapParameter (value, rangeLeft.getStart(), rangeLeft.getEnd(),
                                        Range<float> (paramRange.getStart(),
                                                      paramRange.getStart() + paramRange.getLength()/2)));

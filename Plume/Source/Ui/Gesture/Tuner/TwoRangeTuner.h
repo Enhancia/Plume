@@ -159,34 +159,38 @@ public:
         if (sldr == rangeSliderLeft)
         {
             // min left value changed
-		    if (float (sldr->getMinValue()) != parameterRangeLeft.getStart())
+		    if (sldr->getThumbBeingDragged() == 1)
 		    {
 			    parameterRangeLeft.setStart (float (sldr->getMinValue()));
 		        rangeLabelMinLeft->setText (String (int (parameterRangeLeft.getStart())) + valueUnit, sendNotification);
+		        rangeLabelMaxLeft->setText (String (int (parameterRangeLeft.getEnd())) + valueUnit, sendNotification);
 		    }
 
 		    // max left value changed
-		    else if (float (sldr->getMaxValue()) != parameterRangeLeft.getEnd())
+		    else if (sldr->getThumbBeingDragged() == 2)
 		    {
 			    parameterRangeLeft.setEnd (float (sldr->getMaxValue()));
 		        rangeLabelMaxLeft->setText (String (int (parameterRangeLeft.getEnd())) + valueUnit, sendNotification);
+		        rangeLabelMinLeft->setText (String (int (parameterRangeLeft.getStart())) + valueUnit, sendNotification);
 		    }
         }
         
 		else if (sldr == rangeSliderRight)
         {
 		    // min right value changed
-		    if (float (sldr->getMinValue()) != parameterRangeRight.getStart())
+		    if (sldr->getThumbBeingDragged() == 1)
 		    {
 			    parameterRangeRight.setStart (float (sldr->getMinValue()));
 		        rangeLabelMinRight->setText (String (int (parameterRangeRight.getStart())) + valueUnit, sendNotification);
+		        rangeLabelMaxRight->setText (String (int (parameterRangeRight.getEnd())) + valueUnit, sendNotification);
 		    }
 
 		    // max right value changed
-		    else if (float (sldr->getMaxValue()) != parameterRangeRight.getEnd())
+		    else if (sldr->getThumbBeingDragged() == 2)
 		    {
 			    parameterRangeRight.setEnd (float (sldr->getMaxValue()));
 		        rangeLabelMaxRight->setText (String (int (parameterRangeRight.getEnd())) + valueUnit, sendNotification);
+		        rangeLabelMinRight->setText (String (int (parameterRangeRight.getStart())) + valueUnit, sendNotification);
 		    }
         }
     }
