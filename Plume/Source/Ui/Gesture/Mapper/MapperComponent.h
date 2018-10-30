@@ -15,6 +15,7 @@
 #include "Gesture/Gesture.h"
 #include "Ui/Gesture/Mapper/MappedParameterComponent.h"
 #include "Ui/Gesture/Mapper/MidiModeComponent.h"
+#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
 
 //==============================================================================
 /*
@@ -67,9 +68,6 @@ private:
     ScopedPointer<TextButton> mapButton;
     ScopedPointer<TextButton> clearMapButton;
     ScopedPointer<ImageButton> midiMapButton;
-    
-    //==============================================================================
-    ScopedPointer<Label> ccLabel;
     
     //==============================================================================
     bool allowDisplayUpdate = true;

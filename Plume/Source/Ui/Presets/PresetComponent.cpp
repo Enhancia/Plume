@@ -20,8 +20,6 @@ PresetComponent::PresetComponent(PlumeProcessor& p)  : processor (p)
     nameLabel->setJustificationType (Justification::centred);
     nameLabel->setEditable (false, false, false);
     nameLabel->setColour (Label::backgroundColourId, Colour (0xff323232));
-    nameLabel->setColour (Label::textColourId, Colour (0xffffffff));
-    nameLabel->setColour (Label::outlineColourId, Colour (0x00000000));
         
     addAndMakeVisible (saveButton = new TextButton ("saveButton"));
     saveButton->setButtonText ("Save");
@@ -49,9 +47,9 @@ void PresetComponent::paint (Graphics& g)
 
 void PresetComponent::resized ()
 {
-    nameLabel->setBounds (0, 0, getWidth(), getHeight()/4);
-    saveButton->setBounds (getWidth()/7, getHeight()/2, getWidth()*2/7, getHeight()/4);
-    loadButton->setBounds (getWidth()*4/7, getHeight()/2, getWidth()*2/7, getHeight()/4);
+    nameLabel->setBounds (0, 0, getWidth(), getHeight()/3);
+    saveButton->setBounds (getWidth()/16, getHeight()/2, getWidth()*3/8, getHeight()/3);
+    loadButton->setBounds (getWidth()*9/16, getHeight()/2, getWidth()*3/8, getHeight()/3);
 }
 
 void PresetComponent::buttonClicked (Button* bttn)
@@ -126,7 +124,7 @@ void PresetComponent::loadPreset()
 		nameLabel->setText (TRANS (presetXml->getTagName()),
 							dontSendNotification);
 			    
-	    presetXml->deleteAllChildElements();
+	    presetXml->deleteAllChildElements(); // frees the memory
     }
 }
 

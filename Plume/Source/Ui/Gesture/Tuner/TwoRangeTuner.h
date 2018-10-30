@@ -159,34 +159,38 @@ public:
         if (sldr == rangeSliderLeft)
         {
             // min left value changed
-		    if (float (sldr->getMinValue()) != parameterRangeLeft.getStart())
+		    if (sldr->getThumbBeingDragged() == 1)
 		    {
 			    parameterRangeLeft.setStart (float (sldr->getMinValue()));
 		        rangeLabelMinLeft->setText (String (int (parameterRangeLeft.getStart())) + valueUnit, sendNotification);
+		        rangeLabelMaxLeft->setText (String (int (parameterRangeLeft.getEnd())) + valueUnit, sendNotification);
 		    }
 
 		    // max left value changed
-		    else if (float (sldr->getMaxValue()) != parameterRangeLeft.getEnd())
+		    else if (sldr->getThumbBeingDragged() == 2)
 		    {
 			    parameterRangeLeft.setEnd (float (sldr->getMaxValue()));
 		        rangeLabelMaxLeft->setText (String (int (parameterRangeLeft.getEnd())) + valueUnit, sendNotification);
+		        rangeLabelMinLeft->setText (String (int (parameterRangeLeft.getStart())) + valueUnit, sendNotification);
 		    }
         }
         
 		else if (sldr == rangeSliderRight)
         {
 		    // min right value changed
-		    if (float (sldr->getMinValue()) != parameterRangeRight.getStart())
+		    if (sldr->getThumbBeingDragged() == 1)
 		    {
 			    parameterRangeRight.setStart (float (sldr->getMinValue()));
 		        rangeLabelMinRight->setText (String (int (parameterRangeRight.getStart())) + valueUnit, sendNotification);
+		        rangeLabelMaxRight->setText (String (int (parameterRangeRight.getEnd())) + valueUnit, sendNotification);
 		    }
 
 		    // max right value changed
-		    else if (float (sldr->getMaxValue()) != parameterRangeRight.getEnd())
+		    else if (sldr->getThumbBeingDragged() == 2)
 		    {
 			    parameterRangeRight.setEnd (float (sldr->getMaxValue()));
 		        rangeLabelMaxRight->setText (String (int (parameterRangeRight.getEnd())) + valueUnit, sendNotification);
+		        rangeLabelMinRight->setText (String (int (parameterRangeRight.getStart())) + valueUnit, sendNotification);
 		    }
         }
     }
@@ -199,18 +203,17 @@ private:
         
         // Slider style
         //Left
-        rangeSliderLeft->setColour (Slider::thumbColourId, Colour (0xffe6e6e6));
-        rangeSliderLeft->setColour (Slider::trackColourId, Colour (0xffb7b7b7));
-        rangeSliderLeft->setColour (Slider::backgroundColourId, Colour (0xff101010));
 	    rangeSliderLeft->setSliderStyle(Slider::TwoValueHorizontal);
         rangeSliderLeft->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
         
+        rangeSliderLeft->setLookAndFeel (&leftLookAndFeel);
+        
         //Right
-        rangeSliderRight->setColour (Slider::thumbColourId, Colour (0xffe6e6e6));
-        rangeSliderRight->setColour (Slider::trackColourId, Colour (0xffb7b7b7));
-        rangeSliderRight->setColour (Slider::backgroundColourId, Colour (0xff101010));
 	    rangeSliderRight->setSliderStyle(Slider::TwoValueHorizontal);
         rangeSliderRight->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
+        
+        rightLookAndFeel.setSliderLeft (false);
+        rangeSliderRight->setLookAndFeel (&rightLookAndFeel);
 	    
         // Slider values
         rangeSliderLeft->setRange (double (parameterMax.getStart()),
@@ -237,29 +240,21 @@ private:
         // LabelMinLeft style
         rangeLabelMinLeft->setEditable (true, false, false);
         rangeLabelMinLeft->setFont (Font (13.0f, Font::plain));
-        rangeLabelMinLeft->setColour (Label::textColourId, Colour(0xffffffff));
-        rangeLabelMinLeft->setColour (Label::backgroundColourId, Colour(0xff000000));
         rangeLabelMinLeft->setJustificationType (Justification::centred);
         
         // LabelMaxLeft style
         rangeLabelMaxLeft->setEditable (true, false, false);
         rangeLabelMaxLeft->setFont (Font (13.0f, Font::plain));
-        rangeLabelMaxLeft->setColour (Label::textColourId, Colour(0xffffffff));
-        rangeLabelMaxLeft->setColour (Label::backgroundColourId, Colour(0xff000000));
         rangeLabelMaxLeft->setJustificationType (Justification::centred);
         
         // LabelMinRight style
         rangeLabelMinRight->setEditable (true, false, false);
         rangeLabelMinRight->setFont (Font (13.0f, Font::plain));
-        rangeLabelMinRight->setColour (Label::textColourId, Colour(0xffffffff));
-        rangeLabelMinRight->setColour (Label::backgroundColourId, Colour(0xff000000));
         rangeLabelMinRight->setJustificationType (Justification::centred);
         
         // LabelMaxRight style
         rangeLabelMaxRight->setEditable (true, false, false);
         rangeLabelMaxRight->setFont (Font (13.0f, Font::plain));
-        rangeLabelMaxRight->setColour (Label::textColourId, Colour(0xffffffff));
-        rangeLabelMaxRight->setColour (Label::backgroundColourId, Colour(0xff000000));
         rangeLabelMaxRight->setJustificationType (Justification::centred);
         
         // Labels settings
@@ -274,12 +269,17 @@ private:
     Range<float>& parameterRangeRight;
     const Range<float> parameterMax;
     
+    //==============================================================================
     ScopedPointer<Slider> rangeSliderLeft;
     ScopedPointer<Slider> rangeSliderRight;
     ScopedPointer<Label> rangeLabelMinLeft;
     ScopedPointer<Label> rangeLabelMaxLeft;
     ScopedPointer<Label> rangeLabelMinRight;
     ScopedPointer<Label> rangeLabelMaxRight;
+    
+    //==============================================================================
+    TwoRangeTunerLookAndFeel leftLookAndFeel;
+    TwoRangeTunerLookAndFeel rightLookAndFeel;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TwoRangeTuner)
 };

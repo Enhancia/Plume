@@ -18,13 +18,8 @@ WrapperComponent::WrapperComponent(PluginWrapper& wrap)
 {
     TRACE_IN;
     // Loads all the images for the component
-    String PlumeDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getFullPathName();
-    
-    File f (PlumeDir + "/Resources/Images/Wrapper/folder.png");
-    Image scan = ImageFileFormat::loadFrom (f);
-    
-    f = File (PlumeDir + "/Resources/Images/Wrapper/eye.png");
-    Image editor = ImageFileFormat::loadFrom (f);
+    Image scan = ImageFileFormat::loadFrom (PlumeData::folder_png, PlumeData::folder_pngSize);
+    Image editor = ImageFileFormat::loadFrom (PlumeData::eye_png, PlumeData::eye_pngSize);
     
     // Creates the buttons and the label
     addAndMakeVisible (scanButton = new ImageButton ("Scan Plugin Button"));
@@ -39,8 +34,6 @@ WrapperComponent::WrapperComponent(PluginWrapper& wrap)
     pluginNameLabel->setJustificationType (Justification::centred);
     pluginNameLabel->setEditable (false, false, false);
     pluginNameLabel->setColour (Label::backgroundColourId, Colour (0xff323232));
-    pluginNameLabel->setColour (Label::textColourId, Colour (0xffffffff));
-    pluginNameLabel->setColour (Label::outlineColourId, Colour (0x00000000));
     
     addAndMakeVisible (openEditorButton = new ImageButton ("Open Editor Button"));
     openEditorButton->setImages (false, true, false, 
@@ -59,14 +52,16 @@ WrapperComponent::~WrapperComponent()
 void WrapperComponent::paint (Graphics& g)
 {
     g.fillAll (Colour (0xff909090));
-
+    
+    // Draws Enhancia's Logo
     {
         //g.setColour (Colours::black);
-        int width = getHeight()*2/3, height = getHeight()*2/3, x = 20, y = getHeight()/6;
+        int width = getWidth()/8 > getHeight()*2/3 ? getHeight()*2/3 : getWidth()/8,
+            height = width,
+            x = getWidth()/20,
+            y = getHeight()/6;
         
-        String PlumeDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getFullPathName();
-        File f (PlumeDir + "/Resources/Images/Logo/Logo_ENHANCIA_Round.png");
-        Image logo = ImageFileFormat::loadFrom (f);
+        Image logo = ImageFileFormat::loadFrom (PlumeData::Logo_ENHANCIA_Round_png, PlumeData::Logo_ENHANCIA_Round_pngSize);
         
         g.drawImage (logo,
                      x, y, width, height,
@@ -78,9 +73,9 @@ void WrapperComponent::resized()
 {
     int h = getHeight(), w = getWidth();
     
-	scanButton->setBounds (w*3/16 + 2, h/3, w/16, h/3);
-    pluginNameLabel->setBounds (w*1/4, h/3, w*7/16, h/3);
-	openEditorButton->setBounds (w*23/32, h/4, w/4, h/2);
+	scanButton->setBounds (w*3/16, h/3, h/3, h/3);
+    pluginNameLabel->setBounds (w*3/16 + h/3, h/3, w*8/16 - h/3, h/3);
+	openEditorButton->setBounds (w*3/4, h/4, w*3/16, h/2);
 }
 
 //==============================================================================

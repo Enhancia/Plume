@@ -121,20 +121,21 @@ public:
     
     void sliderValueChanged (Slider* sldr) override
     {
-        // min value changed
-		if (float (sldr->getMinValue()) != parameterRange.getStart())
+        // min value changed by user
+		if (sldr->getThumbBeingDragged() == 1)
 		{
 			parameterRange.setStart (float (sldr->getMinValue()));
 		    rangeLabelMin->setText (String (int (parameterRange.getStart())) + valueUnit, dontSendNotification);
+			rangeLabelMax->setText (String (int (parameterRange.getEnd())) + valueUnit, dontSendNotification);
 		}
 
-		// max value changed
-		else if (float (sldr->getMaxValue()) != parameterRange.getEnd())
+		// max value changed by user
+		else if (sldr->getThumbBeingDragged() == 2)
 		{
 			parameterRange.setEnd (float (sldr->getMaxValue()));
 		    rangeLabelMax->setText (String (int (parameterRange.getEnd())) + valueUnit, dontSendNotification);
+			rangeLabelMin->setText (String (int (parameterRange.getStart())) + valueUnit, dontSendNotification);
 		}
-        
     }
     
 private:
@@ -143,11 +144,9 @@ private:
         Tuner::addAndMakeVisible (rangeSlider = new Slider ("Range Slider"));
         
         // Slider style
-        rangeSlider->setColour (Slider::thumbColourId, Colour (0xffe6e6e6));
-        rangeSlider->setColour (Slider::trackColourId, Colour (0xffb7b7b7));
-        rangeSlider->setColour (Slider::backgroundColourId, Colour (0xff101010));
 	    rangeSlider->setSliderStyle(Slider::TwoValueHorizontal);
         rangeSlider->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
+        rangeSlider->setLookAndFeel (&oneRangeTunerLookAndFeel);
 	    
         // Slider values
         rangeSlider->setRange (double (parameterMax.getStart()), double (parameterMax.getEnd()), 1.0);
@@ -166,15 +165,11 @@ private:
         // LabelMin style
         rangeLabelMin->setEditable (true, false, false);
         rangeLabelMin->setFont (Font (13.0f, Font::plain));
-        rangeLabelMin->setColour (Label::textColourId, Colour(0xffffffff));
-        rangeLabelMin->setColour (Label::backgroundColourId, Colour(0xff000000));
         rangeLabelMin->setJustificationType (Justification::centred);
         
         // LabelMax style
         rangeLabelMax->setEditable (true, false, false);
         rangeLabelMax->setFont (Font (13.0f, Font::plain));
-        rangeLabelMax->setColour (Label::textColourId, Colour(0xffffffff));
-        rangeLabelMax->setColour (Label::backgroundColourId, Colour(0xff000000));
         rangeLabelMax->setJustificationType (Justification::centred);
         
         // Labels settings
@@ -193,5 +188,9 @@ private:
     ScopedPointer<Label> rangeLabelMin;
     ScopedPointer<Label> rangeLabelMax;
     
+    //==============================================================================
+    OneRangeTunerLookAndFeel oneRangeTunerLookAndFeel;
+    
+    //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OneRangeTuner)
 };

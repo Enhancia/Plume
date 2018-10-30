@@ -28,8 +28,7 @@ public:
     {
         TRACE_IN;
         // Creates the on/off button
-        String PlumeDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getFullPathName();
-        Image onOff = ImageFileFormat::loadFrom (File (PlumeDir + "/Resources/Images/Gestures/OnOff.png"));
+        Image onOff = ImageFileFormat::loadFrom (PlumeData::OnOff_png, PlumeData::OnOff_pngSize);
     
         addAndMakeVisible (onOffButton = new ImageButton ("On Off Button"));
         onOffButton->setImages (false, true, true,
@@ -67,11 +66,16 @@ public:
         
         // Fills the area for the Tuner and Mapper
         { 
-			g.setColour(Colour(0xffa0a0a0));
-
-            g.fillRect (0, 0, tunerWidth, getHeight());
-            g.fillRect (tunerWidth+2*MARGIN, 0, mapperWidth, getHeight());
-            g.fillRect (tunerWidth, getHeight()*9/20, 2*MARGIN, getHeight()/10);
+            if (auto* lf = dynamic_cast<PlumeLookAndFeel*> (&getLookAndFeel()))
+            {
+			     g.setColour (lf->getPlumeColour (PlumeLookAndFeel::gestureActiveBackground));
+            }
+                
+            g.fillRoundedRectangle (0, 0, tunerWidth, getHeight(), MARGIN/2);
+            g.fillRoundedRectangle (tunerWidth+2*MARGIN, 0, mapperWidth, getHeight(), MARGIN/2);
+            
+            // Visual link between tuner and mapper
+            if (gesture.isMapped() || gesture.isMidiMapped()) g.fillRect (tunerWidth, getHeight()*9/20, 2*MARGIN, getHeight()/10);
         }
         
         // Loads the gesture image
@@ -81,10 +85,32 @@ public:
             width = tunerWidth/8 - 2*MARGIN;
             height = getHeight() - 2*MARGIN;
 
-            String PlumeDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getFullPathName();
-            File f = File (PlumeDir + "/Resources/Images/Gestures/" + gesture.getTypeString() + ".png");
+            Image gest;
             
-            Image gest = ImageFileFormat::loadFrom (f);
+            // Gets the gesture Image
+            switch (gesture.type)
+            {
+                case Gesture::vibrato:
+                    gest = ImageFileFormat::loadFrom (PlumeData::vibrato_png, PlumeData::vibrato_pngSize);
+                    break;
+            
+                case Gesture::pitchBend:
+                    gest = ImageFileFormat::loadFrom (PlumeData::pitchBend_png, PlumeData::pitchBend_pngSize);
+                    break;
+            
+                case Gesture::tilt:
+                    gest = ImageFileFormat::loadFrom (PlumeData::tilt_png, PlumeData::tilt_pngSize);
+                    break;
+              
+                case Gesture::wave:
+                    gest = ImageFileFormat::loadFrom (PlumeData::wave_png, PlumeData::wave_pngSize);
+                    break;
+            
+                case Gesture::roll:
+                    gest = ImageFileFormat::loadFrom (PlumeData::roll_png, PlumeData::roll_pngSize);
+                    break;
+            }
+            
 			g.drawImageWithin(gest, x, y, width, height,
 							  RectanglePlacement(RectanglePlacement::centred));
         }
@@ -115,11 +141,16 @@ public:
                         
         if (onOffButton->getToggleState() == false)
         {
-			g.setColour(Colour(0x90606060));
-
-            g.fillRect (0, 0, tunerWidth, getHeight());
-            g.fillRect (tunerWidth+2*MARGIN, 0, mapperWidth, getHeight());
-            g.fillRect (tunerWidth, getHeight()*9/20, 2*MARGIN, getHeight()/10);
+            if (auto* lf = dynamic_cast<PlumeLookAndFeel*> (&getLookAndFeel()))
+            {
+			     g.setColour (lf->getPlumeColour (PlumeLookAndFeel::gestureInactiveBackground));
+            }
+            g.setOpacity (0.5f);
+            g.fillRoundedRectangle (0, 0, tunerWidth, getHeight(), MARGIN/2);
+            g.fillRoundedRectangle (tunerWidth+2*MARGIN, 0, mapperWidth, getHeight(), MARGIN/2);
+            
+            // Visual link between tuner and mapper
+            if (gesture.isMapped() || gesture.isMidiMapped()) g.fillRect (tunerWidth, getHeight()*9/20, 2*MARGIN, getHeight()/10);
         }
     }
     
@@ -129,8 +160,8 @@ public:
 		int mapperWidth = getWidth() * 3/8 - MARGIN;
 
         onOffButton->setBounds (tunerWidth/8 + 2*MARGIN, MARGIN, 20, 20);
-        gestTuner->setBounds(tunerWidth/8 + 2*MARGIN, getHeight()/4, tunerWidth*7/8 - 2*MARGIN, getHeight()*3/4);
-        gestMapper->setBounds(getWidth() * 5/8 + MARGIN, 0, mapperWidth, getHeight());
+        gestTuner->setBounds (tunerWidth/8 + 2*MARGIN, getHeight()/4, tunerWidth*7/8 - 2*MARGIN, getHeight()*3/4);
+        gestMapper->setBounds (getWidth() * 5/8 + MARGIN, 0, mapperWidth, getHeight());
         repaint();
     }
     
@@ -229,17 +260,24 @@ void GesturePanel::paint (Graphics& g)
 
 void GesturePanel::resized()
 {
+    int gestureHeight = (getHeight() - (NUM_GEST - 1) * 2*MARGIN) / NUM_GEST; // gets the height of each gesture component
+    
+    for (int i=0; i<gestureComponents.size(); i++)
+    {
+        // Places the gestureComponent for each existing gesture.
+        gestureComponents[i]->setBounds (0, i*(gestureHeight + MARGIN), getWidth(), gestureHeight);
+    }
 }
 
 void GesturePanel::initialize()
 {  
     startTimerHz (freq);
-    
-    int gestureHeight = (getHeight() - (NUM_GEST - 1) * 2*MARGIN) / NUM_GEST; // gets the height of each gesture component
-    
+
+	int gestureHeight = (getHeight() - (NUM_GEST - 1) * 2 * MARGIN) / NUM_GEST; // gets the height of each gesture component
+
     for (int i=0; i<NUM_GEST && i<gestureArray.size(); i++)
     {
-        // Loop that creates and places a gestureComponent for each existing gesture.
+        // Creates a gestureComponent for each existing gesture.
         gestureComponents.add (new GestureComponent (*gestureArray.getGestureById (i), gestureArray, wrapper));
         addAndMakeVisible (gestureComponents[i]);
         gestureComponents[i]->setBounds (0, i*(gestureHeight + MARGIN), getWidth(), gestureHeight);

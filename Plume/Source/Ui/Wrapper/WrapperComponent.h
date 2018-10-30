@@ -12,6 +12,7 @@
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
 #include "Wrapper/PluginWrapper.h"
+#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
 
 //==============================================================================
 /*
@@ -39,10 +40,13 @@ public:
     void update();
     
 private:
+    //==============================================================================
     ScopedPointer<ImageButton> scanButton;
     ScopedPointer<ImageButton> openEditorButton;
     ScopedPointer<Label> pluginNameLabel;
     
+    //==============================================================================
     PluginWrapper& wrapper;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WrapperComponent)
 };

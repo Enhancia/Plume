@@ -32,8 +32,7 @@ public:
     {
         TRACE_IN;
         // Creates the close button
-        String PlumeDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getFullPathName();
-        Image close = ImageFileFormat::loadFrom (File (PlumeDir + "/Resources/Images/Gestures/Close.png"));
+        Image close = ImageFileFormat::loadFrom (PlumeData::Close_png, PlumeData::Close_pngSize);;
     
         addAndMakeVisible (closeButton = new ImageButton ("Close Button"));
         closeButton->setImages (false, true, true,
@@ -49,10 +48,10 @@ public:
     ~MappedParameterComponent()
     {
         TRACE_IN;
-        closeButton == nullptr;
-        valueLabel == nullptr;
-        rangeLabelMin == nullptr;
-        rangeLabelMax == nullptr;
+        closeButton = nullptr;
+        valueLabel = nullptr;
+        rangeLabelMin = nullptr;
+        rangeLabelMax = nullptr;
     }
 
     //==============================================================================
@@ -176,8 +175,8 @@ private:
         
         valueLabel->setEditable (false, false, false);
         valueLabel->setFont (Font (11.0f, Font::plain));
-        valueLabel->setColour (Label::textColourId, Colour(0xff000000));
-        valueLabel->setColour (Label::backgroundColourId, Colour(0x00000000));
+        valueLabel->setColour (Label::textColourId, Colour (0xff000000));
+        valueLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
         valueLabel->setJustificationType (Justification::centredBottom);
         
         valueLabel->setBounds (0, H/3, W*2/3, H/3 - 2);
@@ -191,15 +190,11 @@ private:
         // LabelMin style
         rangeLabelMin->setEditable (true, false, false);
         rangeLabelMin->setFont (Font (11.0f, Font::plain));
-        rangeLabelMin->setColour (Label::textColourId, Colour(0xffffffff));
-        rangeLabelMin->setColour (Label::backgroundColourId, Colour(0xff000000));
         rangeLabelMin->setJustificationType (Justification::centred);
         
         // LabelMax style
         rangeLabelMax->setEditable (true, false, false);
         rangeLabelMax->setFont (Font (11.0f, Font::plain));
-        rangeLabelMax->setColour (Label::textColourId, Colour(0xffffffff));
-        rangeLabelMax->setColour (Label::backgroundColourId, Colour(0xff000000));
         rangeLabelMax->setJustificationType (Justification::centred);
         
         // Labels settings

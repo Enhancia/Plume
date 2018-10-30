@@ -11,8 +11,9 @@
 #pragma once
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
+#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
 
-#define CURSOR_SIZE 10
+#define CURSOR_SIZE 4
 #define W getWidth()
 #define H getHeight()
 
@@ -28,26 +29,19 @@ public:
         :   value (val), totalRange (totRange), valueUnit (unit), showValue (show)
     {
         TRACE_IN;
-        yCursor = getHeight()/3 - CURSOR_SIZE;
+        yCursor = getHeight()/3 - CURSOR_SIZE - 2;
         
         addAndMakeVisible(valueLabel = new Label("value Label"));
         valueLabel->setEditable (false, false, false);
         valueLabel->setText (String(int (value)), dontSendNotification);
         valueLabel->setFont (Font (13.0f, Font::plain));
         
-        if (showValue)
+        if (!showValue)
         {
-            valueLabel->setColour (Label::textColourId, Colour(0xffffffff));
-            valueLabel->setColour (Label::backgroundColourId, Colour(0xff000000));
-        }
-        else
-        {
-            valueLabel->setColour (Label::textColourId, Colour(0x00000000));
-            valueLabel->setColour (Label::backgroundColourId, Colour(0x00000000));
+            valueLabel->setVisible (false);
         }
             
         valueLabel->setJustificationType (Justification::centred);
-        valueLabel->setBounds ( (W*3/4)*3/8, H*2/3, (W*3/4)/4, H/6);
     }
 
     ~Tuner()
@@ -74,7 +68,7 @@ public:
 
     virtual void resized() override
     {
-        yCursor = H/3 - CURSOR_SIZE;
+        yCursor = H/3 - CURSOR_SIZE - 2;
         sliderPlacement.setStart ((W*3/4)/8);
         sliderPlacement.setEnd ((W*3/4)*7/8);
         
@@ -137,7 +131,15 @@ private:
             else if (valueLab > totalRange.getEnd())   xCursor = sliderPlacement.getEnd() - 5;
         }
         
-        g.drawRect (xCursor, yCursor, 1, CURSOR_SIZE);
+        // draws the cursor
+        Path cursorPath;
+        
+        cursorPath.startNewSubPath (xCursor - CURSOR_SIZE, yCursor);
+        cursorPath.lineTo (xCursor, yCursor + CURSOR_SIZE);
+        cursorPath.lineTo (xCursor + CURSOR_SIZE, yCursor);
+        
+		g.setColour (getLookAndFeel().findColour (Slider::backgroundColourId));
+		g.strokePath (cursorPath, { 2.0f, PathStrokeType::curved, PathStrokeType::rounded });
     }
     
     //==============================================================================
@@ -146,6 +148,8 @@ private:
     const bool showValue;
     
     int yCursor;
+    
+    //==============================================================================
     //ScopedPointer<Path> displayTriangle;
     ScopedPointer<Label> valueLabel;
     

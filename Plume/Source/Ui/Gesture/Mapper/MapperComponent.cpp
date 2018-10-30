@@ -14,6 +14,7 @@
 
 #define W getWidth()
 #define H getHeight()
+#define MARGIN 8
 
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 #define TRACE_OUT Logger::writeToLog ("[-FNC]  Leaving: " + String(__FUNCTION__))
@@ -22,24 +23,22 @@ MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr, PluginWr
     :   gesture (gest), gestureArray (gestArr), wrapper (wrap)
 {
     TRACE_IN;
+    
     // map button
     addAndMakeVisible (mapButton = new TextButton ("Map Button"));
     mapButton->setButtonText ("Map");
     mapButton->addListener (this);
-    mapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
     
     // clear map button
     addAndMakeVisible (clearMapButton = new TextButton ("Clear Map Button"));
     clearMapButton->setButtonText ("Clear map");
     clearMapButton->addListener (this);
-    clearMapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
     
     // midiMode Component
     addAndMakeVisible (midiModeComp = new MidiModeComponent (gesture));
     
     // midiMode button
-    String PlumeDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getFullPathName();
-    Image midiOn = ImageFileFormat::loadFrom (File (PlumeDir + "/Resources/Images/Gestures/OnOff.png"));
+    Image midiOn = ImageFileFormat::loadFrom (PlumeData::OnOff_png, PlumeData::OnOff_pngSize);
     
     addAndMakeVisible (midiMapButton = new ImageButton ("Midi Mode Button"));
     midiMapButton->setImages (false, true, true,
@@ -98,19 +97,25 @@ void MapperComponent::paint (Graphics& g)
     
     if (midiMapButton->getToggleState() == false)
     {
-        c1 = Colour(0xffa0a0a0);
-        c2 = Colour(0xff606060);
+        if (auto* lf = dynamic_cast<PlumeLookAndFeel*> (&getLookAndFeel()))
+        {
+		    c1 = lf->getPlumeColour (PlumeLookAndFeel::gestureActiveBackground);
+		    c2 = lf->getPlumeColour (PlumeLookAndFeel::gestureInactiveBackground);
+        }
     }
     else
     {
-        c1 = Colour(0xff606060);
-        c2 = Colour(0xffa0a0a0);
+        if (auto* lf = dynamic_cast<PlumeLookAndFeel*> (&getLookAndFeel()))
+        {
+		    c1 = lf->getPlumeColour (PlumeLookAndFeel::gestureInactiveBackground);
+		    c2 = lf->getPlumeColour (PlumeLookAndFeel::gestureActiveBackground);
+        }
     }
     
     g.setColour (c1);
-    g.fillRect (0, 0, W, H);
+    g.fillRoundedRectangle (0, 0, W, H, MARGIN/2);
     g.setColour (c2);
-    g.fillRect (W*2/3, H/2, W/3, H/2);
+    g.fillRect (W*2/3, H/2, W - W*2/3, H/2);
     
     // "Parameters" text        
     drawMapperText (g, "Parameters",
@@ -133,7 +138,7 @@ void MapperComponent::resized()
     int bttnPanW = W/3, bttnPanH = H/2;
     
     mapButton->setBounds (W*2/3 + bttnPanW/8, bttnPanH/8, bttnPanW*3/4, bttnPanH/3);
-    clearMapButton->setBounds (W*2/3 + bttnPanW/4, bttnPanH*5/8, bttnPanW/2, bttnPanH/3);
+    clearMapButton->setBounds (W*2/3 + bttnPanW/6, bttnPanH*5/8, bttnPanW*2/3, bttnPanH/3);
     midiMapButton->setBounds (W*2/3, bttnPanH, bttnPanW/3, bttnPanH/4);
     midiModeComp->setBounds (W*2/3, bttnPanH, bttnPanW, bttnPanH);
 	
@@ -155,7 +160,10 @@ void MapperComponent::buttonClicked (Button* bttn)
             gestureArray.cancelMapMode();
             gesture.mapModeOn = true;
             gestureArray.mapModeOn = true;
-            mapButton->setColour (TextButton::buttonColourId, Colour (0xff943cb0));
+            if (auto* lf = dynamic_cast<PlumeLookAndFeel*> (&getLookAndFeel()))
+            {
+			     mapButton->setColour (TextButton::buttonColourId, lf->getPlumeColour (PlumeLookAndFeel::gestureActiveMapButton));
+            }
             wrapper.createWrapperEditor();
         }
         
@@ -163,7 +171,7 @@ void MapperComponent::buttonClicked (Button* bttn)
         else
         {
             gestureArray.cancelMapMode();
-            mapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
+            mapButton->setColour (TextButton::buttonColourId, getLookAndFeel().findColour (TextButton::buttonColourId));
         }
     }
     
@@ -174,7 +182,9 @@ void MapperComponent::buttonClicked (Button* bttn)
         if (gesture.mapModeOn) gestureArray.cancelMapMode();
         
         paramCompArray.clear();
-        mapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
+        mapButton->setColour (TextButton::buttonColourId, getLookAndFeel().findColour (TextButton::buttonColourId));
+        
+        getParentComponent()->repaint(); // repaints the whole gesture area
     }
     
     else if (bttn == midiMapButton)
@@ -191,7 +201,8 @@ void MapperComponent::buttonClicked (Button* bttn)
         }
         
         setAlphas();
-        repaint();
+        getParentComponent()->repaint(); // repaints the whole gesture area
+        repaint(); // repaints mapper component
     }
 }
 
@@ -220,7 +231,7 @@ void MapperComponent::changeListenerCallback(ChangeBroadcaster* source)
     // Draws the map button in non-map colour
     if (source == &gestureArray && gestureArray.mapModeOn && gesture.mapModeOn == false)
     {
-        mapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
+        mapButton->setColour (TextButton::buttonColourId, getLookAndFeel().findColour (TextButton::buttonColourId));
         return;
     }
     
@@ -228,12 +239,14 @@ void MapperComponent::changeListenerCallback(ChangeBroadcaster* source)
     // Recreates the array of parameterComponent, and redraws the mapperComponent
     else if (source == &gesture)
     {
-        if (gesture.mapModeOn == false) mapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
+        if (gesture.mapModeOn == false) mapButton->setColour (TextButton::buttonColourId, getLookAndFeel().findColour (TextButton::buttonColourId));
     
         // clears then redraws the array.
         paramCompArray.clear();
         initializeParamCompArray();
         resizeArray();
+        
+        getParentComponent()->repaint(); // repaints the whole gesture area
     }
     
     // If the editor is closed with map mode still on
@@ -241,7 +254,7 @@ void MapperComponent::changeListenerCallback(ChangeBroadcaster* source)
     else if (source == &wrapper && gesture.mapModeOn)
     {
         gestureArray.cancelMapMode();
-        mapButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
+        mapButton->setColour (TextButton::buttonColourId, getLookAndFeel().findColour (TextButton::buttonColourId));
     }
 }
 
@@ -269,7 +282,7 @@ void MapperComponent::initializeParamCompArray()
 
 void MapperComponent::addAndMakeArrayVisible()
 {
-    for (int i=0; i++; i<paramCompArray.size())
+    for (int i=0; i<paramCompArray.size(); i++)
     {
         addAndMakeVisible (paramCompArray[i]);
     }
