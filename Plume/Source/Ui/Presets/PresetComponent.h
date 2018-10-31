@@ -17,7 +17,8 @@
 /*
 */
 class PresetComponent    : public Component,
-                           private Button::Listener
+                           private Button::Listener,
+                           private Label::Listener
 {
 public:
     //==============================================================================
@@ -30,6 +31,7 @@ public:
     
     //==============================================================================
     void buttonClicked (Button* bttn) override;
+    void labelTextChanged (Label* lbl) override;
     
     //==============================================================================
     void savePreset();
@@ -39,6 +41,9 @@ public:
     void update();
 
 private:
+    //==============================================================================
+    Result createPlumeAndPresetDir(File& initialDir);
+    
     //==============================================================================
     ScopedPointer<Label> nameLabel;
 

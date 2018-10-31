@@ -25,7 +25,7 @@ PlumeProcessor::PlumeProcessor()
     TRACE_IN;
     
     Time t;
-    plumeLogger = FileLogger::createDefaultAppLogger ("PlumeLogs",
+    plumeLogger = FileLogger::createDefaultAppLogger ("Enhancia/Plume/Logs/",
                                                       "plumeLog.txt",
                                                       "Plume Log "+String(t.getYear())+String(t.getMonth())+String(t.getDayOfMonth()));
 
@@ -231,8 +231,15 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
             
         if (pd.loadFromXml (*(pluginData.getChildByName ("PLUGIN"))))
         {
-            if (wrapper->isWrapping()) wrapper->rewrapPlugin(pd.fileOrIdentifier);
-            else                       wrapper->wrapPlugin(pd.fileOrIdentifier);
+            if (File (pd.fileOrIdentifier).exists())
+            {
+                if (wrapper->isWrapping()) wrapper->rewrapPlugin(pd.fileOrIdentifier);
+                else                       wrapper->wrapPlugin(pd.fileOrIdentifier);
+            }
+            else
+            {
+                //WIP à faire vendredi recherche plugin """intelligente"""
+            }
         }
     }
 
