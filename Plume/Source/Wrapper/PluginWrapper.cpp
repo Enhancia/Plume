@@ -47,7 +47,7 @@ PluginWrapper::~PluginWrapper()
 bool PluginWrapper::wrapPlugin (File pluginFile)
 {   
     TRACE_IN;
-    if (pluginFile.getFullPathName() == (File::getSpecialLocation (File::currentExecutableFile)).getFullPathName())
+    if (pluginFile == File::getSpecialLocation (File::currentExecutableFile))
     {
         DBG ("Can't wrap yourself can you?");
         return false;

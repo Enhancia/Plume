@@ -231,16 +231,52 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
             
         if (pd.loadFromXml (*(pluginData.getChildByName ("PLUGIN"))))
         {
+            
+            // First searches the direct path
             if (File (pd.fileOrIdentifier).exists())
             {
-                if (wrapper->isWrapping()) wrapper->rewrapPlugin(pd.fileOrIdentifier);
-                else                       wrapper->wrapPlugin(pd.fileOrIdentifier);
+                if (wrapper->isWrapping()) wrapper->rewrapPlugin (pd.fileOrIdentifier);
+                else                       wrapper->wrapPlugin (pd.fileOrIdentifier);
             }
+            // Then the directory where plume is located
             else
             {
                 //WIP à faire vendredi recherche plugin """intelligente"""
+                File pluginDir (File::getSpecialLocation (File::currentApplicationFile).getParentDirectory());
+                String pluginToSearch (pd.name);
+                
+                if (pd.pluginFormatName.compare ("VST") == 0)
+                {
+                  #if JUCE_WINDOWS
+                    pluginToSearch += ".dll";
+                  #elif JUCE_MAC
+                    pluginToSearch += ".vst";
+                  #endif
+                }
+                else if (pd.pluginFormatName.compare ("AudioUnit") == 0)
+                {
+                    pluginToSearch += ".component";
+                }
+                else if (pd.pluginFormatName.compare ("Aax") == 0)
+                {
+                    pluginToSearch += ".aax";
+                }
+                
+                Array<File> searchResult = pluginDir.findChildFiles (File::findFiles + File::ignoreHiddenFiles, true, pluginToSearch);
+                
+                if (!searchResult.isEmpty())
+                {
+                    if (wrapper->isWrapping()) wrapper->rewrapPlugin (searchResult[0]);
+                    else                       wrapper->wrapPlugin (searchResult[0]);
+                }
             }
         }
+    }
+    // If there is no plugin in the preset
+    else
+    {
+        wrapper->unwrapPlugin();
+        return;
     }
 
     // Restores the plugin to its saved state
