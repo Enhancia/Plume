@@ -153,6 +153,12 @@ void PresetComponent::loadPreset()
         // Creates a binary memory block with the loaded xml data
         MemoryBlock presetData;
         ScopedPointer<XmlElement> presetXml = XmlDocument::parse (presetLoader.getResult());
+        if (presetXml == nullptr)
+        {
+            DBG ("Couldn't load preset..");
+            return;
+        }
+        
 	    AudioProcessor::copyXmlToBinary (*presetXml, presetData);
                 
 	    // Calls the plugin's setStateInformation method to load the preset
@@ -180,11 +186,11 @@ Result PresetComponent::createPlumeAndPresetDir (File& initialDir)
         return Result::ok();
     }
   #elif JUCE_MAC
-    if (initialDir.getChildFile("Audio/").getChildFile("Presets/").getChildFile("Enhancia/").getChildFile("Plume/")
-                                                                                            .getChildFile ("User/").exists())
+    if (initialDir.getChildFile ("Audio/").getChildFile ("Presets/").getChildFile ("Enhancia/").getChildFile ("Plume/")
+                                                                                               .getChildFile ("User/").exists())
     {
-        initialDir = initialDir.getChildFile("Audio/").getChildFile("Presets/").getChildFile("Enhancia/").getChildFile("Plume/")
-                                                                                                         .getChildFile ("User/");
+        initialDir = initialDir.getChildFile ("Audio/").getChildFile ("Presets/").getChildFile ("Enhancia/").getChildFile ("Plume/")
+                                                                                                            .getChildFile ("User/");
         return Result::ok();
     }
   #endif
@@ -195,8 +201,8 @@ Result PresetComponent::createPlumeAndPresetDir (File& initialDir)
   #if JUCE_WINDOWS
     dirTemp = dirTemp.getChildFile ("Enhancia/").getChildFile ("Plume/").getChildFile ("Presets/").getChildFile ("User/");
   #elif JUCE_MAC
-    dirTemp = dirTemp.getChildFile("Audio/").getChildFile("Presets/").getChildFile("Enhancia/").getChildFile("Plume/")
-                                                                                               .getChildFile ("User/");
+    dirTemp = dirTemp.getChildFile ("Audio/").getChildFile ("Presets/").getChildFile ("Enhancia/").getChildFile ("Plume/")
+                                                                                                  .getChildFile ("User/");
   #endif
   
     if (!(dirTemp.exists()))

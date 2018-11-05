@@ -47,7 +47,8 @@ PluginWrapper::~PluginWrapper()
 bool PluginWrapper::wrapPlugin (File pluginFile)
 {   
     TRACE_IN;
-    if (pluginFile == File::getSpecialLocation (File::currentExecutableFile))
+    if (pluginFile == File::getSpecialLocation (File::currentExecutableFile) ||
+        pluginFile.getFileNameWithoutExtension().compare ("Plume") == 0)
     {
         DBG ("Can't wrap yourself can you?");
         return false;
