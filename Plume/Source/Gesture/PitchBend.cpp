@@ -89,17 +89,15 @@ void PitchBend::updateMappedParameters()
 {
     if (on == false) return; // does nothing if the gesture is inactive
     
-    float paramVal = -1.0f;
+    bool pbLastTemp = pbLast;
     
     // Goes through the parameterArray to update each value
     for (auto* param : parameterArray)
     {
-		if (paramVal == -1.0f)
-		{
-		    paramVal = getValueForMappedParameter(param->range);
-		}
+        pbLast = pbLastTemp;
+		float paramVal = getValueForMappedParameter(param->range);
 		    
-        if (send == true && paramVal != param->parameter.getValue() && paramVal != -1.0f)
+        if (send == true && paramVal != param->parameter.getValue())
         {
             param->parameter.setValueNotifyingHost (paramVal);
         }

@@ -71,15 +71,13 @@ void Vibrato::updateMappedParameters()
 {
     if (on == false) return; // does nothing if the gesture is inactive
     
-    float paramVal = -1.0f;
+    bool vibLastTemp = vibLast;
     
     // Goes through the parameterArray to update each value
     for (auto* param : parameterArray)
     {
-		if (paramVal == -1.0f)
-		{
-		    paramVal = getValueForMappedParameter(param->range);
-		}
+		vibLast = vibLastTemp;
+		float paramVal = getValueForMappedParameter(param->range);
         
         if (send == true)
         {
