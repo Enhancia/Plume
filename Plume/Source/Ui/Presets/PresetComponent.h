@@ -13,16 +13,21 @@
 #include "../../../JuceLibraryCode/JuceHeader.h"
 #include "Ui/LookAndFeel/PlumeLookAndFeel.h"
 
+#include "Plugin/PluginEditor.h"
+
 //==============================================================================
 /*
 */
+class PlumeEditor;
+
 class PresetComponent    : public Component,
                            private Button::Listener,
-                           private Label::Listener
+                           private Label::Listener,
+                           public ActionBroadcaster
 {
 public:
     //==============================================================================
-    PresetComponent(PlumeProcessor& p);
+    PresetComponent(PlumeProcessor& p, PlumeEditor& e);
     ~PresetComponent();
 
     //==============================================================================
@@ -55,6 +60,7 @@ private:
     
     //==============================================================================
     PlumeProcessor& processor;
+    PlumeEditor& editor;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PresetComponent)
 };

@@ -340,29 +340,29 @@ void GestureArray::addGestureFromXml (XmlElement& gesture)
     switch (gesture.getIntAttribute ("type", -1))
     {
         case Gesture::vibrato:
-            gestures.add (new Vibrato (gesture.getTagName(), float(gesture.getDoubleAttribute ("gain", 400.0f)) ));
+            gestures.add (new Vibrato (gesture.getTagName(), float(gesture.getDoubleAttribute ("gain", 400.0)) ));
             break;
         
         case Gesture::pitchBend:
-            gestures.add (new PitchBend (gesture.getTagName(), float(gesture.getDoubleAttribute ("startLeft", -50.0f)),
-                                                               float(gesture.getDoubleAttribute ("endLeft", -20.0f)),
-                                                               float(gesture.getDoubleAttribute ("startRight", 30.0f)),
-                                                               float(gesture.getDoubleAttribute ("endRight", 60.0f))));
+            gestures.add (new PitchBend (gesture.getTagName(), float(gesture.getDoubleAttribute ("startLeft", -50.0)),
+                                                               float(gesture.getDoubleAttribute ("endLeft", -20.0)),
+                                                               float(gesture.getDoubleAttribute ("startRight", 30.0)),
+                                                               float(gesture.getDoubleAttribute ("endRight", 60.0))));
             break;
             
         case Gesture::tilt:
-            gestures.add (new Tilt (gesture.getTagName(), float(gesture.getDoubleAttribute ("start", 0.0f)),
-                                                          float(gesture.getDoubleAttribute ("end", 50.0f))));
+            gestures.add (new Tilt (gesture.getTagName(), float(gesture.getDoubleAttribute ("start", 0.0)),
+                                                          float(gesture.getDoubleAttribute ("end", 50.0))));
             break;
         /*    
         case Gesture::wave:
-            gestures.add (new Wave (gesture.getTagName(), float(gesture.getDoubleAttribute ("start", 0.0f)),
-                                                          float(gesture.getDoubleAttribute ("end", 50.0f))));
+            gestures.add (new Wave (gesture.getTagName(), float(gesture.getDoubleAttribute ("start", 0.0)),
+                                                          float(gesture.getDoubleAttribute ("end", 50.0))));
             break;
         */
         case Gesture::roll:
-            gestures.add (new Roll (gesture.getTagName(), float(gesture.getDoubleAttribute ("start", -30.0f)),
-                                                          float(gesture.getDoubleAttribute ("end", 30.0f))));
+            gestures.add (new Roll (gesture.getTagName(), float(gesture.getDoubleAttribute ("start", -30.0)),
+                                                          float(gesture.getDoubleAttribute ("end", 30.0))));
             break;
         
         default:

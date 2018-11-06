@@ -77,6 +77,7 @@ MapperComponent::~MapperComponent()
     gesture.removeChangeListener (this);
     gestureArray.removeChangeListener (this);
     wrapper.removeChangeListener (this);
+    paramCompArray.clear();
     
     mapButton->removeListener (this);
     clearMapButton->removeListener (this);
@@ -261,6 +262,8 @@ void MapperComponent::changeListenerCallback(ChangeBroadcaster* source)
 //==============================================================================
 void MapperComponent::updateDisplay()
 {
+    if (paramCompArray.isEmpty()) return;
+    
     for (auto* comp : paramCompArray)
     {
         comp->updateDisplay();

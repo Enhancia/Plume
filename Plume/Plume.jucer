@@ -146,8 +146,8 @@
     </VS2017>
     <XCODE_MAC targetFolder="Builds/MacOSX" smallIcon="YXx8Ce" bigIcon="YXx8Ce">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" headerPath="/Users/Developer/Documents/Dev Plume/Plume/Plume/Source"/>
-        <CONFIGURATION isDebug="0" name="Release" headerPath="/Users/Developer/Documents/Dev Plume/Plume/Plume/Source"/>
+        <CONFIGURATION isDebug="1" name="Debug" headerPath="/Users/macbook/Documents/Dev Plume/Plume/Plume/Source"/>
+        <CONFIGURATION isDebug="0" name="Release" headerPath="/Users/macbook/Documents/Dev Plume/Plume/Plume/Source"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_video" path="../../../../Programmes/JUCE/modules"/>

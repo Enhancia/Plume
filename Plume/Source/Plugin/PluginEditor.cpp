@@ -27,7 +27,7 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 
     // Creates the 3 main components
     addAndMakeVisible (wrapperComp = new WrapperComponent (processor.getWrapper()));
-    addAndMakeVisible (presetComp = new PresetComponent (processor));
+    addAndMakeVisible (presetComp = new PresetComponent (processor, *this));
 	addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(), FRAMERATE));
 	gesturePanel->initialize();
 	
@@ -87,10 +87,18 @@ void PlumeEditor::actionListenerCallback(const String &message)
         updateFullInterface();
     }
     
-    else if (message.compare("blockInterface") == 0)
+    else if (message.compare("lockInterface") == 0)
     {
-        gesturePanel->stopTimer();
         gesturePanel.reset();
+        //gesturePanel->stopTimer();
+    }
+    
+    else if (message.compare("unlockInterface") == 0)
+    {
+        if (!gesturePanel->isTimerRunning())
+        {
+            gesturePanel->startTimerHz (FRAMERATE);
+        }
     }
 }
 
@@ -104,11 +112,18 @@ PlumeProcessor& PlumeEditor::getProcessor()
 void PlumeEditor::updateFullInterface()
 {
     TRACE_IN;
-        
+    
+    gesturePanel.reset();    
     wrapperComp->update();
     presetComp->update();
 
     addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(), FRAMERATE));
     gesturePanel->initialize();
 	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 3 * MARGIN, getWidth() - 4 * MARGIN, getHeight() - TOP_PANEL - 3 * MARGIN);
+}
+
+void PlumeEditor::setInterfaceUpdates (bool shouldUpdate)
+{
+    if (shouldUpdate) gesturePanel->startTimerHz (FRAMERATE);
+    else              gesturePanel->stopTimer();
 }

@@ -252,6 +252,7 @@ GesturePanel::GesturePanel(GestureArray& gestArray, PluginWrapper& wrap, int fre
 GesturePanel::~GesturePanel()
 {
     TRACE_IN;
+    gestureComponents.clear();
 }
 
 void GesturePanel::paint (Graphics& g)
@@ -271,8 +272,6 @@ void GesturePanel::resized()
 
 void GesturePanel::initialize()
 {  
-    startTimerHz (freq);
-
 	int gestureHeight = (getHeight() - (NUM_GEST - 1) * 2 * MARGIN) / NUM_GEST; // gets the height of each gesture component
 
     for (int i=0; i<NUM_GEST && i<gestureArray.size(); i++)
@@ -282,6 +281,8 @@ void GesturePanel::initialize()
         addAndMakeVisible (gestureComponents[i]);
         gestureComponents[i]->setBounds (0, i*(gestureHeight + MARGIN), getWidth(), gestureHeight);
     }
+    
+    startTimerHz (freq);
 }
 
 void GesturePanel::timerCallback()

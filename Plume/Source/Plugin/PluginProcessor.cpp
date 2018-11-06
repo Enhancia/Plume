@@ -21,21 +21,20 @@ PlumeProcessor::PlumeProcessor()
                        .withOutput ("Output", AudioChannelSet::stereo(), true)
                        )
 #endif
-{   
+{
     TRACE_IN;
     
     Time t;
     plumeLogger = FileLogger::createDefaultAppLogger ("Enhancia/Plume/Logs/",
                                                       "plumeLog.txt",
                                                       "Plume Log "+String(t.getYear())+String(t.getMonth())+String(t.getDayOfMonth()));
-
+    
     Logger::setCurrentLogger (plumeLogger);
     
     dataReader = new DataReader();
     gestureArray = new GestureArray (*dataReader);
     wrapper = new PluginWrapper (*this, *gestureArray);
     dataReader->addChangeListener(gestureArray);
-	
 }
 
 PlumeProcessor::~PlumeProcessor()
@@ -170,14 +169,14 @@ void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
     // Gestures configuration loading
     if (wrapperData->getChildByName ("GESTURES") != nullptr)
     {
-        sendActionMessage("blockInterface");
+	    sendActionMessage ("lockInterface");
         loadGestureXml (*(wrapperData->getChildByName ("GESTURES")));
         notifyEditor = true;
     }
     
-    
     // Sends a change message to the editor so it can update its interface.
-    if (notifyEditor) sendActionMessage("updateInterface");
+    if (notifyEditor) sendActionMessage ("updateInterface");
+    else              sendActionMessage ("unlockInterface");
 
     wrapperData = nullptr;
 }
@@ -241,7 +240,6 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
             // Then the directory where plume is located
             else
             {
-                //WIP à faire vendredi recherche plugin """intelligente"""
                 File pluginDir (File::getSpecialLocation (File::currentApplicationFile).getParentDirectory());
                 String pluginToSearch (pd.name);
                 
@@ -269,6 +267,12 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
                     if (wrapper->isWrapping()) wrapper->rewrapPlugin (searchResult[0]);
                     else                       wrapper->wrapPlugin (searchResult[0]);
                 }
+                else 
+                {
+                    DBG ("Failed to find the plugin in Plume's directory.");
+                    if (wrapper->isWrapping()) wrapper->unwrapPlugin();
+                    return;
+                }
             }
         }
     }
@@ -294,6 +298,7 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
 
 void PlumeProcessor::loadGestureXml(const XmlElement& gestureData)
 {
+    sendActionMessage("lockInterface");
     
     int i = 0;
     gestureArray->clearAllGestures();
@@ -304,6 +309,7 @@ void PlumeProcessor::loadGestureXml(const XmlElement& gestureData)
         
         if (gesture->getBoolAttribute ("mapped") == true)
         {
+			gestureArray->getGestureById(i)->clearAllParameters();
             wrapper->addParametersToGestureFromXml (*gesture, i);
         }
         

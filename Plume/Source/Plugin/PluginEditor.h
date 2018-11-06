@@ -22,6 +22,8 @@
 /**
 */
 
+class PresetComponent;
+
 /**
  *  \class PlumeEditor PluginEditor.h
  *
@@ -78,6 +80,8 @@ public:
      * It sets the right current wrapped plugin, preset and gestures.
      */
     void updateFullInterface();
+    
+    void setInterfaceUpdates (bool shouldUpdate);
     
 private:
     //==============================================================================
