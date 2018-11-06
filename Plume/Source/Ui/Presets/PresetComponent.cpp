@@ -167,7 +167,7 @@ void PresetComponent::loadPreset()
 	    // Calls the plugin's setStateInformation method to load the preset
 	    editor.setInterfaceUpdates (false);
         processor.setStateInformation (presetData.getData(), presetData.getSize());
-	    //editor.updateFullInterface();
+	    editor.setInterfaceUpdates (true);
 
         //currentPreset = presetXml->getTagName();
 		nameLabel->setText (TRANS (presetXml->getTagName()),

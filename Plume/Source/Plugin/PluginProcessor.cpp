@@ -176,7 +176,6 @@ void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
     
     // Sends a change message to the editor so it can update its interface.
     if (notifyEditor) sendActionMessage ("updateInterface");
-    else              sendActionMessage ("unlockInterface");
 
     wrapperData = nullptr;
 }

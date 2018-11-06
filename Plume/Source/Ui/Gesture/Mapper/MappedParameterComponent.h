@@ -57,6 +57,8 @@ public:
     //==============================================================================
     void paint (Graphics& g) override
     {   
+        if (!allowDisplayUpdate) return;
+        
         // Parameter Name and number text
         {
 			int x = 0,
@@ -65,9 +67,10 @@ public:
 				height = H/3;
 				
             g.setColour (Colours::black);
-                            
+                         
+            //DBG ("Displaying parameter: " << mappedParameter.parameter.getName (20));
             //name
-            String text (TRANS(mappedParameter.parameter.getName(20)));
+            String text (mappedParameter.parameter.getName (20));
             g.setFont (Font (10.0f, Font::plain).withTypefaceStyle ("Regular"));
             g.drawText (text, x, y, width, height,
                         Justification::centred, true);

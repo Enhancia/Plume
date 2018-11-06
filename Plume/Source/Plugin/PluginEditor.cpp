@@ -124,6 +124,20 @@ void PlumeEditor::updateFullInterface()
 
 void PlumeEditor::setInterfaceUpdates (bool shouldUpdate)
 {
-    if (shouldUpdate) gesturePanel->startTimerHz (FRAMERATE);
-    else              gesturePanel->stopTimer();
+    if (shouldUpdate)
+    {
+        if (gesturePanel == nullptr)
+        {
+            updateFullInterface();
+        }
+        else
+        {
+            gesturePanel->startTimerHz (FRAMERATE);
+        }
+    }
+    else
+    {
+        gesturePanel->stopTimer();
+        gesturePanel.reset();
+    }
 }
