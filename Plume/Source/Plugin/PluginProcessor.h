@@ -11,6 +11,7 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "Common/PlumeCommon.h"
 
 #include "Gesture/GestureArray.h"
 #include "Wrapper/PluginWrapper.h"

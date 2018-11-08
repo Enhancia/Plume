@@ -9,14 +9,15 @@
 */
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
+#include "Common/PlumeCommon.h"
+
 #include "Gesture/GestureArray.h"
 #include "Ui/Gesture/GesturePanel.h"
 #include "Ui/Gesture/Tuner/GesturesTuner.h"
 #include "Ui/Gesture/Mapper/MapperComponent.h"
 
-
-#define MARGIN 8
 #define NUM_GEST 3
+#define MARGIN plumeCommon::MARGIN
 
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 //==============================================================================

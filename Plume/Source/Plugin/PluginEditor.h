@@ -11,6 +11,8 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "Common/PlumeCommon.h"
+
 #include "Ui/Wrapper/WrapperComponent.h"
 #include "Ui/Presets/PresetComponent.h"
 #include "Ui/Gesture/GesturePanel.h"

@@ -330,10 +330,10 @@
  #define JucePlugin_ManufacturerEmail      ""
 #endif
 #ifndef  JucePlugin_ManufacturerCode
- #define JucePlugin_ManufacturerCode       0x4d616e75 // 'Manu'
+ #define JucePlugin_ManufacturerCode       0x4e686e63 // 'Nhnc'
 #endif
 #ifndef  JucePlugin_PluginCode
- #define JucePlugin_PluginCode             0x577a7266 // 'Wzrf'
+ #define JucePlugin_PluginCode             0x506c6d33 // 'Plm3'
 #endif
 #ifndef  JucePlugin_IsSynth
  #define JucePlugin_IsSynth                1
@@ -351,13 +351,13 @@
  #define JucePlugin_EditorRequiresKeyboardFocus  0
 #endif
 #ifndef  JucePlugin_Version
- #define JucePlugin_Version                1.1.4
+ #define JucePlugin_Version                1.1.5
 #endif
 #ifndef  JucePlugin_VersionCode
- #define JucePlugin_VersionCode            0x10104
+ #define JucePlugin_VersionCode            0x10105
 #endif
 #ifndef  JucePlugin_VersionString
- #define JucePlugin_VersionString          "1.1.4"
+ #define JucePlugin_VersionString          "1.1.5"
 #endif
 #ifndef  JucePlugin_VSTUniqueID
  #define JucePlugin_VSTUniqueID            JucePlugin_PluginCode
@@ -402,7 +402,7 @@
  #define JucePlugin_RTASDisableMultiMono   0
 #endif
 #ifndef  JucePlugin_AAXIdentifier
- #define JucePlugin_AAXIdentifier          com.yourcompany.Plume
+ #define JucePlugin_AAXIdentifier          com.Enhancia.Plume
 #endif
 #ifndef  JucePlugin_AAXManufacturerCode
  #define JucePlugin_AAXManufacturerCode    JucePlugin_ManufacturerCode

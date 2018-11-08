@@ -11,9 +11,8 @@
 #include "Plugin/PluginProcessor.h"
 #include "Plugin/PluginEditor.h"
 
-#define MARGIN 8
 #define TOP_PANEL 70
-#define FRAMERATE 100
+#define MARGIN plumeCommon::MARGIN
 
 
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
@@ -28,7 +27,7 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     // Creates the 3 main components
     addAndMakeVisible (wrapperComp = new WrapperComponent (processor.getWrapper()));
     addAndMakeVisible (presetComp = new PresetComponent (processor, *this));
-	addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(), FRAMERATE));
+	addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(), plumeCommon::FRAMERATE));
 	gesturePanel->initialize();
 	
     // Adds itself as a change listener for plume's processor
@@ -38,7 +37,7 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	setResizable (true, false);
 	addAndMakeVisible (resizableCorner = new ResizableCornerComponent (this, getConstrainer()));
 	
-	setSize(800, 450);
+	setSize(plumeCommon::DEFAULT_WINDOW_WIDTH, plumeCommon::DEFAULT_WINDOW_HEIGHT);
 	setResizeLimits (getWidth()*2/3, getHeight()*2/3, getWidth()*3, getHeight()*3);
 }
 
@@ -97,7 +96,7 @@ void PlumeEditor::actionListenerCallback(const String &message)
     {
         if (!gesturePanel->isTimerRunning())
         {
-            gesturePanel->startTimerHz (FRAMERATE);
+            gesturePanel->startTimerHz (plumeCommon::FRAMERATE);
         }
     }
 }
@@ -117,7 +116,7 @@ void PlumeEditor::updateFullInterface()
     wrapperComp->update();
     presetComp->update();
 
-    addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(), FRAMERATE));
+    addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(), plumeCommon::FRAMERATE));
     gesturePanel->initialize();
 	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 3 * MARGIN, getWidth() - 4 * MARGIN, getHeight() - TOP_PANEL - 3 * MARGIN);
 }
@@ -132,7 +131,7 @@ void PlumeEditor::setInterfaceUpdates (bool shouldUpdate)
         }
         else
         {
-            gesturePanel->startTimerHz (FRAMERATE);
+            gesturePanel->startTimerHz (plumeCommon::FRAMERATE);
         }
     }
     else
