@@ -124,13 +124,21 @@ public:
      */
     GestureArray& getGestureArray();
     
-
+    
 private:
+    //==============================================================================
+    void initializeSettings();
+    void initializeParameters();
+    
     //==============================================================================
     ScopedPointer<FileLogger> plumeLogger; /**< \brief Logger object. Allows to write logs for testing purposes. */
     ScopedPointer<PluginWrapper> wrapper; /**< \brief PluginWrapper object. Handles the plugin wrapping. */
     ScopedPointer<DataReader> dataReader; /**< \brief DataReader object. Recieves the data from the ring. */
     ScopedPointer<GestureArray> gestureArray; /**< \brief GestureArray object. Stores all current gesture objects. */
+    
+    //==============================================================================
+    ValueTree settings;
+    AudioProcessorValueTreeState parameters;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeProcessor)

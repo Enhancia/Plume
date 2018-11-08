@@ -224,4 +224,5 @@ private:
     //==============================================================================
     OwnedArray<Gesture> gestures; /**< \brief OwnedArray that holds all gesture objects*/
     DataReader& dataReader; /**< \brief Reference to the data reader object, to access the raw data from the ring*/
+    AudioProcessorValueTreeState& parameters;
 };
