@@ -127,7 +127,7 @@ public:
     
 private:
     //==============================================================================
-    void initializeSettings();
+    //void initializeSettings();
     void initializeParameters();
     
     //==============================================================================
@@ -137,7 +137,7 @@ private:
     ScopedPointer<GestureArray> gestureArray; /**< \brief GestureArray object. Stores all current gesture objects. */
     
     //==============================================================================
-    ValueTree settings;
+    //ValueTree settings;
     AudioProcessorValueTreeState parameters;
     
     //==============================================================================

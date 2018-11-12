@@ -33,8 +33,9 @@ PlumeProcessor::PlumeProcessor()
     Logger::setCurrentLogger (plumeLogger);
     
     initializeParameters();
+    
     dataReader = new DataReader();
-    gestureArray = new GestureArray (*dataReader);
+    gestureArray = new GestureArray (*dataReader, parameters);
     wrapper = new PluginWrapper (*this, *gestureArray);
     dataReader->addChangeListener(gestureArray);
 }
@@ -167,7 +168,7 @@ void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
         loadPluginXml (*(wrapperData->getChildByName ("WRAPPED_PLUGIN")));
         notifyEditor = true;
     }
-    
+    /*
     // Gestures configuration loading
     if (wrapperData->getChildByName ("GESTURES") != nullptr)
     {
@@ -175,7 +176,7 @@ void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
         loadGestureXml (*(wrapperData->getChildByName ("GESTURES")));
         notifyEditor = true;
     }
-    
+    */
     // Sends a change message to the editor so it can update its interface.
     if (notifyEditor) sendActionMessage ("updateInterface");
 
@@ -338,11 +339,12 @@ void PlumeProcessor::initializeParameters()
             // boolean parameters
             if (i == on || i == midi_on)
             {
-				/*
+                
                 parameters.createAndAddParameter (std::make_unique<AudioParameterBool> (String(gest) + paramIds[i],
                                                                                         String(gest) + paramIds[i],
                                                                                         false
-                                                                                        ));*/
+                                                                                        ));
+				/*
                 parameters.createAndAddParameter (String (gest) + paramIds[i], String(gest) + paramIds[i], String(),
                                                   NormalisableRange<float> (0.0f, 1.0f, 1.0f),
                                                   0.0f,
@@ -356,7 +358,8 @@ void PlumeProcessor::initializeParameters()
                                                   true,
                                                   true,
                                                   AudioProcessorParameter::genericParameter,
-                                                  true);
+                                                  true);*/
+												  
             }
             // float parameters
             else
@@ -389,13 +392,13 @@ void PlumeProcessor::initializeParameters()
                         range = NormalisableRange<float> (0.0f, 90.0f, 1.0f);
                         defVal = 60.0f;
                         break;
-			        case tilt_low:
 			        case roll_low:
+			        case tilt_low:
                         range = NormalisableRange<float> (-90.0f, 90.0f, 1.0f);
                         defVal = 0.0f;
                         break;
-			        case tilt_high:
 			        case roll_high:
+			        case tilt_high:
                         range = NormalisableRange<float> (-90.0f, 90.0f, 1.0f);
                         defVal = 50.0f;
                         break;
@@ -407,13 +410,14 @@ void PlumeProcessor::initializeParameters()
                         range = NormalisableRange<float> (0.0f, 1.0f, 0.001f);
                         break;
                 }
-				/*
+				
                 parameters.createAndAddParameter (std::make_unique<AudioParameterFloat> (String(gest) + paramIds[i],
                                                                                          String(gest) + paramIds[i],
                                                                                          range,
-                                                                                         defVal));*/
+                                                                                         defVal));
+				/*
                 parameters.createAndAddParameter (String (gest) + paramIds[i], String(gest) + paramIds[i], String(),
-                                                  range, defVal, nullptr, nullptr);
+                                                  range, defVal, nullptr, nullptr);*/
             }
         }
     }

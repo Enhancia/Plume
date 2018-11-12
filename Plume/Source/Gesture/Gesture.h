@@ -11,6 +11,7 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "Common/PlumeCommon.h"
 #define MAX_PARAMETER 4
 
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
@@ -92,9 +93,9 @@ public:
      *  \param maxRange The maximum values that the gesture's value can take.
      *  \param defaultValue The default value of the gesture's value attribute.
      */
-    Gesture(String gestName, int gestType, Range<float> maxRange,
+    Gesture(String gestName, int gestType, int gestId, Range<float> maxRange,
             float defaultValue = 0.0f, int defaultCc = 1,
-            Range<float> defaultMidiRange = Range<float> (0.0f, 1.0f))	: name (gestName), type (gestType)
+            Range<float> defaultMidiRange = Range<float> (0.0f, 1.0f))	: name (gestName), type (gestType), id (gestId)
     {
         TRACE_IN;
         on = false;
@@ -162,12 +163,6 @@ public:
      *  \param rawData Array of floating point numbers representing Neova pre-processed values. 
      */
     virtual void updateValue (const Array<float> rawData) =0;
-    
-    /**
-     *  \brief Adds the gesture settings as parameters to the processor's parameters array.
-     *
-     */
-    virtual void addGestureParameters() {}
     
     //==============================================================================
     // Static Methods to merge messages in a MidiBuffer
@@ -533,9 +528,11 @@ public:
     }
     
     //==============================================================================
-    const String name; /**< Specific name of the gesture. By default [gesture_type]_default */
-    const int type; /**< Type of Gesture. Int value from gestureType enum */
-    bool mapModeOn = false; /**< Boolean that indicates if the gesture looks for a new parameter to map */
+    const String name; /**< \brief Specific name of the gesture. By default [gesture_type]_default */
+    const int type; /**< \brief Type of Gesture. Int value from gestureType enum */
+    const int id; /**< \brief Int that represents the number of the gesture */
+    
+    bool mapModeOn = false; /**< \brief Boolean that indicates if the gesture looks for a new parameter to map */
     int midiType = Gesture::controlChange; /**< \brief Integer value that represents the midi type the gesture should provide if it is in midi map mode */
     Range<float> midiRange; /**< \brief Holds the range of values that the midi message should access. Between 0.0 and 1.0*/
     

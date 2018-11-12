@@ -11,6 +11,8 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "Common/PlumeCommon.h"
+
 #include "DataReader/DataReader.h"
 #include "Gesture/Gesture.h"
 #include "Gesture/Vibrato.h"
@@ -28,7 +30,7 @@ class GestureArray	: public ChangeListener,
                       public ChangeBroadcaster
 {
 public:
-    GestureArray(DataReader& reader);
+    GestureArray(DataReader& reader, AudioProcessorValueTreeState& params);
     ~GestureArray();
 
     //==============================================================================
@@ -131,7 +133,7 @@ public:
      *  This method will create, add and enable a new Gesture object at the end of the array.
      *  The Gesture will have the specified name and type (chosen with the GestureType enum).
      */
-    void addGesture (String gestureName, int gestureType);
+    void addGesture (String gestureName, int gestureType, int gestureId);
     
     /**
      *  \brief Method to add a parameter to the gesture in mapMode.

@@ -9,11 +9,16 @@
 */
 
 #include "Roll.h"
+using namespace plumeCommon;
 
-Roll::Roll (String gestName, float lowValue, float highValue)
-    : Gesture (gestName, Gesture::roll, Range<float> (-90.0f, 90.0f), 0.0f),
-      range (Range<float> (lowValue, highValue))
+Roll::Roll (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters, float lowValue, float highValue)
+    : Gesture (gestName, Gesture::roll, gestId, Range<float> (ROLL_MIN, ROLL_MAX), 0.0f),
+    
+      rangeLow  (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::roll_low]))),
+      rangeHigh (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::roll_high])))
 {
+	rangeLow.setValueNotifyingHost (rangeLow.convertTo0to1 (lowValue));
+	rangeHigh.setValueNotifyingHost (rangeHigh.convertTo0to1 (highValue));
 }
 
 Roll::~Roll()
@@ -68,8 +73,4 @@ float Roll::getValueForMappedParameter (Range<float> paramRange)
 void Roll::updateValue (const Array<float> rawData)
 {
     value = -rawData[5];
-}
-
-void Roll::addGestureParameters()
-{
 }

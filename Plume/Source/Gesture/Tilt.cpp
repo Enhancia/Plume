@@ -9,11 +9,16 @@
 */
 
 #include "Tilt.h"
+using namespace plumeCommon;
 
-Tilt::Tilt (String gestName, float lowValue, float highValue)
-    : Gesture (gestName, Gesture::tilt, Range<float> (-90.0f, 90.0f), 0.0f),
-      range (Range<float> (lowValue, highValue))
+Tilt::Tilt (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters, float lowValue, float highValue)
+    : Gesture (gestName, Gesture::tilt, gestId, Range<float> (TILT_MIN, TILT_MAX), 0.0f),
+    
+      rangeLow  (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::tilt_low]))),
+      rangeHigh (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::tilt_high])))
 {
+	rangeLow.setValueNotifyingHost (rangeLow.convertTo0to1 (lowValue));
+	rangeHigh.setValueNotifyingHost (rangeHigh.convertTo0to1 (highValue));
 }
 
 Tilt::~Tilt()
@@ -41,7 +46,7 @@ void Tilt::addGestureMidi (MidiBuffer& midiMessages)
 
 int Tilt::getMidiValue()
 {
-    return Gesture::normalizeMidi (range.getStart(), range.getEnd(), value);
+    return Gesture::normalizeMidi (rangeLow.convertFrom0to1 (rangeLow.getValue()), rangeHigh.convertFrom0to1 (rangeHigh.getValue()), value);
 }
 
 void Tilt::updateMappedParameters()
@@ -61,15 +66,11 @@ void Tilt::updateMappedParameters()
 
 float Tilt::getValueForMappedParameter (Range<float> paramRange)
 {
-	return Gesture::mapParameter (value, range.getStart(), range.getEnd(), paramRange);
+	return Gesture::mapParameter (value, rangeLow.convertFrom0to1 (rangeLow.getValue()), rangeHigh.convertFrom0to1 (rangeHigh.getValue()), paramRange);
 }
     
 //==============================================================================
 void Tilt::updateValue (const Array<float> rawData)
 {
     value = rawData[4];
-}
-
-void Tilt::addGestureParameters()
-{
 }

@@ -26,7 +26,11 @@ class PitchBendTuner: public TwoRangeTuner
 public:
     PitchBendTuner(PitchBend& pb)
         :   TwoRangeTuner (pb.getValueReference(), pb.getRangeReference(),
-                           pb.rangeLeft, pb.rangeRight, Range<float> (-90.0f, 90.0f),
+                           Range<float> (pb.rangeLeftLow.convertFrom0to1 (pb.rangeLeftLow.getValue()),
+							             pb.rangeLeftHigh.convertFrom0to1 (pb.rangeLeftHigh.getValue())),
+						   Range<float> (pb.rangeRightLow.convertFrom0to1(pb.rangeRightLow.getValue()),
+								         pb.rangeRightHigh.convertFrom0to1(pb.rangeRightHigh.getValue())),
+			               Range<float> (-90.0f, 90.0f),
                            String (CharPointer_UTF8 ("\xc2\xb0")))
     {}
     
@@ -43,7 +47,10 @@ class TiltTuner: public OneRangeTuner
 {
 public:
     TiltTuner(Tilt& tilt)
-        :   OneRangeTuner (tilt.getValueReference(), tilt.getRangeReference(), tilt.range, Range<float> (-90.0f, 90.0f),
+        :   OneRangeTuner (tilt.getValueReference(), tilt.getRangeReference(),
+			               Range<float> (tilt.rangeLow.convertFrom0to1 (tilt.rangeLow.getValue()),
+							             tilt.rangeHigh.convertFrom0to1 (tilt.rangeHigh.getValue())),
+			               Range<float> (-90.0f, 90.0f),
                            String (CharPointer_UTF8 ("\xc2\xb0")))
     {}
     
@@ -77,7 +84,9 @@ class RollTuner: public OneRangeTuner
 {
 public:
     RollTuner(Roll& roll)
-        :   OneRangeTuner (roll.getValueReference(), roll.getRangeReference(), roll.range, Range<float> (-90.0f, 90.0f),
+        :   OneRangeTuner (roll.getValueReference(), roll.getRangeReference(),
+			               Range<float>(roll.rangeLow.convertFrom0to1 (roll.rangeLow.getValue()), roll.rangeHigh.convertFrom0to1 (roll.rangeHigh.getValue())),
+				           Range<float> (-90.0f, 90.0f),
                            String (CharPointer_UTF8 ("\xc2\xb0")))
     {}
     
@@ -93,8 +102,8 @@ class VibratoTuner: public SymmetricalTuner
 {
 public:
     VibratoTuner(Vibrato& vib)
-        :   SymmetricalTuner (vib.getValueReference(), vib.getRangeReference(), vib.gain, 500.0f, "", false),
-            threshold (vib.threshold)
+        :   SymmetricalTuner (vib.getValueReference(), vib.getRangeReference(), vib.gain.convertFrom0to1 (vib.gain.getValue()), 500.0f, "", false),
+            threshold (vib.threshold.convertFrom0to1(vib.threshold.getValue()))
     {
         addAndMakeVisible(threshLabel = new Label("Threshold Label"));
         threshLabel->setEditable (true, false, false);

@@ -19,7 +19,7 @@ namespace plumeCommon
     // Display settings
     const int MARGIN = 8;
     const int NUM_GEST = 3;
-    const int FRAMERATE = 100;
+    const int FRAMERATE = 60;
     
     // Value tree identifiers
     const Identifier groupIdentifier ("group");
@@ -31,7 +31,7 @@ namespace plumeCommon
     
     // parameter suffixs
     namespace param
-    {   
+    {
 		enum
 		{
 			on = 0,
@@ -73,7 +73,7 @@ namespace plumeCommon
         };
     }
     
-    // parameter values
+    // gesture max range values
     const float VIBRATO_RANGE_MAX  = 500.0f;
     const float VIBRATO_THRESH_MAX = 300.0f;
     
@@ -82,6 +82,9 @@ namespace plumeCommon
     
     const float TILT_MIN = -90.0f;
     const float TILT_MAX =  90.0f;
+    
+    const float ROLL_MIN = -90.0f;
+    const float ROLL_MAX =  90.0f;
     
     const float WAVE_MIN = -90.0f;
     const float WAVE_MAX =  90.0f;

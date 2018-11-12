@@ -24,7 +24,7 @@
 class Wave : public Gesture
 {
 public:
-    Wave (String gestName);
+    Wave (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters);
     ~Wave();
     
     //==============================================================================
@@ -36,7 +36,6 @@ public:
     
     //==============================================================================
     void updateValue (const Array<float> rawData) override;
-    void addGestureParameters() override;
     
 private:
 };

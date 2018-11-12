@@ -24,7 +24,7 @@
 class Tilt : public Gesture
 {
 public:
-    Tilt (String gestName, float lowValue = 0.0f, float highValue = 50.0f);
+    Tilt (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters, float lowValue = 0.0f, float highValue = 50.0f);
     ~Tilt();
     
     //==============================================================================
@@ -36,12 +36,14 @@ public:
     
     //==============================================================================
     void updateValue (const Array<float> rawData) override;
-    void addGestureParameters() override;
     
     //==============================================================================
     // Attributes that will be referenced to the Tuner component.
     // Might want to replace them with audio processor parameters in the future.
     
-    Range<float> range; /**< \brief Tilt's range. The full effect will happend between the two values. */
+    RangedAudioParameter& rangeLow; /**< \brief Tilt's low range value. The full effect will happend between this and rangeHigh. */
+	RangedAudioParameter& rangeHigh; /**< \brief Tilt's high range value. The full effect will happend between rangeLow and this. */
+    
+    //Range<float> range; /**< \brief Tilt's range. The full effect will happend between the two values. */
 private:
 };
