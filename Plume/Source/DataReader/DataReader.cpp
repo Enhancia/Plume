@@ -83,7 +83,7 @@ bool DataReader::createNewPipe(int maxNumber)
 {
     for (int i=0; i<maxNumber; i++)
     {
-        if (createPipe ("Serial Data Pipe " + String(i), 0, true) == true)
+        if (createPipe ("Serial Data Pipe " + String(i), -1, true) == true)
         {
             pipeNumber = i;
             return true;

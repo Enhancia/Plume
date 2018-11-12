@@ -299,27 +299,31 @@ void GestureArray::addMergedPitchMessage (MidiBuffer& midiMessages)
             // Vibrato
             else if (g->type == Gesture::vibrato)
             {
-                Vibrato* vib = dynamic_cast <Vibrato*> (g);
-                gestValue = vib->getMidiValue();
-                
-                if (vib->getSend() == true)
-                {
-                    send = true;
-                    pitchVal += gestValue - 8192;
-                }
+				if (Vibrato* vib = dynamic_cast <Vibrato*> (g))
+				{
+					gestValue = vib->getMidiValue();
+
+					if (vib->getSend() == true)
+					{
+						send = true;
+						pitchVal += gestValue - 8192;
+					}
+				}
             }
             
             // Pitch Bend
             else if (g->type == Gesture::pitchBend)
             {
-                PitchBend* pb = dynamic_cast <PitchBend*> (g);
-                gestValue = pb->getMidiValue();
-                
-                if (pb->getSend() == true)
-                {
-                    send = true;
-                    pitchVal += gestValue - 8192;
-                }
+				if (PitchBend* pb = dynamic_cast <PitchBend*> (g))
+				{
+					gestValue = pb->getMidiValue();
+
+					if (pb->getSend() == true)
+					{
+						send = true;
+						pitchVal += gestValue - 8192;
+					}
+				}
             }
         }
     }

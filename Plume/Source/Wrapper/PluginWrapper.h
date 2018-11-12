@@ -48,6 +48,7 @@ public:
     String getWrappedPluginName();
     WrapperProcessor& getWrapperProcessor();
     PlumeProcessor& getOwner();
+    bool hasOpenedWrapperEditor();
     
     //==============================================================================
     void fillInPluginDescription (PluginDescription& pd);

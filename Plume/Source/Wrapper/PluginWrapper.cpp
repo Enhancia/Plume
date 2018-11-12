@@ -146,7 +146,7 @@ void PluginWrapper::createWrapperEditor()
     
     if (hasOpenedEditor == true)
     {
-        wrapperEditor->toFront(true);
+        wrapperEditor->toFront (true);
         return;
     }
     
@@ -191,6 +191,11 @@ WrapperProcessor& PluginWrapper::getWrapperProcessor()
 PlumeProcessor& PluginWrapper::getOwner()
 {
     return owner;
+}
+
+bool PluginWrapper::hasOpenedWrapperEditor()
+{
+    return hasOpenedEditor;
 }
 
 //==============================================================================
