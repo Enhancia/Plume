@@ -143,7 +143,7 @@ public:
      *  \brief Method to add a parameter to the gesture in mapMode.
      *
      */
-    void addAndSetParameter (AudioProcessorParameter& param, int gestureId, float start, float end);
+    void addAndSetParameter (AudioProcessorParameter& param, int gestureId, float start, float end, bool rev);
     
     /**
      *  \brief Deletes all gestures in the array.

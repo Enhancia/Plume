@@ -209,7 +209,7 @@ void GestureArray::addParameterToMapModeGesture (AudioProcessorParameter& param)
     }
 }
 
-void GestureArray::addAndSetParameter (AudioProcessorParameter& param, int gestureId, float start, float end)
+void GestureArray::addAndSetParameter (AudioProcessorParameter& param, int gestureId, float start = 0.0f, float end = 1.0f, bool rev = false)
 {
     // Does nothing if the parameter is already mapped to any gesture
     if (parameterIsMapped (param.getParameterIndex())) return;
@@ -217,9 +217,7 @@ void GestureArray::addAndSetParameter (AudioProcessorParameter& param, int gestu
     // else adds the parameter and cancels mapMode
     if (gestureId < size())
     {
-        gestures[gestureId]->addParameter(param);
-        gestures[gestureId]->getParameterArray().getLast()->range.setStart(start);
-        gestures[gestureId]->getParameterArray().getLast()->range.setEnd(end);
+        gestures[gestureId]->addParameter(param, Range<float> (start, end), rev);
     }
 }
 
@@ -454,6 +452,7 @@ void GestureArray::createParameterXml(XmlElement& gestureXml, OwnedArray<Gesture
         paramXml->setAttribute ("id", mParam->parameter.getParameterIndex());
         paramXml->setAttribute ("start", mParam->range.getStart());
         paramXml->setAttribute ("end", mParam->range.getEnd());
+        paramXml->setAttribute ("reversed", mParam->reversed);
         
         gestureXml.addChildElement (paramXml); // Adds the element
     }

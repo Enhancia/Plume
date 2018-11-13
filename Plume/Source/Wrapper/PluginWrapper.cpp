@@ -217,7 +217,8 @@ void PluginWrapper::addParametersToGestureFromXml (XmlElement& gesture, int gest
             gestArray.addAndSetParameter (wrapperProcessor->getWrappedParameter (paramXml->getIntAttribute("id")),
                                           gestureNum,
                                           float (paramXml->getDoubleAttribute("start", 0.0f)),
-                                          float (paramXml->getDoubleAttribute("end", 1.0f)));
+                                          float (paramXml->getDoubleAttribute("end", 1.0f)),
+                                          paramXml->getBoolAttribute ("reversed", false));
         }
     }
 }

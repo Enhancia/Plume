@@ -95,16 +95,15 @@ void PitchBend::updateMappedParameters()
     for (auto* param : parameterArray)
     {
         pbLast = pbLastTemp;
-		float paramVal = getValueForMappedParameter(param->range);
 		    
-        if (send == true && paramVal != param->parameter.getValue())
+        if (getValueForMappedParameter(param->range, param->reversed) != param->parameter.getValue() && send == true)
         {
-            param->parameter.setValueNotifyingHost (paramVal);
+            param->parameter.setValueNotifyingHost (getValueForMappedParameter(param->range, param->reversed));
         }
     }
 }
 
-float PitchBend::getValueForMappedParameter (Range<float> paramRange)
+float PitchBend::getValueForMappedParameter (Range<float> paramRange, bool reversed = false)
 {
     // Right side
     if (value>= rangeRight.getStart() && value < 140.0f)
@@ -113,12 +112,18 @@ float PitchBend::getValueForMappedParameter (Range<float> paramRange)
 		pbLast = true;
 		
 		// if the range is empty just returns the max value
-        if (rangeRight.isEmpty()) return paramRange.getEnd();
+        if (rangeRight.isEmpty()) return reversed ? paramRange.getStart() : paramRange.getEnd();
         
         // Normal case, maps to an interval from neutral to max
-        return (Gesture::mapParameter (value, rangeRight.getStart(), rangeRight.getEnd(),
-                                       Range<float> (paramRange.getStart() + paramRange.getLength()/2,
-                                                     paramRange.getEnd())));
+        if (!reversed) return (Gesture::mapParameter (value, rangeRight.getStart(), rangeRight.getEnd(),
+                                                      Range<float> (paramRange.getStart() + paramRange.getLength()/2,
+                                                                    paramRange.getEnd()),
+                                                      false));
+        // reversed
+        else           return (Gesture::mapParameter (value, rangeRight.getStart(), rangeRight.getEnd(),
+                                                      Range<float> (paramRange.getStart(),
+                                                                    paramRange.getStart() + paramRange.getLength()/2),
+                                                      true));
     }
     
     // Left side
@@ -128,12 +133,18 @@ float PitchBend::getValueForMappedParameter (Range<float> paramRange)
         pbLast = true;
         
         // if the range is empty just returns the min value
-        if (rangeRight.isEmpty()) return paramRange.getStart();
+        if (rangeLeft.isEmpty()) return reversed ? paramRange.getEnd() : paramRange.getStart();
         
         // Normal case, maps to an interval from min to neutral
-        return (Gesture::mapParameter (value, rangeLeft.getStart(), rangeLeft.getEnd(),
-                                       Range<float> (paramRange.getStart(),
-                                                     paramRange.getStart() + paramRange.getLength()/2)));
+        if (!reversed) return (Gesture::mapParameter (value, rangeLeft.getStart(), rangeLeft.getEnd(),
+                                                      Range<float> (paramRange.getStart(),
+                                                                    paramRange.getStart() + paramRange.getLength()/2),
+                                                      false));
+        // reversed
+        else           return (Gesture::mapParameter (value, rangeLeft.getStart(), rangeLeft.getEnd(),
+                                                      Range<float> (paramRange.getStart() + paramRange.getLength()/2,
+                                                                    paramRange.getEnd()),
+                                                      true));
     }
     
     // If back to central zone
