@@ -22,7 +22,7 @@ class SymmetricalTuner:    public Tuner,
 {
 public:
     //==============================================================================
-    SymmetricalTuner(const float& val, const Range<float>& totRange, float& param, float paramMax,
+    SymmetricalTuner(const float& val, const Range<float>& totRange, RangedAudioParameter& param, float paramMax,
                      const String unit = "", bool show = true)
         :   Tuner (val, totRange, unit, show), parameter (param), parameterMax (paramMax)
     {

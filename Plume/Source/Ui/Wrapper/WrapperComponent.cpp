@@ -107,7 +107,7 @@ void WrapperComponent::scanPlugin()
         DBG ("successful scan: "<< pluginScanner.getResult().getFileName());
         
         // Tries to wrap the plugin. If successful changes the label and opens the editor
-        if (wrapper.wrapPlugin(pluginScanner.getResult()))
+        if (wrapper.wrapPlugin (pluginScanner.getResult()))
         {
 			pluginNameLabel->setText(wrapper.getWrappedPluginName(), dontSendNotification);
 			openEditor();

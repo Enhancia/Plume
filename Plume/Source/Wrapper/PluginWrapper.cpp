@@ -137,7 +137,7 @@ void PluginWrapper::createWrapperEditor()
 {
     TRACE_IN;
     
-    jassert(wrapperProcessor != nullptr);
+    jassert (wrapperProcessor != nullptr);
     
     if (wrapperProcessor == nullptr)
     {

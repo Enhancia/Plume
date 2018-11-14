@@ -164,6 +164,7 @@ public:
      */
     virtual void updateValue (const Array<float> rawData) =0;
     
+    
     //==============================================================================
     // Static Methods to merge messages in a MidiBuffer
     
