@@ -48,7 +48,7 @@ public:
     bool getRawDataAsFloatArray(Array<float>& arrayToFill);
     
     //==============================================================================
-    bool createNewPipe(int maxNumber);
+    bool connectToExistingPipe();
     bool isConnected();
     
     //==============================================================================
