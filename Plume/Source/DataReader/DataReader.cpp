@@ -18,7 +18,7 @@ DataReader::DataReader(): InterprocessConnection (true, 0x6a6d626e)
     data = new StringArray (StringArray::fromTokens ("0 0 0 0 0 0 0", " ", String()));
     
     // Pipe creation
-    createNewPipe (10);
+	connectToExistingPipe();
     
     // Label creation
     addAndMakeVisible (connectedLabel = new Label ("connectedLabel", TRANS ("Disconnected")));
@@ -79,17 +79,9 @@ bool DataReader::getRawDataAsFloatArray(Array<float>& arrayToFill)
 }
 
 //==============================================================================
-bool DataReader::createNewPipe(int maxNumber)
+bool DataReader::connectToExistingPipe()
 {
-    for (int i=0; i<maxNumber; i++)
-    {
-        if (createPipe ("Serial Data Pipe " + String(i), -1, true) == true)
-        {
-            pipeNumber = i;
-            return true;
-        }
-    }
-    return false;
+	return connectToPipe("mynamedpipe", -1);
 }
 
 bool DataReader::isConnected()
