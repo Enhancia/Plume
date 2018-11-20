@@ -88,7 +88,7 @@ public:
      *  The method will search the array at specified id. If the id is in range, returns a pointer to the Gesture.
      *  If the id is not in range, returns nullptr. You should check the return value after using this method!
      *
-     *  \param nameToSearch Name of the Gesture to look for.
+     *  \param idToSearch Id of the Gesture to look for.
      *  \return Pointer to the searched Gesture object, or nullptr if not found.
      */
     Gesture* getGestureById(const int idToSearch);

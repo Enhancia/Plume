@@ -16,8 +16,7 @@
 #include "Ui/Gesture/Tuner/GesturesTuner.h"
 #include "Ui/Gesture/Mapper/MapperComponent.h"
 
-#define NUM_GEST 3
-#define MARGIN plumeCommon::MARGIN
+#define MARGIN PLUME::UI::MARGIN
 
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 //==============================================================================
@@ -182,10 +181,28 @@ public:
     
     
     //==============================================================================
+    int getGestureId()
+    {
+        return gesture.id;
+    }
+    
+    Tuner& getTuner()
+    {
+        return *gestTuner;
+    }
+    
     void updateDisplay()
     {
         if (gesture.isActive()) gestTuner->updateDisplay();
         if (gesture.isMapped()) gestMapper->updateDisplay();
+    }
+    
+    void updateComponents()
+    {
+        onOffButton->setToggleState (gesture.isActive(), dontSendNotification);
+        gestTuner->updateComponents();
+        gestMapper->updateComponents();
+        repaint();
     }
     
 private:
@@ -244,15 +261,18 @@ private:
 };
 
 //==============================================================================
-GesturePanel::GesturePanel(GestureArray& gestArray, PluginWrapper& wrap, int freqHz) : gestureArray (gestArray), wrapper (wrap)
+GesturePanel::GesturePanel (GestureArray& gestArray, PluginWrapper& wrap, AudioProcessorValueTreeState& params, int freqHz)
+                            : gestureArray (gestArray), wrapper (wrap), parameters (params)
 {
     TRACE_IN;
     freq = freqHz;
+    initialize();
 }
 
 GesturePanel::~GesturePanel()
 {
     TRACE_IN;
+    removeListenerForAllParameters();
     gestureComponents.clear();
 }
 
@@ -262,34 +282,98 @@ void GesturePanel::paint (Graphics& g)
 
 void GesturePanel::resized()
 {
-    int gestureHeight = (getHeight() - (NUM_GEST - 1) * 2*MARGIN) / NUM_GEST; // gets the height of each gesture component
+    int gestureHeight = (getHeight() - (PLUME::NUM_GEST - 1) * 2*MARGIN) / PLUME::NUM_GEST; // gets the height of each gesture component
     
     for (int i=0; i<gestureComponents.size(); i++)
     {
         // Places the gestureComponent for each existing gesture.
-        gestureComponents[i]->setBounds (0, i*(gestureHeight + MARGIN), getWidth(), gestureHeight);
+        gestureComponents[i]->setBounds (0, gestureComponents[i]->getGestureId() *(gestureHeight + MARGIN), getWidth(), gestureHeight);
     }
 }
 
 void GesturePanel::initialize()
 {  
-	int gestureHeight = (getHeight() - (NUM_GEST - 1) * 2 * MARGIN) / NUM_GEST; // gets the height of each gesture component
+	int gestureHeight = (getHeight() - (PLUME::NUM_GEST - 1) * 2 * MARGIN) / PLUME::NUM_GEST; // gets the height of each gesture component
 
-    for (int i=0; i<NUM_GEST && i<gestureArray.size(); i++)
+    for (auto* gesture : gestureArray.getArray())
     {
-        // Creates a gestureComponent for each existing gesture.
-        gestureComponents.add (new GestureComponent (*gestureArray.getGestureById (i), gestureArray, wrapper));
-        addAndMakeVisible (gestureComponents[i]);
-        gestureComponents[i]->setBounds (0, i*(gestureHeight + MARGIN), getWidth(), gestureHeight);
+        addGestureComponent (*gesture);
     }
     
     startTimerHz (freq);
 }
 
-void GesturePanel::timerCallback()
+void GesturePanel::addGestureComponent (Gesture& gest)
 {
+    if (gestureComponents.addIfNotAlreadyThere (new GestureComponent (gest, gestureArray, wrapper)))
+    {
+        addAndMakeVisible (gestureComponents.getLast());
+
+		int gestureHeight = (getHeight() - (PLUME::NUM_GEST - 1) * 2 * MARGIN) / PLUME::NUM_GEST; // gets the height of each gesture component4
+        gestureComponents.getLast()->setBounds (0, gest.id * (gestureHeight + MARGIN), getWidth(), gestureHeight);
+    
+    
+        for (int i=0; i<PLUME::param::numParams; i++)
+        {
+            DBG ("Listening to " << gest.id << PLUME::param::paramIds[i]);
+            parameters.addParameterListener (String (gest.id) + PLUME::param::paramIds[i], this);
+        }
+    }
+}
+
+void GesturePanel::removeGestureComponent (int gestureId)
+{
+	if (gestureId > PLUME::NUM_GEST) return;
+
     for (auto* gComp : gestureComponents)
     {
-        gComp->updateDisplay();
+        if (gComp->getGestureId() == gestureId)
+        {
+            gestureComponents.removeObject (gComp);
+
+			for (int i = 0; i<PLUME::param::numParams; i++)
+			{
+				parameters.removeParameterListener(String(gestureId) + PLUME::param::paramIds[i], this);
+			}
+
+            return;
+        }
+    }
+    
+    
+}
+
+void GesturePanel::removeListenerForAllParameters()
+{
+    for (auto* gesture : gestureArray.getArray())
+    {
+        for (int i = 0; i<PLUME::param::numParams; i++)
+		{
+			parameters.removeParameterListener (String (gesture->id) + PLUME::param::paramIds[i], this);
+		}
+    }
+}
+
+void GesturePanel::timerCallback()
+{
+    if (PLUME::UI::ANIMATE_UI_FLAG)
+    {
+        for (auto* gComp : gestureComponents)
+        {
+            gComp->updateDisplay();
+        }
+    }
+}
+
+void GesturePanel::parameterChanged (const String& parameterID, float newValue)
+{
+    int numGesture = parameterID.substring(0,1).getIntValue();
+
+    for (auto* gComp : gestureComponents)
+    {
+        if (gComp->getGestureId() == numGesture)
+        {
+            gComp->updateComponents();
+        }
     }
 }

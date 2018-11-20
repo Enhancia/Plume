@@ -70,6 +70,18 @@ public:
         repaint();
     }
     
+    void updateComponents() override
+    {
+        // Sets slider value
+        symmetricalSlider->setMinValue (double (-parameter.convertFrom0to1 (parameter.getValue())), dontSendNotification);
+        symmetricalSlider->setMaxValue (double (parameter.convertFrom0to1 (parameter.getValue())), dontSendNotification);
+        
+        // Sets label text
+        rangeLabel->setText (String (int (parameter.convertFrom0to1 (parameter.getValue()))), dontSendNotification);
+        
+        repaint();
+    }
+    
     //==============================================================================
     void labelTextChanged (Label* lbl) override
     {
@@ -78,7 +90,7 @@ public:
             // checks that the string is numbers only
             if (lbl->getText().containsOnly ("-0123456789"+valueUnit) == false)
             {
-                lbl->setText (String (int (parameter)), dontSendNotification);
+                lbl->setText (String (int (parameter.convertFrom0to1 (parameter.getValue()))), dontSendNotification);
                 return;
             }
             
@@ -91,11 +103,11 @@ public:
             if (val < 0.0f) val = 0.0f;
             else if (val > parameterMax) val = parameterMax;
         
-            parameter = val;
+            setParameter (val);
         
-            lbl->setText (String (int (parameter)), dontSendNotification);
-            symmetricalSlider->setMinValue(-parameter, dontSendNotification);
-            symmetricalSlider->setMaxValue(parameter, dontSendNotification);
+            lbl->setText (String (val), dontSendNotification);
+            symmetricalSlider->setMinValue (-val, dontSendNotification);
+            symmetricalSlider->setMaxValue (val, dontSendNotification);
         }
     }
     
@@ -106,24 +118,24 @@ public:
         {
             symmetricalSlider->setMinValue(0.0, dontSendNotification);
             symmetricalSlider->setMaxValue(0.0, dontSendNotification);
-            parameter = 0.0f;
+            setParameter (0.0f);
         }
         
         // min value changed
-		if (float(sldr->getMinValue()) != -parameter)
+		if (float(sldr->getMinValue()) != -parameter.convertFrom0to1 (parameter.getValue()))
 		{
-			parameter = float(-sldr->getMinValue());
+			setParameter (float(-sldr->getMinValue()));
 			sldr->setMaxValue(-sldr->getMinValue(), dontSendNotification);
 		}
 
 		// max value changed
-		else if (float(sldr->getMaxValue()) != parameter)
+		else if (float(sldr->getMaxValue()) != parameter.convertFrom0to1 (parameter.getValue()))
 		{
-			parameter = float(sldr->getMaxValue());
+			setParameter (float(sldr->getMaxValue()));
 			sldr->setMinValue(-sldr->getMaxValue(), dontSendNotification);
 		}
         
-		rangeLabel->setText (String (int (parameter)), dontSendNotification);
+		rangeLabel->setText (String (int (parameter.convertFrom0to1 (parameter.getValue()))), dontSendNotification);
     }
     
 private:
@@ -138,8 +150,8 @@ private:
 	    
         // Slider values
         symmetricalSlider->setRange (double (-parameterMax), double (parameterMax), 1.0);
-        symmetricalSlider->setMinValue (double (-parameter), dontSendNotification);
-        symmetricalSlider->setMaxValue (double (parameter), dontSendNotification);
+        symmetricalSlider->setMinValue (double (-parameter.convertFrom0to1 (parameter.getValue())), dontSendNotification);
+        symmetricalSlider->setMaxValue (double (parameter.convertFrom0to1 (parameter.getValue())), dontSendNotification);
         
         symmetricalSlider->setBounds (Tuner::sliderPlacement.getStart(), H/3 - 7, Tuner::sliderPlacement.getLength(), 15);
         symmetricalSlider->addListener (this);
@@ -147,7 +159,7 @@ private:
     
     void createLabels()
     {
-        Tuner::addAndMakeVisible (rangeLabel = new Label ("Value Label", TRANS (String(int(parameter)))));
+        Tuner::addAndMakeVisible (rangeLabel = new Label ("Value Label", TRANS (String(int(parameter.convertFrom0to1 (parameter.getValue()))))));
         
         // Label style
         rangeLabel->setEditable (true, false, false);
@@ -158,8 +170,15 @@ private:
         rangeLabel->addListener (this);
     }
     
+    void setParameter (float value)
+    {
+        parameter.beginChangeGesture();
+        parameter.setValueNotifyingHost (parameter.convertTo0to1 (value));
+        parameter.endChangeGesture();
+    }
+    
     //==============================================================================
-    float& parameter;
+    RangedAudioParameter& parameter;
     const float parameterMax;
     
     ScopedPointer<Slider> symmetricalSlider;

@@ -82,8 +82,8 @@ public:
             // checks that the string is numbers only (and dot)
             if (lbl->getText().containsOnly ("-.0123456789") == false)
             {
-                if (lbl == rangeLabelMin)       lbl->setText (String (gesture.midiRange.getStart(), 2), dontSendNotification);
-                else if (lbl == rangeLabelMax)  lbl->setText (String (gesture.midiRange.getEnd(), 2), dontSendNotification);
+                if (lbl == rangeLabelMin)       lbl->setText (String (gesture.midiLow.getValue(), 2), dontSendNotification);
+                else if (lbl == rangeLabelMax)  lbl->setText (String (gesture.midiHigh.getValue(), 2), dontSendNotification);
 
                 return;
             }
@@ -98,20 +98,20 @@ public:
             if (lbl == rangeLabelMin)
             {
                 // Min > Max
-                if ( val > gesture.midiRange.getEnd()) val = gesture.midiRange.getEnd();
+                if ( val > gesture.midiHigh.getValue()) val = gesture.midiHigh.getValue();
             
                 // Normal case
-                gesture.midiRange.setStart(val);
-                lbl->setText (String (gesture.midiRange.getStart(), 2), dontSendNotification);
+                gesture.setMidiLow (val);
+                lbl->setText (String (gesture.midiLow.getValue(), 2), dontSendNotification);
             }
             else if (lbl == rangeLabelMax)
             {
                 // Max < Min
-                if ( val < gesture.midiRange.getStart()) val = gesture.midiRange.getStart();
+                if ( val < gesture.midiLow.getValue()) val = gesture.midiLow.getValue();
             
                 // Normal case
-                gesture.midiRange.setEnd (val);
-                lbl->setText (String (gesture.midiRange.getEnd(), 2), dontSendNotification);
+                gesture.setMidiHigh  (val);
+                lbl->setText (String (gesture.midiHigh.getValue(), 2), dontSendNotification);
             }
         }
     }
@@ -129,6 +129,14 @@ public:
             // Affects the gesture's midiType variable
             gesture.midiType = midiTypeBox->getSelectedId();
         }
+    }
+    
+    void updateComponents()
+    {
+        ccLabel->setText (String (gesture.getCc()), dontSendNotification);
+        rangeLabelMin->setText (String (gesture.midiLow.getValue(), 2), dontSendNotification);
+		rangeLabelMax->setText (String (gesture.midiHigh.getValue(), 2), dontSendNotification);
+        
     }
 
 private:
@@ -166,8 +174,8 @@ private:
         
         //=== range Control labels ===
         
-        addAndMakeVisible (rangeLabelMin = new Label ("Min Label", TRANS (String (gesture.midiRange.getStart(), 2))));
-        addAndMakeVisible (rangeLabelMax = new Label ("Max Label", TRANS (String (gesture.midiRange.getEnd(), 2))));
+        addAndMakeVisible (rangeLabelMin = new Label ("Min Label", TRANS (String (gesture.midiLow.getValue(), 2))));
+        addAndMakeVisible (rangeLabelMax = new Label ("Max Label", TRANS (String (gesture.midiHigh.getValue(), 2))));
         
         // LabelMin style
         rangeLabelMin->setEditable (true, false, false);

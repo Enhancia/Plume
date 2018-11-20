@@ -18,26 +18,39 @@
 /*
 */
 class GesturePanel    : public Component,
-                        public Timer
+                        public Timer,
+                        private AudioProcessorValueTreeState::Listener
 {
 public:
-    GesturePanel (GestureArray& gestureArray, PluginWrapper& wrap, int freqHz);
+    //==============================================================================
+    GesturePanel (GestureArray& gestureArray, PluginWrapper& wrap, AudioProcessorValueTreeState& params, int freqHz);
     ~GesturePanel();
 
+    //==============================================================================
     void paint (Graphics&) override;
     void resized() override;
     
+    //==============================================================================
     void timerCallback() override;
+    void parameterChanged (const String &parameterID, float newValue) override;
 
+    //==============================================================================
     void initialize();
+    void addGestureComponent (Gesture& gest);
+    void removeGestureComponent (int gestureId);
+    void removeListenerForAllParameters();
     
 private:
+    //==============================================================================
     class GestureComponent;
     int freq;
-    
+
+    //==============================================================================
     OwnedArray<GestureComponent> gestureComponents;
     GestureArray& gestureArray;
     PluginWrapper& wrapper;
-    
+    AudioProcessorValueTreeState& parameters;
+
+    //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GesturePanel)
 };

@@ -9,7 +9,7 @@
 */
 
 #include "Wave.h"
-using namespace plumeCommon;
+using namespace PLUME;
 
 Wave::Wave (String gestName)  : Gesture (gestName, Gesture::wave, gestId, Range<float> (-90.0f, 90.0f), 0.0f)
 {

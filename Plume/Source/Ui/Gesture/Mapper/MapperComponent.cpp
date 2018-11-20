@@ -16,7 +16,7 @@
 
 #define W getWidth()
 #define H getHeight()
-#define MARGIN plumeCommon::MARGIN
+#define MARGIN PLUME::UI::MARGIN
 
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 #define TRACE_OUT Logger::writeToLog ("[-FNC]  Leaving: " + String(__FUNCTION__))
@@ -270,6 +270,19 @@ void MapperComponent::updateDisplay()
     {
         comp->updateDisplay();
     }
+}
+
+void MapperComponent::updateComponents()
+{
+    // midi mode button
+    midiMapButton->setToggleState (gesture.isMidiMapped(), dontSendNotification);
+	midiMapButton->setState(gesture.isMidiMapped() ? Button::buttonDown
+	                                               : Button::buttonNormal);
+	
+    midiModeComp->updateComponents();
+	setAlphas();
+    getParentComponent()->repaint(); // repaints the whole gesture area
+    repaint(); // repaints mapper component
 }
 
 void MapperComponent::initializeParamCompArray()

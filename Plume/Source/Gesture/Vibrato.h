@@ -24,7 +24,7 @@
 class Vibrato : public Gesture
 {
 public:
-    Vibrato (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters, float val = 400.0f);
+    Vibrato (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters, float val = 400.0f, float thresh = 40.0f);
     ~Vibrato();
     
     //==============================================================================

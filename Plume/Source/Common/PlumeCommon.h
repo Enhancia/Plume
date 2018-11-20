@@ -10,24 +10,49 @@
 
 #pragma once
 
-namespace plumeCommon
+namespace PLUME
 {
-    // Default settings
-    const int DEFAULT_WINDOW_WIDTH = 800;
-    const int DEFAULT_WINDOW_HEIGHT = 450;
+    const int NUM_GEST = 4;
     
-    // Display settings
-    const int MARGIN = 8;
-    const int NUM_GEST = 3;
-    const int FRAMERATE = 60;
+    namespace UI
+    {
+        // Default settings
+        const int DEFAULT_WINDOW_WIDTH = 800;
+        const int DEFAULT_WINDOW_HEIGHT = 450;
+    
+        // Display settings
+        const int MARGIN = 8;
+        const int FRAMERATE = 60;
+        
+        extern bool ANIMATE_UI_FLAG;
+    }
     
     // Value tree identifiers
+    const Identifier parametersIdentifier ("Parameters");
+    const Identifier plumeIdentifier ("Plume");
     const Identifier groupIdentifier ("group");
     const Identifier typeIdentifier ("type");
     const Identifier gestureIdentifier ("gesture");
     const Identifier parameterIdentifier ("parameter");
     const Identifier windowWIdentifier ("window_w");
     const Identifier windowHIdentifier ("window_h");
+    
+    // gesture max range values
+    const float VIBRATO_RANGE_MAX  = 500.0f;
+    const float VIBRATO_THRESH_MAX = 300.0f;
+    
+    const float PITCHBEND_MIN = -90.0f;
+    const float PITCHBEND_MAX =  90.0f;
+    
+    const float TILT_MIN = -90.0f;
+    const float TILT_MAX =  90.0f;
+    
+    const float ROLL_MIN = -90.0f;
+    const float ROLL_MAX =  90.0f;
+    
+    const float WAVE_MIN = -90.0f;
+    const float WAVE_MAX =  90.0f;
+    
     
     // parameter suffixs
     namespace param
@@ -73,19 +98,4 @@ namespace plumeCommon
         };
     }
     
-    // gesture max range values
-    const float VIBRATO_RANGE_MAX  = 500.0f;
-    const float VIBRATO_THRESH_MAX = 300.0f;
-    
-    const float PITCHBEND_MIN = -90.0f;
-    const float PITCHBEND_MAX =  90.0f;
-    
-    const float TILT_MIN = -90.0f;
-    const float TILT_MAX =  90.0f;
-    
-    const float ROLL_MIN = -90.0f;
-    const float ROLL_MAX =  90.0f;
-    
-    const float WAVE_MIN = -90.0f;
-    const float WAVE_MAX =  90.0f;
 }

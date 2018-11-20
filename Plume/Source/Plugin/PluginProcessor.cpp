@@ -21,7 +21,7 @@ PlumeProcessor::PlumeProcessor()
                        .withOutput ("Output", AudioChannelSet::stereo(), true)
                        )
 #endif
-       , parameters (*this, nullptr)
+       , parameters (*this, nullptr /*, PLUME::parametersIdentifier, {}*/)
 {
     TRACE_IN;
     
@@ -33,6 +33,7 @@ PlumeProcessor::PlumeProcessor()
     Logger::setCurrentLogger (plumeLogger);
     
     initializeParameters();
+    parameters.replaceState (ValueTree (PLUME::plumeIdentifier));
     
     dataReader = new DataReader();
     gestureArray = new GestureArray (*dataReader, parameters);
@@ -122,6 +123,11 @@ GestureArray& PlumeProcessor::getGestureArray()
     return *gestureArray;
 }
 
+AudioProcessorValueTreeState& PlumeProcessor::getParameterTree()
+{
+    return parameters;
+}
+
 //==============================================================================
 bool PlumeProcessor::hasEditor() const
 {
@@ -168,15 +174,16 @@ void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
         loadPluginXml (*(wrapperData->getChildByName ("WRAPPED_PLUGIN")));
         notifyEditor = true;
     }
-    /*
+    
     // Gestures configuration loading
     if (wrapperData->getChildByName ("GESTURES") != nullptr)
     {
-	    sendActionMessage ("lockInterface");
+	    //sendActionMessage ("lockInterface");
+	    PLUME::UI::ANIMATE_UI_FLAG = false;
         loadGestureXml (*(wrapperData->getChildByName ("GESTURES")));
         notifyEditor = true;
     }
-    */
+    
     // Sends a change message to the editor so it can update its interface.
     if (notifyEditor) sendActionMessage ("updateInterface");
 
@@ -307,15 +314,18 @@ void PlumeProcessor::loadGestureXml(const XmlElement& gestureData)
     
     forEachXmlChildElement (gestureData, gesture)
     {
-        gestureArray->addGestureFromXml(*gesture);
-        
-        if (gesture->getBoolAttribute ("mapped") == true)
-        {
-			gestureArray->getGestureById(i)->clearAllParameters();
-            wrapper->addParametersToGestureFromXml (*gesture, i);
-        }
-        
-        i++;
+		if (i < PLUME::NUM_GEST)
+		{
+			gestureArray->addGestureFromXml(*gesture);
+
+			if (gesture->getBoolAttribute("mapped") == true)
+			{
+				gestureArray->getGestureById(i)->clearAllParameters();
+				wrapper->addParametersToGestureFromXml(*gesture, i);
+			}
+
+			i++;
+		}
     }
 }
 
@@ -330,36 +340,18 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 //==============================================================================
 void PlumeProcessor::initializeParameters()
 {
-    using namespace plumeCommon::param;
+    using namespace PLUME::param;
             
-    for (int gest =0; gest < plumeCommon::NUM_GEST; gest++)
+    for (int gest =0; gest < PLUME::NUM_GEST; gest++)
     {
         for (int i =0; i < numParams; i++)
         {
             // boolean parameters
             if (i == on || i == midi_on)
             {
-                
                 parameters.createAndAddParameter (std::make_unique<AudioParameterBool> (String(gest) + paramIds[i],
                                                                                         String(gest) + paramIds[i],
-                                                                                        false
-                                                                                        ));
-				/*
-                parameters.createAndAddParameter (String (gest) + paramIds[i], String(gest) + paramIds[i], String(),
-                                                  NormalisableRange<float> (0.0f, 1.0f, 1.0f),
-                                                  0.0f,
-				                                  [](float val)->String { return val < 0.5f ? "Off" : "On"; },
-                                                  [](const String& s)->float
-                                                  {
-                                                      if (s.compare ("On") == 0) return 1.0f;
-                                                      return 0.0f;
-                                                  },
-                                                  false,
-                                                  true,
-                                                  true,
-                                                  AudioProcessorParameter::genericParameter,
-                                                  true);*/
-												  
+                                                                                        false));			  
             }
             // float parameters
             else
@@ -415,9 +407,6 @@ void PlumeProcessor::initializeParameters()
                                                                                          String(gest) + paramIds[i],
                                                                                          range,
                                                                                          defVal));
-				/*
-                parameters.createAndAddParameter (String (gest) + paramIds[i], String(gest) + paramIds[i], String(),
-                                                  range, defVal, nullptr, nullptr);*/
             }
         }
     }

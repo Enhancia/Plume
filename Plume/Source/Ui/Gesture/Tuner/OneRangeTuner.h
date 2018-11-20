@@ -22,9 +22,10 @@ class OneRangeTuner:    public Tuner,
 {
 public:
     //==============================================================================
-    OneRangeTuner(const float& val, const Range<float>& totRange, Range<float>& paramRange, const Range<float> paramMax,
+    OneRangeTuner(const float& val, const Range<float>& totRange,
+                  RangedAudioParameter& rangeL, RangedAudioParameter& rangeH, const Range<float> paramMax,
                   const String unit = "", bool show = true)
-        :   Tuner (val, totRange, unit, show), parameterRange (paramRange), parameterMax (paramMax)
+        :   Tuner (val, totRange, unit, show), rangeLow (rangeL), rangeHigh (rangeH), parameterMax (paramMax)
     {
         createSlider();
         createLabels();
@@ -78,14 +79,30 @@ public:
         repaint();
     }
     
+    void updateComponents() override
+    {
+        if (rangeLow.getValue() < rangeHigh.getValue())
+        {
+            // Sets slider value
+            rangeSlider->setMinValue (double (getRangeLow()), dontSendNotification);
+            rangeSlider->setMaxValue (double (getRangeHigh()), dontSendNotification);
+        
+            // Sets label text
+		    rangeLabelMin->setText (String (int (getRangeLow())) + valueUnit, dontSendNotification);
+		    rangeLabelMax->setText (String (int (getRangeHigh())) + valueUnit, dontSendNotification);
+		
+		    repaint();
+        }
+    }
+    
     //==============================================================================
     void labelTextChanged (Label* lbl) override
     {
         // checks that the string is numbers only (and unit)
         if (lbl->getText().containsOnly ("-0123456789"+valueUnit) == false)
         {
-            if (lbl == rangeLabelMin)       lbl->setText (String (int (parameterRange.getStart())) + valueUnit, dontSendNotification);
-            else if (lbl == rangeLabelMax)  lbl->setText (String (int (parameterRange.getEnd())) + valueUnit, dontSendNotification);
+            if (lbl == rangeLabelMin)       lbl->setText (String (int (getRangeLow())) + valueUnit, dontSendNotification);
+            else if (lbl == rangeLabelMax)  lbl->setText (String (int (getRangeHigh())) + valueUnit, dontSendNotification);
 
             return;
         }
@@ -103,19 +120,19 @@ public:
         // Sets slider and labels accordingly
         if (lbl == rangeLabelMin)
         {
-            if ( val > parameterRange.getEnd()) val = parameterRange.getEnd();
+            if ( val > getRangeHigh()) val = getRangeHigh();
             
-            parameterRange.setStart (val);
-            rangeSlider->setMinValue (parameterRange.getStart(), dontSendNotification);
-            lbl->setText (String (int (parameterRange.getStart())) + valueUnit, dontSendNotification);
+            setRangeLow (val);
+            rangeSlider->setMinValue (getRangeLow(), dontSendNotification);
+            lbl->setText (String (int (getRangeLow())) + valueUnit, dontSendNotification);
         }
         else if (lbl == rangeLabelMax)
         {
-            if ( val < parameterRange.getStart()) val = parameterRange.getStart();
+            if ( val < getRangeLow()) val = getRangeLow();
             
-            parameterRange.setEnd (val);
-            rangeSlider->setMaxValue (parameterRange.getEnd(), dontSendNotification);
-            lbl->setText (String (int (parameterRange.getEnd())) + valueUnit, dontSendNotification);
+            setRangeHigh (val);
+            rangeSlider->setMaxValue (getRangeHigh(), dontSendNotification);
+            lbl->setText (String (int (getRangeHigh())) + valueUnit, dontSendNotification);
         }
     }
     
@@ -124,17 +141,23 @@ public:
         // min value changed by user
 		if (sldr->getThumbBeingDragged() == 1)
 		{
-			parameterRange.setStart (float (sldr->getMinValue()));
-		    rangeLabelMin->setText (String (int (parameterRange.getStart())) + valueUnit, dontSendNotification);
-			rangeLabelMax->setText (String (int (parameterRange.getEnd())) + valueUnit, dontSendNotification);
+			setRangeLow (float (sldr->getMinValue()));
+		    rangeLabelMin->setText (String (int (getRangeLow())) + valueUnit, dontSendNotification);
+		    
+		    // in case the other thumb is dragged along..
+		    rangeHigh.setValue (rangeHigh.convertTo0to1 (float (sldr->getMaxValue())));
+			rangeLabelMax->setText (String (float (sldr->getMaxValue())) + valueUnit, dontSendNotification);
 		}
 
 		// max value changed by user
 		else if (sldr->getThumbBeingDragged() == 2)
 		{
-			parameterRange.setEnd (float (sldr->getMaxValue()));
-		    rangeLabelMax->setText (String (int (parameterRange.getEnd())) + valueUnit, dontSendNotification);
-			rangeLabelMin->setText (String (int (parameterRange.getStart())) + valueUnit, dontSendNotification);
+			setRangeHigh (float (sldr->getMaxValue()));
+		    rangeLabelMax->setText (String (int (getRangeHigh())) + valueUnit, dontSendNotification);
+		    
+		    // in case the other thumb is dragged along..
+		    rangeLow.setValue (rangeLow.convertTo0to1 (float (sldr->getMinValue())));
+			rangeLabelMin->setText (String (float (sldr->getMinValue())) + valueUnit, dontSendNotification);
 		}
     }
     
@@ -150,8 +173,8 @@ private:
 	    
         // Slider values
         rangeSlider->setRange (double (parameterMax.getStart()), double (parameterMax.getEnd()), 1.0);
-        rangeSlider->setMinValue (double (parameterRange.getStart()), dontSendNotification);
-        rangeSlider->setMaxValue (double (parameterRange.getEnd()), dontSendNotification);
+        rangeSlider->setMinValue (double (getRangeLow()), dontSendNotification);
+        rangeSlider->setMaxValue (double (getRangeHigh()), dontSendNotification);
         
         rangeSlider->setBounds (Tuner::sliderPlacement.getStart(), H/3 - 7, Tuner::sliderPlacement.getLength(), 15);
         rangeSlider->addListener (this);
@@ -159,8 +182,8 @@ private:
     
     void createLabels()
     {
-        Tuner::addAndMakeVisible (rangeLabelMin = new Label ("Min Label", TRANS (String(int(parameterRange.getStart())) + valueUnit)));
-        Tuner::addAndMakeVisible (rangeLabelMax = new Label ("Max Label", TRANS (String(int(parameterRange.getEnd())) + valueUnit)));
+        Tuner::addAndMakeVisible (rangeLabelMin = new Label ("Min Label", TRANS (String(int(getRangeLow())) + valueUnit)));
+        Tuner::addAndMakeVisible (rangeLabelMax = new Label ("Max Label", TRANS (String(int(getRangeHigh())) + valueUnit)));
         
         // LabelMin style
         rangeLabelMin->setEditable (true, false, false);
@@ -180,9 +203,34 @@ private:
         rangeLabelMax->addListener (this);
     }
     
+    void setRangeLow (float value)
+    {
+        rangeLow.beginChangeGesture();
+        rangeLow.setValueNotifyingHost (rangeLow.convertTo0to1 (value));
+        rangeLow.endChangeGesture();
+    }
+    
+    void setRangeHigh (float value)
+    {
+        rangeHigh.beginChangeGesture();
+        rangeHigh.setValueNotifyingHost (rangeHigh.convertTo0to1 (value));
+        rangeHigh.endChangeGesture();
+    }
+    
+    float getRangeLow()
+    {
+        return rangeLow.convertFrom0to1 (rangeLow.getValue());
+    }
+    
+    float getRangeHigh()
+    {
+        return rangeHigh.convertFrom0to1 (rangeHigh.getValue());
+    }
+    
     //==============================================================================
-    Range<float>& parameterRange;
     const Range<float> parameterMax;
+    RangedAudioParameter& rangeLow;
+    RangedAudioParameter& rangeHigh;
     
     ScopedPointer<Slider> rangeSlider;
     ScopedPointer<Label> rangeLabelMin;

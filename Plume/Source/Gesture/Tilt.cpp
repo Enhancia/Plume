@@ -9,10 +9,15 @@
 */
 
 #include "Tilt.h"
-using namespace plumeCommon;
+using namespace PLUME;
 
 Tilt::Tilt (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters, float lowValue, float highValue)
-    : Gesture (gestName, Gesture::tilt, gestId, Range<float> (TILT_MIN, TILT_MAX), 0.0f),
+    : Gesture (gestName, Gesture::tilt, gestId, Range<float> (TILT_MIN, TILT_MAX),
+		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::on])),
+		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::midi_on])),
+		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::midi_cc])),
+		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::midi_low])),
+		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::midi_high]))),
     
       rangeLow  (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::tilt_low]))),
       rangeHigh (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::tilt_high])))
@@ -29,12 +34,12 @@ Tilt::~Tilt()
 void Tilt::addGestureMidi (MidiBuffer& midiMessages)
 {
     // Checks if Gesture is on and if value is within the right range
-    if (on == false || value >= 120.0f || value <= -120.0f)
+    if (on.getValue() == 0.0f || value >= 120.0f || value <= -120.0f)
     {
         return;
     }
     
-    if (midiMap)
+    if (isMidiMapped())
     {
         addMidiModeSignalToBuffer (midiMessages, getMidiValue(), 0, 127, 1);
     }
@@ -52,7 +57,7 @@ int Tilt::getMidiValue()
 void Tilt::updateMappedParameters()
 {
     // Checks if Gesture is on and if value is within the right range
-    if (on == false || value >= 120.0f || value <= -120.0f)
+    if (on.getValue() == 0.0f || value >= 120.0f || value <= -120.0f)
     {
         return;
     }

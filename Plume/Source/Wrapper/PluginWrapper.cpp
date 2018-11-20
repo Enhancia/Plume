@@ -35,8 +35,8 @@ PluginWrapper::~PluginWrapper()
 {
     TRACE_IN;
     wrapperEditor = nullptr;
+	wrapperProcessor = nullptr;
     wrappedInstance = nullptr;
-    wrapperProcessor = nullptr;
     
     formatManager = nullptr;
     wrappedPluginDescriptions->clear();

@@ -61,11 +61,12 @@ WrapperProcessor::~WrapperProcessor()
 {
     TRACE_IN;
     auto& params = plugin.getParameters();
-    
+    /*
     for (auto* param : params)
     {
         param->removeListener (&getOwnerWrapper());
     }
+	*/
 }
 
 //==============================================================================

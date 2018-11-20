@@ -15,12 +15,17 @@
 #define rangeRightStart rangeRightLow.convertFrom0to1 (rangeRightLow.getValue())
 #define rangeRightEnd rangeRightHigh.convertFrom0to1 (rangeRightHigh.getValue())
 
-using namespace plumeCommon;
+using namespace PLUME;
 
 PitchBend::PitchBend (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
                       float leftLow, float leftHigh, float rightLow, float rightHigh)
                       
-    : Gesture (gestName, Gesture::pitchBend, gestId, Range<float> (PITCHBEND_MIN, PITCHBEND_MAX), 0.0f),
+    : Gesture (gestName, Gesture::pitchBend, gestId, Range<float> (PITCHBEND_MIN, PITCHBEND_MAX),
+		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::on])),
+		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::midi_on])),
+		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::midi_cc])),
+		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::midi_low])),
+		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::midi_high]))),
     
       rangeLeftLow   (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::bend_leftLow]))),
       rangeLeftHigh  (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::bend_leftHigh]))),
@@ -40,14 +45,14 @@ PitchBend::~PitchBend()
 //==============================================================================
 void PitchBend::addGestureMidi (MidiBuffer& midiMessages)
 {
-    if (on == false) return; // does nothing if the gesture is inactive or mapped
+    if (on.getValue() == 0.0f) return; // does nothing if the gesture is inactive or mapped
     
     int pbVal = getMidiValue();
     
-    if (send == true || midiMap == true)
+    if (send == true || isMidiMapped())
     {
         // Creates the pitchwheel message
-        if (midiMap)
+        if (isMidiMapped())
         {
             addMidiModeSignalToBuffer (midiMessages, pbVal, 0, 127, 1);
         }
@@ -67,11 +72,11 @@ int PitchBend::getMidiValue()
         pbLast = true;
         
         // if the range is empty just returns the max value
-        if (rangeRightLow.getValue() == rangeRightHigh.getValue()) return midiMap ? 127 : 16383;
+        if (rangeRightLow.getValue() == rangeRightHigh.getValue()) return isMidiMapped() ? 127 : 16383;
         
         // Normal case, maps to an interval from neutral to max pitch
-        if (midiMap) return Gesture::map (value, rangeRightStart, rangeRightEnd, 64, 127);
-        else         return Gesture::map (value, rangeRightStart, rangeRightEnd, 8192, 16383);
+        if (isMidiMapped()) return Gesture::map (value, rangeRightStart, rangeRightEnd, 64, 127);
+        else                return Gesture::map (value, rangeRightStart, rangeRightEnd, 8192, 16383);
     }
     
     // Left side
@@ -84,7 +89,7 @@ int PitchBend::getMidiValue()
         if (rangeLeftLow.getValue() == rangeLeftHigh.getValue()) return 0;
         
         // Normal case, maps to an interval from min pitch to neutral
-        if (midiMap) return Gesture::map (value, rangeLeftStart, rangeLeftEnd, 0, 64);
+        if (isMidiMapped()) return Gesture::map (value, rangeLeftStart, rangeLeftEnd, 0, 64);
         else         return Gesture::map (value, rangeLeftStart, rangeLeftEnd, 0, 8191);
     }
     
@@ -93,18 +98,18 @@ int PitchBend::getMidiValue()
     {
         send = true;
         pbLast = false;
-        if (midiMap) return 64;
+        if (isMidiMapped()) return 64;
         else         return 8192;
     }
     
     send = false;
-    if (midiMap) return 64;
+    if (isMidiMapped()) return 64;
     else         return 8192;
 }
    
 void PitchBend::updateMappedParameters()
 {
-    if (on == false) return; // does nothing if the gesture is inactive
+    if (on.getValue() == 0.0f) return; // does nothing if the gesture is inactive
     
     bool pbLastTemp = pbLast;
     

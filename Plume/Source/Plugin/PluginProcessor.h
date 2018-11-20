@@ -123,6 +123,12 @@ public:
      * \return Reference to the GestureArray object.
      */
     GestureArray& getGestureArray();
+    /**
+     * \brief AudioProcessorValueTreeState getter.
+     *
+     * \return Reference to the AudioProcessorValueTreeState object.
+     */
+    AudioProcessorValueTreeState& getParameterTree();
     
     
 private:
