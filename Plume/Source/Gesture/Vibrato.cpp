@@ -98,7 +98,7 @@ void Vibrato::updateMappedParameters()
     for (auto* param : parameterArray)
     {
 		vibLast = vibLastTemp;
-		float paramVal = getValueForMappedParameter(param->range);
+		float paramVal = getValueForMappedParameter(param->range, param->reversed);
         
         if (send == true)
         {
@@ -107,7 +107,7 @@ void Vibrato::updateMappedParameters()
     }
 }
 
-float Vibrato::getValueForMappedParameter (Range<float> paramRange)
+float Vibrato::getValueForMappedParameter (Range<float> paramRange, bool reversed = false)
 {
     bool vibTrig = (intensity > threshold.convertFrom0to1 (threshold.getValue()));
     float gainVal = gain.convertFrom0to1 (gain.getValue());
@@ -116,7 +116,7 @@ float Vibrato::getValueForMappedParameter (Range<float> paramRange)
     {
         vibLast = true;
         send = true;
-        return (Gesture::mapParameter (value, -(500.0f - gainVal), (500.01f - gainVal), paramRange));
+        return (Gesture::mapParameter (value, -(500.0f - gainVal), (500.01f - gainVal), paramRange, reversed));
     }
     else if (vibTrig != vibLast && vibTrig == false)
     {

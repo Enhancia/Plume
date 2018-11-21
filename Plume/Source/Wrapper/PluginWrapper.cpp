@@ -146,7 +146,7 @@ void PluginWrapper::createWrapperEditor()
     
     if (hasOpenedEditor == true)
     {
-        wrapperEditor->toFront(true);
+        wrapperEditor->toFront (true);
         return;
     }
     
@@ -193,6 +193,11 @@ PlumeProcessor& PluginWrapper::getOwner()
     return owner;
 }
 
+bool PluginWrapper::hasOpenedWrapperEditor()
+{
+    return hasOpenedEditor;
+}
+
 //==============================================================================
 void PluginWrapper::fillInPluginDescription (PluginDescription& pd)
 {
@@ -212,7 +217,8 @@ void PluginWrapper::addParametersToGestureFromXml (XmlElement& gesture, int gest
             gestArray.addAndSetParameter (wrapperProcessor->getWrappedParameter (paramXml->getIntAttribute("id")),
                                           gestureNum,
                                           float (paramXml->getDoubleAttribute("start", 0.0f)),
-                                          float (paramXml->getDoubleAttribute("end", 1.0f)));
+                                          float (paramXml->getDoubleAttribute("end", 1.0f)),
+                                          paramXml->getBoolAttribute ("reversed", false));
         }
     }
 }

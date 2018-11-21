@@ -4832,6 +4832,9 @@
     <None Include="..\..\Resources\Images\Gestures\pitchBend.png">
       <Filter>Plume\Resources\Images\Gestures</Filter>
     </None>
+    <None Include="..\..\Resources\Images\Gestures\reverse.png">
+      <Filter>Plume\Resources\Images\Gestures</Filter>
+    </None>
     <None Include="..\..\Resources\Images\Gestures\roll.png">
       <Filter>Plume\Resources\Images\Gestures</Filter>
     </None>

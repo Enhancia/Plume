@@ -31,10 +31,12 @@ public:
     
     //==============================================================================
     void buttonClicked (Button* bttn) override;
+    void mouseUp (const MouseEvent& event) override;
     
     //==============================================================================
     void scanPlugin();
     void openEditor();
+    void closeEditor();
     
     //==============================================================================
     void update();
@@ -44,6 +46,7 @@ private:
     ScopedPointer<ImageButton> scanButton;
     ScopedPointer<ImageButton> openEditorButton;
     ScopedPointer<Label> pluginNameLabel;
+    File lastPluginDir;
     
     //==============================================================================
     PluginWrapper& wrapper;

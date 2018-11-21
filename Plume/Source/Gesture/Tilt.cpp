@@ -70,13 +70,13 @@ void Tilt::updateMappedParameters()
     // Goes through the parameterArray to update each value
     for (auto* param : parameterArray)
     {   
-        param->parameter.setValueNotifyingHost (getValueForMappedParameter (param->range));
+        param->parameter.setValueNotifyingHost (getValueForMappedParameter (param->range, param->reversed));
     }
 }
 
-float Tilt::getValueForMappedParameter (Range<float> paramRange)
+float Tilt::getValueForMappedParameter (Range<float> paramRange, bool reversed = false)
 {
-	return Gesture::mapParameter (value, rangeLow.convertFrom0to1 (rangeLow.getValue()), rangeHigh.convertFrom0to1 (rangeHigh.getValue()), paramRange);
+	return Gesture::mapParameter (value, rangeLow.convertFrom0to1 (rangeLow.getValue()), rangeHigh.convertFrom0to1 (rangeHigh.getValue()), paramRange, reversed);
 }
     
 //==============================================================================

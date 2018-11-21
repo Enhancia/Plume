@@ -67,8 +67,8 @@ public:
      */
     struct MappedParameter
     {
-        MappedParameter(AudioProcessorParameter& p, Range<float> pRange)
-            : parameter (p), range(pRange)
+        MappedParameter(AudioProcessorParameter& p, Range<float> pRange, bool rev = false)
+            : parameter (p), range(pRange), reversed (rev)
         {
             TRACE_IN;
         }
@@ -80,6 +80,7 @@ public:
         
         AudioProcessorParameter& parameter; /**< \brief Reference to a mapped Parameter from the wrapped Plugin. */
         Range<float> range; /**< \brief Range of values from the parameter that the Gesture controls. */
+        bool reversed; /**< \brief Boolean that tells if the parameter's range should be inverted. */
     };
     
     //==============================================================================
@@ -158,7 +159,7 @@ public:
      *  Override this function in derived classes to return a float between whithin the specified range.
      * 
      */
-    virtual float getValueForMappedParameter(Range<float> paramRange) =0;
+    virtual float getValueForMappedParameter (Range<float> paramRange, bool reversed = false) =0;
     
     //==============================================================================
     /**
@@ -510,13 +511,13 @@ public:
     /**
      *  \brief Creates a new MappedParameter.
      */
-    void addParameter (AudioProcessorParameter& param)
+    void addParameter (AudioProcessorParameter& param, Range<float> range = Range<float> (0.0f, 1.0f), bool rev = false)
     {
         TRACE_IN;
                                         
         if (parameterArray.size() < MAX_PARAMETER)
         {
-            parameterArray.add ( new MappedParameter (param, Range<float> (0.0f, 1.0f)));
+            parameterArray.add ( new MappedParameter (param, range, rev));
             mapped = true;
         }
         
@@ -664,8 +665,8 @@ protected:
      *  \param value  Current value inside the range
      *  \param paramRange Range used by the parameter
      */
-    static float mapParameter (float value, float minVal, float maxVal, Range<float> paramRange)
-    {
+    static float mapParameter (float value, float minVal, float maxVal, Range<float> paramRange, bool reversed = false)
+    {   
         // Prevents dividing by 0
         if (minVal == maxVal && value == minVal) return paramRange.getStart();
         
@@ -674,10 +675,13 @@ protected:
         if (paramRange.getEnd() > 1.0f)   paramRange.setEnd (1.0f);
         
         // Checks out of bounds values
-        if (value < minVal) return paramRange.getStart();
-        if (value > maxVal) return paramRange.getEnd();
+        if (value < minVal) return reversed ? paramRange.getEnd() : paramRange.getStart();
+        if (value > maxVal) return reversed ? paramRange.getStart() : paramRange.getEnd();
         
-        return (paramRange.getStart() + paramRange.getLength()*(value - minVal)/(maxVal - minVal));
+        // normal case
+        if (!reversed) return (paramRange.getStart() + paramRange.getLength()*(value - minVal)/(maxVal - minVal));
+        // reversed parameter
+        else           return (paramRange.getStart() + paramRange.getLength()*(maxVal - value)/(maxVal - minVal));
     }
     
      /**

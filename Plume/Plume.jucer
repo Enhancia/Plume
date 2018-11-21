@@ -6,8 +6,7 @@
               buildAAX="0" enableIAA="0" pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
               pluginManufacturer="Enhancia" pluginName="Plume" pluginDesc="Enhancia's Plume. Wraps other plugins and provides customizable and mappable gestures to use with Neova."
               binaryDataNamespace="PlumeData" includeBinaryInJuceHeader="1"
-              pluginManufacturerCode="Nhnc" pluginCode="Plm" aaxIdentifier="com.Enhancia.Plume"
-              pluginAUExportPrefix="PlumeAU" id="c5aWcp">
+              id="PjN2uz" pluginManufacturerCode="Enhn" pluginCode="Plum">
   <MAINGROUP id="RYgD59" name="Plume">
     <GROUP id="{9375F276-9F56-CF4A-C1B1-D4B5B9CE68B9}" name="Source">
       <GROUP id="{84727D1E-9E2A-349D-53A5-E2EDB50DAA12}" name="Common">
@@ -107,6 +106,7 @@
           <FILE id="imHDAT" name="Close.png" compile="0" resource="1" file="Resources/Images/Gestures/Close.png"/>
           <FILE id="CXrCc0" name="OnOff.png" compile="0" resource="1" file="Resources/Images/Gestures/OnOff.png"/>
           <FILE id="OyT0Q1" name="pitchBend.png" compile="0" resource="1" file="Resources/Images/Gestures/pitchBend.png"/>
+          <FILE id="CcJ0Sl" name="reverse.png" compile="0" resource="1" file="Resources/Images/Gestures/reverse.png"/>
           <FILE id="crL2PT" name="roll.png" compile="0" resource="1" file="Resources/Images/Gestures/roll.png"/>
           <FILE id="oFcoGt" name="tilt.png" compile="0" resource="1" file="Resources/Images/Gestures/tilt.png"/>
           <FILE id="iUhiZn" name="vibrato.png" compile="0" resource="1" file="Resources/Images/Gestures/vibrato.png"/>

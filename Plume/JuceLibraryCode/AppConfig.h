@@ -353,10 +353,10 @@
  #define JucePlugin_ManufacturerEmail      ""
 #endif
 #ifndef  JucePlugin_ManufacturerCode
- #define JucePlugin_ManufacturerCode       0x4e686e63 // 'Nhnc'
+ #define JucePlugin_ManufacturerCode       0x456e686e // 'Enhn'
 #endif
 #ifndef  JucePlugin_PluginCode
- #define JucePlugin_PluginCode             0x506c6d00 // 'Plm'
+ #define JucePlugin_PluginCode             0x506c756d // 'Plum'
 #endif
 #ifndef  JucePlugin_IsSynth
  #define JucePlugin_IsSynth                1

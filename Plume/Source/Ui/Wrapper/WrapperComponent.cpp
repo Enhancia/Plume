@@ -34,6 +34,7 @@ WrapperComponent::WrapperComponent(PluginWrapper& wrap)
     pluginNameLabel->setJustificationType (Justification::centred);
     pluginNameLabel->setEditable (false, false, false);
     pluginNameLabel->setColour (Label::backgroundColourId, Colour (0xff323232));
+    pluginNameLabel->addMouseListener (this, false);
     
     addAndMakeVisible (openEditorButton = new ImageButton ("Open Editor Button"));
     openEditorButton->setImages (false, true, false, 
@@ -41,6 +42,8 @@ WrapperComponent::WrapperComponent(PluginWrapper& wrap)
                                  editor, 0.7f, Colour (0x10ffffff),
                                  editor, 0.7f, Colour (0x501600f0));
     openEditorButton->addListener (this);
+    
+    lastPluginDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory();
 }
 
 WrapperComponent::~WrapperComponent()
@@ -92,13 +95,21 @@ void WrapperComponent::buttonClicked (Button* bttn)
     }
 }
 
+void WrapperComponent::mouseUp (const MouseEvent& event)
+{
+    if (event.originalComponent == pluginNameLabel)
+    {
+        openEditor();
+    }
+}
+
 //==============================================================================
 void WrapperComponent::scanPlugin()
 {
     TRACE_IN;
     // Lets the user chose a file, and changes the plugin path accordingly
     FileChooser pluginScanner ("Select the plugin you want to load.",
-                               File::getSpecialLocation (File::currentApplicationFile).getParentDirectory(),
+                               lastPluginDir,
                                "*.dll;*.vst;*.so",
                                true);
                                
@@ -115,6 +126,7 @@ void WrapperComponent::scanPlugin()
         // Tries to wrap the plugin. If successful changes the label and opens the editor
         if (wrapper.wrapPlugin (pluginScanner.getResult()))
         {
+            lastPluginDir = pluginScanner.getResult().getParentDirectory();
 			pluginNameLabel->setText(wrapper.getWrappedPluginName(), dontSendNotification);
 			openEditor();
         }
@@ -127,6 +139,14 @@ void WrapperComponent::openEditor()
     if (wrapper.isWrapping())
     {
         wrapper.createWrapperEditor();
+    }
+}
+
+void WrapperComponent::closeEditor()
+{
+    if (wrapper.isWrapping())
+    {
+        wrapper.clearWrapperEditor();
     }
 }
 

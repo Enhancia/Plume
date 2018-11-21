@@ -32,7 +32,7 @@ public:
     {
         TRACE_IN;
         // Creates the close button
-        Image close = ImageFileFormat::loadFrom (PlumeData::Close_png, PlumeData::Close_pngSize);;
+        Image close = ImageFileFormat::loadFrom (PlumeData::Close_png, PlumeData::Close_pngSize);
     
         addAndMakeVisible (closeButton = new ImageButton ("Close Button"));
         closeButton->setImages (false, true, true,
@@ -40,6 +40,19 @@ public:
 								close, 0.5f, Colour (0x00000000),
 								close, 0.7f, Colour (0x501600f0));
         closeButton->addListener (this);
+        
+        // Creates the reverse button
+        Image reverse = ImageFileFormat::loadFrom (PlumeData::reverse_png, PlumeData::reverse_pngSize);
+        
+        addAndMakeVisible (reverseButton = new ImageButton ("Reverse Button"));
+        reverseButton->setImages (false, true, true,
+								  reverse, 1.0f, Colour (0x00000000),
+								  reverse, 0.5f, Colour (0xff000000),
+								  reverse, 1.0f, Colour (0xffffffff));
+		reverseButton->setToggleState (mappedParameter.reversed, dontSendNotification);
+        reverseButton->setClickingTogglesState (true);
+		reverseButton->setState (Button::buttonNormal);
+        reverseButton->addListener (this);
         
         // Creates the labels
         createLabels();
@@ -49,6 +62,7 @@ public:
     {
         TRACE_IN;
         closeButton = nullptr;
+        reverseButton = nullptr;
         valueLabel = nullptr;
         rangeLabelMin = nullptr;
         rangeLabelMax = nullptr;
@@ -98,7 +112,9 @@ public:
     
 	void resized() override
 	{
-	    closeButton->setBounds (W*2/3, H/3, 10, 10);
+	    closeButton->setBounds (W*2/3, H/6, 10, 10);
+	    reverseButton->setBounds (W*2/3, H*2/3, 10, 10);
+	    
         valueLabel->setBounds (0, H/3, W*2/3, H/3 - 2);
 	    rangeLabelMin->setBounds (2, H*2/3, W/3 - 4, H/4);
 	    rangeLabelMax->setBounds (W/3 + 2, H*2/3, W/3 - 4, H/4);
@@ -110,8 +126,15 @@ public:
     //==============================================================================
     void buttonClicked (Button* bttn) override
     {
-        gesture.deleteParameter (paramId);
-        allowDisplayUpdate = false;
+        if (bttn == closeButton)
+        {
+            gesture.deleteParameter (paramId);
+            allowDisplayUpdate = false;
+        }
+        else if (bttn == reverseButton)
+        {
+            mappedParameter.reversed = !(mappedParameter.reversed);
+        }
     }
     
     void labelTextChanged (Label* lbl) override
@@ -231,6 +254,7 @@ private:
 
     //==============================================================================
     ScopedPointer<ImageButton> closeButton;
+    ScopedPointer<ImageButton> reverseButton;
     ScopedPointer<Label> valueLabel;
     ScopedPointer<Label> rangeLabelMin;
     ScopedPointer<Label> rangeLabelMax;

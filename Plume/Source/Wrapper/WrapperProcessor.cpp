@@ -60,6 +60,7 @@ WrapperProcessor::WrapperProcessor(AudioPluginInstance& wrappedPlugin, PluginWra
 WrapperProcessor::~WrapperProcessor()
 {
     TRACE_IN;
+	/*
     auto& params = plugin.getParameters();
     /*
     for (auto* param : params)
