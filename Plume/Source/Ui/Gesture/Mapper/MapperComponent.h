@@ -41,6 +41,7 @@ public:
     
     //==============================================================================
     void updateDisplay();
+    void updateComponents();
     void initializeParamCompArray();
     void addAndMakeArrayVisible();
     void resizeArray();

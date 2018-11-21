@@ -24,7 +24,7 @@
 class Vibrato : public Gesture
 {
 public:
-    Vibrato (String gestName, float val = 400.0f);
+    Vibrato (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters, float val = 400.0f, float thresh = 40.0f);
     ~Vibrato();
     
     //==============================================================================
@@ -36,7 +36,6 @@ public:
     
     //==============================================================================
     void updateValue (const Array<float> rawData) override;
-    void addGestureParameters() override;
     
     //==============================================================================
     bool getSend(); /**< \brief Getter for the send boolean value */
@@ -45,8 +44,8 @@ public:
     // Attributes that will be referenced to the Tuner component.
     // Might want to replace them with audio processor parameters in the future.
     
-    float threshold = 40.0f; /**< threshold used to trigger the effect*/
-    float gain; /**< Sensibility of the vibrato. From 0.0f (no effect) to 500.0f (maximum effect)*/
+    RangedAudioParameter& gain; /**< threshold used to trigger the effect*/
+	RangedAudioParameter& threshold; /**< Sensibility of the vibrato. From 0.0f (no effect) to 500.0f (maximum effect)*/
     
 private:
     float intensity = 0.0f; /**< Value that will be checked to trigger the vibrato if higher than the treshold */

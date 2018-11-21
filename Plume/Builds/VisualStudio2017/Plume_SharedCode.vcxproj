@@ -14,8 +14,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{2271DF96-4353-A066-453D-76FDF6290661}</ProjectGuid>
-  </PropertyGroup>
+    <ProjectGuid>{833B5084-3B5A-30B6-8B17-57C80674BC0E}</ProjectGuid>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props"/>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'"
                  Label="Configuration">
@@ -136,6 +135,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\Common\PlumeCommon.cpp"/>
     <ClCompile Include="..\..\Source\DataReader\DataReader.cpp"/>
     <ClCompile Include="..\..\Source\Gesture\GestureArray.cpp"/>
     <ClCompile Include="..\..\Source\Gesture\PitchBend.cpp"/>
@@ -1982,6 +1982,7 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_video.cpp"/>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Common\PlumeCommon.h"/>
     <ClInclude Include="..\..\Source\DataReader\DataReader.h"/>
     <ClInclude Include="..\..\Source\Gesture\Gesture.h"/>
     <ClInclude Include="..\..\Source\Gesture\GestureArray.h"/>

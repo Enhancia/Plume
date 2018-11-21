@@ -11,9 +11,8 @@
 #include "Plugin/PluginProcessor.h"
 #include "Plugin/PluginEditor.h"
 
-#define MARGIN 8
 #define TOP_PANEL 70
-#define FRAMERATE 100
+#define MARGIN PLUME::UI::MARGIN
 
 
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
@@ -28,8 +27,8 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     // Creates the 3 main components
     addAndMakeVisible (wrapperComp = new WrapperComponent (processor.getWrapper()));
     addAndMakeVisible (presetComp = new PresetComponent (processor, *this));
-	addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(), FRAMERATE));
-	gesturePanel->initialize();
+	addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
+	                                                    processor.getParameterTree(), PLUME::UI::FRAMERATE));
 	
     // Adds itself as a change listener for plume's processor
     processor.addActionListener (this);
@@ -38,13 +37,16 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	setResizable (true, false);
 	addAndMakeVisible (resizableCorner = new ResizableCornerComponent (this, getConstrainer()));
 	
-	setSize(800, 450);
+	setSize(PLUME::UI::DEFAULT_WINDOW_WIDTH, PLUME::UI::DEFAULT_WINDOW_HEIGHT);
 	setResizeLimits (getWidth()*2/3, getHeight()*2/3, getWidth()*3, getHeight()*3);
+	
+	PLUME::UI::ANIMATE_UI_FLAG = true;
 }
 
 PlumeEditor::~PlumeEditor()
 {
     TRACE_IN;
+    PLUME::UI::ANIMATE_UI_FLAG = false;
     
     processor.removeActionListener (this);
     wrapperComp = nullptr;
@@ -73,7 +75,7 @@ void PlumeEditor::resized()
 {
 	wrapperComp->setBounds(MARGIN, MARGIN, getWidth() * 3 / 4, TOP_PANEL);
 	presetComp->setBounds(getWidth() * 3 / 4 + 2 * MARGIN, MARGIN, getWidth() - getWidth() * 3 / 4 - 3 * MARGIN, TOP_PANEL);
-	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 3 * MARGIN, getWidth() - 4 * MARGIN, getHeight() - TOP_PANEL - 3 * MARGIN);
+	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 3 * MARGIN, getWidth() - 4 * MARGIN, getHeight() - TOP_PANEL - 5 * MARGIN);
 	resizableCorner->setBounds (getWidth() - 20, getHeight() - 20, 20, 20);
 }
 
@@ -97,7 +99,7 @@ void PlumeEditor::actionListenerCallback(const String &message)
     {
         if (!gesturePanel->isTimerRunning())
         {
-            gesturePanel->startTimerHz (FRAMERATE);
+            gesturePanel->startTimerHz (PLUME::UI::FRAMERATE);
         }
     }
 }
@@ -117,9 +119,11 @@ void PlumeEditor::updateFullInterface()
     wrapperComp->update();
     presetComp->update();
 
-    addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(), FRAMERATE));
-    gesturePanel->initialize();
-	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 3 * MARGIN, getWidth() - 4 * MARGIN, getHeight() - TOP_PANEL - 3 * MARGIN);
+    addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
+	                                                    processor.getParameterTree(), PLUME::UI::FRAMERATE));
+	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 3 * MARGIN, getWidth() - 4 * MARGIN, getHeight() - TOP_PANEL - 5 * MARGIN);
+	
+	PLUME::UI::ANIMATE_UI_FLAG = true;
 }
 
 void PlumeEditor::setInterfaceUpdates (bool shouldUpdate)
@@ -132,7 +136,7 @@ void PlumeEditor::setInterfaceUpdates (bool shouldUpdate)
         }
         else
         {
-            gesturePanel->startTimerHz (FRAMERATE);
+            gesturePanel->startTimerHz (PLUME::UI::FRAMERATE);
         }
     }
     else

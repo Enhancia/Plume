@@ -165,9 +165,11 @@ void PresetComponent::loadPreset()
 	    AudioProcessor::copyXmlToBinary (*presetXml, presetData);
                 
 	    // Calls the plugin's setStateInformation method to load the preset
-	    editor.setInterfaceUpdates (false);
+	    PLUME::UI::ANIMATE_UI_FLAG = false;
+	    //editor.setInterfaceUpdates (false);
         processor.setStateInformation (presetData.getData(), presetData.getSize());
-	    editor.setInterfaceUpdates (true);
+	    //editor.setInterfaceUpdates (true);
+	    PLUME::UI::ANIMATE_UI_FLAG = true;
 
         //currentPreset = presetXml->getTagName();
 		nameLabel->setText (TRANS (presetXml->getTagName()),

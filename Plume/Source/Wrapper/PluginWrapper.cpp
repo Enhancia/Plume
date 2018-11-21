@@ -35,8 +35,8 @@ PluginWrapper::~PluginWrapper()
 {
     TRACE_IN;
     wrapperEditor = nullptr;
+	wrapperProcessor = nullptr;
     wrappedInstance = nullptr;
-    wrapperProcessor = nullptr;
     
     formatManager = nullptr;
     wrappedPluginDescriptions->clear();
@@ -137,7 +137,7 @@ void PluginWrapper::createWrapperEditor()
 {
     TRACE_IN;
     
-    jassert(wrapperProcessor != nullptr);
+    jassert (wrapperProcessor != nullptr);
     
     if (wrapperProcessor == nullptr)
     {

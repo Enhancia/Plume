@@ -2,6 +2,9 @@
 
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="Plume\Source\Common">
+      <UniqueIdentifier>{45F2E5C9-C3D6-B682-61E1-48F5ACE9DDF4}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Plume\Source\DataReader">
       <UniqueIdentifier>{345C7276-CC70-5981-6545-105A4398AAE5}</UniqueIdentifier>
     </Filter>
@@ -490,6 +493,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\Common\PlumeCommon.cpp">
+      <Filter>Plume\Source\Common</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\DataReader\DataReader.cpp">
       <Filter>Plume\Source\DataReader</Filter>
     </ClCompile>
@@ -2526,6 +2532,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Common\PlumeCommon.h">
+      <Filter>Plume\Source\Common</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\DataReader\DataReader.h">
       <Filter>Plume\Source\DataReader</Filter>
     </ClInclude>

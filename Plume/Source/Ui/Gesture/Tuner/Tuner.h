@@ -102,6 +102,8 @@ public:
         }
     }
     
+	virtual void updateComponents() = 0;
+    
 protected:
     Range<int> sliderPlacement = Range<int> ((W*3/4)/8, (W*3/4)*7/8);
     const String valueUnit;

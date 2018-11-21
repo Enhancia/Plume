@@ -21,6 +21,7 @@ PlumeProcessor::PlumeProcessor()
                        .withOutput ("Output", AudioChannelSet::stereo(), true)
                        )
 #endif
+       , parameters (*this, nullptr /*, PLUME::parametersIdentifier, {}*/)
 {
     TRACE_IN;
     
@@ -31,8 +32,11 @@ PlumeProcessor::PlumeProcessor()
     
     Logger::setCurrentLogger (plumeLogger);
     
+    initializeParameters();
+    parameters.replaceState (ValueTree (PLUME::plumeIdentifier));
+    
     dataReader = new DataReader();
-    gestureArray = new GestureArray (*dataReader);
+    gestureArray = new GestureArray (*dataReader, parameters);
     wrapper = new PluginWrapper (*this, *gestureArray);
     dataReader->addChangeListener(gestureArray);
 }
@@ -119,6 +123,11 @@ GestureArray& PlumeProcessor::getGestureArray()
     return *gestureArray;
 }
 
+AudioProcessorValueTreeState& PlumeProcessor::getParameterTree()
+{
+    return parameters;
+}
+
 //==============================================================================
 bool PlumeProcessor::hasEditor() const
 {
@@ -154,6 +163,7 @@ void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
 	if (wrapperData == nullptr)
 	{
 		DBG ("Couldn't load data");
+	    PLUME::UI::ANIMATE_UI_FLAG = true;
 		return;
 	}
     
@@ -169,13 +179,15 @@ void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
     // Gestures configuration loading
     if (wrapperData->getChildByName ("GESTURES") != nullptr)
     {
-	    sendActionMessage ("lockInterface");
+	    //sendActionMessage ("lockInterface");
+	    PLUME::UI::ANIMATE_UI_FLAG = false;
         loadGestureXml (*(wrapperData->getChildByName ("GESTURES")));
         notifyEditor = true;
     }
     
     // Sends a change message to the editor so it can update its interface.
     if (notifyEditor) sendActionMessage ("updateInterface");
+    else PLUME::UI::ANIMATE_UI_FLAG = true;
 
     wrapperData = nullptr;
 }
@@ -304,15 +316,18 @@ void PlumeProcessor::loadGestureXml(const XmlElement& gestureData)
     
     forEachXmlChildElement (gestureData, gesture)
     {
-        gestureArray->addGestureFromXml(*gesture);
-        
-        if (gesture->getBoolAttribute ("mapped") == true)
-        {
-			gestureArray->getGestureById(i)->clearAllParameters();
-            wrapper->addParametersToGestureFromXml (*gesture, i);
-        }
-        
-        i++;
+		if (i < PLUME::NUM_GEST)
+		{
+			gestureArray->addGestureFromXml(*gesture);
+
+			if (gesture->getBoolAttribute("mapped") == true)
+			{
+				gestureArray->getGestureById(i)->clearAllParameters();
+				wrapper->addParametersToGestureFromXml(*gesture, i);
+			}
+
+			i++;
+		}
     }
 }
 
@@ -321,4 +336,80 @@ void PlumeProcessor::loadGestureXml(const XmlElement& gestureData)
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new PlumeProcessor();
+}
+
+
+//==============================================================================
+void PlumeProcessor::initializeParameters()
+{
+    using namespace PLUME::param;
+            
+    for (int gest =0; gest < PLUME::NUM_GEST; gest++)
+    {
+        for (int i =0; i < numParams; i++)
+        {
+            // boolean parameters
+            if (i == on || i == midi_on)
+            {
+                parameters.createAndAddParameter (std::make_unique<AudioParameterBool> (String(gest) + paramIds[i],
+                                                                                        String(gest) + paramIds[i],
+                                                                                        false));			  
+            }
+            // float parameters
+            else
+            {
+                NormalisableRange<float> range;
+                float defVal;
+                switch (i)
+                {
+                    case vibrato_range:
+                        range = NormalisableRange<float> (0.0f, 500.0f, 1.0f);
+                        defVal = 400.0f;
+                        break;
+			        case vibrato_thresh:
+                        range = NormalisableRange<float> (0.0f, 300.0f, 1.0f);
+                        defVal = 40.0f;
+                        break;
+			        case bend_leftLow:
+                        range = NormalisableRange<float> (-90.0f, 0.0f, 1.0f);
+                        defVal = -50.0f;
+                        break;
+			        case bend_leftHigh:
+                        range = NormalisableRange<float> (-90.0f, 0.0f, 1.0f);
+                        defVal = -20.0f;
+                        break;
+			        case bend_rightLow:
+                        range = NormalisableRange<float> (0.0f, 90.0f, 1.0f);
+                        defVal = 30.0f;
+                        break;
+			        case bend_rightHigh:
+                        range = NormalisableRange<float> (0.0f, 90.0f, 1.0f);
+                        defVal = 60.0f;
+                        break;
+			        case roll_low:
+			        case tilt_low:
+                        range = NormalisableRange<float> (-90.0f, 90.0f, 1.0f);
+                        defVal = 0.0f;
+                        break;
+			        case roll_high:
+			        case tilt_high:
+                        range = NormalisableRange<float> (-90.0f, 90.0f, 1.0f);
+                        defVal = 50.0f;
+                        break;
+					case midi_cc:
+						range = NormalisableRange<float>(0.0f, 127.0f, 1.0f);
+						defVal = 1.0f;
+						break;
+			        default:
+                        range = NormalisableRange<float> (0.0f, 1.0f, 0.001f);
+                        break;
+                }
+				
+                parameters.createAndAddParameter (std::make_unique<AudioParameterFloat> (String(gest) + paramIds[i],
+                                                                                         String(gest) + paramIds[i],
+                                                                                         range,
+                                                                                         defVal));
+            }
+        }
+    }
 }

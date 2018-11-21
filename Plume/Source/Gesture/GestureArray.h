@@ -11,6 +11,8 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "Common/PlumeCommon.h"
+
 #include "DataReader/DataReader.h"
 #include "Gesture/Gesture.h"
 #include "Gesture/Vibrato.h"
@@ -28,7 +30,7 @@ class GestureArray	: public ChangeListener,
                       public ChangeBroadcaster
 {
 public:
-    GestureArray(DataReader& reader);
+    GestureArray(DataReader& reader, AudioProcessorValueTreeState& params);
     ~GestureArray();
 
     //==============================================================================
@@ -86,7 +88,7 @@ public:
      *  The method will search the array at specified id. If the id is in range, returns a pointer to the Gesture.
      *  If the id is not in range, returns nullptr. You should check the return value after using this method!
      *
-     *  \param nameToSearch Name of the Gesture to look for.
+     *  \param idToSearch Id of the Gesture to look for.
      *  \return Pointer to the searched Gesture object, or nullptr if not found.
      */
     Gesture* getGestureById(const int idToSearch);
@@ -131,7 +133,7 @@ public:
      *  This method will create, add and enable a new Gesture object at the end of the array.
      *  The Gesture will have the specified name and type (chosen with the GestureType enum).
      */
-    void addGesture (String gestureName, int gestureType);
+    void addGesture (String gestureName, int gestureType, int gestureId);
     
     /**
      *  \brief Method to add a parameter to the gesture in mapMode.
@@ -224,4 +226,5 @@ private:
     //==============================================================================
     OwnedArray<Gesture> gestures; /**< \brief OwnedArray that holds all gesture objects*/
     DataReader& dataReader; /**< \brief Reference to the data reader object, to access the raw data from the ring*/
+    AudioProcessorValueTreeState& parameters;
 };
