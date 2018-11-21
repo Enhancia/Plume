@@ -22,8 +22,13 @@ Roll::Roll (String gestName, int gestId, AudioProcessorValueTreeState& plumePara
       rangeLow  (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::roll_low]))),
       rangeHigh (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::roll_high])))
 {
+    rangeLow.beginChangeGesture();
 	rangeLow.setValueNotifyingHost (rangeLow.convertTo0to1 (lowValue));
+    rangeLow.endChangeGesture();
+    
+    rangeHigh.beginChangeGesture();
 	rangeHigh.setValueNotifyingHost (rangeHigh.convertTo0to1 (highValue));
+    rangeHigh.endChangeGesture();
 }
 
 Roll::~Roll()

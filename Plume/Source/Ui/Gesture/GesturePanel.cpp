@@ -202,7 +202,7 @@ public:
         onOffButton->setToggleState (gesture.isActive(), dontSendNotification);
         gestTuner->updateComponents();
         gestMapper->updateComponents();
-        repaint();
+        //repaint();
     }
     
 private:
@@ -282,7 +282,7 @@ void GesturePanel::paint (Graphics& g)
 
 void GesturePanel::resized()
 {
-    int gestureHeight = (getHeight() - (PLUME::NUM_GEST - 1) * 2*MARGIN) / PLUME::NUM_GEST; // gets the height of each gesture component
+    int gestureHeight = (getHeight() - (PLUME::NUM_GEST - 1) * MARGIN) / PLUME::NUM_GEST; // gets the height of each gesture component
     
     for (int i=0; i<gestureComponents.size(); i++)
     {
@@ -293,7 +293,7 @@ void GesturePanel::resized()
 
 void GesturePanel::initialize()
 {  
-	int gestureHeight = (getHeight() - (PLUME::NUM_GEST - 1) * 2 * MARGIN) / PLUME::NUM_GEST; // gets the height of each gesture component
+	//int gestureHeight = (getHeight() - (PLUME::NUM_GEST - 1) * 2 * MARGIN) / PLUME::NUM_GEST; // gets the height of each gesture component
 
     for (auto* gesture : gestureArray.getArray())
     {
@@ -309,7 +309,7 @@ void GesturePanel::addGestureComponent (Gesture& gest)
     {
         addAndMakeVisible (gestureComponents.getLast());
 
-		int gestureHeight = (getHeight() - (PLUME::NUM_GEST - 1) * 2 * MARGIN) / PLUME::NUM_GEST; // gets the height of each gesture component4
+		int gestureHeight = (getHeight() - (PLUME::NUM_GEST - 1) * MARGIN) / PLUME::NUM_GEST; // gets the height of each gesture component4
         gestureComponents.getLast()->setBounds (0, gest.id * (gestureHeight + MARGIN), getWidth(), gestureHeight);
     
     

@@ -12,13 +12,13 @@
 
 namespace PLUME
 {
-    const int NUM_GEST = 4;
+    const int NUM_GEST = 3;
     
     namespace UI
     {
         // Default settings
         const int DEFAULT_WINDOW_WIDTH = 800;
-        const int DEFAULT_WINDOW_HEIGHT = 450;
+        const int DEFAULT_WINDOW_HEIGHT = jmin (NUM_GEST*150, 800);
     
         // Display settings
         const int MARGIN = 8;

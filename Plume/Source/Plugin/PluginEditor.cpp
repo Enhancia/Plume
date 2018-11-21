@@ -75,7 +75,7 @@ void PlumeEditor::resized()
 {
 	wrapperComp->setBounds(MARGIN, MARGIN, getWidth() * 3 / 4, TOP_PANEL);
 	presetComp->setBounds(getWidth() * 3 / 4 + 2 * MARGIN, MARGIN, getWidth() - getWidth() * 3 / 4 - 3 * MARGIN, TOP_PANEL);
-	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 3 * MARGIN, getWidth() - 4 * MARGIN, getHeight() - TOP_PANEL - 4 * MARGIN);
+	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 3 * MARGIN, getWidth() - 4 * MARGIN, getHeight() - TOP_PANEL - 5 * MARGIN);
 	resizableCorner->setBounds (getWidth() - 20, getHeight() - 20, 20, 20);
 }
 
@@ -121,7 +121,7 @@ void PlumeEditor::updateFullInterface()
 
     addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
 	                                                    processor.getParameterTree(), PLUME::UI::FRAMERATE));
-	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 3 * MARGIN, getWidth() - 4 * MARGIN, getHeight() - TOP_PANEL - 3 * MARGIN);
+	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 3 * MARGIN, getWidth() - 4 * MARGIN, getHeight() - TOP_PANEL - 5 * MARGIN);
 	
 	PLUME::UI::ANIMATE_UI_FLAG = true;
 }

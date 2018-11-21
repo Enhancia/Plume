@@ -22,8 +22,13 @@ Tilt::Tilt (String gestName, int gestId, AudioProcessorValueTreeState& plumePara
       rangeLow  (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::tilt_low]))),
       rangeHigh (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::tilt_high])))
 {
+    rangeLow.beginChangeGesture();
 	rangeLow.setValueNotifyingHost (rangeLow.convertTo0to1 (lowValue));
+    rangeLow.endChangeGesture();
+    
+    rangeHigh.beginChangeGesture();
 	rangeHigh.setValueNotifyingHost (rangeHigh.convertTo0to1 (highValue));
+    rangeHigh.endChangeGesture();
 }
 
 Tilt::~Tilt()

@@ -493,7 +493,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Source\Common\Flags.cpp">
+    <ClCompile Include="..\..\Source\Common\PlumeCommon.cpp">
       <Filter>Plume\Source\Common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\DataReader\DataReader.cpp">

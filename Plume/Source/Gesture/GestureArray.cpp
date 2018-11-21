@@ -33,7 +33,7 @@ void GestureArray::initializeGestures()
     addGesture ("Vibrato_Default", Gesture::vibrato, 0);
     addGesture ("PitchBend_Default", Gesture::pitchBend, 1);
     addGesture ("Tilt_Default", Gesture::tilt, 2);
-    addGesture ("Roll_Default", Gesture::roll, 3);
+    //addGesture ("Roll_Default", Gesture::roll, 3);
 }
 //==============================================================================
 void GestureArray::process (MidiBuffer& midiMessages)

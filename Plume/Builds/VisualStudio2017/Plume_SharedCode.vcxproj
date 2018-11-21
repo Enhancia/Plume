@@ -136,7 +136,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Source\Common\Flags.cpp"/>
+    <ClCompile Include="..\..\Source\Common\PlumeCommon.cpp"/>
     <ClCompile Include="..\..\Source\DataReader\DataReader.cpp"/>
     <ClCompile Include="..\..\Source\Gesture\GestureArray.cpp"/>
     <ClCompile Include="..\..\Source\Gesture\PitchBend.cpp"/>

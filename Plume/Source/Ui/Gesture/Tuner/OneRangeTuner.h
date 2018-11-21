@@ -91,7 +91,7 @@ public:
 		    rangeLabelMin->setText (String (int (getRangeLow())) + valueUnit, dontSendNotification);
 		    rangeLabelMax->setText (String (int (getRangeHigh())) + valueUnit, dontSendNotification);
 		
-		    repaint();
+		    //repaint();
         }
     }
     

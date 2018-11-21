@@ -136,7 +136,6 @@ public:
         ccLabel->setText (String (gesture.getCc()), dontSendNotification);
         rangeLabelMin->setText (String (gesture.midiLow.getValue(), 2), dontSendNotification);
 		rangeLabelMax->setText (String (gesture.midiHigh.getValue(), 2), dontSendNotification);
-        
     }
 
 private:

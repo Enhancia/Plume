@@ -107,6 +107,11 @@ void WrapperComponent::scanPlugin()
         DBG ("successful scan: "<< pluginScanner.getResult().getFileName());
         
         PLUME::UI::ANIMATE_UI_FLAG = false;
+        
+        if (wrapper.isWrapping())
+        {
+            wrapper.unwrapPlugin();
+        }
         // Tries to wrap the plugin. If successful changes the label and opens the editor
         if (wrapper.wrapPlugin (pluginScanner.getResult()))
         {

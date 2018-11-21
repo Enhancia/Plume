@@ -163,6 +163,7 @@ void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
 	if (wrapperData == nullptr)
 	{
 		DBG ("Couldn't load data");
+	    PLUME::UI::ANIMATE_UI_FLAG = true;
 		return;
 	}
     
@@ -186,6 +187,7 @@ void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
     
     // Sends a change message to the editor so it can update its interface.
     if (notifyEditor) sendActionMessage ("updateInterface");
+    else PLUME::UI::ANIMATE_UI_FLAG = true;
 
     wrapperData = nullptr;
 }

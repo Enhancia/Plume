@@ -32,10 +32,21 @@ PitchBend::PitchBend (String gestName, int gestId, AudioProcessorValueTreeState&
       rangeRightLow  (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::bend_rightLow]))),
       rangeRightHigh (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::bend_rightHigh])))
 {
+    rangeLeftLow.beginChangeGesture();
     rangeLeftLow.setValueNotifyingHost   (rangeLeftLow.convertTo0to1 (leftLow));
+    rangeLeftLow.endChangeGesture();
+    
+    rangeLeftHigh.beginChangeGesture();
 	rangeLeftHigh.setValueNotifyingHost  (rangeLeftHigh.convertTo0to1 (leftHigh));
+    rangeLeftHigh.endChangeGesture();
+	
+	rangeRightLow.beginChangeGesture();
 	rangeRightLow.setValueNotifyingHost  (rangeRightLow.convertTo0to1 (rightLow));
+    rangeRightLow.endChangeGesture();
+    
+    rangeRightHigh.beginChangeGesture();
 	rangeRightHigh.setValueNotifyingHost (rangeRightHigh.convertTo0to1 (rightHigh));
+    rangeRightHigh.endChangeGesture();
 }
 
 PitchBend::~PitchBend()
