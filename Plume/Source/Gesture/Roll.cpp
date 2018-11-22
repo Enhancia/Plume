@@ -36,7 +36,7 @@ Roll::~Roll()
 }
     
 //==============================================================================
-void Roll::addGestureMidi (MidiBuffer& midiMessages)
+void Roll::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 {
     // Checks if Gesture is on and if value is within the right range
     if (on.getValue() == 0.0f || value >= 120.0f || value <= -120.0f)
@@ -46,11 +46,11 @@ void Roll::addGestureMidi (MidiBuffer& midiMessages)
     
     if (isMidiMapped())
     {
-        addMidiModeSignalToBuffer (midiMessages, getMidiValue(), 0, 127, 1);
+        addMidiModeSignalToBuffer (midiMessages, plumeBuffer, getMidiValue(), 0, 127, 1);
     }
     else
     {
-        //addEventAndMergeCCToBuffer (midiMessages, getMidiValue(), 1, 1);
+        //addEventAndMergeCCToBuffer (midiMessages, plumeBuffer, getMidiValue(), 1, 1);
     }
 }
 

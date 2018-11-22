@@ -20,7 +20,7 @@ Wave::Wave (String gestName)  : Gesture (gestName, Gesture::wave, gestId, Range<
 }
     
 //==============================================================================
-void Wave::addGestureMidi (MidiBuffer& midiMessages)
+void Wave::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 {
 }
 

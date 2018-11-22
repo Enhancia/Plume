@@ -28,7 +28,7 @@ public:
     ~Vibrato();
     
     //==============================================================================
-    void addGestureMidi(MidiBuffer& midiMessages) override;
+    void addGestureMidi(MidiBuffer& midiMessages, MidiBuffer& plumeBuffer) override;
     int getMidiValue () override;
     
     void updateMappedParameters() override;

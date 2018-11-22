@@ -36,14 +36,14 @@ void GestureArray::initializeGestures()
     //addGesture ("Roll_Default", Gesture::roll, 3);
 }
 //==============================================================================
-void GestureArray::process (MidiBuffer& midiMessages)
+void GestureArray::process (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 {
     // adds midi to buffer and updates parameters
-    addGestureMidiToBuffer(midiMessages);
+    addGestureMidiToBuffer(midiMessages, plumeBuffer);
     updateAllMappedParameters();
 }
 
-void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages)
+void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 {
     if (shouldMergePitch)
     {
@@ -52,12 +52,12 @@ void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages)
         {
             if (g->affectsPitch() == false && ( g->isMapped() == false || (g->isMidiMapped() == true && g->midiType != Gesture::pitch)))
             {
-                g->addGestureMidi (midiMessages);
+                g->addGestureMidi (midiMessages, plumeBuffer);
             }
         }
         
         // Adds pitch midi
-        addMergedPitchMessage(midiMessages);
+        addMergedPitchMessage(midiMessages, plumeBuffer);
     }
     
     else
@@ -67,7 +67,7 @@ void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages)
         {
             if (g->isMapped() == false || g->isMidiMapped() == true)
             {
-                g->addGestureMidi (midiMessages);
+                g->addGestureMidi (midiMessages, plumeBuffer);
             }
         }
     }
@@ -273,7 +273,7 @@ void GestureArray::checkPitchMerging()
 }
 
 
-void GestureArray::addMergedPitchMessage (MidiBuffer& midiMessages)
+void GestureArray::addMergedPitchMessage (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 {
     int pitchVal = 8192;
     bool send = false;
@@ -301,7 +301,7 @@ void GestureArray::addMergedPitchMessage (MidiBuffer& midiMessages)
 				{
 					gestValue = vib->getMidiValue();
 
-					if (vib->getSend() == true)
+					if (vib->getSend())
 					{
 						send = true;
 						pitchVal += gestValue - 8192;
@@ -316,7 +316,7 @@ void GestureArray::addMergedPitchMessage (MidiBuffer& midiMessages)
 				{
 					gestValue = pb->getMidiValue();
 
-					if (pb->getSend() == true)
+					if (pb->getSend())
 					{
 						send = true;
 						pitchVal += gestValue - 8192;
@@ -325,14 +325,14 @@ void GestureArray::addMergedPitchMessage (MidiBuffer& midiMessages)
             }
         }
     }
-    if (send == false) return; // Does nothing if no pitch midi should be sent
+    if (!send) return; // Does nothing if no pitch midi should be sent
     
     // Limits the value to be inbounds
     if (pitchVal > 16383) pitchVal = 16383;
     else if (pitchVal < 0) pitchVal = 0;
     
 	// Creates the midi message and adds it to the buffer
-    Gesture::addEventAndMergePitchToBuffer (midiMessages, pitchVal, 1);
+    Gesture::addEventAndMergePitchToBuffer (midiMessages, plumeBuffer, pitchVal, 1);
 }
 
 //==============================================================================

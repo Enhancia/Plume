@@ -134,7 +134,7 @@ public:
      *
      *  \param midiMessages Reference to a MidiBuffer on which the messages should be added. 
      */
-    virtual void addGestureMidi (MidiBuffer& midiMessages) =0;
+    virtual void addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer) =0;
     
     /**
      *  \brief Method that returns the value that would be used to create a MIDI message.
@@ -184,7 +184,7 @@ public:
      *
      *  \param midiMessages Reference to a MidiBuffer in which the pitch messages will be changed. 
      */
-    static void addEventAndMergePitchToBuffer (MidiBuffer& midiMessages, int midiValue, int channel/*, int& basePitch*/)
+    static void addEventAndMergePitchToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int midiValue, int channel)
     {
         MidiBuffer newBuff;
         int time;
@@ -193,13 +193,7 @@ public:
         for (MidiBuffer::Iterator i (midiMessages); i.getNextEvent (m, time);)
         {
             if (m.isPitchWheel()) // checks for pitch wheel events
-            {
-                // Changes the reference to the event's pitch message value
-                //basePitch = m.getPitchWheelValue();
-                
-                // Creates a pitch message with the right value
-                //int newVal = basePitch - 8192 + midiValue;
-                
+            {   
                 int newVal = m.getPitchWheelValue() - 8192 + midiValue;
                 if (newVal < 0) newVal = 0;
                 else if (newVal > 16383) newVal = 16383;
@@ -211,15 +205,10 @@ public:
             
             newBuff.addEvent (m, time);
         }
-        /*
-        // Computes the right value (uses midi value along with basePitch)
-        midiValue = basePitch - 8192 + midiValue;
-        if (midiValue < 0) midiValue = 0;
-        else if (midiValue > 16383) midiValue = 16383;
-        */
         
         // Adds gesture's initial midi message
         newBuff.addEvent (MidiMessage::pitchWheel (channel, midiValue), 1);
+        plumeBuffer.addEvent (MidiMessage::pitchWheel (channel, midiValue), 1);
         
         midiMessages.swapWith (newBuff);
     }
@@ -233,7 +222,7 @@ public:
      *
      *  \param midiMessages Reference to a MidiBuffer in which the modWheel messages will be changed.
      */
-    static void addEventAndMergeCCToBuffer (MidiBuffer& midiMessages, int midiValue, int ccValue, int channel)
+    static void addEventAndMergeCCToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int midiValue, int ccValue, int channel)
     {
         MidiBuffer newBuff;
         int time;
@@ -255,6 +244,7 @@ public:
         
         // Adds gesture's initial cc message
         newBuff.addEvent (MidiMessage::controllerEvent (channel, ccValue, midiValue), 1);
+        plumeBuffer.addEvent (MidiMessage::controllerEvent (channel, ccValue, midiValue), 1);
         
         midiMessages.swapWith (newBuff);
     }
@@ -268,7 +258,7 @@ public:
      *
      *  \param midiMessages Reference to a MidiBuffer in which the modWheel messages will be changed.
      */
-    static void addEventAndMergeAfterTouchToBuffer (MidiBuffer& midiMessages, int midiValue, int channel)
+    static void addEventAndMergeAfterTouchToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int midiValue, int channel)
     {
         MidiBuffer newBuff;
         int time;
@@ -301,7 +291,7 @@ public:
         
         // Adds gesture's initial cc message
         newBuff.addEvent (MidiMessage::channelPressureChange (channel, midiValue), 1);
-        DBG ("AT Value: " << midiValue);
+        plumeBuffer.addEvent (MidiMessage::channelPressureChange (channel, midiValue), 1);
         
         midiMessages.swapWith (newBuff);
     }
@@ -697,7 +687,7 @@ protected:
      *  \param midiMin maximum of "value"'s range. Can be 127 or 16383.
      *  \param channel midi channel.
      */
-    void addMidiModeSignalToBuffer (MidiBuffer& midiMessages, int value, int midiMin, int midiMax, int channel)
+    void addMidiModeSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int value, int midiMin, int midiMax, int channel)
     {
 		if (!isMidiMapped()) return; //Does nothing if not in midi map mode
 
@@ -711,7 +701,7 @@ protected:
                                   map (midiLow.getValue(), 0.0f, 1.0f, 0, 16383),
                                   map (midiHigh.getValue(),   0.0f, 1.0f, 0, 16383));
                                   
-                addEventAndMergePitchToBuffer (midiMessages, newMidi, channel);
+                addEventAndMergePitchToBuffer (midiMessages, plumeBuffer, newMidi, channel);
                 break;
             
 			case (Gesture::controlChange):
@@ -719,7 +709,7 @@ protected:
                                   map (midiLow.getValue(), 0.0f, 1.0f, 0, 127),
                                   map (midiHigh.getValue(),   0.0f, 1.0f, 0, 127));
                                   
-                addEventAndMergeCCToBuffer (midiMessages, newMidi, getCc(), channel);
+                addEventAndMergeCCToBuffer (midiMessages, plumeBuffer, newMidi, getCc(), channel);
                 break;
             
 			case (Gesture::afterTouch):
@@ -727,7 +717,7 @@ protected:
                                   map (midiLow.getValue(), 0.0f, 1.0f, 0, 127),
                                   map (midiHigh.getValue(),   0.0f, 1.0f, 0, 127));
                                   
-                addEventAndMergeAfterTouchToBuffer (midiMessages, newMidi, channel);
+                addEventAndMergeAfterTouchToBuffer (midiMessages, plumeBuffer, newMidi, channel);
                 break;
             
             default:

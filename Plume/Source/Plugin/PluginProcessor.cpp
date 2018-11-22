@@ -96,10 +96,10 @@ bool PlumeProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 
 void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {   
-    //midiBuffer plumeBuffer;
+    MidiBuffer plumeBuffer;
     
     // Adds the gesture's MIDI messages to the buffer, and changes parameters if needed
-    gestureArray->process (midiMessages);
+    gestureArray->process (midiMessages, plumeBuffer);
         
     // if wrapped plugin, lets the wrapped plugin process all MIDI into sound
     if (wrapper->isWrapping())
@@ -108,8 +108,8 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
         wrapper->getWrapperProcessor().processBlock(buffer, midiMessages);
     }
     
-    // returns only the midi from NEOVA
-    //midiMessages.swapWith (plumeBuffer);
+    // returns only the midi from Plume
+    midiMessages = plumeBuffer;
 }
 
 //==============================================================================

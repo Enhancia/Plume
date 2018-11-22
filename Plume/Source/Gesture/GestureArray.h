@@ -42,7 +42,7 @@ public:
      *  This method is called by the processor processBlock() method to create Neova's effects. It will use
      *  addGestureMidiToBuffer() or updateAllMappedParameters
      */
-    void process (MidiBuffer& MidiMessages);
+    void process (MidiBuffer& MidiMessages, MidiBuffer& plumeBuffer);
     
     /**
      *  \brief Method that creates the Midi for each gesture and adds it to the parameter buffer.
@@ -50,7 +50,7 @@ public:
      *  This method is called by the process() method to create Neova's MIDI. It uses each gesture
      *  Gesture::addGestureMidi() method.
      */
-    void addGestureMidiToBuffer (MidiBuffer& midiMessages);
+    void addGestureMidiToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer);
     
     /**
      *  \brief Method that changes the value of every mapped parameter.
@@ -209,7 +209,7 @@ private:
      *
      *  
      */
-    void addMergedPitchMessage (MidiBuffer& midiMessages);
+    void addMergedPitchMessage (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer);
     
     //==============================================================================
     /**

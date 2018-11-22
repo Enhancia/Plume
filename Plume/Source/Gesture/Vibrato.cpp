@@ -36,7 +36,7 @@ Vibrato::~Vibrato()
 }
     
 //==============================================================================
-void Vibrato::addGestureMidi (MidiBuffer& midiMessages)
+void Vibrato::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 {
     if (on.getValue() == 0.0f) return; // does nothing if the gesture is inactive
     
@@ -47,12 +47,12 @@ void Vibrato::addGestureMidi (MidiBuffer& midiMessages)
         // Creates the control change message
         if (isMidiMapped())
         {
-            addMidiModeSignalToBuffer (midiMessages, vibVal, 0, 127, 1);
+            addMidiModeSignalToBuffer (midiMessages, plumeBuffer, vibVal, 0, 127, 1);
         }
         // Creates the pitchwheel message
         else
         {
-            addEventAndMergePitchToBuffer (midiMessages, vibVal, 1/*, pitchReference*/);
+            addEventAndMergePitchToBuffer (midiMessages, plumeBuffer, vibVal, 1/*, pitchReference*/);
         }
     }
 }
