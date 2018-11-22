@@ -281,8 +281,12 @@ void MapperComponent::updateComponents()
 	
     midiModeComp->updateComponents();
 	setAlphas();
-    getParentComponent()->repaint(); // repaints the whole gesture area
-    repaint(); // repaints mapper component
+	
+    if (PLUME::UI::ANIMATE_UI_FLAG)
+    {
+        getParentComponent()->repaint(); // repaints the whole gesture area
+        repaint(); // repaints mapper component
+    }
 }
 
 void MapperComponent::initializeParamCompArray()

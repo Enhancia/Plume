@@ -81,7 +81,7 @@ public:
     
     void updateComponents() override
     {
-        if (rangeLow.getValue() < rangeHigh.getValue())
+        if (rangeLow.getValue() < rangeHigh.getValue() && rangeSlider->getThumbBeingDragged() == -1)
         {
             // Sets slider value
             rangeSlider->setMinValue (double (getRangeLow()), dontSendNotification);
@@ -145,8 +145,11 @@ public:
 		    rangeLabelMin->setText (String (int (getRangeLow())) + valueUnit, dontSendNotification);
 		    
 		    // in case the other thumb is dragged along..
-		    rangeHigh.setValue (rangeHigh.convertTo0to1 (float (sldr->getMaxValue())));
-			rangeLabelMax->setText (String (float (sldr->getMaxValue())) + valueUnit, dontSendNotification);
+		    if (rangeLow.getValue() > rangeHigh.getValue())
+		    {
+		        setRangeHigh (float (sldr->getMaxValue()));
+			    rangeLabelMax->setText (String (float (sldr->getMaxValue())) + valueUnit, dontSendNotification);
+		    }
 		}
 
 		// max value changed by user
@@ -156,8 +159,11 @@ public:
 		    rangeLabelMax->setText (String (int (getRangeHigh())) + valueUnit, dontSendNotification);
 		    
 		    // in case the other thumb is dragged along..
-		    rangeLow.setValue (rangeLow.convertTo0to1 (float (sldr->getMinValue())));
-			rangeLabelMin->setText (String (float (sldr->getMinValue())) + valueUnit, dontSendNotification);
+		    if (rangeLow.getValue() > rangeHigh.getValue())
+		    {
+		        setRangeLow (float (sldr->getMinValue()));
+			    rangeLabelMin->setText (String (float (sldr->getMinValue())) + valueUnit, dontSendNotification);
+		    }
 		}
     }
     

@@ -72,14 +72,17 @@ public:
     
     void updateComponents() override
     {
-        // Sets slider value
-        symmetricalSlider->setMinValue (double (-parameter.convertFrom0to1 (parameter.getValue())), dontSendNotification);
-        symmetricalSlider->setMaxValue (double (parameter.convertFrom0to1 (parameter.getValue())), dontSendNotification);
+        if (symmetricalSlider->getThumbBeingDragged() == -1)
+        {
+            // Sets slider value
+            symmetricalSlider->setMinValue (double (-parameter.convertFrom0to1 (parameter.getValue())), dontSendNotification);
+            symmetricalSlider->setMaxValue (double (parameter.convertFrom0to1 (parameter.getValue())), dontSendNotification);
         
-        // Sets label text
-        rangeLabel->setText (String (int (parameter.convertFrom0to1 (parameter.getValue()))), dontSendNotification);
+            // Sets label text
+            rangeLabel->setText (String (int (parameter.convertFrom0to1 (parameter.getValue()))), dontSendNotification);
         
-        repaint();
+            //repaint();
+        }
     }
     
     //==============================================================================

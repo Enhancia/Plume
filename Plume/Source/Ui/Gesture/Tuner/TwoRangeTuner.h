@@ -100,7 +100,7 @@ public:
     
     void updateComponents() override
     {
-        if (rangeLeftLow.getValue() < rangeLeftHigh.getValue())
+        if (rangeLeftLow.getValue() < rangeLeftHigh.getValue() && rangeSliderLeft->getThumbBeingDragged() == -1)
         {
             // Sets slider value
             rangeSliderLeft->setMinValue (double (getRangeLeftLow()), dontSendNotification);
@@ -111,7 +111,7 @@ public:
             rangeLabelMaxLeft->setText (String (int (getRangeLeftHigh())) + valueUnit, dontSendNotification);
         }
         
-        if (rangeRightLow.getValue() < rangeRightHigh.getValue())
+        if (rangeRightLow.getValue() < rangeRightHigh.getValue() && rangeSliderRight->getThumbBeingDragged() == -1)
         {
             // Sets slider value
             rangeSliderRight->setMaxValue (double (getRangeRightHigh()), dontSendNotification);
@@ -122,7 +122,7 @@ public:
             rangeLabelMaxRight->setText (String (int (getRangeRightHigh())) + valueUnit, dontSendNotification);
         }
         
-        repaint();
+        //repaint();
     }
     
     //==============================================================================
@@ -190,26 +190,33 @@ public:
     {
         if (sldr == rangeSliderLeft)
         {
-            // min left value changed
+			// min left value changed
 		    if (sldr->getThumbBeingDragged() == 1)
 		    {
 		        setRangeLeftLow (float (sldr->getMinValue()));
-		        rangeLabelMinLeft->setText (String (int (getRangeLeftLow())) + valueUnit, sendNotification);
+		        rangeLabelMinLeft->setText (String (int (getRangeLeftLow())) + valueUnit, dontSendNotification);
 		        
 		        // in case the other thumb is dragged along..
-		        setRangeLeftHigh (float (sldr->getMaxValue()));
-		        rangeLabelMaxLeft->setText (String (int (getRangeLeftHigh())) + valueUnit, dontSendNotification);
+				if (rangeLeftLow.getValue() > rangeLeftHigh.getValue())
+				{
+					setRangeLeftHigh (float(sldr->getMaxValue()));
+					rangeLabelMaxLeft->setText(String(int(getRangeLeftHigh())) + valueUnit, dontSendNotification);
+				}
+					
 		    }
 
 		    // max left value changed
 		    else if (sldr->getThumbBeingDragged() == 2)
 		    {
 			    setRangeLeftHigh (float (sldr->getMaxValue()));
-		        rangeLabelMaxLeft->setText (String (int (getRangeLeftHigh())) + valueUnit, sendNotification);
+		        rangeLabelMaxLeft->setText (String (int (getRangeLeftHigh())) + valueUnit, dontSendNotification);
 		        
 		        // in case the other thumb is dragged along..
-		        setRangeLeftLow (float (sldr->getMinValue()));
-		        rangeLabelMinLeft->setText (String (int (getRangeLeftLow())) + valueUnit, dontSendNotification);
+				if (rangeLeftLow.getValue() > rangeLeftHigh.getValue())
+				{
+					setRangeLeftLow (float(sldr->getMinValue()));
+					rangeLabelMinLeft->setText(String(int(getRangeLeftLow())) + valueUnit, dontSendNotification);
+				}
 		    }
         }
         
@@ -219,22 +226,28 @@ public:
 		    if (sldr->getThumbBeingDragged() == 1)
 		    {
 			    setRangeRightLow (float (sldr->getMinValue()));
-		        rangeLabelMinRight->setText (String (int (getRangeRightLow())) + valueUnit, sendNotification);
+		        rangeLabelMinRight->setText (String (int (getRangeRightLow())) + valueUnit, dontSendNotification);
 		        
 		        // in case the other thumb is dragged along..
-		        setRangeRightHigh (float (sldr->getMaxValue()));
-		        rangeLabelMaxRight->setText (String (int (getRangeRightHigh())) + valueUnit, dontSendNotification);
+				if (rangeRightLow.getValue() > rangeRightHigh.getValue())
+				{
+					setRangeRightHigh (float(sldr->getMaxValue()));
+					rangeLabelMaxRight->setText(String(int(getRangeRightHigh())) + valueUnit, dontSendNotification);
+				}
 		    }
 
 		    // max right value changed
 		    else if (sldr->getThumbBeingDragged() == 2)
 		    {
 			    setRangeRightHigh (float (sldr->getMaxValue()));
-		        rangeLabelMaxRight->setText (String (int (getRangeRightHigh())) + valueUnit, sendNotification);
+		        rangeLabelMaxRight->setText (String (int (getRangeRightHigh())) + valueUnit, dontSendNotification);
 		        
 		        // in case the other thumb is dragged along..
-		        setRangeRightLow (float (sldr->getMinValue()));
-		        rangeLabelMinRight->setText (String (int (getRangeRightLow())) + valueUnit, dontSendNotification);
+				if (rangeRightLow.getValue() > rangeRightHigh.getValue())
+				{
+					setRangeRightLow (float(sldr->getMinValue()));
+					rangeLabelMinRight->setText(String(int(getRangeRightLow())) + valueUnit, dontSendNotification);
+				}
 		    }
         }
     }
