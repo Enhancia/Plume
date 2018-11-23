@@ -59,7 +59,8 @@ namespace PLUME
     {
 		enum
 		{
-			on = 0,
+		    value =0,
+			on,
 			midi_on,
 			midi_cc,
 			midi_low,
@@ -80,6 +81,7 @@ namespace PLUME
         
         const String paramIds[] = {
         
+            "_value",
             "_on",
             "_midi_on",
             "_midi_cc",

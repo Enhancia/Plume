@@ -37,13 +37,9 @@ public:
     //==============================================================================
     void updateValue (const Array<float> rawData) override;
     
-    //==============================================================================
-    // Attributes that will be referenced to the Tuner component.
-    // Might want to replace them with audio processor parameters in the future.
-    
+    //============================================================================== 
     RangedAudioParameter& rangeLow; /**< \brief Tilt's low range value. The full effect will happend between this and rangeHigh. */
 	RangedAudioParameter& rangeHigh; /**< \brief Tilt's high range value. The full effect will happend between rangeLow and this. */
-    
-    //Range<float> range; /**< \brief Tilt's range. The full effect will happend between the two values. */
+	
 private:
 };

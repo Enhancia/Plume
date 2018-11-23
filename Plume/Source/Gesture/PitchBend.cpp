@@ -20,7 +20,7 @@ using namespace PLUME;
 PitchBend::PitchBend (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
                       float leftLow, float leftHigh, float rightLow, float rightHigh)
                       
-    : Gesture (gestName, Gesture::pitchBend, gestId, Range<float> (PITCHBEND_MIN, PITCHBEND_MAX),
+    : Gesture (gestName, Gesture::pitchBend, gestId, NormalisableRange<float> (PITCHBEND_MIN, PITCHBEND_MAX, 0.1f),
 		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::on])),
 		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::midi_on])),
 		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::midi_cc])),
@@ -202,5 +202,5 @@ bool PitchBend::getSend()
 //==============================================================================
 void PitchBend::updateValue (const Array<float> rawData)
 {
-    value = -rawData[5];
+    setGestureValue (-rawData[5]);
 }

@@ -12,7 +12,8 @@
 using namespace PLUME;
 
 Vibrato::Vibrato (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters, float val, float thresh)
-    : Gesture (gestName, Gesture::vibrato, gestId, Range<float> (0, VIBRATO_RANGE_MAX),
+    : Gesture (gestName, Gesture::vibrato, gestId, NormalisableRange<float> (0.0f, VIBRATO_RANGE_MAX, 0.1f),
+		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::value])),
 		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::on])),
 		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::midi_on])),
 		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::midi_cc])),

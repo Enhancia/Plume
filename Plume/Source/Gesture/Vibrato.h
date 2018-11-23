@@ -41,9 +41,6 @@ public:
     bool getSend(); /**< \brief Getter for the send boolean value */
     
     //==============================================================================
-    // Attributes that will be referenced to the Tuner component.
-    // Might want to replace them with audio processor parameters in the future.
-    
     RangedAudioParameter& gain; /**< threshold used to trigger the effect*/
 	RangedAudioParameter& threshold; /**< Sensibility of the vibrato. From 0.0f (no effect) to 500.0f (maximum effect)*/
     

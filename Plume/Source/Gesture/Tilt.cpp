@@ -12,7 +12,8 @@
 using namespace PLUME;
 
 Tilt::Tilt (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters, float lowValue, float highValue)
-    : Gesture (gestName, Gesture::tilt, gestId, Range<float> (TILT_MIN, TILT_MAX),
+    : Gesture (gestName, Gesture::tilt, gestId, NormalisableRange<float> (TILT_MIN, TILT_MAX, 0.1f),
+		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::value])),
 		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::on])),
 		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::midi_on])),
 		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::midi_cc])),
