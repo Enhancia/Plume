@@ -25,6 +25,21 @@ namespace PLUME
         const int FRAMERATE = 60;
         
         extern bool ANIMATE_UI_FLAG;
+        
+        const float VIBRATO_DISPLAY_MAX  = 500.0f;
+        const float VIBRATO_THRESH_DISPLAY_MAX = 300.0f;
+    
+        const float PITCHBEND_DISPLAY_MIN = -90.0f;
+        const float PITCHBEND_DISPLAY_MAX =  90.0f;
+    
+        const float TILT_DISPLAY_MIN = -90.0f;
+        const float TILT_DISPLAY_MAX =  90.0f;
+    
+        const float ROLL_DISPLAY_MIN = -90.0f;
+        const float ROLL_DISPLAY_MAX =  90.0f;
+    
+        const float WAVE_DISPLAY_MIN = -90.0f;
+        const float WAVE_DISPLAY_MAX =  90.0f;
     }
     
     // Value tree identifiers
@@ -41,17 +56,17 @@ namespace PLUME
     const float VIBRATO_RANGE_MAX  = 500.0f;
     const float VIBRATO_THRESH_MAX = 300.0f;
     
-    const float PITCHBEND_MIN = -90.0f;
-    const float PITCHBEND_MAX =  90.0f;
+    const float PITCHBEND_MIN = -180.0f;
+    const float PITCHBEND_MAX =  180.0f;
     
-    const float TILT_MIN = -90.0f;
-    const float TILT_MAX =  90.0f;
+    const float TILT_MIN = -180.0f;
+    const float TILT_MAX =  180.0f;
     
-    const float ROLL_MIN = -90.0f;
-    const float ROLL_MAX =  90.0f;
+    const float ROLL_MIN = -180.0f;
+    const float ROLL_MAX =  180.0f;
     
-    const float WAVE_MIN = -90.0f;
-    const float WAVE_MAX =  90.0f;
+    const float WAVE_MIN = -180.0f;
+    const float WAVE_MAX =  180.0f;
     
     
     // parameter suffixs
@@ -59,12 +74,14 @@ namespace PLUME
     {
 		enum
 		{
-			on = 0,
+		    value =0,
+			on,
 			midi_on,
 			midi_cc,
 			midi_low,
 			midi_high,
 			vibrato_range,
+			vibrato_intensity,
 			vibrato_thresh,
 			bend_leftLow,
 			bend_leftHigh,
@@ -80,12 +97,14 @@ namespace PLUME
         
         const String paramIds[] = {
         
+            "_value",
             "_on",
             "_midi_on",
             "_midi_cc",
             "_midi_low",
             "_midi_high",
             "_vibrato_range",
+            "_vibrato_intensity",
             "_vibrato_thresh",
             "_bend_leftLow",
             "_bend_leftHigh",

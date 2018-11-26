@@ -22,10 +22,11 @@ class OneRangeTuner:    public Tuner,
 {
 public:
     //==============================================================================
-    OneRangeTuner(const float& val, const Range<float>& totRange,
+    OneRangeTuner(const float& val, NormalisableRange<float>& gestureRange,
                   RangedAudioParameter& rangeL, RangedAudioParameter& rangeH, const Range<float> paramMax,
                   const String unit = "", bool show = true)
-        :   Tuner (val, totRange, unit, show), rangeLow (rangeL), rangeHigh (rangeH), parameterMax (paramMax)
+        : Tuner(val, gestureRange, paramMax, unit, show),
+		  rangeLow (rangeL), rangeHigh (rangeH), parameterMax (paramMax)
     {
         createSlider();
         createLabels();
@@ -88,8 +89,15 @@ public:
             rangeSlider->setMaxValue (double (getRangeHigh()), dontSendNotification);
         
             // Sets label text
-		    rangeLabelMin->setText (String (int (getRangeLow())) + valueUnit, dontSendNotification);
-		    rangeLabelMax->setText (String (int (getRangeHigh())) + valueUnit, dontSendNotification);
+		    if (!(rangeLabelMin->isBeingEdited()))
+		    {
+		        rangeLabelMin->setText (String (int (getRangeLow())) + valueUnit, dontSendNotification);
+		    }
+		    
+		    if (!(rangeLabelMax->isBeingEdited()))
+		    {
+		        rangeLabelMax->setText (String (int (getRangeHigh())) + valueUnit, dontSendNotification);
+		    }
 		
 		    //repaint();
         }

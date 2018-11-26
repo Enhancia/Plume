@@ -12,12 +12,7 @@
 using namespace PLUME;
 
 Roll::Roll (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters, float lowValue, float highValue)
-    : Gesture (gestName, Gesture::roll, gestId, Range<float> (ROLL_MIN, ROLL_MAX),
-		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::on])),
-		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::midi_on])),
-		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::midi_cc])),
-		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::midi_low])),
-		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::midi_high]))),
+    : Gesture (gestName, Gesture::roll, gestId, NormalisableRange<float> (ROLL_MIN, ROLL_MAX, 0.1f), plumeParameters),
     
       rangeLow  (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::roll_low]))),
       rangeHigh (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::roll_high])))
@@ -39,7 +34,7 @@ Roll::~Roll()
 void Roll::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 {
     // Checks if Gesture is on and if value is within the right range
-    if (on.getValue() == 0.0f || value >= 120.0f || value <= -120.0f)
+    if (on.getValue() == 0.0f || getGestureValue() >= 120.0f || getGestureValue() <= -120.0f)
     {
         return;
     }
@@ -56,13 +51,13 @@ void Roll::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 
 int Roll::getMidiValue()
 {
-    return Gesture::normalizeMidi (range.getStart(), range.getEnd(), value);
+    return Gesture::normalizeMidi (rangeLow.convertFrom0to1 (rangeLow.getValue()), rangeHigh.convertFrom0to1 (rangeHigh.getValue()), getGestureValue());
 }
 
 void Roll::updateMappedParameters()
 {
     // Checks if Gesture is on and if value is within the right range
-    if (on.getValue() == 0.0f || value >= 120.0f || value <= -120.0f)
+    if (on.getValue() == 0.0f || getGestureValue() >= 120.0f || getGestureValue() <= -120.0f)
     {
         return;
     }
@@ -76,11 +71,11 @@ void Roll::updateMappedParameters()
 
 float Roll::getValueForMappedParameter (Range<float> paramRange, bool reversed = false)
 {
-	return Gesture::mapParameter (value, range.getStart(), range.getEnd(), paramRange);
+	return Gesture::mapParameter (getGestureValue(), rangeLow.convertFrom0to1 (rangeLow.getValue()), rangeHigh.convertFrom0to1 (rangeHigh.getValue()), paramRange, reversed);
 }
     
 //==============================================================================
 void Roll::updateValue (const Array<float> rawData)
 {
-    value = -rawData[5];
+    setGestureValue (-rawData[5]);
 }

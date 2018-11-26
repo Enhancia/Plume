@@ -22,12 +22,12 @@ class TwoRangeTuner:    public Tuner,
 {
 public:
     //==============================================================================
-    TwoRangeTuner(const float& val, const Range<float>& totRange,
+    TwoRangeTuner(const float& val, const NormalisableRange<float>& gestureRange,
                   RangedAudioParameter& rangeLL, RangedAudioParameter& rangeLH,
                   RangedAudioParameter& rangeRL, RangedAudioParameter& rangeRH,
                   const Range<float> paramMax,
                   const String unit = "", bool show = true)
-        :   Tuner (val, totRange, unit, show),
+        :   Tuner (val, gestureRange, paramMax, unit, show),
             rangeLeftLow (rangeLL), rangeLeftHigh (rangeLH),
             rangeRightLow (rangeRL), rangeRightHigh (rangeRH),
             parameterMax (paramMax)
@@ -107,8 +107,14 @@ public:
             rangeSliderLeft->setMaxValue (double (getRangeLeftHigh()), dontSendNotification);
         
             // Sets label text
-		    rangeLabelMinLeft->setText (String (int (getRangeLeftLow())) + valueUnit, dontSendNotification);
-            rangeLabelMaxLeft->setText (String (int (getRangeLeftHigh())) + valueUnit, dontSendNotification);
+            if (!(rangeLabelMinLeft->isBeingEdited()))
+		    {
+		        rangeLabelMinLeft->setText (String (int (getRangeLeftLow())) + valueUnit, dontSendNotification);
+		    }
+		    if (!(rangeLabelMaxLeft->isBeingEdited()))
+		    {
+                rangeLabelMaxLeft->setText (String (int (getRangeLeftHigh())) + valueUnit, dontSendNotification);
+		    }
         }
         
         if (rangeRightLow.getValue() < rangeRightHigh.getValue() && rangeSliderRight->getThumbBeingDragged() == -1)
@@ -118,8 +124,14 @@ public:
             rangeSliderRight->setMinValue (double (getRangeRightLow()), dontSendNotification);
         
             // Sets label text
-            rangeLabelMinRight->setText (String (int (getRangeRightLow())) + valueUnit, dontSendNotification);
-            rangeLabelMaxRight->setText (String (int (getRangeRightHigh())) + valueUnit, dontSendNotification);
+            if (!(rangeLabelMinRight->isBeingEdited()))
+		    {
+                rangeLabelMinRight->setText (String (int (getRangeRightLow())) + valueUnit, dontSendNotification);
+		    }
+            if (!(rangeLabelMaxRight->isBeingEdited()))
+		    {
+                rangeLabelMaxRight->setText (String (int (getRangeRightHigh())) + valueUnit, dontSendNotification);
+		    }
         }
         
         //repaint();

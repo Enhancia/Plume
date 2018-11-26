@@ -28,7 +28,7 @@ public:
         :   TwoRangeTuner (pb.getValueReference(), pb.getRangeReference(),
                            pb.rangeLeftLow, pb.rangeLeftHigh,
                            pb.rangeRightLow, pb.rangeRightHigh,
-			               Range<float> (-90.0f, 90.0f),
+			               Range<float> (PLUME::UI::PITCHBEND_DISPLAY_MIN, PLUME::UI::PITCHBEND_DISPLAY_MAX),
                            String (CharPointer_UTF8 ("\xc2\xb0")))
     {}
     
@@ -48,7 +48,7 @@ public:
         :   OneRangeTuner (tilt.getValueReference(), tilt.getRangeReference(),
 			               tilt.rangeLow,
 						   tilt.rangeHigh,
-			               Range<float> (-90.0f, 90.0f),
+			               Range<float> (PLUME::UI::TILT_DISPLAY_MIN, PLUME::UI::TILT_DISPLAY_MAX),
                            String (CharPointer_UTF8 ("\xc2\xb0")))
     {}
     
@@ -65,7 +65,8 @@ class WaveTuner: public OneRangeTuner
 {
 public:
     WaveTuner(Wave& wave)
-        :   OneRangeTuner (wave.getValueReference(), wave.getRangeReference(), wave.range, Range<float> (-90.0f, 90.0f),
+        :   OneRangeTuner (wave.getValueReference(), wave.getRangeReference(), wave.range,
+                           Range<float> (PLUME::UI::WAVE_DISPLAY_MIN, PLUME::UI::WAVE_DISPLAY_MAX),
                            String (CharPointer_UTF8 ("\xc2\xb0")))
     {}
     
@@ -84,7 +85,7 @@ public:
     RollTuner(Roll& roll)
         :   OneRangeTuner (roll.getValueReference(), roll.getRangeReference(),
 			               roll.rangeLow, roll.rangeHigh,
-				           Range<float> (-90.0f, 90.0f),
+				           Range<float> (PLUME::UI::ROLL_DISPLAY_MIN, PLUME::UI::ROLL_DISPLAY_MAX),
                            String (CharPointer_UTF8 ("\xc2\xb0")))
     {}
     
@@ -100,7 +101,7 @@ class VibratoTuner: public SymmetricalTuner
 {
 public:
     VibratoTuner(Vibrato& vib)
-        :   SymmetricalTuner (vib.getValueReference(), vib.getRangeReference(), vib.gain, 500.0f, "", false),
+        :   SymmetricalTuner (vib.getValueReference(), vib.getRangeReference(), vib.gain, PLUME::UI::VIBRATO_DISPLAY_MAX, "", false),
             threshold (vib.threshold)
     {
         addAndMakeVisible(threshLabel = new Label("Threshold Label"));
@@ -146,7 +147,10 @@ public:
         SymmetricalTuner::updateComponents(); //base class display update
         
         // Sets label text
-        threshLabel->setText (String (int (threshold.convertFrom0to1 (threshold.getValue()))), dontSendNotification);
+        if (!(threshLabel->isBeingEdited()))
+		{
+            threshLabel->setText (String (int (threshold.convertFrom0to1 (threshold.getValue()))), dontSendNotification);
+		}
     }
     //==============================================================================
     void labelTextChanged (Label* lbl) override

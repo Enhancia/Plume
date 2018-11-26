@@ -358,7 +358,7 @@ void PlumeProcessor::initializeParameters()
             {
                 parameters.createAndAddParameter (std::make_unique<AudioParameterBool> (String(gest) + paramIds[i],
                                                                                         String(gest) + paramIds[i],
-                                                                                        false));			  
+                                                                                        false));
             }
             // float parameters
             else
@@ -374,6 +374,10 @@ void PlumeProcessor::initializeParameters()
 			        case vibrato_thresh:
                         range = NormalisableRange<float> (0.0f, 300.0f, 1.0f);
                         defVal = 40.0f;
+                        break;
+                    case vibrato_intensity:
+                        range = NormalisableRange<float> (0.0f, 1000.0f, 1.0f);
+                        defVal = 0.0f;
                         break;
 			        case bend_leftLow:
                         range = NormalisableRange<float> (-90.0f, 0.0f, 1.0f);

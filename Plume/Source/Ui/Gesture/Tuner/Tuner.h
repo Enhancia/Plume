@@ -25,8 +25,8 @@ class Tuner    : public Component
 {
 public:
     //==============================================================================
-    Tuner(const float& val, const Range<float>& totRange, const String unit = "", bool show = true)
-        :   value (val), totalRange (totRange), valueUnit (unit), showValue (show)
+    Tuner(const float& val, NormalisableRange<float> gestRange, const Range<float> dispRange, const String unit = "", bool show = true)
+        :   value (val), gestureRange (gestRange), displayRange (dispRange), valueUnit (unit), showValue (show)
     {
         TRACE_IN;
         yCursor = getHeight()/3 - CURSOR_SIZE - 2;
@@ -53,14 +53,9 @@ public:
     //==============================================================================
     virtual void paint (Graphics& g) override
     {
-        //g.fillAll (Colour (0x50ffffff));
-        
         g.setColour (Colours::black);
         
-        //g.drawRect(0, 0, getWidth(), getHeight()); // outline
-        //g.drawRect(W*3/4, 0, 1, getHeight()); // boundary slider|values
-        
-        if (showValue && value > totalRange.getStart() && value < totalRange.getEnd())
+        if (showValue && value > displayRange.getStart() && value < displayRange.getEnd())
         {
             drawCursor(g);
         }
@@ -79,25 +74,12 @@ public:
     //==============================================================================
     void updateDisplay()
     {
-		/*
-        // Value under min value for first time
-        if (value <= totalRange.getStart() &&
-            valueLabel->getText().upToFirstOccurrenceOf (valueUnit, false, false).getIntValue() != int(totalRange.getStart()) )
+        float convertedValue = gestureRange.convertFrom0to1 (value);
+
+		// Normal case
+        if (convertedValue >= displayRange.getStart() && convertedValue <= displayRange.getEnd())
         {
-            valueLabel->setText (String (int (totalRange.getStart()))+valueUnit, dontSendNotification);
-        }
-        // Value over max value for first time
-        else if (value >= totalRange.getEnd() &&
-                 valueLabel->getText().upToFirstOccurrenceOf (valueUnit, false, false).getIntValue() != int(totalRange.getEnd()) )
-        {
-            valueLabel->setText (String (int (totalRange.getStart()))+valueUnit, dontSendNotification);
-        }
-		*/
-        
-        // Normal case
-        if (value >= totalRange.getStart() && value <= totalRange.getEnd())
-        {
-            if (showValue)   valueLabel->setText (String(int (value))+valueUnit, dontSendNotification);
+            if (showValue)   valueLabel->setText (String(int (convertedValue))+valueUnit, dontSendNotification);
             repaint();
         }
     }
@@ -112,26 +94,26 @@ private:
     //==============================================================================
     void drawCursor(Graphics& g)
     {
-        int xCursor;
-		int valueLab = int (value);
+        int xCursor = 0;
+		int valueLab = int (gestureRange.convertFrom0to1(value));
 		
 		//if (valueUnit != "") valueLab = valueLabel->getText().upToFirstOccurrenceOf(valueUnit, false, false).getIntValue();
 		//else                 valueLab = valueLabel->getText().getIntValue();
         
-        // Regular cursor placement
-        if (valueLab > totalRange.getStart() && valueLab < totalRange.getEnd())
-        {
-            // Formula: x = length * (val - start)/(end - start) + x0;
-            xCursor = (sliderPlacement.getLength() - 10)*(valueLab-totalRange.getStart())/(totalRange.getEnd()-totalRange.getStart())
-                      + sliderPlacement.getStart()+5;
-        }
+        // if out of bounds doesn't draw anything
+		if (valueLab < displayRange.getStart() || valueLab > displayRange.getEnd()) return;
         
+        // Formula: x = length * (val - start)/(end - start) + x0;
+        xCursor = (sliderPlacement.getLength() - 10)*(valueLab-displayRange.getStart())/(displayRange.getEnd()-displayRange.getStart())
+                   + sliderPlacement.getStart()+5;
+        
+        /*
         // Placement if value exceeds limits
         else
         {
-            if (valueLab < totalRange.getStart())      xCursor = sliderPlacement.getStart() + 5;
-            else if (valueLab > totalRange.getEnd())   xCursor = sliderPlacement.getEnd() - 5;
-        }
+            if (valueLab < displayRange.getStart())      xCursor = sliderPlacement.getStart() + 5;
+            else if (valueLab > displayRange.getEnd())   xCursor = sliderPlacement.getEnd() - 5;
+        */
         
         // draws the cursor
         Path cursorPath;
@@ -146,7 +128,8 @@ private:
     
     //==============================================================================
     const float& value;
-    const Range<float>& totalRange;
+    const Range<float> displayRange;
+    NormalisableRange<float> gestureRange;
     const bool showValue;
     
     int yCursor;

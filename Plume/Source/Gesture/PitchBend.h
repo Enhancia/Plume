@@ -42,9 +42,6 @@ public:
     bool getSend(); /**< \brief Getter for the send boolean value */
     
     //==============================================================================
-    // Attributes that will be referenced to the Tuner component.
-    // Might want to replace them with audio processor parameters in the future.
-    
     RangedAudioParameter& rangeLeftLow; /**< \brief Bend's low range value. The down pitch effect will happen between this and rangeLeftHigh. */
 	RangedAudioParameter& rangeLeftHigh; /**< \brief Bend's high range value. The down pitch effect will happen between rangeLeftLow and this. */
 	RangedAudioParameter& rangeRightLow; /**< \brief Bend's low range value. The up pitch effect will happen between this and rangeRightHigh. */
