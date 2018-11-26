@@ -35,17 +35,19 @@ public:
     float getValueForMappedParameter (Range<float> paramRange, bool reversed) override;
     
     //==============================================================================
+    void setIntensityValue (float newVal);
     void updateValue (const Array<float> rawData) override;
     
     //==============================================================================
     bool getSend(); /**< \brief Getter for the send boolean value */
     
     //==============================================================================
-    RangedAudioParameter& gain; /**< threshold used to trigger the effect*/
-	RangedAudioParameter& threshold; /**< Sensibility of the vibrato. From 0.0f (no effect) to 500.0f (maximum effect)*/
+    RangedAudioParameter& gain; /**< Sensibility of the vibrato. From 0.0f (no effect) to 500.0f (maximum effect)*/
+	RangedAudioParameter& threshold; /**< threshold used to trigger the effect*/
+	RangedAudioParameter& intensity; /**< Current intensity of the vibrato. The effect is triggered if this is above the threshold parameter*/
     
 private:
-    float intensity = 0.0f; /**< Value that will be checked to trigger the vibrato if higher than the treshold */
+    //float intensity = 0.0f; /**< Value that will be checked to trigger the vibrato if higher than the treshold */
     
     // Booleans that represent the state of the vibrato
     bool send = false; /**< \brief Boolean to know if the gesture should send midi */

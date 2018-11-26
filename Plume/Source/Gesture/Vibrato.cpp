@@ -12,15 +12,10 @@
 using namespace PLUME;
 
 Vibrato::Vibrato (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters, float val, float thresh)
-    : Gesture (gestName, Gesture::vibrato, gestId, NormalisableRange<float> (0.0f, VIBRATO_RANGE_MAX, 0.1f),
-		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::value])),
-		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::on])),
-		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::midi_on])),
-		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::midi_cc])),
-		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::midi_low])),
-		       *(plumeParameters.getParameter (String(gestId) + param::paramIds[param::midi_high]))),
+    : Gesture (gestName, Gesture::vibrato, gestId, NormalisableRange<float> (-VIBRATO_RANGE_MAX, VIBRATO_RANGE_MAX, 0.1f), plumeParameters),
     
-      gain  (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::vibrato_range]))),
+      gain      (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::vibrato_range]))),
+      intensity (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::vibrato_intensity]))),
       threshold (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::vibrato_thresh])))
 {
     gain.beginChangeGesture();
@@ -60,7 +55,7 @@ void Vibrato::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 
 int Vibrato::getMidiValue()
 {
-    bool vibTrig = (intensity > threshold.convertFrom0to1 (threshold.getValue()));
+    bool vibTrig = (intensity.convertFrom0to1 (intensity.getValue()) > threshold.convertFrom0to1 (threshold.getValue()));
     float gainVal = gain.convertFrom0to1 (gain.getValue());
     
     // Vibrato should be triggered
@@ -69,8 +64,8 @@ int Vibrato::getMidiValue()
         vibLast = true;
         send = true;
         
-        if (isMidiMapped()) return Gesture::normalizeMidi (-(500.0f - gainVal), (500.01f - gainVal), value);
-        else                return Gesture::map (value, -(500.0f - gainVal), (500.01f - gainVal), 0, 16383);
+        if (isMidiMapped()) return Gesture::normalizeMidi (-(500.0f - gainVal), (500.01f - gainVal), getGestureValue());
+        else                return Gesture::map (getGestureValue(), -(500.0f - gainVal), (500.01f - gainVal), 0, 16383);
     }
     
     // Vibrato back to neutral
@@ -110,14 +105,14 @@ void Vibrato::updateMappedParameters()
 
 float Vibrato::getValueForMappedParameter (Range<float> paramRange, bool reversed = false)
 {
-    bool vibTrig = (intensity > threshold.convertFrom0to1 (threshold.getValue()));
+    bool vibTrig = (intensity.convertFrom0to1 (intensity.getValue()) > threshold.convertFrom0to1 (threshold.getValue()));
     float gainVal = gain.convertFrom0to1 (gain.getValue());
     
     if (vibTrig && gainVal != 0.0f)
     {
         vibLast = true;
         send = true;
-        return (Gesture::mapParameter (value, -(500.0f - gainVal), (500.01f - gainVal), paramRange, reversed));
+        return (Gesture::mapParameter (getGestureValue(), -(500.0f - gainVal), (500.01f - gainVal), paramRange, reversed));
     }
     else if (vibTrig != vibLast && vibTrig == false)
     {
@@ -137,8 +132,17 @@ bool Vibrato::getSend()
 }
 
 //==============================================================================
+void Vibrato::setIntensityValue (float newVal)
+{
+    intensity.beginChangeGesture();
+    intensity.setValueNotifyingHost (intensity.convertTo0to1 (newVal));
+    intensity.endChangeGesture();
+}
+
+//==============================================================================
 void Vibrato::updateValue (const Array<float> rawData)
 {
-    intensity = rawData[1];
-    value = rawData[0];
+    DBG ("intensity : " << rawData[1]);
+    if (isActive()) setIntensityValue (rawData[1]);
+    setGestureValue (rawData[0]);
 }

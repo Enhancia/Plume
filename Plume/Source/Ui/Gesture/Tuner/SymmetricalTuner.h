@@ -22,9 +22,9 @@ class SymmetricalTuner:    public Tuner,
 {
 public:
     //==============================================================================
-    SymmetricalTuner(const float& val, const Range<float>& totRange, RangedAudioParameter& param, float paramMax,
+    SymmetricalTuner(const float& val, NormalisableRange<float> gestureRange, RangedAudioParameter& param, float paramMax,
                      const String unit = "", bool show = true)
-        :   Tuner (val, totRange, unit, show), parameter (param), parameterMax (paramMax)
+        :   Tuner (val, gestureRange, Range<float> (0.0f, paramMax), unit, show), parameter (param), parameterMax (paramMax)
     {
         Component::setBounds (Tuner::getBounds());
         createSlider();
@@ -79,8 +79,10 @@ public:
             symmetricalSlider->setMaxValue (double (parameter.convertFrom0to1 (parameter.getValue())), dontSendNotification);
         
             // Sets label text
-            rangeLabel->setText (String (int (parameter.convertFrom0to1 (parameter.getValue()))), dontSendNotification);
-        
+            if (!(rangeLabel->isBeingEdited()))
+		    {
+                rangeLabel->setText (String (int (parameter.convertFrom0to1 (parameter.getValue()))), dontSendNotification);
+		    }
             //repaint();
         }
     }
