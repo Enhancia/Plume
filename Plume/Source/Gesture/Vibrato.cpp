@@ -9,67 +9,84 @@
 */
 
 #include "Gesture/Vibrato.h"
+using namespace PLUME;
 
-Vibrato::Vibrato (String gestName, float val)  : Gesture (gestName, Gesture::vibrato, Range<float> (-200.0f, 200.0f), 0.0f),
-                                                 gain (val)
+Vibrato::Vibrato (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters, float val, float thresh)
+    : Gesture (gestName, Gesture::vibrato, gestId, NormalisableRange<float> (-VIBRATO_RANGE_MAX, VIBRATO_RANGE_MAX, 0.1f), plumeParameters),
+    
+      gain      (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::vibrato_range]))),
+      intensity (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::vibrato_intensity]))),
+      threshold (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::vibrato_thresh])))
 {
+    gain.beginChangeGesture();
+    gain.setValueNotifyingHost (gain.convertTo0to1 (val));
+    gain.endChangeGesture();
+    
+    threshold.beginChangeGesture();
+    threshold.setValueNotifyingHost (threshold.convertTo0to1 (thresh));
+    threshold.endChangeGesture();
 }
+
 Vibrato::~Vibrato()
 {
 }
     
 //==============================================================================
-void Vibrato::addGestureMidi (MidiBuffer& midiMessages)
+void Vibrato::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 {
-    if (on == false) return; // does nothing if the gesture is inactive
+    if (on.getValue() == 0.0f) return; // does nothing if the gesture is inactive
     
     int vibVal = getMidiValue();
     
-    if (send == true || midiMap == true)
+    if (send == true || isMidiMapped())
     {
         // Creates the control change message
-        if (midiMap)
+        if (isMidiMapped())
         {
-            addMidiModeSignalToBuffer (midiMessages, vibVal, 0, 127, 1);
+            addMidiModeSignalToBuffer (midiMessages, plumeBuffer, vibVal, 0, 127, 1);
         }
         // Creates the pitchwheel message
         else
         {
-            addEventAndMergePitchToBuffer (midiMessages, vibVal, 1/*, pitchReference*/);
+            addEventAndMergePitchToBuffer (midiMessages, plumeBuffer, vibVal, 1/*, pitchReference*/);
         }
     }
 }
 
 int Vibrato::getMidiValue()
 {
-    bool vibTrig = (intensity > threshold);
+    bool vibTrig = (intensity.convertFrom0to1 (intensity.getValue()) > threshold.convertFrom0to1 (threshold.getValue()));
+    float gainVal = gain.convertFrom0to1 (gain.getValue());
     
-    if (vibTrig && gain != 0.0f)
+    // Vibrato should be triggered
+    if (vibTrig && gainVal != 0.0f)
     {
         vibLast = true;
         send = true;
         
-        if (midiMap) return Gesture::normalizeMidi (-(500.0f - gain), (500.01f - gain), value);
-        else         return Gesture::map (value, -(500.0f - gain), (500.01f - gain), 0, 16383);
+        if (isMidiMapped()) return Gesture::normalizeMidi (-(500.0f - gainVal), (500.01f - gainVal), getGestureValue());
+        else                return Gesture::map (getGestureValue(), -(500.0f - gainVal), (500.01f - gainVal), 0, 16383);
     }
     
+    // Vibrato back to neutral
     else if (vibTrig != vibLast && vibTrig == false)
     {
         vibLast = false;
         send = true;
         
-        if (midiMap) return 64;
-        else         return 8192;
+        if (isMidiMapped()) return 64;
+        else                return 8192;
     }
     
+    // No vibrato
     send = false;
-    if (midiMap) return 64;
-    else         return 8192;
+    if (isMidiMapped()) return 64;
+    else                return 8192;
 }
 
 void Vibrato::updateMappedParameters()
 {
-    if (on == false) return; // does nothing if the gesture is inactive
+    if (on.getValue() == 0.0f) return; // does nothing if the gesture is inactive
     
     bool vibLastTemp = vibLast;
     
@@ -88,13 +105,14 @@ void Vibrato::updateMappedParameters()
 
 float Vibrato::getValueForMappedParameter (Range<float> paramRange, bool reversed = false)
 {
-    bool vibTrig = (intensity > threshold);
+    bool vibTrig = (intensity.convertFrom0to1 (intensity.getValue()) > threshold.convertFrom0to1 (threshold.getValue()));
+    float gainVal = gain.convertFrom0to1 (gain.getValue());
     
-    if (vibTrig && gain != 0.0f)
+    if (vibTrig && gainVal != 0.0f)
     {
         vibLast = true;
         send = true;
-        return (Gesture::mapParameter (value, -(500.0f - gain), (500.01f - gain), paramRange, reversed));
+        return (Gesture::mapParameter (getGestureValue(), -(500.0f - gainVal), (500.01f - gainVal), paramRange, reversed));
     }
     else if (vibTrig != vibLast && vibTrig == false)
     {
@@ -114,15 +132,17 @@ bool Vibrato::getSend()
 }
 
 //==============================================================================
-void Vibrato::updateValue (const Array<float> rawData)
+void Vibrato::setIntensityValue (float newVal)
 {
-    intensity = rawData[1];
-    value = rawData[0];
-    
-    //DBG ("values: 1 = " << intensity << " | 2 = " << value << " \n");
+    intensity.beginChangeGesture();
+    intensity.setValueNotifyingHost (intensity.convertTo0to1 (newVal));
+    intensity.endChangeGesture();
 }
 
-void Vibrato::addGestureParameters()
+//==============================================================================
+void Vibrato::updateValue (const Array<float> rawData)
 {
-    // WIP
+    DBG ("intensity : " << rawData[1]);
+    if (isActive()) setIntensityValue (rawData[1]);
+    setGestureValue (rawData[0]);
 }

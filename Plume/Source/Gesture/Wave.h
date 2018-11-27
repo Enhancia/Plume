@@ -24,11 +24,11 @@
 class Wave : public Gesture
 {
 public:
-    Wave (String gestName);
+    Wave (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters);
     ~Wave();
     
     //==============================================================================
-    void addGestureMidi(MidiBuffer& midiMessages) override;
+    void addGestureMidi(MidiBuffer& midiMessages, MidiBuffer& plumeBuffer) override;
     int getMidiValue () override;
     
     void updateMappedParameters() override;
@@ -36,7 +36,6 @@ public:
     
     //==============================================================================
     void updateValue (const Array<float> rawData) override;
-    void addGestureParameters() override;
     
 private:
 };

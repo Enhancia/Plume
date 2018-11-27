@@ -22,10 +22,15 @@ class TwoRangeTuner:    public Tuner,
 {
 public:
     //==============================================================================
-    TwoRangeTuner(const float& val, const Range<float>& totRange,
-                  Range<float>& paramRangeLeft, Range<float>& paramRangeRight, const Range<float> paramMax,
+    TwoRangeTuner(const float& val, const NormalisableRange<float>& gestureRange,
+                  RangedAudioParameter& rangeLL, RangedAudioParameter& rangeLH,
+                  RangedAudioParameter& rangeRL, RangedAudioParameter& rangeRH,
+                  const Range<float> paramMax,
                   const String unit = "", bool show = true)
-        :   Tuner (val, totRange, unit, show), parameterRangeLeft (paramRangeLeft), parameterRangeRight (paramRangeRight), parameterMax (paramMax)
+        :   Tuner (val, gestureRange, paramMax, unit, show),
+            rangeLeftLow (rangeLL), rangeLeftHigh (rangeLH),
+            rangeRightLow (rangeRL), rangeRightHigh (rangeRH),
+            parameterMax (paramMax)
     {
         Component::setBounds (Tuner::getBounds());
         createSliders();
@@ -93,16 +98,55 @@ public:
         repaint();
     }
     
+    void updateComponents() override
+    {
+        if (rangeLeftLow.getValue() < rangeLeftHigh.getValue() && rangeSliderLeft->getThumbBeingDragged() == -1)
+        {
+            // Sets slider value
+            rangeSliderLeft->setMinValue (double (getRangeLeftLow()), dontSendNotification);
+            rangeSliderLeft->setMaxValue (double (getRangeLeftHigh()), dontSendNotification);
+        
+            // Sets label text
+            if (!(rangeLabelMinLeft->isBeingEdited()))
+		    {
+		        rangeLabelMinLeft->setText (String (int (getRangeLeftLow())) + valueUnit, dontSendNotification);
+		    }
+		    if (!(rangeLabelMaxLeft->isBeingEdited()))
+		    {
+                rangeLabelMaxLeft->setText (String (int (getRangeLeftHigh())) + valueUnit, dontSendNotification);
+		    }
+        }
+        
+        if (rangeRightLow.getValue() < rangeRightHigh.getValue() && rangeSliderRight->getThumbBeingDragged() == -1)
+        {
+            // Sets slider value
+            rangeSliderRight->setMaxValue (double (getRangeRightHigh()), dontSendNotification);
+            rangeSliderRight->setMinValue (double (getRangeRightLow()), dontSendNotification);
+        
+            // Sets label text
+            if (!(rangeLabelMinRight->isBeingEdited()))
+		    {
+                rangeLabelMinRight->setText (String (int (getRangeRightLow())) + valueUnit, dontSendNotification);
+		    }
+            if (!(rangeLabelMaxRight->isBeingEdited()))
+		    {
+                rangeLabelMaxRight->setText (String (int (getRangeRightHigh())) + valueUnit, dontSendNotification);
+		    }
+        }
+        
+        //repaint();
+    }
+    
     //==============================================================================
     void labelTextChanged (Label* lbl) override
     {
         // checks that the string is numbers only (and unit)
         if (lbl->getText().containsOnly ("-0123456789"+valueUnit) == false)
         {
-            if      (lbl == rangeLabelMinLeft)   lbl->setText (String (int (parameterRangeLeft.getStart())) + valueUnit, dontSendNotification);
-            else if (lbl == rangeLabelMaxLeft)   lbl->setText (String (int (parameterRangeLeft.getEnd())) + valueUnit, dontSendNotification);
-            else if (lbl == rangeLabelMinRight)  lbl->setText (String (int (parameterRangeRight.getStart())) + valueUnit, dontSendNotification);
-            else if (lbl == rangeLabelMaxRight)  lbl->setText (String (int (parameterRangeRight.getEnd())) + valueUnit, dontSendNotification);
+            if      (lbl == rangeLabelMinLeft)   lbl->setText (String (int (getRangeLeftLow())) + valueUnit, dontSendNotification);
+            else if (lbl == rangeLabelMaxLeft)   lbl->setText (String (int (getRangeLeftHigh())) + valueUnit, dontSendNotification);
+            else if (lbl == rangeLabelMinRight)  lbl->setText (String (int (getRangeRightLow())) + valueUnit, dontSendNotification);
+            else if (lbl == rangeLabelMaxRight)  lbl->setText (String (int (getRangeRightHigh())) + valueUnit, dontSendNotification);
 
             return;
         }
@@ -120,37 +164,37 @@ public:
         // Sets slider and labels accordingly
         if (lbl == rangeLabelMinLeft)   // Min left
         {
-            if ( val > parameterRangeLeft.getEnd()) val = parameterRangeLeft.getEnd();
+            if ( val > getRangeLeftHigh()) val = getRangeLeftHigh();
             
-            parameterRangeLeft.setStart (val);
-            rangeSliderLeft->setMinValue (parameterRangeLeft.getStart(), dontSendNotification);
-            lbl->setText (String (int (parameterRangeLeft.getStart())) + valueUnit, dontSendNotification);
+            setRangeLeftLow (val);
+            rangeSliderLeft->setMinValue (getRangeLeftLow(), dontSendNotification);
+            lbl->setText (String (int (getRangeLeftLow())) + valueUnit, dontSendNotification);
         }
         else if (lbl == rangeLabelMaxLeft)  // Max left
         {
-            if ( val < parameterRangeLeft.getStart()) val = parameterRangeLeft.getStart();
+            if ( val < getRangeLeftLow()) val = getRangeLeftLow();
             else if (val > (parameterMax.getStart() + parameterMax.getEnd())/2) val = (parameterMax.getStart() + parameterMax.getEnd())/2;
             
-            parameterRangeLeft.setEnd (val);
-            rangeSliderLeft->setMaxValue (parameterRangeLeft.getEnd(), dontSendNotification);
-            lbl->setText (String (int (parameterRangeLeft.getEnd())) + valueUnit, dontSendNotification);
+            setRangeLeftHigh (val);
+            rangeSliderLeft->setMaxValue (getRangeLeftHigh(), dontSendNotification);
+            lbl->setText (String (int (getRangeLeftHigh())) + valueUnit, dontSendNotification);
         }
         else if (lbl == rangeLabelMinRight)   // Min right
         {
-            if ( val > parameterRangeRight.getEnd()) val = parameterRangeRight.getEnd();
+            if ( val > getRangeRightHigh()) val = getRangeRightHigh();
             else if (val < (parameterMax.getStart() + parameterMax.getEnd())/2) val = (parameterMax.getStart() + parameterMax.getEnd())/2;
             
-            parameterRangeRight.setStart (val);
-            rangeSliderRight->setMinValue (parameterRangeRight.getStart(), dontSendNotification);
-            lbl->setText (String (int (parameterRangeRight.getStart())) + valueUnit, dontSendNotification);
+            setRangeRightLow (val);
+            rangeSliderRight->setMinValue (getRangeRightLow(), dontSendNotification);
+            lbl->setText (String (int (getRangeRightLow())) + valueUnit, dontSendNotification);
         }
         else if (lbl == rangeLabelMaxRight)  // Max right
         {
-            if ( val < parameterRangeRight.getStart()) val = parameterRangeRight.getStart();
+            if ( val < getRangeRightLow()) val = getRangeRightLow();
             
-            parameterRangeRight.setEnd (val);
-            rangeSliderRight->setMaxValue (parameterRangeRight.getEnd(), dontSendNotification);
-            lbl->setText (String (int (parameterRangeRight.getEnd())) + valueUnit, dontSendNotification);
+            setRangeRightHigh (val);
+            rangeSliderRight->setMaxValue (getRangeRightHigh(), dontSendNotification);
+            lbl->setText (String (int (getRangeRightHigh())) + valueUnit, dontSendNotification);
         }
     }
     
@@ -158,20 +202,33 @@ public:
     {
         if (sldr == rangeSliderLeft)
         {
-            // min left value changed
+			// min left value changed
 		    if (sldr->getThumbBeingDragged() == 1)
 		    {
-			    parameterRangeLeft.setStart (float (sldr->getMinValue()));
-		        rangeLabelMinLeft->setText (String (int (parameterRangeLeft.getStart())) + valueUnit, sendNotification);
-		        rangeLabelMaxLeft->setText (String (int (parameterRangeLeft.getEnd())) + valueUnit, sendNotification);
+		        setRangeLeftLow (float (sldr->getMinValue()));
+		        rangeLabelMinLeft->setText (String (int (getRangeLeftLow())) + valueUnit, dontSendNotification);
+		        
+		        // in case the other thumb is dragged along..
+				if (rangeLeftLow.getValue() > rangeLeftHigh.getValue())
+				{
+					setRangeLeftHigh (float(sldr->getMaxValue()));
+					rangeLabelMaxLeft->setText(String(int(getRangeLeftHigh())) + valueUnit, dontSendNotification);
+				}
+					
 		    }
 
 		    // max left value changed
 		    else if (sldr->getThumbBeingDragged() == 2)
 		    {
-			    parameterRangeLeft.setEnd (float (sldr->getMaxValue()));
-		        rangeLabelMaxLeft->setText (String (int (parameterRangeLeft.getEnd())) + valueUnit, sendNotification);
-		        rangeLabelMinLeft->setText (String (int (parameterRangeLeft.getStart())) + valueUnit, sendNotification);
+			    setRangeLeftHigh (float (sldr->getMaxValue()));
+		        rangeLabelMaxLeft->setText (String (int (getRangeLeftHigh())) + valueUnit, dontSendNotification);
+		        
+		        // in case the other thumb is dragged along..
+				if (rangeLeftLow.getValue() > rangeLeftHigh.getValue())
+				{
+					setRangeLeftLow (float(sldr->getMinValue()));
+					rangeLabelMinLeft->setText(String(int(getRangeLeftLow())) + valueUnit, dontSendNotification);
+				}
 		    }
         }
         
@@ -180,17 +237,29 @@ public:
 		    // min right value changed
 		    if (sldr->getThumbBeingDragged() == 1)
 		    {
-			    parameterRangeRight.setStart (float (sldr->getMinValue()));
-		        rangeLabelMinRight->setText (String (int (parameterRangeRight.getStart())) + valueUnit, sendNotification);
-		        rangeLabelMaxRight->setText (String (int (parameterRangeRight.getEnd())) + valueUnit, sendNotification);
+			    setRangeRightLow (float (sldr->getMinValue()));
+		        rangeLabelMinRight->setText (String (int (getRangeRightLow())) + valueUnit, dontSendNotification);
+		        
+		        // in case the other thumb is dragged along..
+				if (rangeRightLow.getValue() > rangeRightHigh.getValue())
+				{
+					setRangeRightHigh (float(sldr->getMaxValue()));
+					rangeLabelMaxRight->setText(String(int(getRangeRightHigh())) + valueUnit, dontSendNotification);
+				}
 		    }
 
 		    // max right value changed
 		    else if (sldr->getThumbBeingDragged() == 2)
 		    {
-			    parameterRangeRight.setEnd (float (sldr->getMaxValue()));
-		        rangeLabelMaxRight->setText (String (int (parameterRangeRight.getEnd())) + valueUnit, sendNotification);
-		        rangeLabelMinRight->setText (String (int (parameterRangeRight.getStart())) + valueUnit, sendNotification);
+			    setRangeRightHigh (float (sldr->getMaxValue()));
+		        rangeLabelMaxRight->setText (String (int (getRangeRightHigh())) + valueUnit, dontSendNotification);
+		        
+		        // in case the other thumb is dragged along..
+				if (rangeRightLow.getValue() > rangeRightHigh.getValue())
+				{
+					setRangeRightLow (float(sldr->getMinValue()));
+					rangeLabelMinRight->setText(String(int(getRangeRightLow())) + valueUnit, dontSendNotification);
+				}
 		    }
         }
     }
@@ -218,13 +287,13 @@ private:
         // Slider values
         rangeSliderLeft->setRange (double (parameterMax.getStart()),
                                    double ((parameterMax.getStart() + parameterMax.getEnd())/2), 1.0);
-        rangeSliderLeft->setMinValue (double (parameterRangeLeft.getStart()), dontSendNotification);
-        rangeSliderLeft->setMaxValue (double (parameterRangeLeft.getEnd()), dontSendNotification);
+        rangeSliderLeft->setMinValue (double (getRangeLeftLow()), dontSendNotification);
+        rangeSliderLeft->setMaxValue (double (getRangeLeftHigh()), dontSendNotification);
         
         rangeSliderRight->setRange (double ((parameterMax.getStart() + parameterMax.getEnd())/2),
                                     double (parameterMax.getEnd()), 1.0);
-        rangeSliderRight->setMaxValue (double (parameterRangeRight.getEnd()), dontSendNotification);
-        rangeSliderRight->setMinValue (double (parameterRangeRight.getStart()), dontSendNotification);
+        rangeSliderRight->setMaxValue (double (getRangeRightHigh()), dontSendNotification);
+        rangeSliderRight->setMinValue (double (getRangeRightLow()), dontSendNotification);
         
         rangeSliderLeft->addListener (this);
 		rangeSliderRight->addListener(this);
@@ -232,10 +301,14 @@ private:
     
     void createLabels()
     {
-        Tuner::addAndMakeVisible (rangeLabelMinLeft  = new Label ("Min Left Label", TRANS (String(int(parameterRangeLeft.getStart())) + valueUnit)));
-        Tuner::addAndMakeVisible (rangeLabelMaxLeft  = new Label ("Max Left Label", TRANS (String(int(parameterRangeLeft.getEnd())) + valueUnit)));
-        Tuner::addAndMakeVisible (rangeLabelMinRight = new Label ("Min Right Label", TRANS (String(int(parameterRangeRight.getStart())) + valueUnit)));
-        Tuner::addAndMakeVisible (rangeLabelMaxRight = new Label ("Max Right Label", TRANS (String(int(parameterRangeRight.getEnd())) + valueUnit)));
+        Tuner::addAndMakeVisible (rangeLabelMinLeft  = new Label ("Min Left Label",
+                                                                  TRANS (String (int(getRangeLeftLow())) + valueUnit)));
+        Tuner::addAndMakeVisible (rangeLabelMaxLeft  = new Label ("Max Left Label",
+                                                                  TRANS (String(int(getRangeLeftHigh())) + valueUnit)));
+        Tuner::addAndMakeVisible (rangeLabelMinRight = new Label ("Min Right Label",
+                                                                  TRANS (String(int(getRangeRightLow())) + valueUnit)));
+        Tuner::addAndMakeVisible (rangeLabelMaxRight = new Label ("Max Right Label",
+                                                                  TRANS (String(int(getRangeRightHigh())) + valueUnit)));
         
         // LabelMinLeft style
         rangeLabelMinLeft->setEditable (true, false, false);
@@ -264,9 +337,59 @@ private:
         rangeLabelMaxRight->addListener (this);
     }
     
+    void setRangeLeftLow (float value)
+    {
+        rangeLeftLow.beginChangeGesture();
+        rangeLeftLow.setValueNotifyingHost (rangeLeftLow.convertTo0to1 (value));
+        rangeLeftLow.endChangeGesture();
+    }
+    
+    void setRangeLeftHigh (float value)
+    {
+        rangeLeftHigh.beginChangeGesture();
+        rangeLeftHigh.setValueNotifyingHost (rangeLeftHigh.convertTo0to1 (value));
+        rangeLeftHigh.endChangeGesture();
+    }
+    
+    void setRangeRightLow (float value)
+    {
+        rangeRightLow.beginChangeGesture();
+        rangeRightLow.setValueNotifyingHost (rangeRightLow.convertTo0to1 (value));
+        rangeRightLow.endChangeGesture();
+    }
+    
+    void setRangeRightHigh (float value)
+    {
+        rangeRightHigh.beginChangeGesture();
+        rangeRightHigh.setValueNotifyingHost (rangeRightHigh.convertTo0to1 (value));
+        rangeRightHigh.endChangeGesture();
+    }
+    
+    float getRangeLeftLow()
+    {
+        return rangeLeftLow.convertFrom0to1 (rangeLeftLow.getValue());
+    }
+    
+    float getRangeLeftHigh()
+    {
+        return rangeLeftHigh.convertFrom0to1 (rangeLeftHigh.getValue());
+    }
+    
+    float getRangeRightLow()
+    {
+        return rangeRightLow.convertFrom0to1 (rangeRightLow.getValue());
+    }
+    
+    float getRangeRightHigh()
+    {
+        return rangeRightHigh.convertFrom0to1 (rangeRightHigh.getValue());
+    }
+    
     //==============================================================================
-    Range<float>& parameterRangeLeft;
-    Range<float>& parameterRangeRight;
+    RangedAudioParameter& rangeLeftLow;
+    RangedAudioParameter& rangeLeftHigh;
+    RangedAudioParameter& rangeRightLow;
+    RangedAudioParameter& rangeRightHigh;
     const Range<float> parameterMax;
     
     //==============================================================================

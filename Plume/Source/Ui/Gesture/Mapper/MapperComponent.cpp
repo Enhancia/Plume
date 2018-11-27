@@ -10,11 +10,13 @@
 #pragma once
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
+#include "Common/PlumeCommon.h"
+
 #include "Ui/Gesture/Mapper/MapperComponent.h"
 
 #define W getWidth()
 #define H getHeight()
-#define MARGIN 8
+#define MARGIN PLUME::UI::MARGIN
 
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 #define TRACE_OUT Logger::writeToLog ("[-FNC]  Leaving: " + String(__FUNCTION__))
@@ -267,6 +269,23 @@ void MapperComponent::updateDisplay()
     for (auto* comp : paramCompArray)
     {
         comp->updateDisplay();
+    }
+}
+
+void MapperComponent::updateComponents()
+{
+    // midi mode button
+    midiMapButton->setToggleState (gesture.isMidiMapped(), dontSendNotification);
+	midiMapButton->setState(gesture.isMidiMapped() ? Button::buttonDown
+	                                               : Button::buttonNormal);
+	
+    midiModeComp->updateComponents();
+	setAlphas();
+	
+    if (PLUME::UI::ANIMATE_UI_FLAG)
+    {
+        getParentComponent()->repaint(); // repaints the whole gesture area
+        repaint(); // repaints mapper component
     }
 }
 

@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" jucerVersion="5.4.1"
-              pluginFormats="buildVST,buildStandalone" version="1.1.6" companyName="Enhancia"
+              pluginFormats="buildVST,buildStandalone" version="1.1.7" companyName="Enhancia"
               buildVST="1" buildVST3="0" buildAU="0" buildAUv3="0" buildRTAS="0"
-              buildAAX="0" enableIAA="0" pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
+              buildAAX="0" enableIAA="0" pluginCharacteristicsValue="pluginIsMidiEffectPlugin,pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
               pluginManufacturer="Enhancia" pluginName="Plume" pluginDesc="Enhancia's Plume. Wraps other plugins and provides customizable and mappable gestures to use with Neova."
               binaryDataNamespace="PlumeData" includeBinaryInJuceHeader="1"
               id="PjN2uz" pluginManufacturerCode="Enhn" pluginCode="Plum">
   <MAINGROUP id="RYgD59" name="Plume">
     <GROUP id="{9375F276-9F56-CF4A-C1B1-D4B5B9CE68B9}" name="Source">
+      <GROUP id="{84727D1E-9E2A-349D-53A5-E2EDB50DAA12}" name="Common">
+        <FILE id="jgeTBQ" name="PlumeCommon.cpp" compile="1" resource="0" file="Source/Common/PlumeCommon.cpp"/>
+        <FILE id="aoaZYk" name="PlumeCommon.h" compile="0" resource="0" file="Source/Common/PlumeCommon.h"/>
+      </GROUP>
       <GROUP id="{9B740626-EAB3-638F-41B5-B9DE410DDCF6}" name="DataReader">
         <FILE id="vdUcyM" name="DataReader.cpp" compile="1" resource="0" file="Source/DataReader/DataReader.cpp"/>
         <FILE id="xokgvb" name="DataReader.h" compile="0" resource="0" file="Source/DataReader/DataReader.h"/>
@@ -120,13 +124,13 @@
     </GROUP>
   </MAINGROUP>
   <LIVE_SETTINGS>
-    <WINDOWS/>
+    <WINDOWS buildEnabled="0"/>
   </LIVE_SETTINGS>
   <EXPORTFORMATS>
     <VS2017 targetFolder="Builds/VisualStudio2017" bigIcon="YXx8Ce" smallIcon="YXx8Ce">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="0" name="Release" headerPath="C:\Users\Mathieu\Documents\Oria\Oria_technique\Logiciels\Git\Plume\Plume\Source"/>
-        <CONFIGURATION isDebug="1" name="Debug" headerPath="C:\Users\Mathieu\Documents\Oria\Oria_technique\Logiciels\Git\Plume\Plume\Source"/>
+        <CONFIGURATION isDebug="0" name="Release" headerPath="D:\Workspace\GitWorkspace\Plume\Plume\Source"/>
+        <CONFIGURATION isDebug="1" name="Debug" headerPath="D:\Workspace\GitWorkspace\Plume\Plume\Source"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../../../Programmes/JUCE/modules"/>

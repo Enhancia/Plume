@@ -24,32 +24,30 @@
 class Vibrato : public Gesture
 {
 public:
-    Vibrato (String gestName, float val = 400.0f);
+    Vibrato (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters, float val = 400.0f, float thresh = 40.0f);
     ~Vibrato();
     
     //==============================================================================
-    void addGestureMidi(MidiBuffer& midiMessages) override;
+    void addGestureMidi(MidiBuffer& midiMessages, MidiBuffer& plumeBuffer) override;
     int getMidiValue () override;
     
     void updateMappedParameters() override;
     float getValueForMappedParameter (Range<float> paramRange, bool reversed) override;
     
     //==============================================================================
+    void setIntensityValue (float newVal);
     void updateValue (const Array<float> rawData) override;
-    void addGestureParameters() override;
     
     //==============================================================================
     bool getSend(); /**< \brief Getter for the send boolean value */
     
     //==============================================================================
-    // Attributes that will be referenced to the Tuner component.
-    // Might want to replace them with audio processor parameters in the future.
-    
-    float threshold = 40.0f; /**< threshold used to trigger the effect*/
-    float gain; /**< Sensibility of the vibrato. From 0.0f (no effect) to 500.0f (maximum effect)*/
+    RangedAudioParameter& gain; /**< Sensibility of the vibrato. From 0.0f (no effect) to 500.0f (maximum effect)*/
+	RangedAudioParameter& threshold; /**< threshold used to trigger the effect*/
+	RangedAudioParameter& intensity; /**< Current intensity of the vibrato. The effect is triggered if this is above the threshold parameter*/
     
 private:
-    float intensity = 0.0f; /**< Value that will be checked to trigger the vibrato if higher than the treshold */
+    //float intensity = 0.0f; /**< Value that will be checked to trigger the vibrato if higher than the treshold */
     
     // Booleans that represent the state of the vibrato
     bool send = false; /**< \brief Boolean to know if the gesture should send midi */

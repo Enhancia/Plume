@@ -26,7 +26,9 @@ class PitchBendTuner: public TwoRangeTuner
 public:
     PitchBendTuner(PitchBend& pb)
         :   TwoRangeTuner (pb.getValueReference(), pb.getRangeReference(),
-                           pb.rangeLeft, pb.rangeRight, Range<float> (-90.0f, 90.0f),
+                           pb.rangeLeftLow, pb.rangeLeftHigh,
+                           pb.rangeRightLow, pb.rangeRightHigh,
+			               Range<float> (PLUME::UI::PITCHBEND_DISPLAY_MIN, PLUME::UI::PITCHBEND_DISPLAY_MAX),
                            String (CharPointer_UTF8 ("\xc2\xb0")))
     {}
     
@@ -43,7 +45,10 @@ class TiltTuner: public OneRangeTuner
 {
 public:
     TiltTuner(Tilt& tilt)
-        :   OneRangeTuner (tilt.getValueReference(), tilt.getRangeReference(), tilt.range, Range<float> (-90.0f, 90.0f),
+        :   OneRangeTuner (tilt.getValueReference(), tilt.getRangeReference(),
+			               tilt.rangeLow,
+						   tilt.rangeHigh,
+			               Range<float> (PLUME::UI::TILT_DISPLAY_MIN, PLUME::UI::TILT_DISPLAY_MAX),
                            String (CharPointer_UTF8 ("\xc2\xb0")))
     {}
     
@@ -60,7 +65,8 @@ class WaveTuner: public OneRangeTuner
 {
 public:
     WaveTuner(Wave& wave)
-        :   OneRangeTuner (wave.getValueReference(), wave.getRangeReference(), wave.range, Range<float> (-90.0f, 90.0f),
+        :   OneRangeTuner (wave.getValueReference(), wave.getRangeReference(), wave.range,
+                           Range<float> (PLUME::UI::WAVE_DISPLAY_MIN, PLUME::UI::WAVE_DISPLAY_MAX),
                            String (CharPointer_UTF8 ("\xc2\xb0")))
     {}
     
@@ -77,7 +83,9 @@ class RollTuner: public OneRangeTuner
 {
 public:
     RollTuner(Roll& roll)
-        :   OneRangeTuner (roll.getValueReference(), roll.getRangeReference(), roll.range, Range<float> (-90.0f, 90.0f),
+        :   OneRangeTuner (roll.getValueReference(), roll.getRangeReference(),
+			               roll.rangeLow, roll.rangeHigh,
+				           Range<float> (PLUME::UI::ROLL_DISPLAY_MIN, PLUME::UI::ROLL_DISPLAY_MAX),
                            String (CharPointer_UTF8 ("\xc2\xb0")))
     {}
     
@@ -93,12 +101,12 @@ class VibratoTuner: public SymmetricalTuner
 {
 public:
     VibratoTuner(Vibrato& vib)
-        :   SymmetricalTuner (vib.getValueReference(), vib.getRangeReference(), vib.gain, 500.0f, "", false),
+        :   SymmetricalTuner (vib.getValueReference(), vib.getRangeReference(), vib.gain, PLUME::UI::VIBRATO_DISPLAY_MAX, "", false),
             threshold (vib.threshold)
     {
         addAndMakeVisible(threshLabel = new Label("Threshold Label"));
         threshLabel->setEditable (true, false, false);
-        threshLabel->setText (String(int (threshold)), dontSendNotification);
+        threshLabel->setText (String (int (threshold.convertFrom0to1 (threshold.getValue()))), dontSendNotification);
         threshLabel->setFont (Font (13.0f, Font::plain));
         threshLabel->setJustificationType (Justification::centred);
         threshLabel->addListener (this);
@@ -134,6 +142,16 @@ public:
         repaint();
     }
     
+    void updateComponents() override
+    {
+        SymmetricalTuner::updateComponents(); //base class display update
+        
+        // Sets label text
+        if (!(threshLabel->isBeingEdited()))
+		{
+            threshLabel->setText (String (int (threshold.convertFrom0to1 (threshold.getValue()))), dontSendNotification);
+		}
+    }
     //==============================================================================
     void labelTextChanged (Label* lbl) override
     {
@@ -144,7 +162,7 @@ public:
             // checks that the string is numbers only
             if (lbl->getText().containsOnly ("0123456789") == false)
             {
-                lbl->setText (String (int (threshold)), dontSendNotification);
+                lbl->setText (String (int (threshold.convertFrom0to1 (threshold.getValue()))), dontSendNotification);
                 return;
             }
             
@@ -152,8 +170,11 @@ public:
         
             if (val < 0.0f) val = 0.0f;
             else if (val > 300.0f) val = 300.0f;
-        
-            threshold = val;
+            
+            threshold.beginChangeGesture();
+            threshold.setValueNotifyingHost (threshold.convertTo0to1 (val));
+            threshold.endChangeGesture();
+            
             lbl->setText (String (int(val)), dontSendNotification);
         }
     }
@@ -162,7 +183,7 @@ private:
     //==============================================================================
     ScopedPointer<Label> threshLabel;
     
-    float& threshold; /**< \brief Vibrato's threshold reference, used by the label to modify the right vibrato parameter */
+    RangedAudioParameter& threshold; /**< \brief Vibrato's threshold reference, used by the label to modify the right vibrato parameter */
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VibratoTuner)
