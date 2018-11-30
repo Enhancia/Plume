@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" jucerVersion="5.4.1"
-              pluginFormats="buildAU,buildStandalone,buildVST,buildVST3" version="1.1.7"
-              companyName="Enhancia" buildVST="1" buildVST3="1" buildAU="1"
-              buildAUv3="0" buildRTAS="0" buildAAX="0" enableIAA="0" pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
+              pluginFormats="buildStandalone,buildVST" version="1.1.7" companyName="Enhancia"
+              buildVST="1" buildVST3="0" buildAU="0" buildAUv3="0" buildRTAS="0"
+              buildAAX="0" enableIAA="0" pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
               pluginManufacturer="Enhancia" pluginName="Plume" pluginDesc="Enhancia's Plume. Wraps other plugins, provides customizable and mappable gestures to use with Neova."
               binaryDataNamespace="PlumeData" includeBinaryInJuceHeader="1"
               id="PjN2uz" pluginManufacturerCode="Enhn" pluginCode="Plum">
@@ -76,6 +76,13 @@
                   file="Source/Ui/Gesture/Mapper/MidiModeComponent.h"/>
           </GROUP>
           <GROUP id="{027C4BCF-8809-483D-C6DA-16DDB0E6F69A}" name="Tuner">
+            <FILE id="Cp1JGI" name="OneRangeTuner.cpp" compile="1" resource="0"
+                  file="Source/Ui/Gesture/Tuner/OneRangeTuner.cpp"/>
+            <FILE id="QxoyET" name="SymmetricalTuner.cpp" compile="1" resource="0"
+                  file="Source/Ui/Gesture/Tuner/SymmetricalTuner.cpp"/>
+            <FILE id="y1OJNc" name="TwoRangeTuner.cpp" compile="1" resource="0"
+                  file="Source/Ui/Gesture/Tuner/TwoRangeTuner.cpp"/>
+            <FILE id="B0V3Qw" name="Tuner.cpp" compile="1" resource="0" file="Source/Ui/Gesture/Tuner/Tuner.cpp"/>
             <FILE id="M4nvbi" name="Tuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/Tuner.h"/>
             <FILE id="WeeLEA" name="SymmetricalTuner.h" compile="0" resource="0"
                   file="Source/Ui/Gesture/Tuner/SymmetricalTuner.h"/>

@@ -541,6 +541,18 @@
     <ClCompile Include="..\..\Source\Ui\Gesture\Mapper\MapperComponent.cpp">
       <Filter>Plume\Source\Ui\Gesture\Mapper</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Ui\Gesture\Tuner\OneRangeTuner.cpp">
+      <Filter>Plume\Source\Ui\Gesture\Tuner</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Ui\Gesture\Tuner\SymmetricalTuner.cpp">
+      <Filter>Plume\Source\Ui\Gesture\Tuner</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Ui\Gesture\Tuner\TwoRangeTuner.cpp">
+      <Filter>Plume\Source\Ui\Gesture\Tuner</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Ui\Gesture\Tuner\Tuner.cpp">
+      <Filter>Plume\Source\Ui\Gesture\Tuner</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Ui\Presets\PresetComponent.cpp">
       <Filter>Plume\Source\Ui\Presets</Filter>
     </ClCompile>
