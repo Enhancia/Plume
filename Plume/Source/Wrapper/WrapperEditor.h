@@ -23,11 +23,17 @@ class WrapperEditorWindow  : public DocumentWindow
 {
 public:
     //==============================================================================
-    WrapperEditorWindow (WrapperProcessor&);
+	WrapperEditorWindow (WrapperProcessor&, int x = 0, int y = 0);
     ~WrapperEditorWindow();
 
     //==============================================================================
     void closeButtonPressed() override ;
+    /**
+     * \brief Called to indicate that this component has just acquired the keyboard focus.
+     */
+    void focusGained (FocusChangeType cause) override;
+    
+    //==============================================================================
     AudioProcessorEditor* createProcessorEditor (AudioProcessor& processor);
     
     //==============================================================================

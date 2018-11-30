@@ -41,8 +41,9 @@ public:
     bool isWrapping();
     
     //==============================================================================
-    void createWrapperEditor();
+    void createWrapperEditor (int x = 0, int y = 0);
     void clearWrapperEditor();
+    void wrapperEditorToFront (bool shouldAlsoGiveFocus);
     
     //==============================================================================
     String getWrappedPluginName();

@@ -23,12 +23,16 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     TRACE_IN;
     
     setLookAndFeel (&plumeLookAndFeel);
+	setMouseClickGrabsKeyboardFocus(false);
+	setBroughtToFrontOnMouseClick (true);
 
     // Creates the 3 main components
     addAndMakeVisible (wrapperComp = new WrapperComponent (processor.getWrapper()));
     addAndMakeVisible (presetComp = new PresetComponent (processor, *this));
 	addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
 	                                                    processor.getParameterTree(), PLUME::UI::FRAMERATE));
+	                                                    
+	
 	
     // Adds itself as a change listener for plume's processor
     processor.addActionListener (this);
@@ -39,7 +43,15 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	
 	setSize(PLUME::UI::DEFAULT_WINDOW_WIDTH, PLUME::UI::DEFAULT_WINDOW_HEIGHT);
 	setResizeLimits (getWidth()*2/3, getHeight()*2/3, getWidth()*3, getHeight()*3);
-	
+
+	for (Component* comp : getChildren())
+    {
+        comp->addMouseListener(this, true);
+    }
+
+	// if a WrappedEditor currently exists, puts it in front (useful because hosts actually deletes the editor when not shown)
+	wrapperComp->windowToFront();
+
 	PLUME::UI::ANIMATE_UI_FLAG = true;
 }
 
@@ -47,13 +59,22 @@ PlumeEditor::~PlumeEditor()
 {
     TRACE_IN;
     PLUME::UI::ANIMATE_UI_FLAG = false;
-    
+	for (Component* comp : getChildren())
+	{
+		comp->removeMouseListener(this);
+	}
+
+	//wrapperComp->removeMouseListener(this);
+	//presetComp->removeMouseListener(this);
+	//gesturePanel->removeMouseListener(this);
+	//resizableCorner->removeMouseListener(this);
+
     processor.removeActionListener (this);
     wrapperComp = nullptr;
     presetComp = nullptr;
     gesturePanel = nullptr;
     resizableCorner = nullptr;
-    
+
     setLookAndFeel (nullptr);
 }
 
@@ -77,6 +98,8 @@ void PlumeEditor::resized()
 	presetComp->setBounds(getWidth() * 3 / 4 + 2 * MARGIN, MARGIN, getWidth() - getWidth() * 3 / 4 - 3 * MARGIN, TOP_PANEL);
 	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 3 * MARGIN, getWidth() - 4 * MARGIN, getHeight() - TOP_PANEL - 5 * MARGIN);
 	resizableCorner->setBounds (getWidth() - 20, getHeight() - 20, 20, 20);
+
+	wrapperComp->windowToFront();
 }
 
 //==============================================================================
@@ -84,23 +107,48 @@ void PlumeEditor::actionListenerCallback(const String &message)
 {
     TRACE_IN;
     
-    if (message.compare("updateInterface") == 0)
+    if (message.compare (PLUME::commands::updateInterface) == 0)
     {
         updateFullInterface();
     }
     
-    else if (message.compare("lockInterface") == 0)
+    else if (message.compare (PLUME::commands::lockInterface) == 0)
     {
-        gesturePanel.reset();
+        //gesturePanel.reset();
         //gesturePanel->stopTimer();
     }
     
-    else if (message.compare("unlockInterface") == 0)
+    else if (message.compare (PLUME::commands::unlockInterface) == 0)
     {
         if (!gesturePanel->isTimerRunning())
         {
             gesturePanel->startTimerHz (PLUME::UI::FRAMERATE);
         }
+    }
+}
+
+void PlumeEditor::broughtToFront()
+{
+    if (wrapperComp->hasEditor())
+    {
+        //wrapperComp->windowToFront();
+    }
+}
+
+void PlumeEditor::focusLost (Component::FocusChangeType cause)
+{
+    if (wrapperComp->hasEditor())
+    {
+        DBG ("focus lost cause : " + String (cause));
+        wrapperComp->windowToFront();
+    }
+}
+
+void PlumeEditor::mouseUp (const MouseEvent& event)
+{
+    if (wrapperComp->hasEditor())
+    {
+        wrapperComp->windowToFront();
     }
 }
 
@@ -115,13 +163,15 @@ void PlumeEditor::updateFullInterface()
 {
     TRACE_IN;
     
-    gesturePanel.reset();    
+    gesturePanel.reset();
+    
     wrapperComp->update();
     presetComp->update();
 
     addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
 	                                                    processor.getParameterTree(), PLUME::UI::FRAMERATE));
 	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 3 * MARGIN, getWidth() - 4 * MARGIN, getHeight() - TOP_PANEL - 5 * MARGIN);
+	gesturePanel->addMouseListener (this, true);
 	
 	PLUME::UI::ANIMATE_UI_FLAG = true;
 }
@@ -144,4 +194,10 @@ void PlumeEditor::setInterfaceUpdates (bool shouldUpdate)
         gesturePanel->stopTimer();
         gesturePanel.reset();
     }
+}
+
+void PlumeEditor::setWindowsToFront()
+{
+    toFront (false);
+	wrapperComp->windowToFront();
 }

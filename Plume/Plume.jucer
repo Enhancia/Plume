@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" jucerVersion="5.4.1"
-              pluginFormats="buildVST,buildStandalone" version="1.1.7" companyName="Enhancia"
-              buildVST="1" buildVST3="0" buildAU="0" buildAUv3="0" buildRTAS="0"
-              buildAAX="0" enableIAA="0" pluginCharacteristicsValue="pluginIsMidiEffectPlugin,pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
-              pluginManufacturer="Enhancia" pluginName="Plume" pluginDesc="Enhancia's Plume. Wraps other plugins and provides customizable and mappable gestures to use with Neova."
+              pluginFormats="buildAU,buildStandalone,buildVST,buildVST3" version="1.1.7"
+              companyName="Enhancia" buildVST="1" buildVST3="1" buildAU="1"
+              buildAUv3="0" buildRTAS="0" buildAAX="0" enableIAA="0" pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
+              pluginManufacturer="Enhancia" pluginName="Plume" pluginDesc="Enhancia's Plume. Wraps other plugins, provides customizable and mappable gestures to use with Neova."
               binaryDataNamespace="PlumeData" includeBinaryInJuceHeader="1"
               id="PjN2uz" pluginManufacturerCode="Enhn" pluginCode="Plum">
   <MAINGROUP id="RYgD59" name="Plume">
@@ -76,12 +76,12 @@
                   file="Source/Ui/Gesture/Mapper/MidiModeComponent.h"/>
           </GROUP>
           <GROUP id="{027C4BCF-8809-483D-C6DA-16DDB0E6F69A}" name="Tuner">
-            <FILE id="p4jPAQ" name="GesturesTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/GesturesTuner.h"/>
-            <FILE id="lWYww1" name="OneRangeTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/OneRangeTuner.h"/>
+            <FILE id="M4nvbi" name="Tuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/Tuner.h"/>
             <FILE id="WeeLEA" name="SymmetricalTuner.h" compile="0" resource="0"
                   file="Source/Ui/Gesture/Tuner/SymmetricalTuner.h"/>
-            <FILE id="M4nvbi" name="Tuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/Tuner.h"/>
+            <FILE id="lWYww1" name="OneRangeTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/OneRangeTuner.h"/>
             <FILE id="ZmZmBe" name="TwoRangeTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/TwoRangeTuner.h"/>
+            <FILE id="p4jPAQ" name="GesturesTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/GesturesTuner.h"/>
           </GROUP>
         </GROUP>
         <GROUP id="{5450FD28-5BE9-06D6-902F-232955675D30}" name="Presets">

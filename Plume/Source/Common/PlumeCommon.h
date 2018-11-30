@@ -117,4 +117,13 @@ namespace PLUME
         };
     }
     
+    // commands strings
+    namespace commands
+    {
+        const String toFront ("toFront");
+        const String updateInterface ("updateInterface");
+        const String unlockInterface ("unlockInterface");
+        const String lockInterface ("lockInterface");
+    }
+    
 }

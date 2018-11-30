@@ -29,6 +29,7 @@ PluginWrapper::PluginWrapper (PlumeProcessor& p, GestureArray& gArr)
     wrappedPluginDescriptions = new OwnedArray<PluginDescription>;
     formatManager = new AudioPluginFormatManager;
     formatManager->addFormat (new VSTPluginFormat());
+    //formatManager->addFormat (new AudioUnitFormat());
 }
 
 PluginWrapper::~PluginWrapper()
@@ -72,7 +73,7 @@ bool PluginWrapper::wrapPlugin (File pluginFile)
     }
     else
     {
-        DBG ("Error: The specified plugin doesn't exist or failed to load.\n\n");
+        DBG ("Error: The specified plugin ( " << pluginFile.getFullPathName() << " ) doesn't exist or failed to load.\n\n");
         return false;
     }
     
@@ -133,7 +134,7 @@ bool PluginWrapper::isWrapping()
 }
 
 //==============================================================================
-void PluginWrapper::createWrapperEditor()
+void PluginWrapper::createWrapperEditor (int x, int y)
 {
     TRACE_IN;
     
@@ -146,7 +147,7 @@ void PluginWrapper::createWrapperEditor()
     
     if (hasOpenedEditor == true)
     {
-        wrapperEditor->toFront (true);
+        wrapperEditor->toFront (false);
         return;
     }
     
@@ -155,6 +156,7 @@ void PluginWrapper::createWrapperEditor()
     if (wrapperEditor == nullptr)
     {
         wrapperEditor = new WrapperEditorWindow (*wrapperProcessor);
+		wrapperEditor->toFront (false);
         return;
     }
     
@@ -172,6 +174,15 @@ void PluginWrapper::clearWrapperEditor()
         sendChangeMessage();
     }
 }
+
+void PluginWrapper::wrapperEditorToFront (bool shouldAlsoGiveFocus)
+{
+    if (hasOpenedEditor)
+    {
+        wrapperEditor->toFront (shouldAlsoGiveFocus);
+    }
+}
+
 //==============================================================================
 String PluginWrapper::getWrappedPluginName()
 {

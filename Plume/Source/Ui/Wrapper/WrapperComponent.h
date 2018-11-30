@@ -22,7 +22,7 @@ class WrapperComponent    : public Component,
 {
 public:
     //==============================================================================
-    WrapperComponent(PluginWrapper& wrap);
+    WrapperComponent (PluginWrapper& wrap);
     ~WrapperComponent();
 
     //==============================================================================
@@ -37,6 +37,8 @@ public:
     void scanPlugin();
     void openEditor();
     void closeEditor();
+    bool hasEditor();
+    void windowToFront();
     
     //==============================================================================
     void update();

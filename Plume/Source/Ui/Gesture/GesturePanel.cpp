@@ -315,7 +315,6 @@ void GesturePanel::addGestureComponent (Gesture& gest)
     
         for (int i=0; i<PLUME::param::numParams; i++)
         {
-            DBG ("Listening to " << gest.id << PLUME::param::paramIds[i]);
             parameters.addParameterListener (String (gest.id) + PLUME::param::paramIds[i], this);
         }
     }

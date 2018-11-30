@@ -13,7 +13,7 @@
 
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 //==============================================================================
-WrapperComponent::WrapperComponent(PluginWrapper& wrap)
+WrapperComponent::WrapperComponent (PluginWrapper& wrap)
     : wrapper (wrap)
 {
     TRACE_IN;
@@ -44,6 +44,7 @@ WrapperComponent::WrapperComponent(PluginWrapper& wrap)
     openEditorButton->addListener (this);
     
     lastPluginDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory();
+    
 }
 
 WrapperComponent::~WrapperComponent()
@@ -91,7 +92,15 @@ void WrapperComponent::buttonClicked (Button* bttn)
     
     else if (bttn == openEditorButton)
     {
-        openEditor();
+		if (wrapper.hasOpenedWrapperEditor())
+		{
+			closeEditor();
+		}
+		else
+		{
+			openEditor();
+		}
+        
     }
 }
 
@@ -147,6 +156,19 @@ void WrapperComponent::closeEditor()
     if (wrapper.isWrapping())
     {
         wrapper.clearWrapperEditor();
+    }
+}
+
+bool WrapperComponent::hasEditor()
+{
+    return wrapper.isWrapping();
+}
+
+void WrapperComponent::windowToFront ()
+{
+    if (wrapper.isWrapping() && wrapper.hasOpenedWrapperEditor())
+    {
+        wrapper.createWrapperEditor();
     }
 }
 
