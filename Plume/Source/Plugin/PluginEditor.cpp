@@ -98,8 +98,6 @@ void PlumeEditor::resized()
 	presetComp->setBounds(getWidth() * 3 / 4 + 2 * MARGIN, MARGIN, getWidth() - getWidth() * 3 / 4 - 3 * MARGIN, TOP_PANEL);
 	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 3 * MARGIN, getWidth() - 4 * MARGIN, getHeight() - TOP_PANEL - 5 * MARGIN);
 	resizableCorner->setBounds (getWidth() - 20, getHeight() - 20, 20, 20);
-
-	wrapperComp->windowToFront();
 }
 
 //==============================================================================
@@ -135,13 +133,20 @@ void PlumeEditor::broughtToFront()
     }
 }
 
+void PlumeEditor::focusGained (Component::FocusChangeType cause)
+{
+    
+}
+
 void PlumeEditor::focusLost (Component::FocusChangeType cause)
 {
+    /*
     if (wrapperComp->hasEditor())
     {
         DBG ("focus lost cause : " + String (cause));
         wrapperComp->windowToFront();
     }
+    */
 }
 
 void PlumeEditor::mouseUp (const MouseEvent& event)
