@@ -43,7 +43,7 @@ public:
     void resized() override;
 
     //==============================================================================
-    void readData(String s);
+    bool readData(String s);
     const String getRawData(int index);
     bool getRawDataAsFloatArray(Array<float>& arrayToFill);
     

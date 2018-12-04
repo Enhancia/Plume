@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "Ui/Gesture/Tuner/Tuner.h"
+#include "Ui/Gesture/Tuner/OneRangeTuner.h"
 
 
 OneRangeTuner::OneRangeTuner(const float& val, NormalisableRange<float>& gestureRange,

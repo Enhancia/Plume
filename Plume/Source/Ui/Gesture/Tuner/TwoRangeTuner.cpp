@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "Ui/Gesture/Tuner/Tuner.h"
+#include "Ui/Gesture/Tuner/TwoRangeTuner.h"
 
 //==============================================================================
 TwoRangeTuner::TwoRangeTuner(const float& val, const NormalisableRange<float>& gestureRange,

@@ -61,6 +61,11 @@
           <FILE id="OXmlbL" name="PlumeLookAndFeel.h" compile="0" resource="0"
                 file="Source/Ui/LookAndFeel/PlumeLookAndFeel.h"/>
         </GROUP>
+        <GROUP id="{4CA36361-EB23-BED0-3C51-3F19F9BE9F00}" name="Common">
+          <FILE id="cZ9UZJ" name="MovingCursor.cpp" compile="1" resource="0"
+                file="Source/Ui/Common/MovingCursor.cpp"/>
+          <FILE id="QhDpZl" name="MovingCursor.h" compile="0" resource="0" file="Source/Ui/Common/MovingCursor.h"/>
+        </GROUP>
         <GROUP id="{3CFEC0E3-E11C-6973-B8F6-2519E7B63825}" name="Gesture">
           <FILE id="tb4LAs" name="GesturePanel.cpp" compile="1" resource="0"
                 file="Source/Ui/Gesture/GesturePanel.cpp"/>
@@ -76,17 +81,17 @@
                   file="Source/Ui/Gesture/Mapper/MidiModeComponent.h"/>
           </GROUP>
           <GROUP id="{027C4BCF-8809-483D-C6DA-16DDB0E6F69A}" name="Tuner">
-            <FILE id="Cp1JGI" name="OneRangeTuner.cpp" compile="1" resource="0"
-                  file="Source/Ui/Gesture/Tuner/OneRangeTuner.cpp"/>
-            <FILE id="QxoyET" name="SymmetricalTuner.cpp" compile="1" resource="0"
-                  file="Source/Ui/Gesture/Tuner/SymmetricalTuner.cpp"/>
-            <FILE id="y1OJNc" name="TwoRangeTuner.cpp" compile="1" resource="0"
-                  file="Source/Ui/Gesture/Tuner/TwoRangeTuner.cpp"/>
             <FILE id="B0V3Qw" name="Tuner.cpp" compile="1" resource="0" file="Source/Ui/Gesture/Tuner/Tuner.cpp"/>
             <FILE id="M4nvbi" name="Tuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/Tuner.h"/>
+            <FILE id="QxoyET" name="SymmetricalTuner.cpp" compile="1" resource="0"
+                  file="Source/Ui/Gesture/Tuner/SymmetricalTuner.cpp"/>
             <FILE id="WeeLEA" name="SymmetricalTuner.h" compile="0" resource="0"
                   file="Source/Ui/Gesture/Tuner/SymmetricalTuner.h"/>
+            <FILE id="Cp1JGI" name="OneRangeTuner.cpp" compile="1" resource="0"
+                  file="Source/Ui/Gesture/Tuner/OneRangeTuner.cpp"/>
             <FILE id="lWYww1" name="OneRangeTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/OneRangeTuner.h"/>
+            <FILE id="y1OJNc" name="TwoRangeTuner.cpp" compile="1" resource="0"
+                  file="Source/Ui/Gesture/Tuner/TwoRangeTuner.cpp"/>
             <FILE id="ZmZmBe" name="TwoRangeTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/TwoRangeTuner.h"/>
             <FILE id="p4jPAQ" name="GesturesTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/GesturesTuner.h"/>
           </GROUP>
@@ -199,5 +204,5 @@
     <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_video" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
   </MODULES>
-  <JUCEOPTIONS JUCE_PLUGINHOST_VST="1" JUCE_ENABLE_REPAINT_DEBUGGING="1"/>
+  <JUCEOPTIONS JUCE_PLUGINHOST_VST="1"/>
 </JUCERPROJECT>

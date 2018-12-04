@@ -366,8 +366,13 @@ void GesturePanel::timerCallback()
 
 void GesturePanel::parameterChanged (const String& parameterID, float newValue)
 {
+    // if the ID is "x_value" or "x_vibrato_intensity" doesn't update
+    // (only the MovingCursor object in the the GestureTuner Component is updated)
+    if (parameterID.endsWith ("ue") || parameterID.endsWith ("y")) return;
+        
+    
     int numGesture = parameterID.substring(0,1).getIntValue();
-
+    
     for (auto* gComp : gestureComponents)
     {
         if (gComp->getGestureId() == numGesture)

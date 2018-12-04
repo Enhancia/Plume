@@ -22,7 +22,7 @@ namespace PLUME
     
         // Display settings
         const int MARGIN = 8;
-        const int FRAMERATE = 60;
+        const int FRAMERATE = 50;
         
         extern bool ANIMATE_UI_FLAG;
         

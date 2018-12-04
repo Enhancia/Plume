@@ -129,7 +129,7 @@ void PlumeEditor::broughtToFront()
 {
     if (wrapperComp->hasEditor())
     {
-        //wrapperComp->windowToFront();
+        //setWindowsToFront();
     }
 }
 
@@ -153,7 +153,7 @@ void PlumeEditor::mouseUp (const MouseEvent& event)
 {
     if (wrapperComp->hasEditor())
     {
-        wrapperComp->windowToFront();
+        setWindowsToFront();
     }
 }
 
@@ -203,6 +203,6 @@ void PlumeEditor::setInterfaceUpdates (bool shouldUpdate)
 
 void PlumeEditor::setWindowsToFront()
 {
-    toFront (false);
 	wrapperComp->windowToFront();
+    toFront (true);
 }

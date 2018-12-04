@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "Ui/Gesture/Tuner/Tuner.h"
+#include "Ui/Gesture/Tuner/SymmetricalTuner.h"
 
 SymmetricalTuner::SymmetricalTuner(const float& val, NormalisableRange<float> gestureRange, RangedAudioParameter& param, float paramMax,
                     const String unit, bool show)
