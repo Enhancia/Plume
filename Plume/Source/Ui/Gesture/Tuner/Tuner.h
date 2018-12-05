@@ -36,6 +36,7 @@ public:
 	virtual void updateComponents() = 0;
 	
 protected:
+    //==============================================================================
     Range<int> sliderPlacement;
     const String valueUnit;
     

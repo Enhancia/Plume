@@ -47,11 +47,9 @@ void DataReader::resized()
 bool DataReader::readData (String s)
 {
 	auto strArr = StringArray::fromTokens(s, " ", String());
-    
-	DBG ("\nOLD : " << data->joinIntoString (" "));
-	DBG ("NEW : " << strArr.joinIntoString (" "));
+
     // Checks for full lines
-    if (strArr.size() == DATA_SIZE && *data != strArr)
+    if (strArr.size() == DATA_SIZE)
     {
         // Splits the string into 7 separate ones
         *data = strArr;
@@ -117,7 +115,6 @@ void DataReader::messageReceived (const MemoryBlock &message)
     {
         if (readData (message.toString()))
         {
-            DBG ("New values yay biatch");
             sendChangeMessage();
         }
     }

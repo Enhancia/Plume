@@ -28,7 +28,7 @@ Tuner::Tuner (const float& val, NormalisableRange<float> gestRange, const Range<
 	    valueLabel->setFont (Font(13.0f, Font::plain));
 	    valueLabel->setJustificationType(Justification::centred);
 	    
-	    addAndMakeVisible (cursor = new MovingCursor (value, displayRange, gestureRange, CURSOR_SIZE));
+	    addAndMakeVisible (cursor = new MovingCursor (value, displayRange, gestureRange, CURSOR_SIZE, 5));
 	}
 }
 

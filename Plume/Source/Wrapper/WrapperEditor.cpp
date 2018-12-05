@@ -26,10 +26,6 @@ WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc, int x, int
         setContentOwned (ui, true);
     }
     
-	//if (wrapperProcessor.getOwnerProcessor().getActiveEditor() == nullptr)
-    //centreAroundComponent (wrapperProcessor.getOwnerWrapper().getOwner().getActiveEditor(), getWidth(), getHeight());
-    setTopLeftPosition (x, y);
-    
     setVisible (true);
 }
 
