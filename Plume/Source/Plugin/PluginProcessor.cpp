@@ -112,10 +112,10 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
     DBG ("\nInput Buses : " << getBusCount (true) << " | Output Buses : " << getBusCount (false));
     DBG ("Main input enabled ? " << int (!(getBusesLayout().getMainInputChannelSet().isDisabled())) << " | Main Output Enabled ? "
                                  << int (!(getBusesLayout().getMainOutputChannelSet().isDisabled())));
-    */
-    /*
+    
     
     {
+		
         File abf = File (File::getSpecialLocation (File::userDesktopDirectory).getFullPathName() + "/AudioBuff.txt");
         if (!(abf.exists()))
 		{
@@ -128,6 +128,7 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
 		    int sample = i * (buffer.getNumSamples() / 4);
 			abf.appendText( String (sample) + " : " + String (buffer.getSample (1, sample)) + "\n");
 		}
+		
 
         File mbf = File (File::getSpecialLocation (File::userDesktopDirectory).getFullPathName() + "/MidiBuff.txt");
 		if (!(mbf.exists()))
@@ -135,13 +136,29 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
 			mbf.create();
 			DBG ("Attempted to create file : " + mbf.getFullPathName());
 		}
-		DBG("mbf : " + mbf.getFullPathName());
 
-		MidiMessage m; int time;
-        for (MidiBuffer::Iterator i (midiMessages); i.getNextEvent (m, time);)
+		if (!midiMessages.isEmpty())
         {
-            mbf.appendText (m.getDescription() + " | " + String(time) + "\n" );
+			mbf.appendText ("\nNew Buffer: size " + String (buffer.getNumSamples()) + "\n");
+
+		    MidiMessage m; int time;
+            for (MidiBuffer::Iterator i (midiMessages); i.getNextEvent (m, time);)
+            {
+                mbf.appendText (m.getDescription() + " | " + String(time) + "\n" );
+			    
+                //for (const uint8* p = m.getRawData(); p < p + m.getRawDataSize(); p++)
+                //{
+                //    mbf.appendText (String(*p));
+                //}
+                //mbf.appendText ("\n\n");
+            }
+            mbf.appendText ("\n");
         }
+        else 
+        {
+            mbf.appendText ("\nEmpty Buffer\n");
+        }
+        
     }
     */
     

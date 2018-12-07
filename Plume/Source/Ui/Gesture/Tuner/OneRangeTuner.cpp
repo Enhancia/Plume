@@ -11,7 +11,7 @@
 #include "Ui/Gesture/Tuner/OneRangeTuner.h"
 
 
-OneRangeTuner::OneRangeTuner(const float& val, NormalisableRange<float>& gestureRange,
+OneRangeTuner::OneRangeTuner(const float& val, NormalisableRange<float> gestureRange,
                 RangedAudioParameter& rangeL, RangedAudioParameter& rangeH, const Range<float> paramMax,
                 const String unit, bool show)
     : Tuner(val, gestureRange, paramMax, unit, show),

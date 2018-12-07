@@ -22,7 +22,7 @@ class OneRangeTuner:    public Tuner,
 {
 public:
     //==============================================================================
-    OneRangeTuner(const float& val, NormalisableRange<float>& gestureRange,
+    OneRangeTuner(const float& val, NormalisableRange<float> gestureRange,
                   RangedAudioParameter& rangeL, RangedAudioParameter& rangeH, const Range<float> paramMax,
                   const String unit = "", bool show = true);
     ~OneRangeTuner();
