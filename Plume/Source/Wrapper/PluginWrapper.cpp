@@ -29,7 +29,7 @@ PluginWrapper::PluginWrapper (PlumeProcessor& p, GestureArray& gArr)
     wrappedPluginDescriptions = new OwnedArray<PluginDescription>;
     formatManager = new AudioPluginFormatManager;
     formatManager->addFormat (new VSTPluginFormat());
-    //formatManager->addFormat (new AudioUnitFormat());
+    formatManager->addFormat (new AudioUnitPluginFormat());
 }
 
 PluginWrapper::~PluginWrapper()
