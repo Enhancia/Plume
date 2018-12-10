@@ -64,16 +64,35 @@ bool PluginWrapper::wrapPlugin (File pluginFile)
     DBG ("\n[Scan and add File]");
     ScopedPointer<KnownPluginList> pluginList = new KnownPluginList();
     
+    
+    PluginDirectoryScanner pScanner (*pluginList, *getPluginFormat (pluginFile),
+		                             FileSearchPath (pluginFile.getParentDirectory().getFullPathName()),
+                                     false, File(), true);
+    String name;
+    
+    pScanner.setFilesOrIdentifiersToScan (StringArray (pluginFile.getFullPathName()));
+    pScanner.scanNextFile (false, name);
+    
+    if (auto desc = pluginList->getType (0))
+    /*
     if (pluginList->scanAndAddFile (pluginFile.getFullPathName(),
                                     false,
                                     *wrappedPluginDescriptions,
                                     *(formatManager->getFormat (0))))
+    */
     {
-        pluginList = nullptr;
+        // Only loads the plugin if it is an instrument (ie it creates sound).
+        if (desc->isInstrument)  wrappedPluginDescriptions->add (desc);
+        
+        else
+        {
+            DBG ("Error: The specified plugin ( " << name << " ) isn't an instrument.\n\n");
+            return false;
+        }
     }
     else
     {
-        DBG ("Error: The specified plugin ( " << pluginFile.getFullPathName() << " ) doesn't exist or failed to load.\n\n");
+        DBG ("Error: The specified plugin ( " << name << " | " << pluginFile.getFullPathName() << " ) doesn't exist or failed to load.\n\n");
         return false;
     }
     
@@ -127,6 +146,37 @@ bool PluginWrapper::rewrapPlugin(File pluginFile)
     return wrapPlugin(pluginFile);
 }
 
+AudioPluginFormat* PluginWrapper::getPluginFormat (File pluginFile)
+{
+   String ext = pluginFile.getFileExtension();
+
+ #if (JUCE_WINDOWS || JUCE_MAC) && JUCE_PLUGINHOST_VST
+  #if JUCE_WINDOWS
+   if (ext.compare (".dll") == 0)
+  #elif JUCE_MAC
+   if (ext.compare (".vst") == 0)
+  #endif
+   {
+       return formatManager->getFormat (Formats::VST);
+   }
+ #endif
+
+ #if (JUCE_WINDOWS || JUCE_MAC) && JUCE_PLUGINHOST_VST3
+   if (ext.compare (".vst3") == 0)
+   {
+       return formatManager->getFormat (Formats::VST3);
+   }
+ #endif
+
+ #if JUCE_MAC && JUCE_PLUGINHOST_AU
+   if (ext.compare (".component") == 0)
+   {
+       return formatManager->getFormat (Formats::AU);
+   }
+ #endif
+
+   return nullptr;
+}
 //==============================================================================
 bool PluginWrapper::isWrapping()
 {
@@ -182,6 +232,7 @@ void PluginWrapper::wrapperEditorToFront (bool shouldAlsoGiveFocus)
         wrapperEditor->toFront (shouldAlsoGiveFocus);
     }
 }
+
 
 //==============================================================================
 String PluginWrapper::getWrappedPluginName()

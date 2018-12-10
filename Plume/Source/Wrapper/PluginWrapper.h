@@ -28,6 +28,14 @@ class PluginWrapper : public AudioProcessorParameter::Listener,
                       public ChangeBroadcaster
 {
 public:
+    enum Formats
+    {
+        VST =0,
+        VST3,
+        AU,
+        numFormats
+    };
+   
     //==============================================================================
     PluginWrapper(PlumeProcessor&, GestureArray&);
     ~PluginWrapper();
@@ -36,6 +44,8 @@ public:
     bool wrapPlugin (File pluginFile);
     void unwrapPlugin();
     bool rewrapPlugin(File pluginFile);
+    
+    AudioPluginFormat* getPluginFormat (File pluginFile);
     
     //==============================================================================
     bool isWrapping();
