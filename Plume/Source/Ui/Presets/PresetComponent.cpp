@@ -47,7 +47,10 @@ PresetComponent::~PresetComponent()
 
 void PresetComponent::paint (Graphics& g)
 {
-    g.fillAll (Colour (0xff909090));
+    if (auto* lf = dynamic_cast<PlumeLookAndFeel*> (&getLookAndFeel()))
+    {
+        g.fillAll (lf->getPlumeColour (PlumeLookAndFeel::topPanelBackground));
+    }
 }
 
 void PresetComponent::resized ()

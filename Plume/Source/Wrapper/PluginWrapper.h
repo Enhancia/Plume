@@ -31,8 +31,12 @@ public:
     enum Formats
     {
         VST =0,
-        VST3,
+      #if JUCE_MAC
         AU,
+      #endif
+      #if JUCE_PLUGINHOST_VST3
+        VST3,
+      #endif
         numFormats
     };
    
@@ -41,9 +45,9 @@ public:
     ~PluginWrapper();
     
     //==============================================================================
-    bool wrapPlugin (File pluginFile);
+    bool wrapPlugin (String pluginFileOrId);
     void unwrapPlugin();
-    bool rewrapPlugin(File pluginFile);
+    bool rewrapPlugin (String pluginFileOrId);
     
     AudioPluginFormat* getPluginFormat (File pluginFile);
     

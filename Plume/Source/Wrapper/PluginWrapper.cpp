@@ -29,7 +29,12 @@ PluginWrapper::PluginWrapper (PlumeProcessor& p, GestureArray& gArr)
     wrappedPluginDescriptions = new OwnedArray<PluginDescription>;
     formatManager = new AudioPluginFormatManager;
     formatManager->addFormat (new VSTPluginFormat());
+  #if JUCE_MAC
     formatManager->addFormat (new AudioUnitPluginFormat());
+  #endif
+  #if JUCE_PLUGINHOST_VST3
+    formatManager->addFormat (new VST3PluginFormat());
+  #endif
 }
 
 PluginWrapper::~PluginWrapper()
@@ -45,64 +50,89 @@ PluginWrapper::~PluginWrapper()
 }
 
 //==============================================================================
-bool PluginWrapper::wrapPlugin (File pluginFile)
+bool PluginWrapper::wrapPlugin (String pluginFileOrId)
 {   
     TRACE_IN;
-    if (pluginFile == File::getSpecialLocation (File::currentExecutableFile) ||
-        pluginFile.getFileNameWithoutExtension().compare ("Plume") == 0)
+    
+    bool isFile = File (pluginFileOrId).exists();
+    
+    if ((isFile && File (pluginFileOrId) == File::getSpecialLocation (File::currentExecutableFile)) ||
+        pluginFileOrId.contains ("Plume."))
     {
         DBG ("Can't wrap yourself can you?");
         return false;
-    }
-    
-    if (hasWrappedInstance)
-    {
-        unwrapPlugin();
     }
     
     //Scans the plugin directory for the wanted plugin and gets its PluginDescription
     DBG ("\n[Scan and add File]");
     ScopedPointer<KnownPluginList> pluginList = new KnownPluginList();
     
-    
-    PluginDirectoryScanner pScanner (*pluginList, *getPluginFormat (pluginFile),
-		                             FileSearchPath (pluginFile.getParentDirectory().getFullPathName()),
-                                     false, File(), true);
-    String name;
-    
-    pScanner.setFilesOrIdentifiersToScan (StringArray (pluginFile.getFullPathName()));
-    pScanner.scanNextFile (false, name);
-    
-    if (auto desc = pluginList->getType (0))
-    /*
-    if (pluginList->scanAndAddFile (pluginFile.getFullPathName(),
-                                    false,
-                                    *wrappedPluginDescriptions,
-                                    *(formatManager->getFormat (0))))
-    */
+    if (isFile)
     {
-        // Only loads the plugin if it is an instrument (ie it creates sound).
-        if (desc->isInstrument)  wrappedPluginDescriptions->add (desc);
+        File pluginFile (pluginFileOrId);
         
+        // Scanning method for a File
+        PluginDirectoryScanner pScanner (*pluginList, *getPluginFormat (pluginFile),
+		                                FileSearchPath (pluginFile.getParentDirectory().getFullPathName()),
+                                        false, File(), true);
+        String name;
+    
+        pScanner.setFilesOrIdentifiersToScan (StringArray (pluginFileOrId));
+        pScanner.scanNextFile (false, name);
+    
+        if (auto desc = pluginList->getType (0))
+        {
+            // Only loads the plugin if it is an instrument (ie it creates sound).
+            if (desc->isInstrument)  wrappedPluginDescriptions->add (desc);
+        
+            else
+            {
+                DBG ("Error: The specified plugin ( " << name << " ) isn't an instrument.\n\n");
+                return false;
+            }
+        }
         else
         {
-            DBG ("Error: The specified plugin ( " << name << " ) isn't an instrument.\n\n");
+            DBG ("Error: The specified plugin ( " << name << " | " << pluginFileOrId << " ) doesn't exist or failed to load.\n\n");
             return false;
         }
     }
     else
     {
-        DBG ("Error: The specified plugin ( " << name << " | " << pluginFile.getFullPathName() << " ) doesn't exist or failed to load.\n\n");
-        return false;
+        // Scanning method for an ID (ie AudioUnit ID string)
+        if (pluginList->scanAndAddFile (pluginFileOrId,
+                                        false,
+                                        *wrappedPluginDescriptions,
+                                        *(formatManager->getFormat (0))))
+        {
+            // Only loads the plugin if it is an instrument (ie if it creates sound).
+            if (!(wrappedPluginDescriptions->getLast()->isInstrument))
+            {
+				wrappedPluginDescriptions->removeLast();
+                DBG ("Error: The specified plugin ( " << pluginFileOrId << " ) isn't an instrument.\n\n");
+                return false;
+            }
+        }
+        else
+        {
+            DBG ("Error: The specified plugin ( " << pluginFileOrId << " ) doesn't exist or failed to load.\n\n");
+            return false;
+        }
     }
     
+
+	if (hasWrappedInstance)
+	{
+		unwrapPlugin();
+	}
+
     //Creates the plugin instance using the format manager
     String errorMsg;
     DBG ("\n[create Plugin Instance]");
-    wrappedInstance = formatManager->createPluginInstance (*((*wrappedPluginDescriptions)[wrappedPluginDescriptions->size()-1]),
-                                                             owner.getSampleRate(),
-															 owner.getBlockSize(),
-                                                             errorMsg);
+    wrappedInstance = formatManager->createPluginInstance (*(wrappedPluginDescriptions->getLast()),
+                                                            owner.getSampleRate(),
+															owner.getBlockSize(),
+                                                            errorMsg);
                                                              
     if (wrappedInstance == nullptr)
     {
@@ -116,7 +146,10 @@ bool PluginWrapper::wrapPlugin (File pluginFile)
     wrapperProcessor = new WrapperProcessor (*wrappedInstance, *this);
     wrapperProcessor->prepareToPlay (owner.getSampleRate(), owner.getBlockSize());
     hasWrappedInstance = true;
-    
+
+	wrappedPluginDescriptions->clear (false);
+	pluginList = nullptr;
+	
     return true;
 }
 
@@ -140,10 +173,10 @@ void PluginWrapper::unwrapPlugin()
     wrappedInstance.reset();
 }
 
-bool PluginWrapper::rewrapPlugin(File pluginFile)
+bool PluginWrapper::rewrapPlugin(String pluginFileOrId)
 {
     unwrapPlugin();
-    return wrapPlugin(pluginFile);
+    return wrapPlugin(pluginFileOrId);
 }
 
 AudioPluginFormat* PluginWrapper::getPluginFormat (File pluginFile)

@@ -321,13 +321,13 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
 			bool requiresSearch = true;
 
             // First searches the direct path
-            if (File (pd.fileOrIdentifier).exists())
+            if (!(pd.fileOrIdentifier.isEmpty()))
             {
                 if (wrapper->isWrapping()) requiresSearch = !(wrapper->rewrapPlugin (pd.fileOrIdentifier));
                 else                       requiresSearch = !(wrapper->wrapPlugin (pd.fileOrIdentifier));
             }
             // Then the directory where plume is located
-            if (requiresSearch)
+            if (requiresSearch && File (pd.fileOrIdentifier).exists())
             {
                 File pluginDir (File::getSpecialLocation (File::currentApplicationFile).getParentDirectory());
                 String pluginToSearch (pd.name);
@@ -338,8 +338,6 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
                     pluginToSearch += ".dll";
                   #elif JUCE_MAC
                     pluginToSearch += ".vst";
-                  #elif JUCE_LINUX
-                    pluginToSearch += ".so"; // Plume isn't distributed on Linux but might aswell still write that
                   #endif
                 }
                 else if (pd.pluginFormatName.compare ("VST3") == 0)
@@ -359,8 +357,8 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
                 
                 if (!searchResult.isEmpty())
                 {
-                    if (wrapper->isWrapping()) wrapper->rewrapPlugin (searchResult[0]);
-                    else                       wrapper->wrapPlugin (searchResult[0]);
+                    if (wrapper->isWrapping()) wrapper->rewrapPlugin (searchResult[0].getFullPathName());
+                    else                       wrapper->wrapPlugin (searchResult[0].getFullPathName());
                 }
                 else 
                 {
@@ -371,7 +369,7 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
             }
         }
     }
-    // If there is no plugin in the preset
+    // If there is no plugin in the preset only unwraps
     else
     {
         wrapper->unwrapPlugin();
@@ -393,8 +391,6 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
 
 void PlumeProcessor::loadGestureXml(const XmlElement& gestureData)
 {
-    //sendActionMessage("lockInterface");
-    
     int i = 0;
     gestureArray->clearAllGestures();
     
@@ -404,7 +400,7 @@ void PlumeProcessor::loadGestureXml(const XmlElement& gestureData)
 		{
 			gestureArray->addGestureFromXml(*gesture);
 
-			if (gesture->getBoolAttribute("mapped") == true)
+			if (gesture->getBoolAttribute ("mapped") == true)
 			{
 				gestureArray->getGestureById(i)->clearAllParameters();
 				wrapper->addParametersToGestureFromXml(*gesture, i);
