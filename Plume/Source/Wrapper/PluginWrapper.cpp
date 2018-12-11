@@ -73,8 +73,8 @@ bool PluginWrapper::wrapPlugin (String pluginFileOrId)
         
         // Scanning method for a File
         PluginDirectoryScanner pScanner (*pluginList, *getPluginFormat (pluginFile),
-		                                FileSearchPath (pluginFile.getParentDirectory().getFullPathName()),
-                                        false, File(), true);
+                                         FileSearchPath (pluginFile.getParentDirectory().getFullPathName()),
+                                         false, File(), true);
         String name;
     
         pScanner.setFilesOrIdentifiersToScan (StringArray (pluginFileOrId));
@@ -97,27 +97,41 @@ bool PluginWrapper::wrapPlugin (String pluginFileOrId)
             return false;
         }
     }
+    
+    // If not a file, then most likely an AU identifier:
+    // the search takes place in the common AU folders with the AU format.
     else
     {
-        // Scanning method for an ID (ie AudioUnit ID string)
-        if (pluginList->scanAndAddFile (pluginFileOrId,
-                                        false,
-                                        *wrappedPluginDescriptions,
-                                        *(formatManager->getFormat (0))))
+      #if !JUCE_MAC
+        DBG ("Error: The specified plugin ( " << pluginFileOrId << " ) isn't a in a legal file path.\n\n");
+        return false;
+      #else
+        PluginDirectoryScanner pScanner (*pluginList, formatManager->getFormat (Formats::AU),
+		                                FileSearchPath ("Macintosh HD:/Library/Audio/Plug-Ins/Components/;
+                                                        ~/Library/Audio/Plug-Ins/Components/"),,
+                                        false, File(), true);
+        String name;
+    
+        pScanner.setFilesOrIdentifiersToScan (StringArray (pluginFileOrId));
+        pScanner.scanNextFile (false, name);
+    
+        if (auto desc = pluginList->getType (0))
         {
-            // Only loads the plugin if it is an instrument (ie if it creates sound).
-            if (!(wrappedPluginDescriptions->getLast()->isInstrument))
+            // Only loads the plugin if it is an instrument (ie it creates sound).
+            if (desc->isInstrument)  wrappedPluginDescriptions->add (desc);
+        
+            else
             {
-				wrappedPluginDescriptions->removeLast();
-                DBG ("Error: The specified plugin ( " << pluginFileOrId << " ) isn't an instrument.\n\n");
+                DBG ("Error: The specified plugin ( " << name << " ) isn't an instrument.\n\n");
                 return false;
             }
         }
         else
         {
-            DBG ("Error: The specified plugin ( " << pluginFileOrId << " ) doesn't exist or failed to load.\n\n");
+            DBG ("Error: The specified plugin ( " << name << " | " << pluginFileOrId << " ) doesn't exist or failed to load.\n\n");
             return false;
         }
+      #endif
     }
     
 
