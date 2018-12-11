@@ -544,8 +544,8 @@ public:
     void clearAllParameters()
     {
         TRACE_IN;
+		mapped = false;
         parameterArray.clear();
-        mapped = false;
         sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
     }
     
