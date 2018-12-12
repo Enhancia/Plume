@@ -55,6 +55,26 @@
               file="Source/Wrapper/WrapperProcessor.h"/>
       </GROUP>
       <GROUP id="{EB1FE939-C694-02C5-E97F-E17B6084B07C}" name="Ui">
+        <GROUP id="{ACEA364D-47F4-BE67-B3B0-D0FEC5CE7BA7}" name="Header">
+          <FILE id="hBml6T" name="HeaderComponent.cpp" compile="1" resource="0"
+                file="Source/Ui/Header/HeaderComponent.cpp"/>
+          <FILE id="Z3rHfA" name="HeaderComponent.h" compile="0" resource="0"
+                file="Source/Ui/Header/HeaderComponent.h"/>
+        </GROUP>
+        <GROUP id="{50A59D03-EF8C-6884-6A1F-9905EDBD4B18}" name="SideBar">
+          <FILE id="VoBRbA" name="PresetComponent.cpp" compile="1" resource="0"
+                file="Source/Ui/SideBar/PresetComponent.cpp"/>
+          <FILE id="gfzO6n" name="PresetComponent.h" compile="0" resource="0"
+                file="Source/Ui/SideBar/PresetComponent.h"/>
+          <FILE id="CzkUFf" name="SideBarComponent.cpp" compile="1" resource="0"
+                file="Source/Ui/SideBar/SideBarComponent.cpp"/>
+          <FILE id="lr3xWX" name="SideBarComponent.h" compile="0" resource="0"
+                file="Source/Ui/SideBar/SideBarComponent.h"/>
+          <FILE id="uiKfHn" name="WrapperComponent.cpp" compile="1" resource="0"
+                file="Source/Ui/SideBar/WrapperComponent.cpp"/>
+          <FILE id="YjXPVK" name="WrapperComponent.h" compile="0" resource="0"
+                file="Source/Ui/SideBar/WrapperComponent.h"/>
+        </GROUP>
         <GROUP id="{4CBB6F8D-0DE8-71C7-60AF-FF1213B7784A}" name="LookAndFeel">
           <FILE id="zqremJ" name="PlumeLookAndFeel.cpp" compile="1" resource="0"
                 file="Source/Ui/LookAndFeel/PlumeLookAndFeel.cpp"/>
@@ -95,18 +115,6 @@
             <FILE id="ZmZmBe" name="TwoRangeTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/TwoRangeTuner.h"/>
             <FILE id="p4jPAQ" name="GesturesTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/GesturesTuner.h"/>
           </GROUP>
-        </GROUP>
-        <GROUP id="{5450FD28-5BE9-06D6-902F-232955675D30}" name="Presets">
-          <FILE id="jEnMNo" name="PresetComponent.cpp" compile="1" resource="0"
-                file="Source/Ui/Presets/PresetComponent.cpp"/>
-          <FILE id="m6axr4" name="PresetComponent.h" compile="0" resource="0"
-                file="Source/Ui/Presets/PresetComponent.h"/>
-        </GROUP>
-        <GROUP id="{0D2A9DE8-260D-995D-E894-2CD89C78486D}" name="Wrapper">
-          <FILE id="HpuqnY" name="WrapperComponent.cpp" compile="1" resource="0"
-                file="Source/Ui/Wrapper/WrapperComponent.cpp"/>
-          <FILE id="XEqLHr" name="WrapperComponent.h" compile="0" resource="0"
-                file="Source/Ui/Wrapper/WrapperComponent.h"/>
         </GROUP>
       </GROUP>
     </GROUP>

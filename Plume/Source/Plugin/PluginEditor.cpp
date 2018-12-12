@@ -27,8 +27,10 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	setBroughtToFrontOnMouseClick (true);
 
     // Creates the 3 main components
-    addAndMakeVisible (wrapperComp = new WrapperComponent (processor.getWrapper()));
-    addAndMakeVisible (presetComp = new PresetComponent (processor, *this));
+    //addAndMakeVisible (wrapperComp = new WrapperComponent (processor.getWrapper()));
+    //addAndMakeVisible (presetComp = new PresetComponent (processor, *this));
+    addAndMakeVisible (sideBar = new SideBarComponent());
+    addAndMakeVisible (header = new HeaderComponent());
 	addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
 	                                                    processor.getParameterTree(), PLUME::UI::FRAMERATE));
 	                                                    
@@ -50,7 +52,7 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     }
 
 	// if a WrappedEditor currently exists, puts it in front (useful because hosts actually deletes the editor when not shown)
-	wrapperComp->windowToFront();
+	//wrapperComp->windowToFront();
 
 	PLUME::UI::ANIMATE_UI_FLAG = true;
 }
@@ -63,11 +65,6 @@ PlumeEditor::~PlumeEditor()
 	{
 		comp->removeMouseListener(this);
 	}
-
-	//wrapperComp->removeMouseListener(this);
-	//presetComp->removeMouseListener(this);
-	//gesturePanel->removeMouseListener(this);
-	//resizableCorner->removeMouseListener(this);
 
     processor.removeActionListener (this);
     wrapperComp = nullptr;
@@ -94,9 +91,14 @@ void PlumeEditor::paint (Graphics& g)
 
 void PlumeEditor::resized()
 {
-	wrapperComp->setBounds(MARGIN, MARGIN, getWidth() * 3 / 4, TOP_PANEL);
-	presetComp->setBounds(getWidth() * 3 / 4 + 2 * MARGIN, MARGIN, getWidth() - getWidth() * 3 / 4 - 3 * MARGIN, TOP_PANEL);
-	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 3 * MARGIN, getWidth() - 4 * MARGIN, getHeight() - TOP_PANEL - 5 * MARGIN);
+    using namespace PLUME::UI;
+    auto area = getLocalBounds();
+    
+	//wrapperComp->setBounds(MARGIN, MARGIN, getWidth() * 3 / 4, TOP_PANEL);
+	//presetComp->setBounds(getWidth() * 3 / 4 + 2 * MARGIN, MARGIN, getWidth() - getWidth() * 3 / 4 - 3 * MARGIN, TOP_PANEL);
+	sideBar->setBounds (area.removeFromLeft (SIDEBAR_WIDTH));
+	header->setBounds (area.removeFromTop (HEADER_HEIGHT));
+	gesturePanel->setBounds(area.reduced (10*MARGIN));
 	resizableCorner->setBounds (getWidth() - 20, getHeight() - 20, 20, 20);
 }
 
@@ -127,10 +129,6 @@ void PlumeEditor::actionListenerCallback(const String &message)
 
 void PlumeEditor::broughtToFront()
 {
-    if (wrapperComp->hasEditor())
-    {
-        //setWindowsToFront();
-    }
 }
 
 void PlumeEditor::focusGained (Component::FocusChangeType cause)
@@ -151,10 +149,12 @@ void PlumeEditor::focusLost (Component::FocusChangeType cause)
 
 void PlumeEditor::mouseUp (const MouseEvent& event)
 {
+	/*
     if (wrapperComp->hasEditor())
     {
         setWindowsToFront();
     }
+	*/
 }
 
 //==============================================================================

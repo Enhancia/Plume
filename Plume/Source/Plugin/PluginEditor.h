@@ -13,8 +13,10 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Common/PlumeCommon.h"
 
-#include "Ui/Wrapper/WrapperComponent.h"
-#include "Ui/Presets/PresetComponent.h"
+#include "Ui/SideBar/WrapperComponent.h"
+#include "Ui/SideBar/PresetComponent.h"
+#include "Ui/SideBar/SideBarComponent.h"
+#include "Ui/Header/HeaderComponent.h"
 #include "Ui/Gesture/GesturePanel.h"
 #include "Ui/LookAndFeel/PlumeLookAndFeel.h"
 
@@ -103,6 +105,8 @@ private:
     ScopedPointer<WrapperComponent> wrapperComp; /**< \brief Object allowing to choose a plugin to wrap and use with neova */
     ScopedPointer<PresetComponent> presetComp; /**< \brief Object allowing to save or load presets, in the xml format */
     ScopedPointer<GesturePanel> gesturePanel; /**< \brief Object that handles the different gesture gui objects */
+    ScopedPointer<SideBarComponent> sideBar;
+    ScopedPointer<HeaderComponent> header;
     
     //==============================================================================
     PlumeLookAndFeel plumeLookAndFeel;

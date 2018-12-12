@@ -9,7 +9,7 @@
 */
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
-#include "Ui/Wrapper/WrapperComponent.h"
+#include "WrapperComponent.h"
 
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 //==============================================================================

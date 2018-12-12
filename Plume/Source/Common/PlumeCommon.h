@@ -18,10 +18,16 @@ namespace PLUME
     {
         // Default settings
         const int DEFAULT_WINDOW_WIDTH = 800;
-        const int DEFAULT_WINDOW_HEIGHT = jmin (NUM_GEST*150, 800);
+        const int DEFAULT_WINDOW_HEIGHT = 600;
     
-        // Display settings
+        // Display panels values
         const int MARGIN = 8;
+        const int SIDEBAR_WIDTH = 150;
+        const int INFO_HEIGHT = 60;
+        const int HEADER_HEIGHT = 40;
+        const int GESTURE_DETAIL_WIDTH = 300;
+        
+        // Display settings
         const int FRAMERATE = 60;
         
         extern bool ANIMATE_UI_FLAG;
