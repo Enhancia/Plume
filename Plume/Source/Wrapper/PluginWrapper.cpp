@@ -29,6 +29,12 @@ PluginWrapper::PluginWrapper (PlumeProcessor& p, GestureArray& gArr)
     wrappedPluginDescriptions = new OwnedArray<PluginDescription>;
     formatManager = new AudioPluginFormatManager;
     formatManager->addFormat (new VSTPluginFormat());
+  #if JUCE_MAC
+    formatManager->addFormat (new AudioUnitPluginFormat());
+  #endif
+  #if JUCE_PLUGINHOST_VST3
+    formatManager->addFormat (new VST3PluginFormat());
+  #endif
 }
 
 PluginWrapper::~PluginWrapper()
@@ -44,45 +50,103 @@ PluginWrapper::~PluginWrapper()
 }
 
 //==============================================================================
-bool PluginWrapper::wrapPlugin (File pluginFile)
+bool PluginWrapper::wrapPlugin (String pluginFileOrId)
 {   
     TRACE_IN;
-    if (pluginFile == File::getSpecialLocation (File::currentExecutableFile) ||
-        pluginFile.getFileNameWithoutExtension().compare ("Plume") == 0)
+    
+    bool isFile = File (pluginFileOrId).exists();
+    
+    if ((isFile && File (pluginFileOrId) == File::getSpecialLocation (File::currentExecutableFile)) ||
+        pluginFileOrId.contains ("Plume."))
     {
         DBG ("Can't wrap yourself can you?");
         return false;
-    }
-    
-    if (hasWrappedInstance)
-    {
-        unwrapPlugin();
     }
     
     //Scans the plugin directory for the wanted plugin and gets its PluginDescription
     DBG ("\n[Scan and add File]");
     ScopedPointer<KnownPluginList> pluginList = new KnownPluginList();
     
-    if (pluginList->scanAndAddFile (pluginFile.getFullPathName(),
-                                    false,
-                                    *wrappedPluginDescriptions,
-                                    *(formatManager->getFormat (0))))
+    if (isFile)
     {
-        pluginList = nullptr;
-    }
-    else
-    {
-        DBG ("Error: The specified plugin doesn't exist or failed to load.\n\n");
-        return false;
+        File pluginFile (pluginFileOrId);
+        
+        // Scanning method for a File
+        PluginDirectoryScanner pScanner (*pluginList, *getPluginFormat (pluginFile),
+                                         FileSearchPath (pluginFile.getParentDirectory().getFullPathName()),
+                                         false, File(), true);
+        String name;
+    
+        pScanner.setFilesOrIdentifiersToScan (StringArray (pluginFileOrId));
+        pScanner.scanNextFile (false, name);
+    
+        if (auto desc = pluginList->getType (0))
+        {
+            // Only loads the plugin if it is an instrument (ie it creates sound).
+            if (desc->isInstrument)  wrappedPluginDescriptions->add (desc);
+        
+            else
+            {
+                DBG ("Error: The specified plugin ( " << name << " ) isn't an instrument.\n\n");
+                return false;
+            }
+        }
+        else
+        {
+            DBG ("Error: The specified plugin ( " << name << " | " << pluginFileOrId << " ) doesn't exist or failed to load.\n\n");
+            return false;
+        }
     }
     
+    // If not a file, then most likely an AU identifier:
+    // the search takes place in the common AU folders with the AU format.
+    else
+    {
+      #if !JUCE_MAC
+        DBG ("Error: The specified plugin ( " << pluginFileOrId << " ) isn't a in a legal file path.\n\n");
+        return false;
+      #else
+        PluginDirectoryScanner pScanner (*pluginList, formatManager->getFormat (Formats::AU),
+		                                FileSearchPath ("Macintosh HD:/Library/Audio/Plug-Ins/Components/;
+                                                        ~/Library/Audio/Plug-Ins/Components/"),,
+                                        false, File(), true);
+        String name;
+    
+        pScanner.setFilesOrIdentifiersToScan (StringArray (pluginFileOrId));
+        pScanner.scanNextFile (false, name);
+    
+        if (auto desc = pluginList->getType (0))
+        {
+            // Only loads the plugin if it is an instrument (ie it creates sound).
+            if (desc->isInstrument)  wrappedPluginDescriptions->add (desc);
+        
+            else
+            {
+                DBG ("Error: The specified plugin ( " << name << " ) isn't an instrument.\n\n");
+                return false;
+            }
+        }
+        else
+        {
+            DBG ("Error: The specified plugin ( " << name << " | " << pluginFileOrId << " ) doesn't exist or failed to load.\n\n");
+            return false;
+        }
+      #endif
+    }
+    
+
+	if (hasWrappedInstance)
+	{
+		unwrapPlugin();
+	}
+
     //Creates the plugin instance using the format manager
     String errorMsg;
     DBG ("\n[create Plugin Instance]");
-    wrappedInstance = formatManager->createPluginInstance (*((*wrappedPluginDescriptions)[wrappedPluginDescriptions->size()-1]),
-                                                             owner.getSampleRate(),
-															 owner.getBlockSize(),
-                                                             errorMsg);
+    wrappedInstance = formatManager->createPluginInstance (*(wrappedPluginDescriptions->getLast()),
+                                                            owner.getSampleRate(),
+															owner.getBlockSize(),
+                                                            errorMsg);
                                                              
     if (wrappedInstance == nullptr)
     {
@@ -96,7 +160,10 @@ bool PluginWrapper::wrapPlugin (File pluginFile)
     wrapperProcessor = new WrapperProcessor (*wrappedInstance, *this);
     wrapperProcessor->prepareToPlay (owner.getSampleRate(), owner.getBlockSize());
     hasWrappedInstance = true;
-    
+
+	wrappedPluginDescriptions->clear (false);
+	pluginList = nullptr;
+	
     return true;
 }
 
@@ -120,12 +187,43 @@ void PluginWrapper::unwrapPlugin()
     wrappedInstance.reset();
 }
 
-bool PluginWrapper::rewrapPlugin(File pluginFile)
+bool PluginWrapper::rewrapPlugin(String pluginFileOrId)
 {
     unwrapPlugin();
-    return wrapPlugin(pluginFile);
+    return wrapPlugin(pluginFileOrId);
 }
 
+AudioPluginFormat* PluginWrapper::getPluginFormat (File pluginFile)
+{
+   String ext = pluginFile.getFileExtension();
+
+ #if (JUCE_WINDOWS || JUCE_MAC) && JUCE_PLUGINHOST_VST
+  #if JUCE_WINDOWS
+   if (ext.compare (".dll") == 0)
+  #elif JUCE_MAC
+   if (ext.compare (".vst") == 0)
+  #endif
+   {
+       return formatManager->getFormat (Formats::VST);
+   }
+ #endif
+
+ #if (JUCE_WINDOWS || JUCE_MAC) && JUCE_PLUGINHOST_VST3
+   if (ext.compare (".vst3") == 0)
+   {
+       return formatManager->getFormat (Formats::VST3);
+   }
+ #endif
+
+ #if JUCE_MAC && JUCE_PLUGINHOST_AU
+   if (ext.compare (".component") == 0)
+   {
+       return formatManager->getFormat (Formats::AU);
+   }
+ #endif
+
+   return nullptr;
+}
 //==============================================================================
 bool PluginWrapper::isWrapping()
 {
@@ -133,7 +231,7 @@ bool PluginWrapper::isWrapping()
 }
 
 //==============================================================================
-void PluginWrapper::createWrapperEditor()
+void PluginWrapper::createWrapperEditor (int x, int y)
 {
     TRACE_IN;
     
@@ -146,7 +244,7 @@ void PluginWrapper::createWrapperEditor()
     
     if (hasOpenedEditor == true)
     {
-        wrapperEditor->toFront (true);
+        wrapperEditor->toFront (false);
         return;
     }
     
@@ -155,6 +253,7 @@ void PluginWrapper::createWrapperEditor()
     if (wrapperEditor == nullptr)
     {
         wrapperEditor = new WrapperEditorWindow (*wrapperProcessor);
+		wrapperEditor->toFront (false);
         return;
     }
     
@@ -172,6 +271,16 @@ void PluginWrapper::clearWrapperEditor()
         sendChangeMessage();
     }
 }
+
+void PluginWrapper::wrapperEditorToFront (bool shouldAlsoGiveFocus)
+{
+    if (hasOpenedEditor)
+    {
+        wrapperEditor->toFront (shouldAlsoGiveFocus);
+    }
+}
+
+
 //==============================================================================
 String PluginWrapper::getWrappedPluginName()
 {

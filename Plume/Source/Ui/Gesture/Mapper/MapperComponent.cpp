@@ -7,7 +7,6 @@
 
   ==============================================================================
 */
-#pragma once
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
 #include "Common/PlumeCommon.h"
@@ -52,17 +51,6 @@ MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr, PluginWr
 	midiMapButton->setState(gesture.isMidiMapped() ? Button::buttonDown
 	                                               : Button::buttonNormal);
     midiMapButton->addListener (this);
-    
-    /*
-    // CC label
-    addAndMakeVisible (ccLabel = new Label ("CC Label", TRANS (String(gesture.getCc()))));
-    ccLabel->setEditable (true, false, false);
-    ccLabel->setFont (Font (13.0f, Font::plain));
-    ccLabel->setColour (Label::textColourId, Colour(0xffffffff));
-    ccLabel->setColour (Label::backgroundColourId, Colour(0xff000000));
-    ccLabel->setJustificationType (Justification::centred);
-    ccLabel->addListener (this);
-    */
     
     // Adding the mapper as a change listener
     gesture.addChangeListener (this);

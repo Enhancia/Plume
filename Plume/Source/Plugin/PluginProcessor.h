@@ -75,6 +75,8 @@ public:
     void setCurrentProgram (int index) override {};
     const String getProgramName (int index) override { return {}; };
     void changeProgramName (int index, const String& newName) override {};
+    
+    void updateTrackProperties (const AudioProcessor::TrackProperties& properties) override;
 
     //==============================================================================
     /**

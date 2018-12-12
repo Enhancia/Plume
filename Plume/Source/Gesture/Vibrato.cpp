@@ -38,6 +38,8 @@ void Vibrato::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
     
     int vibVal = getMidiValue();
     
+	if (vibVal == lastMidi) return; // Does nothing if the midi value did not change
+
     if (send == true || isMidiMapped())
     {
         // Creates the control change message
@@ -50,6 +52,8 @@ void Vibrato::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
         {
             addEventAndMergePitchToBuffer (midiMessages, plumeBuffer, vibVal, 1/*, pitchReference*/);
         }
+
+		lastMidi = vibVal;
     }
 }
 
@@ -142,7 +146,6 @@ void Vibrato::setIntensityValue (float newVal)
 //==============================================================================
 void Vibrato::updateValue (const Array<float> rawData)
 {
-    DBG ("intensity : " << rawData[1]);
     if (isActive()) setIntensityValue (rawData[1]);
     setGestureValue (rawData[0]);
 }

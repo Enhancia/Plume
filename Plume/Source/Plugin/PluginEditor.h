@@ -69,7 +69,17 @@ public:
      * This method is called by the processor when it needs the interface to be fully updated.
      * It calls the method updateFullInterface. sets the right current wrapped plugin, preset and gestures.
      */
-    void actionListenerCallback(const String &message) override;
+    void actionListenerCallback (const String &message) override;
+    
+    /**
+     * \brief Called to indicate that this component has just acquired the keyboard focus.
+     */
+    void focusLost (Component::FocusChangeType cause) override;
+    void focusGained (Component::FocusChangeType cause) override;
+    
+    void broughtToFront() override;
+    
+    void mouseUp (const MouseEvent& event) override;
     
     //==============================================================================
     PlumeProcessor& getProcessor();
@@ -84,6 +94,8 @@ public:
     void updateFullInterface();
     
     void setInterfaceUpdates (bool shouldUpdate);
+    
+    void setWindowsToFront();
     
 private:
     //==============================================================================

@@ -54,7 +54,9 @@ void PitchBend::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffe
     if (on.getValue() == 0.0f) return; // does nothing if the gesture is inactive or mapped
     
     int pbVal = getMidiValue();
-    
+
+	if (pbVal == lastMidi) return; // Does nothing if the midi value did not change
+
     if (send == true || isMidiMapped())
     {
         // Creates the pitchwheel message
@@ -64,8 +66,10 @@ void PitchBend::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffe
         }
         else
         {
-            addEventAndMergePitchToBuffer (midiMessages, plumeBuffer, pbVal, 1/*, pitchReference*/);
+            addEventAndMergePitchToBuffer (midiMessages, plumeBuffer, pbVal, 1);
         }
+
+		lastMidi = pbVal;
     }
 }
 

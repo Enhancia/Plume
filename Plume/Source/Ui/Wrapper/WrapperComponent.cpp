@@ -13,7 +13,7 @@
 
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 //==============================================================================
-WrapperComponent::WrapperComponent(PluginWrapper& wrap)
+WrapperComponent::WrapperComponent (PluginWrapper& wrap)
     : wrapper (wrap)
 {
     TRACE_IN;
@@ -44,6 +44,7 @@ WrapperComponent::WrapperComponent(PluginWrapper& wrap)
     openEditorButton->addListener (this);
     
     lastPluginDir = File::getSpecialLocation (File::currentApplicationFile).getParentDirectory();
+    
 }
 
 WrapperComponent::~WrapperComponent()
@@ -54,7 +55,10 @@ WrapperComponent::~WrapperComponent()
 //==============================================================================
 void WrapperComponent::paint (Graphics& g)
 {
-    g.fillAll (Colour (0xff909090));
+    if (auto* lf = dynamic_cast<PlumeLookAndFeel*> (&getLookAndFeel()))
+    {
+        g.fillAll (lf->getPlumeColour (PlumeLookAndFeel::topPanelBackground));
+    }
     
     // Draws Enhancia's Logo
     {
@@ -91,7 +95,15 @@ void WrapperComponent::buttonClicked (Button* bttn)
     
     else if (bttn == openEditorButton)
     {
-        openEditor();
+		if (wrapper.hasOpenedWrapperEditor())
+		{
+			closeEditor();
+		}
+		else
+		{
+			openEditor();
+		}
+        
     }
 }
 
@@ -110,7 +122,7 @@ void WrapperComponent::scanPlugin()
     // Lets the user chose a file, and changes the plugin path accordingly
     FileChooser pluginScanner ("Select the plugin you want to load.",
                                lastPluginDir,
-                               "*.dll;*.vst;*.so",
+                               "*.dll;*.vst;*.component",
                                true);
                                
     if (pluginScanner.browseForFileToOpen())
@@ -124,7 +136,7 @@ void WrapperComponent::scanPlugin()
             wrapper.unwrapPlugin();
         }
         // Tries to wrap the plugin. If successful changes the label and opens the editor
-        if (wrapper.wrapPlugin (pluginScanner.getResult()))
+        if (wrapper.wrapPlugin (pluginScanner.getResult().getFullPathName()))
         {
             lastPluginDir = pluginScanner.getResult().getParentDirectory();
 			pluginNameLabel->setText(wrapper.getWrappedPluginName(), dontSendNotification);
@@ -147,6 +159,19 @@ void WrapperComponent::closeEditor()
     if (wrapper.isWrapping())
     {
         wrapper.clearWrapperEditor();
+    }
+}
+
+bool WrapperComponent::hasEditor()
+{
+    return wrapper.isWrapping();
+}
+
+void WrapperComponent::windowToFront ()
+{
+    if (wrapper.isWrapping() && wrapper.hasOpenedWrapperEditor())
+    {
+        wrapper.createWrapperEditor();
     }
 }
 

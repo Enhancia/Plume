@@ -47,7 +47,10 @@ PresetComponent::~PresetComponent()
 
 void PresetComponent::paint (Graphics& g)
 {
-    g.fillAll (Colour (0xff909090));
+    if (auto* lf = dynamic_cast<PlumeLookAndFeel*> (&getLookAndFeel()))
+    {
+        g.fillAll (lf->getPlumeColour (PlumeLookAndFeel::topPanelBackground));
+    }
 }
 
 void PresetComponent::resized ()
@@ -166,7 +169,7 @@ void PresetComponent::loadPreset()
                 
 	    // Calls the plugin's setStateInformation method to load the preset
 	    PLUME::UI::ANIMATE_UI_FLAG = false;
-	    //editor.setInterfaceUpdates (false);
+	    editor.setInterfaceUpdates (false);
         processor.setStateInformation (presetData.getData(), presetData.getSize());
 	    //editor.setInterfaceUpdates (true);
 	    PLUME::UI::ANIMATE_UI_FLAG = true;

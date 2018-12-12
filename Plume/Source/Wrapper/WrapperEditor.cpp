@@ -12,10 +12,10 @@
 
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 //==============================================================================
-WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc)
+WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc, int x, int y)
        : DocumentWindow (wrapProc.getName(),
                          LookAndFeel::getDefaultLookAndFeel().findColour (ResizableWindow::backgroundColourId),
-                         DocumentWindow::minimiseButton | DocumentWindow::closeButton),
+                         /*DocumentWindow::minimiseButton | */DocumentWindow::closeButton),
          wrapperProcessor (wrapProc)
 {
     TRACE_IN;
@@ -26,11 +26,6 @@ WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc)
         setContentOwned (ui, true);
     }
     
-    //centreAroundComponent (wrapperProcessor.getOwnerWrapper().getOwner().getActiveEditor(), getWidth(), getHeight());
-    //setTopLeftPosition (/*wrapperProcessor.getOwnerProcessor().getActiveEditor() == nullptr ?*/
-    //                    Point<int> (0,0)/* :
-    //                    wrapperProcessor.getOwnerProcessor().getActiveEditor()->getPosition()*/);
-                        
     setVisible (true);
 }
 
@@ -45,10 +40,20 @@ void WrapperEditorWindow::closeButtonPressed()
     wrapperProcessor.getOwnerWrapper().clearWrapperEditor();
 }
 
+void WrapperEditorWindow::focusGained (FocusChangeType cause)
+{
+    if (cause != Component::focusChangedDirectly)
+    {
+        toFront (false);
+        //wrapperProcessor.getOwnerWrapper().getOwner().sendActionMessage (PLUME::commands::toFront);
+    }
+}
+
 AudioProcessorEditor* WrapperEditorWindow::createProcessorEditor (AudioProcessor& processor)
 {
     if (auto* ui = processor.createEditorIfNeeded())
     {
+        toFront (false);
         return ui;
     }
         

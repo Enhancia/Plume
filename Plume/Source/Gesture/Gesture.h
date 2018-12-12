@@ -150,7 +150,7 @@ public:
     /**
      *  \brief Helper function to write the correct values for the mapped parameters.
      *
-     *  Updates all parameters of this Gesture with their right values. Uses getValueForMappedParameters() to get each value.
+     *  Updates all mapped parameters of this Gesture with their right values. Uses getValueForMappedParameters() to get each value.
      *
      */
     virtual void updateMappedParameters() =0;
@@ -158,7 +158,7 @@ public:
     /**
      *  \brief Method that returns the value for a specific mapped parameter.
      *
-     *  Override this function in derived classes to return a float between whithin the specified range.
+     *  Override this method in derived classes to return a float within the specified range.
      * 
      */
     virtual float getValueForMappedParameter (Range<float> paramRange, bool reversed = false) =0;
@@ -167,7 +167,7 @@ public:
     /**
      *  \brief Method that uses raw data to update the gestures raw value accordingly.
      *
-     *  Override this function in derived classes to update the right variable (or processor parameter), with the right raw value.
+     *  Override this method in derived classes to update the right variable (or processor parameter), with the right raw value.
      *
      *  \param rawData Array of floating point numbers representing Neova pre-processed values. 
      */
@@ -515,7 +515,7 @@ public:
      */
     void addParameter (AudioProcessorParameter& param, Range<float> r = Range<float> (0.0f, 1.0f), bool rev = false)
     {
-        TRACE_IN;                            
+        TRACE_IN;
         if (parameterArray.size() < MAX_PARAMETER)
         {
             parameterArray.add ( new MappedParameter (param, r, rev));
@@ -544,8 +544,8 @@ public:
     void clearAllParameters()
     {
         TRACE_IN;
+		mapped = false;
         parameterArray.clear();
-        mapped = false;
         sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
     }
     
@@ -740,6 +740,7 @@ protected:
     bool mapped; /**< \brief Boolean that represents if the gesture is mapped or not. */
     //bool midiMap; /**< \brief Boolean that tells if the gesture is currently in midiMap mode */
     //int cc; /**< \brief Integer value that represents the CC used for the gesture in midiMap mode (default 1: modwheel) */
+    int lastMidi = -1; /**< \brief Integer value that represents the midiValue supposedely sent to the previous midiBuffer */
     
     //==============================================================================
     float* valueRef; /**< \brief Parameter that holds the current "raw" value of the gesture. Should be used and updated by subclasses. */

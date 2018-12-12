@@ -28,21 +28,36 @@ class PluginWrapper : public AudioProcessorParameter::Listener,
                       public ChangeBroadcaster
 {
 public:
+    enum Formats
+    {
+        VST =0,
+      #if JUCE_MAC
+        AU,
+      #endif
+      #if JUCE_PLUGINHOST_VST3
+        VST3,
+      #endif
+        numFormats
+    };
+   
     //==============================================================================
     PluginWrapper(PlumeProcessor&, GestureArray&);
     ~PluginWrapper();
     
     //==============================================================================
-    bool wrapPlugin (File pluginFile);
+    bool wrapPlugin (String pluginFileOrId);
     void unwrapPlugin();
-    bool rewrapPlugin(File pluginFile);
+    bool rewrapPlugin (String pluginFileOrId);
+    
+    AudioPluginFormat* getPluginFormat (File pluginFile);
     
     //==============================================================================
     bool isWrapping();
     
     //==============================================================================
-    void createWrapperEditor();
+    void createWrapperEditor (int x = 0, int y = 0);
     void clearWrapperEditor();
+    void wrapperEditorToFront (bool shouldAlsoGiveFocus);
     
     //==============================================================================
     String getWrappedPluginName();

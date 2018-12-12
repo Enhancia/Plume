@@ -44,19 +44,22 @@ void DataReader::resized()
 }
 
 //==============================================================================
-void DataReader::readData(String s)
+bool DataReader::readData (String s)
 {
 	auto strArr = StringArray::fromTokens(s, " ", String());
 
     // Checks for full lines
     if (strArr.size() == DATA_SIZE)
     {
-            // Splits the string into 7 separate ones
-            *data = strArr;
+        // Splits the string into 7 separate ones
+        *data = strArr;
+        return true;
     }
+    
+	return false;
 }
 
-const String DataReader::getRawData(int index)
+const String DataReader::getRawData (int index)
 {
     return (*data)[index];
 }
@@ -81,7 +84,7 @@ bool DataReader::getRawDataAsFloatArray(Array<float>& arrayToFill)
 //==============================================================================
 bool DataReader::connectToExistingPipe()
 {
-	return connectToPipe("mynamedpipe", -1);
+	return connectToPipe ("mynamedpipe", -1);
 }
 
 bool DataReader::isConnected()
@@ -106,11 +109,13 @@ void DataReader::connectionLost()
     connectedLabel->setText (TRANS ("Disconnected"), dontSendNotification);
 }
 
-void DataReader::messageReceived(const MemoryBlock &message)
+void DataReader::messageReceived (const MemoryBlock &message)
 {
     if (connected && message.getSize() != 0)
     {
-        readData(message.toString());
-        sendChangeMessage();
+        if (readData (message.toString()))
+        {
+            sendChangeMessage();
+        }
     }
 }

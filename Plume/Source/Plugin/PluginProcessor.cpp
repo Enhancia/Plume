@@ -97,6 +97,70 @@ bool PlumeProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {   
     MidiBuffer plumeBuffer;
+    /* 
+    if (auto* pHead = getPlayHead())
+    {
+		AudioPlayHead::CurrentPositionInfo pos;
+
+		if (pHead->getCurrentPosition(pos))
+		{
+			DBG ("Playing ? " << String(int(pos.isPlaying)));
+			//Logger::writeToLog("Playing ? " + String(int(pos.isPlaying)));
+		}
+    }
+    
+    DBG ("\nInput Buses : " << getBusCount (true) << " | Output Buses : " << getBusCount (false));
+    DBG ("Main input enabled ? " << int (!(getBusesLayout().getMainInputChannelSet().isDisabled())) << " | Main Output Enabled ? "
+                                 << int (!(getBusesLayout().getMainOutputChannelSet().isDisabled())));
+    
+    
+    {
+		
+        File abf = File (File::getSpecialLocation (File::userDesktopDirectory).getFullPathName() + "/AudioBuff.txt");
+        if (!(abf.exists()))
+		{
+			abf.create();
+			DBG ("Attempted to create file : " + abf.getFullPathName());
+		}
+
+		for (int i = 0; i < 4; i++)
+		{
+		    int sample = i * (buffer.getNumSamples() / 4);
+			abf.appendText( String (sample) + " : " + String (buffer.getSample (1, sample)) + "\n");
+		}
+		
+
+        File mbf = File (File::getSpecialLocation (File::userDesktopDirectory).getFullPathName() + "/MidiBuff.txt");
+		if (!(mbf.exists()))
+		{
+			mbf.create();
+			DBG ("Attempted to create file : " + mbf.getFullPathName());
+		}
+
+		if (!midiMessages.isEmpty())
+        {
+			mbf.appendText ("\nNew Buffer: size " + String (buffer.getNumSamples()) + "\n");
+
+		    MidiMessage m; int time;
+            for (MidiBuffer::Iterator i (midiMessages); i.getNextEvent (m, time);)
+            {
+                mbf.appendText (m.getDescription() + " | " + String(time) + "\n" );
+			    
+                //for (const uint8* p = m.getRawData(); p < p + m.getRawDataSize(); p++)
+                //{
+                //    mbf.appendText (String(*p));
+                //}
+                //mbf.appendText ("\n\n");
+            }
+            mbf.appendText ("\n");
+        }
+        else 
+        {
+            mbf.appendText ("\nEmpty Buffer\n");
+        }
+        
+    }
+    */
     
     // Adds the gesture's MIDI messages to the buffer, and changes parameters if needed
     gestureArray->process (midiMessages, plumeBuffer);
@@ -105,7 +169,10 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
     if (wrapper->isWrapping())
     {
         // Calls the wrapper processor's processBlock method
-        wrapper->getWrapperProcessor().processBlock(buffer, midiMessages);
+        if (!(wrapper->getWrapperProcessor().isSuspended()))
+        {
+            wrapper->getWrapperProcessor().processBlock(buffer, midiMessages);
+        }
     }
     
     // returns only the midi from Plume
@@ -162,6 +229,8 @@ void PlumeProcessor::getStateInformation (MemoryBlock& destData)
 
 void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
+    suspendProcessing (true);
+    
     TRACE_IN;
     ScopedPointer<XmlElement> wrapperData = getXmlFromBinary (data, sizeInBytes);
     
@@ -169,6 +238,7 @@ void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
 	{
 		DBG ("Couldn't load data");
 	    PLUME::UI::ANIMATE_UI_FLAG = true;
+	    suspendProcessing (false);
 		return;
 	}
     
@@ -177,6 +247,7 @@ void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
 	// Plugin configuration loading
     if (wrapperData->getChildByName ("WRAPPED_PLUGIN") != nullptr)
     {
+		PLUME::UI::ANIMATE_UI_FLAG = false;
         loadPluginXml (*(wrapperData->getChildByName ("WRAPPED_PLUGIN")));
         notifyEditor = true;
     }
@@ -195,6 +266,7 @@ void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
     else PLUME::UI::ANIMATE_UI_FLAG = true;
 
     wrapperData = nullptr;
+    suspendProcessing (false);
 }
 
 void PlumeProcessor::createPluginXml(XmlElement& wrapperData)
@@ -246,15 +318,16 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
             
         if (pd.loadFromXml (*(pluginData.getChildByName ("PLUGIN"))))
         {
-            
+			bool requiresSearch = true;
+
             // First searches the direct path
-            if (File (pd.fileOrIdentifier).exists())
+            if (!(pd.fileOrIdentifier.isEmpty()))
             {
-                if (wrapper->isWrapping()) wrapper->rewrapPlugin (pd.fileOrIdentifier);
-                else                       wrapper->wrapPlugin (pd.fileOrIdentifier);
+                if (wrapper->isWrapping()) requiresSearch = !(wrapper->rewrapPlugin (pd.fileOrIdentifier));
+                else                       requiresSearch = !(wrapper->wrapPlugin (pd.fileOrIdentifier));
             }
             // Then the directory where plume is located
-            else
+            if (requiresSearch && File (pd.fileOrIdentifier).exists())
             {
                 File pluginDir (File::getSpecialLocation (File::currentApplicationFile).getParentDirectory());
                 String pluginToSearch (pd.name);
@@ -266,6 +339,10 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
                   #elif JUCE_MAC
                     pluginToSearch += ".vst";
                   #endif
+                }
+                else if (pd.pluginFormatName.compare ("VST3") == 0)
+                {
+                    pluginToSearch += ".vst3";
                 }
                 else if (pd.pluginFormatName.compare ("AudioUnit") == 0)
                 {
@@ -280,8 +357,8 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
                 
                 if (!searchResult.isEmpty())
                 {
-                    if (wrapper->isWrapping()) wrapper->rewrapPlugin (searchResult[0]);
-                    else                       wrapper->wrapPlugin (searchResult[0]);
+                    if (wrapper->isWrapping()) wrapper->rewrapPlugin (searchResult[0].getFullPathName());
+                    else                       wrapper->wrapPlugin (searchResult[0].getFullPathName());
                 }
                 else 
                 {
@@ -292,7 +369,7 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
             }
         }
     }
-    // If there is no plugin in the preset
+    // If there is no plugin in the preset only unwraps
     else
     {
         wrapper->unwrapPlugin();
@@ -314,8 +391,6 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
 
 void PlumeProcessor::loadGestureXml(const XmlElement& gestureData)
 {
-    sendActionMessage("lockInterface");
-    
     int i = 0;
     gestureArray->clearAllGestures();
     
@@ -325,7 +400,7 @@ void PlumeProcessor::loadGestureXml(const XmlElement& gestureData)
 		{
 			gestureArray->addGestureFromXml(*gesture);
 
-			if (gesture->getBoolAttribute("mapped") == true)
+			if (gesture->getBoolAttribute ("mapped") == true)
 			{
 				gestureArray->getGestureById(i)->clearAllParameters();
 				wrapper->addParametersToGestureFromXml(*gesture, i);
@@ -421,4 +496,9 @@ void PlumeProcessor::initializeParameters()
             }
         }
     }
+}
+
+void PlumeProcessor::updateTrackProperties (const AudioProcessor::TrackProperties& properties)
+{
+    DBG ("Name : " << properties.name << " | Colour : " << properties.colour.toDisplayString(false));
 }
