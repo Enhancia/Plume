@@ -110,7 +110,7 @@ public:
         addAndMakeVisible(threshLabel = new Label("Threshold Label"));
         threshLabel->setEditable (true, false, false);
         threshLabel->setText (String (int (threshold.convertFrom0to1 (threshold.getValue()))), dontSendNotification);
-        threshLabel->setFont (Font (13.0f, Font::plain));
+        threshLabel->setFont (Font (PLUME::UI::font, 13.0f, Font::plain));
         threshLabel->setJustificationType (Justification::centred);
         threshLabel->addListener (this);
     }

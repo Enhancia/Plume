@@ -13,7 +13,7 @@
 
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 
-PresetComponent::PresetComponent(PlumeProcessor& p, PlumeEditor& e)  : processor (p), editor (e)
+PresetComponent::PresetComponent(PlumeProcessor& p)  : processor (p)
 {
     TRACE_IN;
     addAndMakeVisible (nameLabel = new Label ("nameLabel", TRANS ("[No current preset]")));
@@ -31,15 +31,12 @@ PresetComponent::PresetComponent(PlumeProcessor& p, PlumeEditor& e)  : processor
     loadButton->setButtonText ("Load");
     loadButton->addListener (this);
     loadButton->setColour (TextButton::buttonColourId, Colour (0xff323232));
-    
-    addActionListener (dynamic_cast<PlumeEditor*> (getParentComponent()));
 }
 
 PresetComponent::~PresetComponent()
 {
     TRACE_IN;
 	nameLabel->removeListener (this);
-	removeActionListener (dynamic_cast<PlumeEditor*> (getParentComponent()));
     nameLabel  = nullptr;
     saveButton = nullptr;
     loadButton = nullptr;
@@ -169,9 +166,7 @@ void PresetComponent::loadPreset()
                 
 	    // Calls the plugin's setStateInformation method to load the preset
 	    PLUME::UI::ANIMATE_UI_FLAG = false;
-	    editor.setInterfaceUpdates (false);
         processor.setStateInformation (presetData.getData(), presetData.getSize());
-	    //editor.setInterfaceUpdates (true);
 	    PLUME::UI::ANIMATE_UI_FLAG = true;
 
         //currentPreset = presetXml->getTagName();

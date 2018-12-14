@@ -347,7 +347,7 @@ void MapperComponent::drawMapperText (Graphics& g, String text, int x, int y, in
     if (opaqueWhenMidiMode)     g.setColour (gesture.isMidiMapped() ? Colour (0xffffffff) : Colour (0x80ffffff));
     else                        g.setColour (gesture.isMidiMapped() ? Colour (0x80ffffff) : Colour (0xffffffff));
     
-    g.setFont (Font (fontSize, Font::plain).withTypefaceStyle ("Regular"));
+    g.setFont (Font (PLUME::UI::font, fontSize, Font::plain).withTypefaceStyle ("Regular"));
     g.drawText (TRANS(text), x, y, width, height,
                 Justification::centred, true);
 }

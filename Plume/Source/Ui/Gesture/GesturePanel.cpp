@@ -246,7 +246,7 @@ private:
     void drawGestureText(Graphics& g, String text, int x, int y, int width, int height, float fontSize = 15.0f)
     {
         g.setColour (Colour(0xffffffff));                    
-        g.setFont (Font (fontSize, Font::plain).withTypefaceStyle ("Regular"));
+        g.setFont (Font (PLUME::UI::font, fontSize, Font::plain).withTypefaceStyle ("Regular"));
         g.drawText (TRANS(text), x, y, width, height,
                     Justification::centred, true);
     }

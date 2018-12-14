@@ -57,7 +57,7 @@ PlumeLookAndFeel::PlumeLookAndFeel()
 	setColour (ComboBox::backgroundColourId, Colour (0x00000000));
 	setColour (ComboBox::textColourId, Colour (0xff000000));
 	setColour (ComboBox::arrowColourId, Colour (0xff000000));
-	setColour (ComboBox::outlineColourId, Colour (0x00000000));
+	setColour (ComboBox::outlineColourId, Colour (0x00000000)); // Necessary to not draw Label outlines due to an Error in the JUCE code..
 }
 
 PlumeLookAndFeel::~PlumeLookAndFeel()

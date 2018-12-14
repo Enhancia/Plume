@@ -162,7 +162,7 @@ private:
         // CC label
         addAndMakeVisible (ccLabel = new Label ("CC Label", TRANS (String(gesture.getCc()))));
         ccLabel->setEditable ((midiTypeBox->getSelectedId() == Gesture::controlChange), false, false);
-        ccLabel->setFont (Font (13.0f, Font::plain));
+        ccLabel->setFont (Font (PLUME::UI::font, 13.0f, Font::plain));
         ccLabel->setJustificationType (Justification::centred);
         
         // cc Label is visible & editable only if "CC" is selected
@@ -178,12 +178,12 @@ private:
         
         // LabelMin style
         rangeLabelMin->setEditable (true, false, false);
-        rangeLabelMin->setFont (Font (11.0f, Font::plain));
+        rangeLabelMin->setFont (Font (PLUME::UI::font, 11.0f, Font::plain));
         rangeLabelMin->setJustificationType (Justification::centred);
         
         // LabelMax style
         rangeLabelMax->setEditable (true, false, false);
-        rangeLabelMax->setFont (Font (11.0f, Font::plain));
+        rangeLabelMax->setFont (Font (PLUME::UI::font, 11.0f, Font::plain));
         rangeLabelMax->setJustificationType (Justification::centred);
         
         

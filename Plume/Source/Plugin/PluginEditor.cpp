@@ -26,15 +26,23 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	setMouseClickGrabsKeyboardFocus(false);
 	setBroughtToFrontOnMouseClick (true);
 
-    // Creates the 3 main components
-    //addAndMakeVisible (wrapperComp = new WrapperComponent (processor.getWrapper()));
-    //addAndMakeVisible (presetComp = new PresetComponent (processor, *this));
-    addAndMakeVisible (sideBar = new SideBarComponent());
-    addAndMakeVisible (header = new HeaderComponent());
+    // Creates the main components
+    addAndMakeVisible (header = new HeaderComponent (processor));
+    addAndMakeVisible (sideBar = new SideBarComponent (processor));
+    
 	addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
 	                                                    processor.getParameterTree(), PLUME::UI::FRAMERATE));
-	                                                    
-	
+	bool sideBarHidden = false;
+
+	addAndMakeVisible (sideBarButton = new ShapeButton ("Side Bar Button",
+                                                        sideBarHidden ? Colour(0xff393939) : Colour (0xffffffff),
+		                                                sideBarHidden ? Colour(0xaa393939) : Colour (0xaaffffff),
+		                                                sideBarHidden ? Colour(0xff393939) : Colour (0xffffffff)));
+                                                        
+	sideBarButton->setToggleState (sideBarHidden, dontSendNotification); // side bar visible at first
+    sideBarButton->setClickingTogglesState (true);
+	createSideBarButtonPath();
+    sideBarButton->addListener (this);
 	
     // Adds itself as a change listener for plume's processor
     processor.addActionListener (this);
@@ -53,7 +61,7 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 
 	// if a WrappedEditor currently exists, puts it in front (useful because hosts actually deletes the editor when not shown)
 	//wrapperComp->windowToFront();
-
+    
 	PLUME::UI::ANIMATE_UI_FLAG = true;
 }
 
@@ -67,8 +75,6 @@ PlumeEditor::~PlumeEditor()
 	}
 
     processor.removeActionListener (this);
-    wrapperComp = nullptr;
-    presetComp = nullptr;
     gesturePanel = nullptr;
     resizableCorner = nullptr;
 
@@ -85,7 +91,8 @@ void PlumeEditor::paint (Graphics& g)
     g.setColour (Colour (0xff000000));
     g.setFont (Font (10.0f, Font::italic).withTypefaceStyle ("Regular"));
     g.drawText ("Plume " + String(JucePlugin_VersionString),
-                MARGIN, getHeight() - MARGIN, 100, MARGIN,
+		        sideBarButton->getToggleState() ? MARGIN : MARGIN + PLUME::UI::SIDEBAR_WIDTH, getHeight() - MARGIN,
+		        100, MARGIN,
                 Justification::centredLeft, true);
 }
 
@@ -94,16 +101,23 @@ void PlumeEditor::resized()
     using namespace PLUME::UI;
     auto area = getLocalBounds();
     
-	//wrapperComp->setBounds(MARGIN, MARGIN, getWidth() * 3 / 4, TOP_PANEL);
-	//presetComp->setBounds(getWidth() * 3 / 4 + 2 * MARGIN, MARGIN, getWidth() - getWidth() * 3 / 4 - 3 * MARGIN, TOP_PANEL);
-	sideBar->setBounds (area.removeFromLeft (SIDEBAR_WIDTH));
+    auto sideBarArea = Rectangle<int> (sideBarButton->getToggleState() ? 0 : SIDEBAR_WIDTH - HEADER_HEIGHT, 0,
+	                                   HEADER_HEIGHT, HEADER_HEIGHT);
+	sideBarButton->setBounds (sideBarArea.reduced ((3*MARGIN)/2));
+	if (!sideBarButton->getToggleState())
+	{
+		sideBar->setBounds(area.removeFromLeft(SIDEBAR_WIDTH));
+	}
+
 	header->setBounds (area.removeFromTop (HEADER_HEIGHT));
-	gesturePanel->setBounds(area.reduced (10*MARGIN));
+	gesturePanel->setBounds(area.reduced (6*MARGIN));
 	resizableCorner->setBounds (getWidth() - 20, getHeight() - 20, 20, 20);
+
+	repaint();
 }
 
 //==============================================================================
-void PlumeEditor::actionListenerCallback(const String &message)
+void PlumeEditor::actionListenerCallback (const String &message)
 {
     TRACE_IN;
     
@@ -127,34 +141,45 @@ void PlumeEditor::actionListenerCallback(const String &message)
     }
 }
 
-void PlumeEditor::broughtToFront()
+void PlumeEditor::buttonClicked (Button* bttn)
 {
+    if (bttn == sideBarButton)
+    {
+		sideBar->setVisible (!sideBarButton->getToggleState());
+		resized();
+
+        createSideBarButtonPath();
+    }
 }
 
-void PlumeEditor::focusGained (Component::FocusChangeType cause)
+void PlumeEditor::createSideBarButtonPath()
 {
+    using namespace PLUME::UI;
     
-}
+	DBG (int (sideBarButton->getToggleState()));
 
-void PlumeEditor::focusLost (Component::FocusChangeType cause)
-{
-    /*
-    if (wrapperComp->hasEditor())
-    {
-        DBG ("focus lost cause : " + String (cause));
-        wrapperComp->windowToFront();
-    }
-    */
-}
+	sideBarButton->setColours (sideBarButton->getToggleState() ? Colour(0xff393939) : Colour(0xffffffff),
+		                       sideBarButton->getToggleState() ? Colour(0xaa393939) : Colour(0xaaffffff),
+		                       sideBarButton->getToggleState() ? Colour(0xff393939) : Colour(0xffffffff));
 
-void PlumeEditor::mouseUp (const MouseEvent& event)
-{
-	/*
-    if (wrapperComp->hasEditor())
+    Path p;
+    
+    if (sideBarButton->getToggleState())
     {
-        setWindowsToFront();
+        p.startNewSubPath (0,0);
+        p.lineTo (HEADER_HEIGHT - 2*MARGIN, HEADER_HEIGHT/2 - MARGIN);
+        p.lineTo (0, HEADER_HEIGHT - 2*MARGIN);
+        p.closeSubPath();
     }
-	*/
+    else
+    {
+        p.startNewSubPath (HEADER_HEIGHT - 2*MARGIN, 0);
+        p.lineTo (0, HEADER_HEIGHT/2 - MARGIN);
+        p.lineTo (HEADER_HEIGHT - 2*MARGIN, HEADER_HEIGHT - 2*MARGIN);
+        p.closeSubPath();
+    }
+    
+    sideBarButton->setShape (p, false, false, false);
 }
 
 //==============================================================================
@@ -167,15 +192,12 @@ PlumeProcessor& PlumeEditor::getProcessor()
 void PlumeEditor::updateFullInterface()
 {
     TRACE_IN;
-    
+    auto gpbounds = gesturePanel->getBounds();
     gesturePanel.reset();
-    
-    wrapperComp->update();
-    presetComp->update();
 
     addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
 	                                                    processor.getParameterTree(), PLUME::UI::FRAMERATE));
-	gesturePanel->setBounds(2 * MARGIN, TOP_PANEL + 3 * MARGIN, getWidth() - 4 * MARGIN, getHeight() - TOP_PANEL - 5 * MARGIN);
+	gesturePanel->setBounds(gpbounds);
 	gesturePanel->addMouseListener (this, true);
 	
 	PLUME::UI::ANIMATE_UI_FLAG = true;
@@ -203,6 +225,6 @@ void PlumeEditor::setInterfaceUpdates (bool shouldUpdate)
 
 void PlumeEditor::setWindowsToFront()
 {
-	wrapperComp->windowToFront();
+	//wrapperComp->windowToFront();
     toFront (true);
 }

@@ -60,10 +60,12 @@ public:
     void wrapperEditorToFront (bool shouldAlsoGiveFocus);
     
     //==============================================================================
-    String getWrappedPluginName();
     WrapperProcessor& getWrapperProcessor();
     PlumeProcessor& getOwner();
     bool hasOpenedWrapperEditor();
+    
+    String getWrappedPluginName();
+    String getWrappedPluginInfoString();
     
     //==============================================================================
     void fillInPluginDescription (PluginDescription& pd);

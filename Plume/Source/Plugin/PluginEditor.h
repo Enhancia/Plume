@@ -13,9 +13,9 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Common/PlumeCommon.h"
 
+#include "Ui/SideBar/SideBarComponent.h"
 #include "Ui/SideBar/WrapperComponent.h"
 #include "Ui/SideBar/PresetComponent.h"
-#include "Ui/SideBar/SideBarComponent.h"
 #include "Ui/Header/HeaderComponent.h"
 #include "Ui/Gesture/GesturePanel.h"
 #include "Ui/LookAndFeel/PlumeLookAndFeel.h"
@@ -37,7 +37,8 @@ class PresetComponent;
  *  interface blocks: wrapper, presets, and gestures.
  */
 class PlumeEditor  : public AudioProcessorEditor,
-                     public ActionListener
+                     public ActionListener,
+                     public Button::Listener
 {
 public:
     /**
@@ -73,15 +74,7 @@ public:
      */
     void actionListenerCallback (const String &message) override;
     
-    /**
-     * \brief Called to indicate that this component has just acquired the keyboard focus.
-     */
-    void focusLost (Component::FocusChangeType cause) override;
-    void focusGained (Component::FocusChangeType cause) override;
-    
-    void broughtToFront() override;
-    
-    void mouseUp (const MouseEvent& event) override;
+    void buttonClicked (Button* bttn) override;
     
     //==============================================================================
     PlumeProcessor& getProcessor();
@@ -102,11 +95,15 @@ public:
 private:
     //==============================================================================
     PlumeProcessor& processor; /**< \brief Reference to Plume's processor object */
-    ScopedPointer<WrapperComponent> wrapperComp; /**< \brief Object allowing to choose a plugin to wrap and use with neova */
-    ScopedPointer<PresetComponent> presetComp; /**< \brief Object allowing to save or load presets, in the xml format */
+    //ScopedPointer<WrapperComponent> wrapperComp; /**< \brief Object allowing to choose a plugin to wrap and use with neova */
+    //ScopedPointer<PresetComponent> presetComp; /**< \brief Object allowing to save or load presets, in the xml format */
     ScopedPointer<GesturePanel> gesturePanel; /**< \brief Object that handles the different gesture gui objects */
     ScopedPointer<SideBarComponent> sideBar;
     ScopedPointer<HeaderComponent> header;
+    ScopedPointer<ShapeButton> sideBarButton;
+    
+    //==============================================================================
+    void createSideBarButtonPath();
     
     //==============================================================================
     PlumeLookAndFeel plumeLookAndFeel;

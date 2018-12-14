@@ -22,13 +22,15 @@ namespace PLUME
     
         // Display panels values
         const int MARGIN = 8;
-        const int SIDEBAR_WIDTH = 150;
+        const int SIDEBAR_WIDTH = 200;
         const int INFO_HEIGHT = 60;
         const int HEADER_HEIGHT = 40;
         const int GESTURE_DETAIL_WIDTH = 300;
         
         // Display settings
         const int FRAMERATE = 60;
+        
+        const String font = "Tw Cen MT";
         
         extern bool ANIMATE_UI_FLAG;
         
@@ -46,6 +48,7 @@ namespace PLUME
     
         const float WAVE_DISPLAY_MIN = -90.0f;
         const float WAVE_DISPLAY_MAX =  90.0f;
+        
     }
     
     // Value tree identifiers
@@ -130,6 +133,10 @@ namespace PLUME
         const String updateInterface ("updateInterface");
         const String unlockInterface ("unlockInterface");
         const String lockInterface ("lockInterface");
+    }
+    
+    namespace colours
+    {
     }
     
 }

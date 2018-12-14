@@ -41,7 +41,7 @@ void SymmetricalTuner::paint (Graphics& g)
         Colour fillColour = Colour (0xffffffff);
 
         g.setColour (fillColour);
-        g.setFont (Font (12.0f, Font::plain).withTypefaceStyle ("Regular"));
+        g.setFont (Font (PLUME::UI::font, 12.0f, Font::plain).withTypefaceStyle ("Regular"));
         g.drawText (text, x, y, width, height,
                     Justification::centred, true);
     }
@@ -156,7 +156,7 @@ void SymmetricalTuner::createLabels()
         
     // Label style
     rangeLabel->setEditable (true, false, false);
-    rangeLabel->setFont (Font (13.0f, Font::plain));
+    rangeLabel->setFont (Font (PLUME::UI::font, 13.0f, Font::plain));
     rangeLabel->setJustificationType (Justification::centred);
         
     rangeLabel->setBounds (W*(3/4+1/16), H/4, W/8, H/4);

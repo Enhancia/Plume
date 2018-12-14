@@ -30,7 +30,7 @@ WrapperComponent::WrapperComponent (PluginWrapper& wrap)
     scanButton->addListener (this);
     
     addAndMakeVisible (pluginNameLabel = new Label ("Plugin Name Label", TRANS (wrapper.getWrappedPluginName())));
-    pluginNameLabel->setFont (Font (15.00f, Font::bold).withTypefaceStyle ("Regular"));
+    pluginNameLabel->setFont (Font (PLUME::UI::font, 15.00f, Font::bold).withTypefaceStyle ("Regular"));
     pluginNameLabel->setJustificationType (Justification::centred);
     pluginNameLabel->setEditable (false, false, false);
     pluginNameLabel->setColour (Label::backgroundColourId, Colour (0xff323232));

@@ -292,6 +292,18 @@ String PluginWrapper::getWrappedPluginName()
     return "No plugin";
 }
 
+String PluginWrapper::getWrappedPluginInfoString()
+{
+    if (hasWrappedInstance)
+    {
+        auto desc = wrappedInstance->getPluginDescription();
+        
+        return (desc.name + " (" + desc.version + ") - " + desc.manufacturerName);
+    }
+    
+    return " - ";
+}
+
 WrapperProcessor& PluginWrapper::getWrapperProcessor()
 {
     return *wrapperProcessor;
