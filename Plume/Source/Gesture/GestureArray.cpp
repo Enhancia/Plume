@@ -76,7 +76,7 @@ void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages, MidiBuffer&
 void GestureArray::updateAllMappedParameters()
 {
     // calls updateMappedParameters for every gestures that isn't in
-    // mapMode (to prevent the parameter from changing) and is mapped
+    // mapMode (to prevent the parameter from changing) and that is mapped
     for (auto* g : gestures)
     {
         if (mapModeOn == false && g->isMapped() && g->isMidiMapped() == false)
@@ -98,10 +98,12 @@ void GestureArray::updateAllValues()
         {
             g->updateValue (rawData);
         }
-        return;
     }
     
-	DBG ("couldn't get the float values. No value was updated.");
+    else
+    {
+	    DBG ("couldn't get the float values. No value was updated.");
+    }
 }
 
 //==============================================================================
@@ -217,7 +219,7 @@ void GestureArray::addAndSetParameter (AudioProcessorParameter& param, int gestu
     // else adds the parameter and cancels mapMode
     if (gestureId < size())
     {
-        gestures[gestureId]->addParameter(param, Range<float> (start, end), rev);
+        gestures[gestureId]->addParameter (param, Range<float> (start, end), rev);
     }
 }
 

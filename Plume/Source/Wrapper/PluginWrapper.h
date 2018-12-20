@@ -46,13 +46,20 @@ public:
     
     //==============================================================================
     bool wrapPlugin (String pluginFileOrId);
+    bool wrapPlugin (int pluginMenuId);
     void unwrapPlugin();
     bool rewrapPlugin (String pluginFileOrId);
+    bool rewrapPlugin (int pluginMenuId);
+    bool isWrapping();
     
+    //==============================================================================
+    void scanAllPluginsInDirectories (bool dontRescanIfAlreadyInList, bool ignoreBlackList = false);
     AudioPluginFormat* getPluginFormat (File pluginFile);
     
     //==============================================================================
-    bool isWrapping();
+    OwnedArray<File> createFileList();
+    void addCustomDirectory (File newDir);
+    void addPluginsToMenu (PopupMenu& menu);
     
     //==============================================================================
     void createWrapperEditor (int x = 0, int y = 0);
@@ -79,6 +86,9 @@ private:
     //==============================================================================
     bool hasWrappedInstance;
     bool hasOpenedEditor;
+    bool useDefaultPaths = true;
+    float scanProgress;
+    String pluginBeingScanned;
     
     //==============================================================================
     ScopedPointer<WrapperProcessor> wrapperProcessor;
@@ -87,6 +97,8 @@ private:
 
     //==============================================================================
     OwnedArray<PluginDescription>* wrappedPluginDescriptions;
+    OwnedArray<File> customDirectories;
+    ScopedPointer<KnownPluginList> pluginList;
     ScopedPointer<AudioPluginFormatManager> formatManager;
  
     PlumeProcessor& owner;

@@ -140,6 +140,9 @@ const String&#160;</td><td class="memItemRight" valign="bottom"><b>getProgramNam
 <tr class="memitem:a28ce5f77d4e4871ff57ade3e730b5cd9"><td class="memItemLeft" align="right" valign="top"><a id="a28ce5f77d4e4871ff57ade3e730b5cd9"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>changeProgramName</b> (int index, const String &amp;newName) override</td></tr>
 <tr class="separator:a28ce5f77d4e4871ff57ade3e730b5cd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae012dd41a5ac75aea7d2ae863840c7ea"><td class="memItemLeft" align="right" valign="top"><a id="ae012dd41a5ac75aea7d2ae863840c7ea"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>updateTrackProperties</b> (const AudioProcessor::TrackProperties &amp;properties) override</td></tr>
+<tr class="separator:ae012dd41a5ac75aea7d2ae863840c7ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae06dd312c3dc3ba7389ce44fd74cbc18"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_plume_processor.html#ae06dd312c3dc3ba7389ce44fd74cbc18">getStateInformation</a> (MemoryBlock &amp;destData) override</td></tr>
 <tr class="memdesc:ae06dd312c3dc3ba7389ce44fd74cbc18"><td class="mdescLeft">&#160;</td><td class="mdescRight">State save method.  <a href="#ae06dd312c3dc3ba7389ce44fd74cbc18">More...</a><br /></td></tr>
 <tr class="separator:ae06dd312c3dc3ba7389ce44fd74cbc18"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -167,6 +170,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>loadGestureXml</b> (c
 <tr class="memitem:a691a2f342167e257fabf74d0bb76a563"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gesture_array.html">GestureArray</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_plume_processor.html#a691a2f342167e257fabf74d0bb76a563">getGestureArray</a> ()</td></tr>
 <tr class="memdesc:a691a2f342167e257fabf74d0bb76a563"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_gesture_array.html" title="Class that holds an array of Gesture, with several methods to use them. ">GestureArray</a> getter.  <a href="#a691a2f342167e257fabf74d0bb76a563">More...</a><br /></td></tr>
 <tr class="separator:a691a2f342167e257fabf74d0bb76a563"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a644209f6f5ffcd173b09cc897932bba2"><td class="memItemLeft" align="right" valign="top">AudioProcessorValueTreeState &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_plume_processor.html#a644209f6f5ffcd173b09cc897932bba2">getParameterTree</a> ()</td></tr>
+<tr class="memdesc:a644209f6f5ffcd173b09cc897932bba2"><td class="mdescLeft">&#160;</td><td class="mdescRight">AudioProcessorValueTreeState getter.  <a href="#a644209f6f5ffcd173b09cc897932bba2">More...</a><br /></td></tr>
+<tr class="separator:a644209f6f5ffcd173b09cc897932bba2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Plume's processor object. </p>
@@ -230,6 +236,26 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>loadGestureXml</b> (c
 
 <p><a class="el" href="class_gesture_array.html" title="Class that holds an array of Gesture, with several methods to use them. ">GestureArray</a> getter. </p>
 <dl class="section return"><dt>Returns</dt><dd>Reference to the <a class="el" href="class_gesture_array.html" title="Class that holds an array of Gesture, with several methods to use them. ">GestureArray</a> object. </dd></dl>
+
+</div>
+</div>
+<a id="a644209f6f5ffcd173b09cc897932bba2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a644209f6f5ffcd173b09cc897932bba2">&#9670;&nbsp;</a></span>getParameterTree()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AudioProcessorValueTreeState &amp; PlumeProcessor::getParameterTree </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>AudioProcessorValueTreeState getter. </p>
+<dl class="section return"><dt>Returns</dt><dd>Reference to the AudioProcessorValueTreeState object. </dd></dl>
 
 </div>
 </div>

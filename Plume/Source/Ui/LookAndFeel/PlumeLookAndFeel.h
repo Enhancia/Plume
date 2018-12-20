@@ -44,6 +44,15 @@ public:
     void drawPointer (Graphics&, float x, float y, float diameter,
                       const Colour&, const Colour&, int direction) noexcept;
     //==============================================================================
+    
+    //void drawPopupMenuBackground (Graphics&, int width, int height) override;
+	/*
+    void drawPopupMenuItem (Graphics&, const Rectangle<int>& area,
+                            bool isSeparator, bool isActive, bool isHighlighted, bool isTicked, bool hasSubMenu,
+                            const String& text, const String& shortcutKeyText,
+                            const Drawable* icon, const Colour* textColour) override;
+	*/
+    //==============================================================================
         
 protected:
     Colour plumePalette[PlumeColour::numColours];

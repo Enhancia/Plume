@@ -8,7 +8,9 @@
   ==============================================================================
 */
 
+
 #pragma once
+#include "../JuceLibraryCode/JuceHeader.h"
 
 namespace PLUME
 {
@@ -18,7 +20,7 @@ namespace PLUME
     {
         // Default settings
         const int DEFAULT_WINDOW_WIDTH = 800;
-        const int DEFAULT_WINDOW_HEIGHT = 600;
+        const int DEFAULT_WINDOW_HEIGHT = 500;
     
         // Display panels values
         const int MARGIN = 8;
@@ -139,4 +141,14 @@ namespace PLUME
     {
     }
     
+    namespace path
+    {
+		extern const Path createGearPath();
+		extern const Path createPianoPath();
+		extern const Path createFolderPath();
+        
+        const Path gearPath = createGearPath();
+        const Path pianoPath = createPianoPath();
+        const Path folderPath = createFolderPath();
+    }
 }

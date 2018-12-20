@@ -22,7 +22,7 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 {
     TRACE_IN;
     
-    setLookAndFeel (&plumeLookAndFeel);
+	setLookAndFeel (&plumeLookAndFeel);
 	setMouseClickGrabsKeyboardFocus(false);
 	setBroughtToFrontOnMouseClick (true);
 
@@ -35,9 +35,9 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	bool sideBarHidden = false;
 
 	addAndMakeVisible (sideBarButton = new ShapeButton ("Side Bar Button",
-                                                        sideBarHidden ? Colour(0xff393939) : Colour (0xffffffff),
-		                                                sideBarHidden ? Colour(0xaa393939) : Colour (0xaaffffff),
-		                                                sideBarHidden ? Colour(0xff393939) : Colour (0xffffffff)));
+                                                        Colour(0xff393939),
+		                                                Colour(0xaa393939),
+		                                                Colour(0xff393939)));
                                                         
 	sideBarButton->setToggleState (sideBarHidden, dontSendNotification); // side bar visible at first
     sideBarButton->setClickingTogglesState (true);
@@ -62,6 +62,7 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	// if a WrappedEditor currently exists, puts it in front (useful because hosts actually deletes the editor when not shown)
 	//wrapperComp->windowToFront();
     
+	
 	PLUME::UI::ANIMATE_UI_FLAG = true;
 }
 
@@ -101,7 +102,7 @@ void PlumeEditor::resized()
     using namespace PLUME::UI;
     auto area = getLocalBounds();
     
-    auto sideBarArea = Rectangle<int> (sideBarButton->getToggleState() ? 0 : SIDEBAR_WIDTH - HEADER_HEIGHT, 0,
+    auto sideBarArea = Rectangle<int> (sideBarButton->getToggleState() ? 0 : SIDEBAR_WIDTH, 0,
 	                                   HEADER_HEIGHT, HEADER_HEIGHT);
 	sideBarButton->setBounds (sideBarArea.reduced ((3*MARGIN)/2));
 	if (!sideBarButton->getToggleState())
@@ -110,7 +111,7 @@ void PlumeEditor::resized()
 	}
 
 	header->setBounds (area.removeFromTop (HEADER_HEIGHT));
-	gesturePanel->setBounds(area.reduced (6*MARGIN));
+	gesturePanel->setBounds(area.reduced (2*MARGIN, 2*MARGIN));
 	resizableCorner->setBounds (getWidth() - 20, getHeight() - 20, 20, 20);
 
 	repaint();
@@ -158,10 +159,6 @@ void PlumeEditor::createSideBarButtonPath()
     
 	DBG (int (sideBarButton->getToggleState()));
 
-	sideBarButton->setColours (sideBarButton->getToggleState() ? Colour(0xff393939) : Colour(0xffffffff),
-		                       sideBarButton->getToggleState() ? Colour(0xaa393939) : Colour(0xaaffffff),
-		                       sideBarButton->getToggleState() ? Colour(0xff393939) : Colour(0xffffffff));
-
     Path p;
     
     if (sideBarButton->getToggleState())
@@ -199,6 +196,7 @@ void PlumeEditor::updateFullInterface()
 	                                                    processor.getParameterTree(), PLUME::UI::FRAMERATE));
 	gesturePanel->setBounds(gpbounds);
 	gesturePanel->addMouseListener (this, true);
+	header->update();
 	
 	PLUME::UI::ANIMATE_UI_FLAG = true;
 }

@@ -19,18 +19,27 @@
 //==============================================================================
 /*
 */
-class SideBarComponent    : public Component
+class SideBarComponent    : public Component,
+                            private Button::Listener
 {
 public:
+    //==============================================================================
     SideBarComponent (PlumeProcessor& proc);
     ~SideBarComponent();
 
+    //==============================================================================
     void paint (Graphics&) override;
     void resized() override;
+    
+    //==============================================================================
+    void buttonClicked (Button* bttn) override;
 
 private:
+    //==============================================================================
     PlumeProcessor& processor;
     ScopedPointer<PresetComponent> presetComponent;
+    ScopedPointer<ShapeButton> optionsButton;
 
+    //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SideBarComponent)
 };

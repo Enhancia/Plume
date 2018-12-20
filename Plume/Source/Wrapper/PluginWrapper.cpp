@@ -35,6 +35,9 @@ PluginWrapper::PluginWrapper (PlumeProcessor& p, GestureArray& gArr)
   #if JUCE_PLUGINHOST_VST3
     formatManager->addFormat (new VST3PluginFormat());
   #endif
+  
+    pluginList = new KnownPluginList ();
+    //scanAllPluginsInDirectories (false, true);
 }
 
 PluginWrapper::~PluginWrapper()
@@ -167,6 +170,47 @@ bool PluginWrapper::wrapPlugin (String pluginFileOrId)
     return true;
 }
 
+bool PluginWrapper::wrapPlugin (int pluginMenuId)
+{
+    int pluginId = pluginList->getIndexChosenByMenu (pluginMenuId);
+    
+    if (pluginList->getType (pluginId) == nullptr)
+    {
+        DBG ("Error: Couldn't find the plugin at the specified Id..\nSize of the plugin list: " << pluginList->getNumTypes()
+                                                                                                << " | Specified id : "
+                                                                                                << pluginId
+                                                                                                << "\n");
+        return false;
+    }
+        
+    if (hasWrappedInstance)
+	{
+		unwrapPlugin();
+	}
+	
+    String errorMsg;
+    DBG ("\n[create Plugin Instance]");
+    wrappedInstance = formatManager->createPluginInstance (*pluginList->getType (pluginId),
+                                                           owner.getSampleRate(),
+														   owner.getBlockSize(),
+                                                           errorMsg);
+                                                             
+    if (wrappedInstance == nullptr)
+    {
+        DBG ("Error: Failed to create an instance of the plugin, error message:\n\n" << errorMsg);
+        return false;
+    }
+    
+    //Creates the wrapped processor object using the instance
+    wrappedInstance->enableAllBuses();
+    
+    wrapperProcessor = new WrapperProcessor (*wrappedInstance, *this);
+    wrapperProcessor->prepareToPlay (owner.getSampleRate(), owner.getBlockSize());
+    hasWrappedInstance = true;
+	
+    return true;
+}
+
 void PluginWrapper::unwrapPlugin()
 {
     TRACE_IN;
@@ -191,6 +235,12 @@ bool PluginWrapper::rewrapPlugin(String pluginFileOrId)
 {
     unwrapPlugin();
     return wrapPlugin(pluginFileOrId);
+}
+
+bool PluginWrapper::rewrapPlugin(int pluginId)
+{
+    unwrapPlugin();
+    return wrapPlugin(pluginId);
 }
 
 AudioPluginFormat* PluginWrapper::getPluginFormat (File pluginFile)
@@ -224,7 +274,7 @@ AudioPluginFormat* PluginWrapper::getPluginFormat (File pluginFile)
 
    return nullptr;
 }
-//==============================================================================
+
 bool PluginWrapper::isWrapping()
 {
     return hasWrappedInstance;
@@ -317,6 +367,80 @@ PlumeProcessor& PluginWrapper::getOwner()
 bool PluginWrapper::hasOpenedWrapperEditor()
 {
     return hasOpenedEditor;
+}
+
+//==============================================================================
+OwnedArray<File> PluginWrapper::createFileList()
+{
+    OwnedArray<File> directories;
+    
+    if (useDefaultPaths)
+    {
+        directories.add (new File (File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getFullPathName()));
+        
+      #if JUCE_WINDOWS
+        // adds PF/Steinberg if it exists
+      #elif JUCE_MAC
+        // adds User and Local /Library/Audio/plug-Ins/
+      #endif
+    }
+    
+    if (!customDirectories.isEmpty())
+    {
+        directories.addArray (customDirectories);
+    }
+
+	return directories;
+}
+
+void PluginWrapper::addCustomDirectory (File newDir)
+{
+    if (newDir.exists() && newDir.isDirectory())
+    {
+        // Checks if it's not already in the array
+        for (auto* file : customDirectories)
+        {
+            if (*file == newDir)
+            {
+                return;
+            }
+        }
+        
+        // Creates a copy of the file to prevent any memory leak
+        customDirectories.add (new File (newDir));
+    }
+}
+
+void PluginWrapper::scanAllPluginsInDirectories (bool dontRescanIfAlreadyInList, bool ignoreBlackList)
+{
+    if (formatManager->getNumFormats() == 0 ||
+        (!useDefaultPaths && customDirectories.isEmpty())) return;
+    
+    //clears the list
+    pluginList->clear();
+    
+    // Sets all the files to search
+    FileSearchPath fsp;
+    for (auto* file : createFileList())
+    {
+        fsp.add (File (*file)); // Creates a copy of the file to prevent leakage / nullptr bad access
+    }
+        
+    for (int i=0; i<formatManager->getNumFormats(); i++)
+    {
+        PluginDirectoryScanner dirScanner (*pluginList, *formatManager->getFormat (i), fsp, false, File(), false);
+        
+        while (dirScanner.scanNextFile (dontRescanIfAlreadyInList, pluginBeingScanned)) // Rescans until scanNextFile returns false
+        {
+            scanProgress = dirScanner.getProgress();
+            DBG ("Scanning : " << pluginBeingScanned << " | Progress : " << scanProgress);
+        }
+    }
+}
+
+void PluginWrapper::addPluginsToMenu (PopupMenu& menu)
+{
+    pluginList->addToMenu (menu, KnownPluginList::sortByFormat);
 }
 
 //==============================================================================

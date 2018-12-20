@@ -100,15 +100,24 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_plume_editor.html#aa42064f898f3a543173c5b29c7b2932c">resized</a> () override</td></tr>
 <tr class="memdesc:aa42064f898f3a543173c5b29c7b2932c"><td class="mdescLeft">&#160;</td><td class="mdescRight">JUCE Components' resized method. <br /></td></tr>
 <tr class="separator:aa42064f898f3a543173c5b29c7b2932c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5d593b33e5e4e33827928dbcdc272416"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_plume_editor.html#a5d593b33e5e4e33827928dbcdc272416">changeListenerCallback</a> (ChangeBroadcaster *source) override</td></tr>
-<tr class="memdesc:a5d593b33e5e4e33827928dbcdc272416"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback to a change message sent by the processor.  <a href="#a5d593b33e5e4e33827928dbcdc272416">More...</a><br /></td></tr>
-<tr class="separator:a5d593b33e5e4e33827928dbcdc272416"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04371047171d9eab921db9e8e7011bb8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_plume_editor.html#a04371047171d9eab921db9e8e7011bb8">actionListenerCallback</a> (const String &amp;message) override</td></tr>
+<tr class="memdesc:a04371047171d9eab921db9e8e7011bb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback to a change message sent by the processor.  <a href="#a04371047171d9eab921db9e8e7011bb8">More...</a><br /></td></tr>
+<tr class="separator:a04371047171d9eab921db9e8e7011bb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefe952401cbabab09b3bf0fa8f4b0f91"><td class="memItemLeft" align="right" valign="top"><a id="aefe952401cbabab09b3bf0fa8f4b0f91"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>buttonClicked</b> (Button *bttn) override</td></tr>
+<tr class="separator:aefe952401cbabab09b3bf0fa8f4b0f91"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d5df58d658438a09a9823b3a06d101d"><td class="memItemLeft" align="right" valign="top"><a id="a3d5df58d658438a09a9823b3a06d101d"></a>
 <a class="el" href="class_plume_processor.html">PlumeProcessor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getProcessor</b> ()</td></tr>
 <tr class="separator:a3d5df58d658438a09a9823b3a06d101d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acddc96d095aeb53f7a4ee6cf1f3265e6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_plume_editor.html#acddc96d095aeb53f7a4ee6cf1f3265e6">updateFullInterface</a> ()</td></tr>
 <tr class="memdesc:acddc96d095aeb53f7a4ee6cf1f3265e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method that sets a full interface update.  <a href="#acddc96d095aeb53f7a4ee6cf1f3265e6">More...</a><br /></td></tr>
 <tr class="separator:acddc96d095aeb53f7a4ee6cf1f3265e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a496bc069c9238a062e8f6a25df52e2ac"><td class="memItemLeft" align="right" valign="top"><a id="a496bc069c9238a062e8f6a25df52e2ac"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setInterfaceUpdates</b> (bool shouldUpdate)</td></tr>
+<tr class="separator:a496bc069c9238a062e8f6a25df52e2ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7d2cbe20fd813653fc6a53e5b434f1e"><td class="memItemLeft" align="right" valign="top"><a id="af7d2cbe20fd813653fc6a53e5b434f1e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setWindowsToFront</b> ()</td></tr>
+<tr class="separator:af7d2cbe20fd813653fc6a53e5b434f1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Plume's editor component. Holds the ui of the plugin. </p>
@@ -142,8 +151,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a5d593b33e5e4e33827928dbcdc272416"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5d593b33e5e4e33827928dbcdc272416">&#9670;&nbsp;</a></span>changeListenerCallback()</h2>
+<a id="a04371047171d9eab921db9e8e7011bb8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04371047171d9eab921db9e8e7011bb8">&#9670;&nbsp;</a></span>actionListenerCallback()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -152,10 +161,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void PlumeEditor::changeListenerCallback </td>
+          <td class="memname">void PlumeEditor::actionListenerCallback </td>
           <td>(</td>
-          <td class="paramtype">ChangeBroadcaster *&#160;</td>
-          <td class="paramname"><em>source</em></td><td>)</td>
+          <td class="paramtype">const String &amp;&#160;</td>
+          <td class="paramname"><em>message</em></td><td>)</td>
           <td></td>
         </tr>
       </table>

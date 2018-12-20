@@ -71,6 +71,9 @@ const String {\bfseries get\+Program\+Name} (int index) override
 \mbox{\Hypertarget{class_plume_processor_a28ce5f77d4e4871ff57ade3e730b5cd9}\label{class_plume_processor_a28ce5f77d4e4871ff57ade3e730b5cd9}} 
 void {\bfseries change\+Program\+Name} (int index, const String \&new\+Name) override
 \item 
+\mbox{\Hypertarget{class_plume_processor_ae012dd41a5ac75aea7d2ae863840c7ea}\label{class_plume_processor_ae012dd41a5ac75aea7d2ae863840c7ea}} 
+void {\bfseries update\+Track\+Properties} (const Audio\+Processor\+::\+Track\+Properties \&properties) override
+\item 
 void \mbox{\hyperlink{class_plume_processor_ae06dd312c3dc3ba7389ce44fd74cbc18}{get\+State\+Information}} (Memory\+Block \&dest\+Data) override
 \begin{DoxyCompactList}\small\item\em State save method. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{class_plume_processor_aa7ab9da73c37f6db69ea6c7e1e4a0211}{set\+State\+Information}} (const void $\ast$data, int size\+In\+Bytes) override
@@ -92,7 +95,9 @@ void {\bfseries load\+Gesture\+Xml} (const Xml\+Element \&gesture\+Data)
 \mbox{\hyperlink{class_data_reader}{Data\+Reader}} $\ast$ \mbox{\hyperlink{class_plume_processor_ab24c4b6857ca26d462fce6be9e23cedd}{get\+Data\+Reader}} ()
 \begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{class_data_reader}{Data\+Reader}} getter. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{class_gesture_array}{Gesture\+Array}} \& \mbox{\hyperlink{class_plume_processor_a691a2f342167e257fabf74d0bb76a563}{get\+Gesture\+Array}} ()
-\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{class_gesture_array}{Gesture\+Array}} getter. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{class_gesture_array}{Gesture\+Array}} getter. \end{DoxyCompactList}\item 
+Audio\+Processor\+Value\+Tree\+State \& \mbox{\hyperlink{class_plume_processor_a644209f6f5ffcd173b09cc897932bba2}{get\+Parameter\+Tree}} ()
+\begin{DoxyCompactList}\small\item\em Audio\+Processor\+Value\+Tree\+State getter. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
@@ -139,6 +144,19 @@ Reference to the \mbox{\hyperlink{class_data_reader}{Data\+Reader}} object.
 
 \begin{DoxyReturn}{Returns}
 Reference to the \mbox{\hyperlink{class_gesture_array}{Gesture\+Array}} object. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_plume_processor_a644209f6f5ffcd173b09cc897932bba2}\label{class_plume_processor_a644209f6f5ffcd173b09cc897932bba2}} 
+\index{Plume\+Processor@{Plume\+Processor}!get\+Parameter\+Tree@{get\+Parameter\+Tree}}
+\index{get\+Parameter\+Tree@{get\+Parameter\+Tree}!Plume\+Processor@{Plume\+Processor}}
+\subsubsection{\texorpdfstring{get\+Parameter\+Tree()}{getParameterTree()}}
+{\footnotesize\ttfamily Audio\+Processor\+Value\+Tree\+State \& Plume\+Processor\+::get\+Parameter\+Tree (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Audio\+Processor\+Value\+Tree\+State getter. 
+
+\begin{DoxyReturn}{Returns}
+Reference to the Audio\+Processor\+Value\+Tree\+State object. 
 \end{DoxyReturn}
 \mbox{\Hypertarget{class_plume_processor_ae06dd312c3dc3ba7389ce44fd74cbc18}\label{class_plume_processor_ae06dd312c3dc3ba7389ce44fd74cbc18}} 
 \index{Plume\+Processor@{Plume\+Processor}!get\+State\+Information@{get\+State\+Information}}

@@ -17,21 +17,41 @@
 //==============================================================================
 /*
 */
-class HeaderComponent    : public Component
+class HeaderComponent    : public Component,
+                           public Button::Listener
 {
 public:
+    //==============================================================================
     HeaderComponent (PlumeProcessor& proc);
     ~HeaderComponent();
 
+    //==============================================================================
     void paint (Graphics&) override;
     void resized() override;
     
+    //==============================================================================
+    void mouseUp (const MouseEvent &event) override;
+    void buttonClicked (Button* bttn) override;
+    
+    //==============================================================================
     void update();
+    void drawPianoAndFolderPath (Path& pianoPath, Path& folderPath);
+    void createPluginMenu();
 
 private:
+	static void pluginMenuCallback (int result, HeaderComponent* header);
+	void handlePluginChoice (int chosenId);
+
+    //==============================================================================
     PlumeProcessor& processor;
+    Path eyePath;
+    Path pianoPath;
+    
+    PopupMenu pluginListMenu;
+    ScopedPointer<ShapeButton> pluginListButton;
     ScopedPointer<Label> pluginNameLabel;
     ScopedPointer<Label> presetNameLabel;
     
+    //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (HeaderComponent)
 };

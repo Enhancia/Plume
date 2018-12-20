@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" jucerVersion="5.4.1"
-              pluginFormats="buildAU,buildStandalone,buildVST" version="1.1.8"
+              pluginFormats="buildAU,buildStandalone,buildVST" version="1.2.0"
               companyName="Enhancia" buildVST="1" buildVST3="0" buildAU="1"
               buildAUv3="0" buildRTAS="0" buildAAX="0" enableIAA="0" pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
               pluginManufacturer="Enhancia" pluginName="Plume" pluginDesc="Enhancia's Plume. Wraps other plugins, provides customizable and mappable gestures to use with Neova."
@@ -55,6 +55,17 @@
               file="Source/Wrapper/WrapperProcessor.h"/>
       </GROUP>
       <GROUP id="{EB1FE939-C694-02C5-E97F-E17B6084B07C}" name="Ui">
+        <GROUP id="{4CBB6F8D-0DE8-71C7-60AF-FF1213B7784A}" name="LookAndFeel">
+          <FILE id="zqremJ" name="PlumeLookAndFeel.cpp" compile="1" resource="0"
+                file="Source/Ui/LookAndFeel/PlumeLookAndFeel.cpp"/>
+          <FILE id="OXmlbL" name="PlumeLookAndFeel.h" compile="0" resource="0"
+                file="Source/Ui/LookAndFeel/PlumeLookAndFeel.h"/>
+        </GROUP>
+        <GROUP id="{4CA36361-EB23-BED0-3C51-3F19F9BE9F00}" name="Common">
+          <FILE id="cZ9UZJ" name="MovingCursor.cpp" compile="1" resource="0"
+                file="Source/Ui/Common/MovingCursor.cpp"/>
+          <FILE id="QhDpZl" name="MovingCursor.h" compile="0" resource="0" file="Source/Ui/Common/MovingCursor.h"/>
+        </GROUP>
         <GROUP id="{ACEA364D-47F4-BE67-B3B0-D0FEC5CE7BA7}" name="Header">
           <FILE id="hBml6T" name="HeaderComponent.cpp" compile="1" resource="0"
                 file="Source/Ui/Header/HeaderComponent.cpp"/>
@@ -74,17 +85,6 @@
                 file="Source/Ui/SideBar/WrapperComponent.cpp"/>
           <FILE id="YjXPVK" name="WrapperComponent.h" compile="0" resource="0"
                 file="Source/Ui/SideBar/WrapperComponent.h"/>
-        </GROUP>
-        <GROUP id="{4CBB6F8D-0DE8-71C7-60AF-FF1213B7784A}" name="LookAndFeel">
-          <FILE id="zqremJ" name="PlumeLookAndFeel.cpp" compile="1" resource="0"
-                file="Source/Ui/LookAndFeel/PlumeLookAndFeel.cpp"/>
-          <FILE id="OXmlbL" name="PlumeLookAndFeel.h" compile="0" resource="0"
-                file="Source/Ui/LookAndFeel/PlumeLookAndFeel.h"/>
-        </GROUP>
-        <GROUP id="{4CA36361-EB23-BED0-3C51-3F19F9BE9F00}" name="Common">
-          <FILE id="cZ9UZJ" name="MovingCursor.cpp" compile="1" resource="0"
-                file="Source/Ui/Common/MovingCursor.cpp"/>
-          <FILE id="QhDpZl" name="MovingCursor.h" compile="0" resource="0" file="Source/Ui/Common/MovingCursor.h"/>
         </GROUP>
         <GROUP id="{3CFEC0E3-E11C-6973-B8F6-2519E7B63825}" name="Gesture">
           <FILE id="tb4LAs" name="GesturePanel.cpp" compile="1" resource="0"
