@@ -244,7 +244,7 @@ void PluginWrapper::createWrapperEditor (int x, int y)
     
     if (hasOpenedEditor == true)
     {
-        wrapperEditor->toFront (false);
+        wrapperEditor->toFront (true);
         return;
     }
     
@@ -253,11 +253,12 @@ void PluginWrapper::createWrapperEditor (int x, int y)
     if (wrapperEditor == nullptr)
     {
         wrapperEditor = new WrapperEditorWindow (*wrapperProcessor);
-		wrapperEditor->toFront (false);
+		wrapperEditor->toFront (true);
         return;
     }
     
     wrapperEditor.reset (new WrapperEditorWindow (*wrapperProcessor));
+    wrapperEditor->toFront (true);
 }
 
 void PluginWrapper::clearWrapperEditor()

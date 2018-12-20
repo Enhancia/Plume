@@ -71,16 +71,6 @@ public:
      */
     void actionListenerCallback (const String &message) override;
     
-    /**
-     * \brief Called to indicate that this component has just acquired the keyboard focus.
-     */
-    void focusLost (Component::FocusChangeType cause) override;
-    void focusGained (Component::FocusChangeType cause) override;
-    
-    void broughtToFront() override;
-    
-    void mouseUp (const MouseEvent& event) override;
-    
     //==============================================================================
     PlumeProcessor& getProcessor();
     

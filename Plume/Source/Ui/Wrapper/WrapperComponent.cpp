@@ -95,15 +95,7 @@ void WrapperComponent::buttonClicked (Button* bttn)
     
     else if (bttn == openEditorButton)
     {
-		if (wrapper.hasOpenedWrapperEditor())
-		{
-			closeEditor();
-		}
-		else
-		{
-			openEditor();
-		}
-        
+		openEditor();
     }
 }
 

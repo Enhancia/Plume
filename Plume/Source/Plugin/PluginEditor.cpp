@@ -125,38 +125,6 @@ void PlumeEditor::actionListenerCallback(const String &message)
     }
 }
 
-void PlumeEditor::broughtToFront()
-{
-    if (wrapperComp->hasEditor())
-    {
-        //setWindowsToFront();
-    }
-}
-
-void PlumeEditor::focusGained (Component::FocusChangeType cause)
-{
-    
-}
-
-void PlumeEditor::focusLost (Component::FocusChangeType cause)
-{
-    /*
-    if (wrapperComp->hasEditor())
-    {
-        DBG ("focus lost cause : " + String (cause));
-        wrapperComp->windowToFront();
-    }
-    */
-}
-
-void PlumeEditor::mouseUp (const MouseEvent& event)
-{
-    if (wrapperComp->hasEditor())
-    {
-        setWindowsToFront();
-    }
-}
-
 //==============================================================================
 PlumeProcessor& PlumeEditor::getProcessor()
 {
