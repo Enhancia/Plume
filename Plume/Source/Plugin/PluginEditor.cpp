@@ -35,9 +35,9 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	bool sideBarHidden = false;
 
 	addAndMakeVisible (sideBarButton = new ShapeButton ("Side Bar Button",
-                                                        Colour(0xff393939),
-		                                                Colour(0xaa393939),
-		                                                Colour(0xff393939)));
+                                                        PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText),
+		                                                PLUME::UI::currentTheme.getColour(PLUME::colour::headerHighlightedText),
+		                                                PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText)));
                                                         
 	sideBarButton->setToggleState (sideBarHidden, dontSendNotification); // side bar visible at first
     sideBarButton->setClickingTogglesState (true);
@@ -86,7 +86,7 @@ PlumeEditor::~PlumeEditor()
 void PlumeEditor::paint (Graphics& g)
 {
     // Background
-    g.fillAll (plumeLookAndFeel.getPlumeColour (PlumeLookAndFeel::background));
+    g.fillAll (PLUME::UI::currentTheme.getColour (PLUME::colour::basePanelBackground));
     
     // Version Text
     g.setColour (Colour (0xff000000));

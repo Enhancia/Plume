@@ -59,7 +59,7 @@ public:
     //==============================================================================
     OwnedArray<File> createFileList();
     void addCustomDirectory (File newDir);
-    void addPluginsToMenu (PopupMenu& menu);
+    void addPluginsToMenu (PopupMenu& menu, KnownPluginList::SortMethod sort);
     
     //==============================================================================
     void createWrapperEditor (int x = 0, int y = 0);

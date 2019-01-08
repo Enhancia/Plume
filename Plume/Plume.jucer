@@ -10,6 +10,9 @@
   <MAINGROUP id="RYgD59" name="Plume">
     <GROUP id="{9375F276-9F56-CF4A-C1B1-D4B5B9CE68B9}" name="Source">
       <GROUP id="{84727D1E-9E2A-349D-53A5-E2EDB50DAA12}" name="Common">
+        <FILE id="ustxre" name="PlumeColours.cpp" compile="1" resource="0"
+              file="Source/Common/PlumeColours.cpp"/>
+        <FILE id="Ljx0Gf" name="PlumeColours.h" compile="0" resource="0" file="Source/Common/PlumeColours.h"/>
         <FILE id="jgeTBQ" name="PlumeCommon.cpp" compile="1" resource="0" file="Source/Common/PlumeCommon.cpp"/>
         <FILE id="aoaZYk" name="PlumeCommon.h" compile="0" resource="0" file="Source/Common/PlumeCommon.h"/>
       </GROUP>
@@ -73,7 +76,7 @@
                 file="Source/Ui/Header/HeaderComponent.h"/>
         </GROUP>
         <GROUP id="{50A59D03-EF8C-6884-6A1F-9905EDBD4B18}" name="SideBar">
-          <FILE id="VoBRbA" name="PresetComponent.cpp" compile="1" resource="0"
+          <FILE id="VoBRbA" name="PresetComponent.cpp" compile="0" resource="0"
                 file="Source/Ui/SideBar/PresetComponent.cpp"/>
           <FILE id="gfzO6n" name="PresetComponent.h" compile="0" resource="0"
                 file="Source/Ui/SideBar/PresetComponent.h"/>
@@ -81,7 +84,7 @@
                 file="Source/Ui/SideBar/SideBarComponent.cpp"/>
           <FILE id="lr3xWX" name="SideBarComponent.h" compile="0" resource="0"
                 file="Source/Ui/SideBar/SideBarComponent.h"/>
-          <FILE id="uiKfHn" name="WrapperComponent.cpp" compile="1" resource="0"
+          <FILE id="uiKfHn" name="WrapperComponent.cpp" compile="0" resource="0"
                 file="Source/Ui/SideBar/WrapperComponent.cpp"/>
           <FILE id="YjXPVK" name="WrapperComponent.h" compile="0" resource="0"
                 file="Source/Ui/SideBar/WrapperComponent.h"/>

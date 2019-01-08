@@ -20,7 +20,7 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc) : processor (proc)
     pluginNameLabel->setJustificationType (Justification::centred);
     pluginNameLabel->setEditable (false, false, false);
     pluginNameLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
-    pluginNameLabel->setColour (Label::textColourId, Colour (0xff393939));
+    pluginNameLabel->setColour (Label::textColourId, PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText));
     pluginNameLabel->addMouseListener (this, false);
     
     // Preset Name
@@ -29,7 +29,7 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc) : processor (proc)
     presetNameLabel->setJustificationType (Justification::centred);
     presetNameLabel->setEditable (false, false, false);
     presetNameLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
-    presetNameLabel->setColour (Label::textColourId, Colour (0xff393939));
+    presetNameLabel->setColour (Label::textColourId, PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText));
     
     // Plugin List Button
     Path arrow;
@@ -42,13 +42,11 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc) : processor (proc)
 		                                                   Colour(0x00000000),
 		                                                   Colour(0x00000000)));
 	pluginListButton->setShape (arrow, false, true, false);
-	pluginListButton->setOutline (Colour (0xff393939), 2.0f);
+	pluginListButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText), 2.0f);
 	pluginListButton->addListener (this);
     
 	// Plugin List menu
-	pluginListMenu.setLookAndFeel (&getTopLevelComponent()->getLookAndFeel());
-	pluginListMenu.addSectionHeader ("Plugins:");
-    createPluginMenu();
+    createPluginMenu (KnownPluginList::sortByFormat);
 	
     // drawPianoAndFolderPath (pianoPath, folderPath);
     
@@ -63,12 +61,14 @@ void HeaderComponent::paint (Graphics& g)
 {
     using namespace PLUME::UI;
     
-    g.fillAll (Colour (0xfff8f8f8));
+    g.fillAll (currentTheme.getColour(PLUME::colour::headerBackground));
     
     //Gradient for horizontal lines
-    auto grad = ColourGradient::vertical (Colour (0xffa5a5a5), MARGIN, 
-                                          Colour (0xffe1e1e1), getHeight() - MARGIN);
-    grad.addColour (0.8, Colour (0xffe1e1e1));
+    auto grad = ColourGradient::vertical (currentTheme.getColour(PLUME::colour::headerSeparatorTop),
+                                          MARGIN, 
+                                          currentTheme.getColour(PLUME::colour::headerSeparatorBottom),
+                                          getHeight() - MARGIN);
+    grad.addColour (0.8, currentTheme.getColour(PLUME::colour::headerSeparatorBottom));
     g.setGradientFill (grad);
     
     auto area = getLocalBounds().withLeft (getHeight()); 
@@ -129,6 +129,23 @@ void HeaderComponent::mouseUp (const MouseEvent &event)
 	}
 }
 
+
+void HeaderComponent::mouseEnter (const MouseEvent &event)
+{
+    if (event.eventComponent == pluginNameLabel)
+	{
+        pluginNameLabel->setColour (Label::textColourId, PLUME::UI::currentTheme.getColour(PLUME::colour::headerHighlightedText));
+	}
+}
+
+void HeaderComponent::mouseExit (const MouseEvent &event)
+{
+    if (event.eventComponent == pluginNameLabel)
+	{
+        pluginNameLabel->setColour (Label::textColourId, PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText));
+	}
+}
+
 void HeaderComponent::buttonClicked (Button* bttn) 
 {
     if (bttn == pluginListButton)
@@ -161,13 +178,16 @@ void HeaderComponent::handlePluginChoice (int chosenId)
 void HeaderComponent::update()
 {
     pluginNameLabel->setText (processor.getWrapper().getWrappedPluginInfoString(), dontSendNotification);
-    createPluginMenu();
+    createPluginMenu (KnownPluginList::sortByFormat);
 }
 
 
-void HeaderComponent::createPluginMenu()
+void HeaderComponent::createPluginMenu (KnownPluginList::SortMethod sort)
 {
-    processor.getWrapper().addPluginsToMenu (pluginListMenu);
+	pluginListMenu.clear();
+	pluginListMenu.setLookAndFeel (&getTopLevelComponent()->getLookAndFeel());
+	pluginListMenu.addSectionHeader ("Plugins:");
+    processor.getWrapper().addPluginsToMenu (pluginListMenu, sort);
 }
 
 void HeaderComponent::drawPianoAndFolderPath (Path& pianoPath, Path& folderPath)

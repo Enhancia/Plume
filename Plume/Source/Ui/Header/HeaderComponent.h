@@ -31,12 +31,14 @@ public:
     
     //==============================================================================
     void mouseUp (const MouseEvent &event) override;
+    void mouseEnter (const MouseEvent &event) override;
+    void mouseExit (const MouseEvent &event) override;
     void buttonClicked (Button* bttn) override;
     
     //==============================================================================
     void update();
     void drawPianoAndFolderPath (Path& pianoPath, Path& folderPath);
-    void createPluginMenu();
+    void createPluginMenu (KnownPluginList::SortMethod sort);
 
 private:
 	static void pluginMenuCallback (int result, HeaderComponent* header);

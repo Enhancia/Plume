@@ -15,9 +15,9 @@
 SideBarComponent::SideBarComponent (PlumeProcessor& proc)   : processor (proc)
 {
     addAndMakeVisible (optionsButton = new ShapeButton ("Options Button",
-                                                        Colour(0xffffffff),
-		                                                Colour(0xaaffffff),
-		                                                Colour(0xaaaaaaff)));
+                                                        PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFill),
+		                                                PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFillHighlighted),
+		                                                PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFillClicked)));
 	optionsButton->setShape (PLUME::path::gearPath, false, true, false);
 	optionsButton->addListener (this);
     //addAndMakeVisible (presetComponent = new PresetComponent (processor));
@@ -31,18 +31,20 @@ void SideBarComponent::paint (Graphics& g)
 {
 	using namespace PLUME::UI;
 	
-    g.fillAll (Colour (0xff393939));
+    g.fillAll (currentTheme.getColour(PLUME::colour::sideBarBackground));
     
     //Gradient for horizontal lines
-    auto grad = ColourGradient::horizontal (Colour (0x05ffffff), MARGIN, 
-                                            Colour (0x05ffffff), getWidth() - MARGIN);
-    grad.addColour (0.5, Colour (0x40ffffff));
+    auto grad = ColourGradient::horizontal (currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
+                                            MARGIN, 
+                                            currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
+                                            getWidth() - MARGIN);
+    grad.addColour (0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
 
     
     auto area = getLocalBounds();
     
     // Plume. text
-    g.setColour (Colours::white);
+    g.setColour (currentTheme.getColour(PLUME::colour::sideBarMainText));
     g.setFont (Font (font, 25.0f, Font::bold));
     g.drawText ("Plume.", area.removeFromTop (HEADER_HEIGHT).reduced (MARGIN),
                 Justification::centredLeft, true);
@@ -57,7 +59,7 @@ void SideBarComponent::paint (Graphics& g)
     g.drawHorizontalLine (area.getY() + MARGIN, MARGIN, getWidth() - MARGIN);
     
     g.setFont (Font (font, 15.0f, Font::plain));
-	g.setColour(Colours::white);
+	g.setColour(currentTheme.getColour(PLUME::colour::sideBarSubText));
     g.drawText ("Presets", area.reduced (2*MARGIN),
                 Justification::topLeft, true);
 }

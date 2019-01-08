@@ -15,6 +15,9 @@ namespace PLUME
     namespace UI
     {
         bool ANIMATE_UI_FLAG = false;
+
+		using namespace PLUME::colour;
+        PlumeTheme currentTheme = PlumeTheme::createPlumeTheme (PlumeTheme::red);
     }
     
     namespace path

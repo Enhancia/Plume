@@ -11,6 +11,7 @@
 
 #pragma once
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "PlumeColours.h"
 
 namespace PLUME
 {
@@ -51,6 +52,7 @@ namespace PLUME
         const float WAVE_DISPLAY_MIN = -90.0f;
         const float WAVE_DISPLAY_MAX =  90.0f;
         
+        extern PLUME::colour::PlumeTheme currentTheme;
     }
     
     // Value tree identifiers
@@ -135,10 +137,6 @@ namespace PLUME
         const String updateInterface ("updateInterface");
         const String unlockInterface ("unlockInterface");
         const String lockInterface ("lockInterface");
-    }
-    
-    namespace colours
-    {
     }
     
     namespace path

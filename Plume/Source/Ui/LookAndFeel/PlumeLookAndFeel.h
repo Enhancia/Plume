@@ -10,31 +10,20 @@
 
 #pragma once
 #include "../../../JuceLibraryCode/JuceHeader.h"
+#include "Common/PlumeCommon.h"
 
+namespace PLUME
+{
 
 class PlumeLookAndFeel : public LookAndFeel_V4
 {
 public:
     //==============================================================================
-    enum PlumeColour
-    {
-        background =0,
-        topPanelBackground,
-        topPanelObjects,
-        gestureActiveBackground,
-        gestureInactiveBackground,
-        gestureActiveMapButton,
-        
-        numColours
-    };
-    
-    //==============================================================================
 	PlumeLookAndFeel();
 	~PlumeLookAndFeel();
 	
     //==============================================================================
-	Colour getPlumeColour (int colourId);
-	void setPlumeColour (int colourId, Colour colourValue);
+	void setColours();
     
     //==============================================================================
 	void drawLinearSlider (Graphics&, int x, int y, int width, int height,
@@ -53,11 +42,9 @@ public:
                             const Drawable* icon, const Colour* textColour) override;
 	*/
     //==============================================================================
-        
-protected:
-    Colour plumePalette[PlumeColour::numColours];
-
+    
 private:
+    
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlumeLookAndFeel)
 };
 
@@ -109,3 +96,4 @@ private:
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TwoRangeTunerLookAndFeel)
 };
 
+} // namespace PLUME

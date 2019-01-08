@@ -416,8 +416,11 @@ void PluginWrapper::scanAllPluginsInDirectories (bool dontRescanIfAlreadyInList,
     if (formatManager->getNumFormats() == 0 ||
         (!useDefaultPaths && customDirectories.isEmpty())) return;
     
-    //clears the list
-    pluginList->clear();
+    if (!dontRescanIfAlreadyInList)
+    {
+        //clears the list
+        pluginList->clear();
+    }
     
     // Sets all the files to search
     FileSearchPath fsp;
@@ -438,9 +441,9 @@ void PluginWrapper::scanAllPluginsInDirectories (bool dontRescanIfAlreadyInList,
     }
 }
 
-void PluginWrapper::addPluginsToMenu (PopupMenu& menu)
+void PluginWrapper::addPluginsToMenu (PopupMenu& menu, KnownPluginList::SortMethod sort)
 {
-    pluginList->addToMenu (menu, KnownPluginList::sortByFormat);
+    pluginList->addToMenu (menu, sort);
 }
 
 //==============================================================================

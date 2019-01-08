@@ -65,11 +65,8 @@ public:
         Colour fillColour;
         
         // Fills the area for the Tuner and Mapper
-        { 
-            if (auto* lf = dynamic_cast<PlumeLookAndFeel*> (&getLookAndFeel()))
-            {
-			     g.setColour (lf->getPlumeColour (PlumeLookAndFeel::gestureActiveBackground));
-            }
+        {                              
+			g.setColour (PLUME::UI::currentTheme.getColour(PLUME::colour::basePanelGestureHighlightedBackground));
                 
             g.fillRoundedRectangle (0, 0, tunerWidth, getHeight(), MARGIN/2);
             g.fillRoundedRectangle (tunerWidth+2*MARGIN, 0, mapperWidth, getHeight(), MARGIN/2);
@@ -141,10 +138,8 @@ public:
                         
         if (onOffButton->getToggleState() == false)
         {
-            if (auto* lf = dynamic_cast<PlumeLookAndFeel*> (&getLookAndFeel()))
-            {
-			     g.setColour (lf->getPlumeColour (PlumeLookAndFeel::gestureInactiveBackground));
-            }
+            g.setColour (PLUME::UI::currentTheme.getColour(PLUME::colour::basePanelGestureBackground));
+            
             g.setOpacity (0.5f);
             g.fillRoundedRectangle (0, 0, tunerWidth, getHeight(), MARGIN/2);
             g.fillRoundedRectangle (tunerWidth+2*MARGIN, 0, mapperWidth, getHeight(), MARGIN/2);
