@@ -17,7 +17,9 @@ StatutPipe::StatutPipe(): InterprocessConnection (true, 0x6a6d626e)
 }
 
 StatutPipe::~StatutPipe()
-{}
+{
+    
+}
 
 
 //==============================================================================
@@ -54,6 +56,5 @@ void StatutPipe::messageReceived(const MemoryBlock &message)
     {
         nbPipeToConnect = message.toString().getIntValue();
         sendChangeMessage();
-        disconnect();
     }
 }

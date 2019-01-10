@@ -5,7 +5,7 @@
 
   ==============================================================================
 */
-
+#if 0
 #include "DataReader/DataReaderMacOS/DataReaderMacOS.h"
 
 //==============================================================================
@@ -77,7 +77,7 @@ String DataReader::getData()
 {
     return data;
 }
- */
+*/
 
 //==============================================================================
 void DataReader::connectionMade()
@@ -113,3 +113,4 @@ void DataReader::changeListenerCallback (ChangeBroadcaster * source)
         statutPipe.disconnect();
 }
 
+#endif

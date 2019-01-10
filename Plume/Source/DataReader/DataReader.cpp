@@ -5,8 +5,6 @@
 
   ==============================================================================
 */
-#if 0
-//!JUCE_MAC
 
 #include "DataReader/DataReader.h"
 
@@ -19,8 +17,13 @@ DataReader::DataReader(): InterprocessConnection (true, 0x6a6d626e)
     // Data initialization
     data = new StringArray (StringArray::fromTokens ("0 0 0 0 0 0 0", " ", String()));
     
-    // Pipe creation
-	connectToExistingPipe();
+    #if JUCE_MAC
+        statutPipe = std::make_unique<StatutPipe> ();
+        statutPipe->addChangeListener(this);
+    #else
+        // Pipe creation
+        connectToExistingPipe();
+    #endif
     
     // Label creation
     addAndMakeVisible (connectedLabel = new Label ("connectedLabel", TRANS ("Disconnected")));
@@ -33,6 +36,7 @@ DataReader::~DataReader()
 {
     data = nullptr;
     connectedLabel = nullptr;
+    statutPipe = nullptr;
 }
 
 //==============================================================================
@@ -89,6 +93,11 @@ bool DataReader::connectToExistingPipe()
 	return connectToPipe ("mynamedpipe", -1);
 }
 
+bool DataReader::connectToExistingPipe(int nbPipe)
+{
+    return connectToPipe("mynamedpipe" + String(nbPipe), -1);
+}
+
 bool DataReader::isConnected()
 {
     return connected;
@@ -99,6 +108,11 @@ void DataReader::connectionMade()
 {
     connected = true;
     
+    #if JUCE_MAC
+        String test = "Start";
+        sendMessage(MemoryBlock(test.toUTF8(), test.getNumBytesAsUTF8()));
+    #endif
+    
     connectedLabel->setColour (Label::textColourId, Colour (0xaa00ff00));
     connectedLabel->setText (TRANS ("<Connected>" /* : pipe " + String(pipeNumber)*/), dontSendNotification);
 }
@@ -106,6 +120,11 @@ void DataReader::connectionMade()
 void DataReader::connectionLost()
 {
     connected = false;
+    
+    #if JUCE_MAC
+        String test = "Stop";
+        sendMessage(MemoryBlock(test.toUTF8(), test.getNumBytesAsUTF8()));
+    #endif
     
     connectedLabel->setColour (Label::textColourId, Colour (0xaaff0000));
     connectedLabel->setText (TRANS ("Disconnected"), dontSendNotification);
@@ -121,4 +140,12 @@ void DataReader::messageReceived (const MemoryBlock &message)
         }
     }
 }
-#endif
+
+
+void DataReader::changeListenerCallback (ChangeBroadcaster * source)
+{
+    int nbPipeToConnect = statutPipe->getPipeToConnect();
+    connectToExistingPipe(nbPipeToConnect);
+    statutPipe->disconnect();
+    statutPipe.reset();
+}

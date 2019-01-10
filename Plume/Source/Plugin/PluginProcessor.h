@@ -16,8 +16,7 @@
 #include "Gesture/GestureArray.h"
 #include "Wrapper/PluginWrapper.h"
 #include "Gesture/Gesture.h"
-#include "DataReader/DataReaderMacOS/DataReaderMacOS.h"
-#include "DataReader/DataReaderMacOS/StatutPipe.h"
+#include "DataReader/DataReader.h"
 
 
 //==============================================================================
@@ -145,7 +144,7 @@ private:
     ScopedPointer<PluginWrapper> wrapper; /**< \brief PluginWrapper object. Handles the plugin wrapping. */
     ScopedPointer<DataReader> dataReader; /**< \brief DataReader object. Recieves the data from the ring. */
     ScopedPointer<GestureArray> gestureArray; /**< \brief GestureArray object. Stores all current gesture objects. */
-    std::unique_ptr<StatutPipe> statutPipe;
+    
     //==============================================================================
     //ValueTree settings;
     AudioProcessorValueTreeState parameters;

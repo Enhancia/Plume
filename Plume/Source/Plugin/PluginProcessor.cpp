@@ -35,9 +35,7 @@ PlumeProcessor::PlumeProcessor()
     initializeParameters();
     parameters.replaceState (ValueTree (PLUME::plumeIdentifier));
     
-    statutPipe = std::make_unique<StatutPipe> ();
-    dataReader = new DataReader(*statutPipe);
-    
+    dataReader = new DataReader();
     gestureArray = new GestureArray (*dataReader, parameters);
     wrapper = new PluginWrapper (*this, *gestureArray);
     dataReader->addChangeListener(gestureArray);

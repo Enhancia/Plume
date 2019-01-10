@@ -5,6 +5,7 @@
 
   ==============================================================================
 */
+#if 0
 #ifndef __RAW_DATA_READER__
 #define __RAW_DATA_READER__
 
@@ -62,4 +63,5 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DataReader)
 };
 
+#endif
 #endif

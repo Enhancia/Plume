@@ -5,8 +5,7 @@
 
   ==============================================================================
 */
-//#if !JUCE_MAC
-#if 0
+
 #ifndef __RAW_DATA_READER__
 #define __RAW_DATA_READER__
 
@@ -14,6 +13,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "../juce_serialport/juce_serialport.h"
+#include "DataReader/DataReaderMacOS/StatutPipe.h"
 
 //==============================================================================
 /*
@@ -31,7 +31,8 @@
  */
 class DataReader   : public Component,
                      private InterprocessConnection,
-                     public ChangeBroadcaster
+                     public ChangeBroadcaster,
+                     public ChangeListener
 {
 public:
     static constexpr int DATA_SIZE = 7;
@@ -51,12 +52,14 @@ public:
     
     //==============================================================================
     bool connectToExistingPipe();
+    bool connectToExistingPipe(int nbPipe);
     bool isConnected();
     
     //==============================================================================
     void connectionMade() override;
     void connectionLost() override;
     void messageReceived(const MemoryBlock &message) override;
+    void changeListenerCallback(ChangeBroadcaster* source) override;
     
 private:
     //==============================================================================
@@ -66,8 +69,9 @@ private:
     ScopedPointer<StringArray> data;
     ScopedPointer<Label> connectedLabel;
 
+    std::unique_ptr<StatutPipe> statutPipe;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DataReader)
 };
 
-#endif
 #endif
