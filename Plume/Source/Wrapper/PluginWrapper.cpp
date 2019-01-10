@@ -106,10 +106,8 @@ bool PluginWrapper::wrapPlugin (String pluginFileOrId)
         DBG ("Error: The specified plugin ( " << pluginFileOrId << " ) isn't a in a legal file path.\n\n");
         return false;
       #else
-        PluginDirectoryScanner pScanner (*pluginList, formatManager->getFormat (Formats::AU),
-		                                FileSearchPath ("Macintosh HD:/Library/Audio/Plug-Ins/Components/;
-                                                        ~/Library/Audio/Plug-Ins/Components/"),,
-                                        false, File(), true);
+        PluginDirectoryScanner pScanner (*pluginList, *formatManager->getFormat (Formats::AU), FileSearchPath("Macintosh HD:/Library/Audio/Plug-Ins/Components/;~/Library/Audio/Plug-Ins/Components/"),false, File(), true);
+        
         String name;
     
         pScanner.setFilesOrIdentifiersToScan (StringArray (pluginFileOrId));

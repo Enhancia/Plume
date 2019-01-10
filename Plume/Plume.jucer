@@ -14,6 +14,14 @@
         <FILE id="aoaZYk" name="PlumeCommon.h" compile="0" resource="0" file="Source/Common/PlumeCommon.h"/>
       </GROUP>
       <GROUP id="{9B740626-EAB3-638F-41B5-B9DE410DDCF6}" name="DataReader">
+        <GROUP id="{2C2FB31F-BF87-99C2-ACFB-2A8D1AE30E26}" name="DataReaderMacOS">
+          <FILE id="Oj5hYC" name="DataReaderMacOS.cpp" compile="1" resource="0"
+                file="Source/DataReader/DataReaderMacOS/DataReaderMacOS.cpp"/>
+          <FILE id="xSWXnz" name="DataReaderMacOS.h" compile="0" resource="0"
+                file="Source/DataReader/DataReaderMacOS/DataReaderMacOS.h"/>
+          <FILE id="mRYAcM" name="StatutPipe.cpp" compile="1" resource="0" file="Source/DataReader/DataReaderMacOS/StatutPipe.cpp"/>
+          <FILE id="fgXe4J" name="StatutPipe.h" compile="0" resource="0" file="Source/DataReader/DataReaderMacOS/StatutPipe.h"/>
+        </GROUP>
         <FILE id="vdUcyM" name="DataReader.cpp" compile="1" resource="0" file="Source/DataReader/DataReader.cpp"/>
         <FILE id="xokgvb" name="DataReader.h" compile="0" resource="0" file="Source/DataReader/DataReader.h"/>
       </GROUP>
@@ -137,6 +145,7 @@
   </MAINGROUP>
   <LIVE_SETTINGS>
     <WINDOWS buildEnabled="0"/>
+    <OSX/>
   </LIVE_SETTINGS>
   <EXPORTFORMATS>
     <VS2017 targetFolder="Builds/VisualStudio2017" bigIcon="YXx8Ce" smallIcon="YXx8Ce">

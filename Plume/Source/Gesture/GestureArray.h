@@ -13,7 +13,8 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Common/PlumeCommon.h"
 
-#include "DataReader/DataReader.h"
+#include "DataReader/DataReaderMacOS/DataReaderMacOS.h"
+
 #include "Gesture/Gesture.h"
 #include "Gesture/Vibrato.h"
 #include "Gesture/PitchBend.h"

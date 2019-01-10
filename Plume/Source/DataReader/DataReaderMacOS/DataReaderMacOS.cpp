@@ -5,51 +5,40 @@
 
   ==============================================================================
 */
-#if 0
-//!JUCE_MAC
 
-#include "DataReader/DataReader.h"
+#include "DataReader/DataReaderMacOS/DataReaderMacOS.h"
 
 //==============================================================================
-DataReader::DataReader(): InterprocessConnection (true, 0x6a6d626e)
+DataReader::DataReader(StatutPipe& stPipe): InterprocessConnection (true, 0x6a6d626e), statutPipe(stPipe)
 {
-    setSize (120, 50);
+    
     connected = false;
-    
-    // Data initialization
     data = new StringArray (StringArray::fromTokens ("0 0 0 0 0 0 0", " ", String()));
-    
-    // Pipe creation
-	connectToExistingPipe();
-    
-    // Label creation
-    addAndMakeVisible (connectedLabel = new Label ("connectedLabel", TRANS ("Disconnected")));
-    connectedLabel->setColour (Label::textColourId, Colour (0xaaff0000));
-    connectedLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
-    connectedLabel->setBounds (10, 5, 100, 40);
+    statutPipe.addChangeListener(this);
+	//connectNewPipe(nbPipe);
 }
 
 DataReader::~DataReader()
 {
-    data = nullptr;
-    connectedLabel = nullptr;
 }
 
 //==============================================================================
-void DataReader::paint (Graphics& g)
+bool DataReader::connectNewPipe(int nbPipe)
 {
-    g.fillAll (Colour (0x42000000));
+    return connectToPipe("mynamedpipe" + String(nbPipe), -1);
 }
 
-void DataReader::resized()
+bool DataReader::isConnected()
 {
+    return connected;
 }
+
 
 //==============================================================================
 bool DataReader::readData (String s)
 {
-	auto strArr = StringArray::fromTokens(s, " ", String());
-
+    auto strArr = StringArray::fromTokens(s, " ", String());
+    
     // Checks for full lines
     if (strArr.size() == DATA_SIZE)
     {
@@ -58,7 +47,7 @@ bool DataReader::readData (String s)
         return true;
     }
     
-	return false;
+    return false;
 }
 
 const String DataReader::getRawData (int index)
@@ -83,42 +72,44 @@ bool DataReader::getRawDataAsFloatArray(Array<float>& arrayToFill)
     return true;
 }
 
-//==============================================================================
-bool DataReader::connectToExistingPipe()
+/*
+String DataReader::getData()
 {
-	return connectToPipe ("mynamedpipe", -1);
+    return data;
 }
-
-bool DataReader::isConnected()
-{
-    return connected;
-}
+ */
 
 //==============================================================================
 void DataReader::connectionMade()
 {
     connected = true;
-    
-    connectedLabel->setColour (Label::textColourId, Colour (0xaa00ff00));
-    connectedLabel->setText (TRANS ("<Connected>" /* : pipe " + String(pipeNumber)*/), dontSendNotification);
+    String test = "Start";
+    sendMessage(MemoryBlock(test.toUTF8(), test.getNumBytesAsUTF8()));
 }
 
 void DataReader::connectionLost()
 {
     connected = false;
-    
-    connectedLabel->setColour (Label::textColourId, Colour (0xaaff0000));
-    connectedLabel->setText (TRANS ("Disconnected"), dontSendNotification);
+    String test = "Stop";
+    sendMessage(MemoryBlock(test.toUTF8(), test.getNumBytesAsUTF8()));
 }
 
-void DataReader::messageReceived (const MemoryBlock &message)
+void DataReader::messageReceived(const MemoryBlock &message)
 {
     if (connected && message.getSize() != 0)
     {
+        //data = message.toString();
         if (readData (message.toString()))
         {
             sendChangeMessage();
         }
     }
 }
-#endif
+
+void DataReader::changeListenerCallback (ChangeBroadcaster * source)
+{
+        int nbPipeToConnect = statutPipe.getPipeToConnect();
+        connectNewPipe(nbPipeToConnect);
+        statutPipe.disconnect();
+}
+
