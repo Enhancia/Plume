@@ -13,7 +13,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "../juce_serialport/juce_serialport.h"
-#include "DataReader/DataReaderMacOS/StatutPipe.h"
+#include "DataReader/StatutPipe.h"
 
 //==============================================================================
 /*
