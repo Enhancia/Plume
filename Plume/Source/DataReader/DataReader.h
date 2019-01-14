@@ -13,6 +13,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "../juce_serialport/juce_serialport.h"
+#include <SystemConfiguration/SystemConfiguration.h>
 #include "DataReader/StatutPipe.h"
 
 //==============================================================================

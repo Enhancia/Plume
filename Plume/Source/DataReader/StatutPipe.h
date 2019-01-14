@@ -12,6 +12,7 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include <SystemConfiguration/SystemConfiguration.h>
 //==============================================================================
 
 class StatutPipe  : public Component, public InterprocessConnection, public ChangeBroadcaster

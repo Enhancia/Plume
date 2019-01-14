@@ -95,7 +95,14 @@ bool DataReader::connectToExistingPipe()
 
 bool DataReader::connectToExistingPipe(int nbPipe)
 {
-    return connectToPipe("mynamedpipe" + String(nbPipe), -1);
+    //only happens on MacOS
+    
+    //get current userID
+    uid_t currentUID;
+    SCDynamicStoreCopyConsoleUser(NULL, &currentUID, NULL);
+    
+    //create namedpipe  with currentUID to enable multi user session
+    return connectToPipe("mynamedpipe" + String (currentUID) + String(nbPipe), -1);
 }
 
 bool DataReader::isConnected()
@@ -144,6 +151,7 @@ void DataReader::messageReceived (const MemoryBlock &message)
 
 void DataReader::changeListenerCallback (ChangeBroadcaster * source)
 {
+    //only happens on MacOS
     int nbPipeToConnect = statutPipe->getPipeToConnect();
     connectToExistingPipe(nbPipeToConnect);
     statutPipe->disconnect();

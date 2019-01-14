@@ -25,7 +25,11 @@ StatutPipe::~StatutPipe()
 //==============================================================================
 bool StatutPipe::connectNewPipe()
 {
-    return connectToPipe("StatutPipe", -1);
+    //get current userID
+    uid_t currentUID;
+    SCDynamicStoreCopyConsoleUser(NULL, &currentUID, NULL);
+    
+    return connectToPipe("StatutPipe" + String (currentUID), -1);
 }
 
 bool StatutPipe::isConnected()
