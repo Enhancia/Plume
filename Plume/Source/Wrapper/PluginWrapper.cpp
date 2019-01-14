@@ -53,103 +53,35 @@ PluginWrapper::~PluginWrapper()
 }
 
 //==============================================================================
-bool PluginWrapper::wrapPlugin (String pluginFileOrId)
-{   
-    TRACE_IN;
+bool PluginWrapper::wrapPlugin (PluginDescription& description)
+{
+    auto descToWrap = pluginList->getTypeForIdentifierString (description.createIdentifierString());
     
-    bool isFile = File (pluginFileOrId).exists();
-    
-    if ((isFile && File (pluginFileOrId) == File::getSpecialLocation (File::currentExecutableFile)) ||
-        pluginFileOrId.contains ("Plume."))
+    if (descToWrap == nullptr)
     {
-        DBG ("Can't wrap yourself can you?");
+        DBG ("Error: Couldn't find the plugin for the specified description..\n" <<
+			 "Specified description ID : " << description.createIdentifierString() << "\n");
         return false;
     }
     
-    //Scans the plugin directory for the wanted plugin and gets its PluginDescription
-    DBG ("\n[Scan and add File]");
-    ScopedPointer<KnownPluginList> pluginList = new KnownPluginList();
-    
-    if (isFile)
+    if (!(descToWrap)->isInstrument)
     {
-        File pluginFile (pluginFileOrId);
+        DBG ("Specified plugin is not an instrument!!");
         
-        // Scanning method for a File
-        PluginDirectoryScanner pScanner (*pluginList, *getPluginFormat (pluginFile),
-                                         FileSearchPath (pluginFile.getParentDirectory().getFullPathName()),
-                                         false, File(), true);
-        String name;
-    
-        pScanner.setFilesOrIdentifiersToScan (StringArray (pluginFileOrId));
-        pScanner.scanNextFile (false, name);
-    
-        if (auto desc = pluginList->getType (0))
-        {
-            // Only loads the plugin if it is an instrument (ie it creates sound).
-            if (desc->isInstrument)  wrappedPluginDescriptions->add (desc);
-        
-            else
-            {
-                DBG ("Error: The specified plugin ( " << name << " ) isn't an instrument.\n\n");
-                return false;
-            }
-        }
-        else
-        {
-            DBG ("Error: The specified plugin ( " << name << " | " << pluginFileOrId << " ) doesn't exist or failed to load.\n\n");
-            return false;
-        }
-    }
-    
-    // If not a file, then most likely an AU identifier:
-    // the search takes place in the common AU folders with the AU format.
-    else
-    {
-      #if !JUCE_MAC
-        DBG ("Error: The specified plugin ( " << pluginFileOrId << " ) isn't a in a legal file path.\n\n");
         return false;
-      #else
-        PluginDirectoryScanner pScanner (*pluginList, formatManager->getFormat (Formats::AU),
-		                                FileSearchPath ("Macintosh HD:/Library/Audio/Plug-Ins/Components/;
-                                                        ~/Library/Audio/Plug-Ins/Components/"),,
-                                        false, File(), true);
-        String name;
-    
-        pScanner.setFilesOrIdentifiersToScan (StringArray (pluginFileOrId));
-        pScanner.scanNextFile (false, name);
-    
-        if (auto desc = pluginList->getType (0))
-        {
-            // Only loads the plugin if it is an instrument (ie it creates sound).
-            if (desc->isInstrument)  wrappedPluginDescriptions->add (desc);
-        
-            else
-            {
-                DBG ("Error: The specified plugin ( " << name << " ) isn't an instrument.\n\n");
-                return false;
-            }
-        }
-        else
-        {
-            DBG ("Error: The specified plugin ( " << name << " | " << pluginFileOrId << " ) doesn't exist or failed to load.\n\n");
-            return false;
-        }
-      #endif
     }
-    
-
-	if (hasWrappedInstance)
+        
+    if (hasWrappedInstance)
 	{
 		unwrapPlugin();
 	}
-
-    //Creates the plugin instance using the format manager
+	
     String errorMsg;
     DBG ("\n[create Plugin Instance]");
-    wrappedInstance = formatManager->createPluginInstance (*(wrappedPluginDescriptions->getLast()),
-                                                            owner.getSampleRate(),
-															owner.getBlockSize(),
-                                                            errorMsg);
+    wrappedInstance = formatManager->createPluginInstance (*descToWrap,
+                                                           owner.getSampleRate(),
+														   owner.getBlockSize(),
+                                                           errorMsg);
                                                              
     if (wrappedInstance == nullptr)
     {
@@ -163,9 +95,6 @@ bool PluginWrapper::wrapPlugin (String pluginFileOrId)
     wrapperProcessor = new WrapperProcessor (*wrappedInstance, *this);
     wrapperProcessor->prepareToPlay (owner.getSampleRate(), owner.getBlockSize());
     hasWrappedInstance = true;
-
-	wrappedPluginDescriptions->clear (false);
-	pluginList = nullptr;
 	
     return true;
 }
@@ -180,6 +109,13 @@ bool PluginWrapper::wrapPlugin (int pluginMenuId)
                                                                                                 << " | Specified id : "
                                                                                                 << pluginId
                                                                                                 << "\n");
+        return false;
+    }
+    
+    if (!(pluginList->getType (pluginId)->isInstrument))
+    {
+        DBG ("Specified plugin is not an instrument!!");
+        
         return false;
     }
         
@@ -231,10 +167,10 @@ void PluginWrapper::unwrapPlugin()
     wrappedInstance.reset();
 }
 
-bool PluginWrapper::rewrapPlugin(String pluginFileOrId)
+bool PluginWrapper::rewrapPlugin (PluginDescription& description)
 {
     unwrapPlugin();
-    return wrapPlugin(pluginFileOrId);
+    return wrapPlugin(description);
 }
 
 bool PluginWrapper::rewrapPlugin(int pluginId)
@@ -418,7 +354,6 @@ void PluginWrapper::scanAllPluginsInDirectories (bool dontRescanIfAlreadyInList,
     
     if (!dontRescanIfAlreadyInList)
     {
-        //clears the list
         pluginList->clear();
     }
     

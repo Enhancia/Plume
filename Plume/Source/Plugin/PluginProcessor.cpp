@@ -25,6 +25,7 @@ PlumeProcessor::PlumeProcessor()
 {
     TRACE_IN;
     
+    // Logger
     Time t;
     plumeLogger = FileLogger::createDefaultAppLogger ("Enhancia/Plume/Logs/",
                                                       "plumeLog.txt",
@@ -32,12 +33,16 @@ PlumeProcessor::PlumeProcessor()
     
     Logger::setCurrentLogger (plumeLogger);
     
+    // Parameters
     initializeParameters();
     parameters.replaceState (ValueTree (PLUME::plumeIdentifier));
     
+    // Objects
     dataReader = new DataReader();
     gestureArray = new GestureArray (*dataReader, parameters);
     wrapper = new PluginWrapper (*this, *gestureArray);
+    presetHandler = new PresetHandler();
+    
     dataReader->addChangeListener(gestureArray);
 }
 
@@ -200,6 +205,12 @@ AudioProcessorValueTreeState& PlumeProcessor::getParameterTree()
     return parameters;
 }
 
+
+PresetHandler& PlumeProcessor::getPresetHandler()
+{
+    return *presetHandler;
+}
+
 //==============================================================================
 bool PlumeProcessor::hasEditor() const
 {
@@ -318,8 +329,13 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
             
         if (pd.loadFromXml (*(pluginData.getChildByName ("PLUGIN"))))
         {
-			bool requiresSearch = true;
-
+            if (!(pd.fileOrIdentifier.isEmpty()))
+            {
+                if (wrapper->isWrapping()) wrapper->rewrapPlugin (pd);
+                else                       wrapper->wrapPlugin (pd);
+            }
+			
+            /*
             // First searches the direct path
             if (!(pd.fileOrIdentifier.isEmpty()))
             {
@@ -366,7 +382,10 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
                     if (wrapper->isWrapping()) wrapper->unwrapPlugin();
                     return;
                 }
+                
             }
+			*/
+            
         }
     }
     // If there is no plugin in the preset only unwraps

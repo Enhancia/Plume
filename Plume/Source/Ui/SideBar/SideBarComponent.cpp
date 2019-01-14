@@ -20,7 +20,7 @@ SideBarComponent::SideBarComponent (PlumeProcessor& proc)   : processor (proc)
 		                                                PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFillClicked)));
 	optionsButton->setShape (PLUME::path::gearPath, false, true, false);
 	optionsButton->addListener (this);
-    //addAndMakeVisible (presetComponent = new PresetComponent (processor));
+    addAndMakeVisible (presetComponent = new PresetComponent (processor));
 }
 
 SideBarComponent::~SideBarComponent()
@@ -46,21 +46,21 @@ void SideBarComponent::paint (Graphics& g)
     // Plume. text
     g.setColour (currentTheme.getColour(PLUME::colour::sideBarMainText));
     g.setFont (Font (font, 25.0f, Font::bold));
-    g.drawText ("Plume.", area.removeFromTop (HEADER_HEIGHT).reduced (MARGIN),
+    g.drawText ("Plume.", area.removeFromTop (HEADER_HEIGHT).reduced (2*MARGIN, MARGIN),
                 Justification::centredLeft, true);
 
 	g.setGradientFill (grad);
 	g.drawHorizontalLine (area.getY(), MARGIN, getWidth() - MARGIN);
     
-	area.removeFromTop (2*MARGIN); // Extra space
+	area.removeFromTop (MARGIN/2); // Extra space
 
                 
     // Presets Panel
-    g.drawHorizontalLine (area.getY() + MARGIN, MARGIN, getWidth() - MARGIN);
+    //g.drawHorizontalLine (area.getY() + MARGIN, MARGIN, getWidth() - MARGIN);
     
     g.setFont (Font (font, 15.0f, Font::plain));
 	g.setColour(currentTheme.getColour(PLUME::colour::sideBarSubText));
-    g.drawText ("Presets", area.reduced (2*MARGIN),
+    g.drawText ("Presets", area.reduced (MARGIN),
                 Justification::topLeft, true);
 }
 
@@ -76,9 +76,10 @@ void SideBarComponent::resized()
     optionsButton->setBounds (buttonsArea.removeFromRight (buttonsArea.getWidth()/2).reduced (MARGIN));
     
     // Presets
-	area.removeFromTop (HEADER_HEIGHT);
-    //presetComponent->setBounds (area.reduced (2*MARGIN, 4*MARGIN));
-    area.removeFromTop (area.getHeight()/2);
+	area.removeFromTop (MARGIN + 15);
+	area.removeFromBottom (2*HEADER_HEIGHT);
+    presetComponent->setBounds (area.reduced (MARGIN));
+    //area.removeFromTop (area.getHeight()/2);
 }
 
 void SideBarComponent::buttonClicked (Button* bttn)

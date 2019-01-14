@@ -45,10 +45,10 @@ public:
     ~PluginWrapper();
     
     //==============================================================================
-    bool wrapPlugin (String pluginFileOrId);
+    bool wrapPlugin (PluginDescription& description);
     bool wrapPlugin (int pluginMenuId);
     void unwrapPlugin();
-    bool rewrapPlugin (String pluginFileOrId);
+    bool rewrapPlugin (PluginDescription& description);
     bool rewrapPlugin (int pluginMenuId);
     bool isWrapping();
     

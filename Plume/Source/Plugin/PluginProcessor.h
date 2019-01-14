@@ -17,6 +17,7 @@
 #include "Wrapper/PluginWrapper.h"
 #include "Gesture/Gesture.h"
 #include "DataReader/DataReader.h"
+#include "Presets/PresetHandler.h"
 
 //==============================================================================
 /**
@@ -131,6 +132,12 @@ public:
      * \return Reference to the AudioProcessorValueTreeState object.
      */
     AudioProcessorValueTreeState& getParameterTree();
+    /**
+     * \brief PresetHandler getter.
+     *
+     * \return Reference to the PresetHandler object.
+     */
+    PresetHandler& getPresetHandler();
     
     
 private:
@@ -143,6 +150,7 @@ private:
     ScopedPointer<PluginWrapper> wrapper; /**< \brief PluginWrapper object. Handles the plugin wrapping. */
     ScopedPointer<DataReader> dataReader; /**< \brief DataReader object. Recieves the data from the ring. */
     ScopedPointer<GestureArray> gestureArray; /**< \brief GestureArray object. Stores all current gesture objects. */
+    ScopedPointer<PresetHandler> presetHandler; /**< \brief PresetHandler object. Stores preset directories and lists of all presets. */
     
     //==============================================================================
     //ValueTree settings;

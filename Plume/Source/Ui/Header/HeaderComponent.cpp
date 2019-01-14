@@ -24,7 +24,7 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc) : processor (proc)
     pluginNameLabel->addMouseListener (this, false);
     
     // Preset Name
-    addAndMakeVisible (presetNameLabel = new Label ("Preset Name Label", "No preset"));
+    addAndMakeVisible (presetNameLabel = new Label ("Preset Name Label", processor.getPresetHandler().getCurrentPreset()));
     presetNameLabel->setFont (Font (PLUME::UI::font, 15.00f, Font::plain).withTypefaceStyle ("Regular"));
     presetNameLabel->setJustificationType (Justification::centred);
     presetNameLabel->setEditable (false, false, false);
@@ -178,6 +178,7 @@ void HeaderComponent::handlePluginChoice (int chosenId)
 void HeaderComponent::update()
 {
     pluginNameLabel->setText (processor.getWrapper().getWrappedPluginInfoString(), dontSendNotification);
+    presetNameLabel->setText (processor.getPresetHandler().getCurrentPreset(), dontSendNotification);
     createPluginMenu (KnownPluginList::sortByFormat);
 }
 

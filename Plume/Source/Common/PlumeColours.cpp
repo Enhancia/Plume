@@ -18,7 +18,8 @@ PlumeTheme::~PlumeTheme()
 
 Colour PlumeTheme::operator[] (const int index) const noexcept
 {
-    // bright red means there's an issue for that colour.. Most likely there wasn't enough colours in the constructor
+    // bright red means there's an issue for that colour..
+    // Either there wasn't enough colours in the constructor or index is out of range
     return (index < numColours && index > -1) ? palette[index] : Colour (0xffff0000);
 }
 
@@ -50,19 +51,19 @@ PlumeTheme PlumeTheme::createDefaultTheme()
                          0xff323232, //sideBarBackground
                          0xffffffff, //sideBarMainText
                          0xffffffff, //sideBarSubText
-                         0x05ffffff, //sideBarSeparatorOut
-                         0x40ffffff, //sideBarSeparatorIn
+                         0x10ffffff, //sideBarSeparatorOut
+                         0x50ffffff, //sideBarSeparatorIn
                          0xffffffff, //sideBarButtonFill
 						 0xaaffffff, //sideBarButtonFillHighlighted
 						 0xaaaaaaff, //sideBarButtonFillClicked
             
                          // Preset Box
-                         0xff232323, //presetsBoxBackground
-                         0xffffffff, //presetsBoxStandartText
-                         0xffa0a0a0, //presetsBoxHighlightedBackground
+                         0x00000000, //presetsBoxBackground
+                         0xbbffffff, //presetsBoxStandartText
+                         0x40ffffff, //presetsBoxHighlightedBackground
                          0xff000000, //presetsBoxHighlightedText
-                         0xffffffff, //presetsBoxOutlineTop
-                         0xffffffff, //presetsBoxOutlineBottom
+						 0x10ffffff, //presetsBoxOutlineTop
+						 0x30ffffff, //presetsBoxOutlineBottom
             
                          // Info Panel
                          0xff606060, //infoPanelBackground
@@ -103,19 +104,19 @@ PlumeTheme PlumeTheme::createRedTheme()
                          0xff461d1d, //sideBarBackground
                          0xffffffff, //sideBarMainText
                          0xffffffff, //sideBarSubText
-                         0x05ffffff, //sideBarSeparatorOut
-                         0x40ffffff, //sideBarSeparatorIn
+                         0x10ffffff, //sideBarSeparatorOut
+                         0x50ffffff, //sideBarSeparatorIn
 						 0xffffffff, //sideBarButtonFill
 						 0xaaffffff, //sideBarButtonFillHighlighted
 						 0xaaaaaaff, //sideBarButtonFillClicked
             
                          // Preset Box
-                         0xff232323, //presetsBoxBackground
-                         0xffffffff, //presetsBoxStandartText
-                         0xffa0a0a0, //presetsBoxHighlightedBackground
-                         0xff000000, //presetsBoxHighlightedText
-                         0xffffffff, //presetsBoxOutlineTop
-                         0xffffffff, //presetsBoxOutlineBottom
+                         0x00000000, //presetsBoxBackground
+                         0xbbffffff, //presetsBoxStandartText
+                         0x40ffffff, //presetsBoxHighlightedBackground
+                         0xff441818, //presetsBoxHighlightedText
+						 0x10ffffff, //presetsBoxOutlineTop
+						 0x30ffffff, //presetsBoxOutlineBottom
             
                          // Info Panel
                          0xff606060, //infoPanelBackground
@@ -125,7 +126,7 @@ PlumeTheme PlumeTheme::createRedTheme()
                          // Header
                          0xfff8f8f8, //headerBackground
                          0xff927575, //headerSeparatorTop
-                         0xffdbaaaa, //headerSeparatorBottom
+                         0xffe1e1e1, //headerSeparatorBottom
                          0xff532323, //headerStandartText
                          0xffa84646, //headerHighlightedText
             

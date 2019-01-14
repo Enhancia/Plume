@@ -11,17 +11,16 @@
 #pragma once
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
-#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
+#include "Common/PlumeCommon.h"
 #include "Plugin/PluginProcessor.h"
+#include "Ui/SideBar/PresetBoxModel.h"
 
 //==============================================================================
 /*
 */
 
 class PresetComponent    : public Component,
-                           private Button::Listener,
-                           private Label::Listener,
-                           public ActionBroadcaster
+                           private Button::Listener
 {
 public:
     //==============================================================================
@@ -30,28 +29,25 @@ public:
 
     //==============================================================================
     void paint (Graphics& g) override;
+    void paintOverChildren (Graphics& g) override;
     void resized() override;
     
     //==============================================================================
     void buttonClicked (Button* bttn) override;
-    void labelTextChanged (Label* lbl) override;
     
     //==============================================================================
     void savePreset();
-    void loadPreset();
+    void addNewPreset();
     
     //==============================================================================
     void update();
 
 private:
     //==============================================================================
-    Result createPlumeAndPresetDir(File& initialDir);
-    
-    //==============================================================================
-    ScopedPointer<Label> nameLabel;
-
+    ScopedPointer<ListBox> presetBox;
+    ScopedPointer<PresetBoxModel> presetBoxModel;
     ScopedPointer<TextButton> saveButton;
-    ScopedPointer<TextButton> loadButton;
+    ScopedPointer<TextButton> newButton;
     
     //==============================================================================
     //String currentPreset;

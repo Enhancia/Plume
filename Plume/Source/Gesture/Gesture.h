@@ -592,11 +592,11 @@ protected:
      *
      *  \param minVal Low value of the range
      *  \param maxVal High value of the range
-     *  \param value  Current value inside the range
+     *  \param val  Current value inside the range
      */
-    static int normalizeMidi (float minVal, float maxVal, float value)
+    static int normalizeMidi (float minVal, float maxVal, float val)
     {
-        if (minVal == maxVal && value == minVal) return 0;
+        if (minVal == maxVal && val == minVal) return 0;
         
         int norm;
         float a, b;
@@ -604,7 +604,7 @@ protected:
         a = 127.0f / (maxVal - minVal);
         b = -a * minVal;
   
-        norm = (a*value+b);
+        norm = (a*val+b);
         if (norm < 0) norm = 0;
         if (norm > 127) norm = 127;
   
@@ -619,18 +619,18 @@ protected:
      * 
      *  \param minVal Low value of the range
      *  \param maxVal High value of the range
-     *  \param value  Current value inside the range
+     *  \param val  Current value inside the range
      *  \param minNew low value of the new range
      *  \param maxNew high value of the new range
      */
-    static int map (float value, float minVal, float maxVal, int minNew, int maxNew)
+    static int map (float val, float minVal, float maxVal, int minNew, int maxNew)
     {
-        if (minVal == maxVal && value == minVal) return minNew;
+        if (minVal == maxVal && val == minVal) return minNew;
     
-        if (value < minVal) return minNew;
-        if (value > maxVal) return maxNew;
+        if (val < minVal) return minNew;
+        if (val > maxVal) return maxNew;
     
-        return (minNew + int ((maxNew - minNew)*(value - minVal)/(maxVal-minVal)));
+        return (minNew + int ((maxNew - minNew)*(val - minVal)/(maxVal-minVal)));
     }
     
     /**
@@ -640,19 +640,19 @@ protected:
      * 
      *  \param minVal Low value of the range
      *  \param maxVal High value of the range
-     *  \param value  Current value inside the range
+     *  \param val  Current value inside the range
      *  \param minNew low value of the new range
      *  \param maxNew high value of the new range
      */
-    static int mapInt (int value, int minVal, int maxVal, int minNew, int maxNew)
+    static int mapInt (int val, int minVal, int maxVal, int minNew, int maxNew)
     {
-        if (minVal == maxVal && value == minVal) return minNew;
-        else if (minVal == minNew && maxVal == maxNew) return value;
+        if (minVal == maxVal && val == minVal) return minNew;
+        else if (minVal == minNew && maxVal == maxNew) return val;
     
-        if (value < minVal) return minNew;
-        if (value > maxVal) return maxNew;
+        if (val < minVal) return minNew;
+        if (val > maxVal) return maxNew;
     
-        return (minNew + (maxNew - minNew)*(value - minVal)/(maxVal-minVal));
+        return (minNew + (maxNew - minNew)*(val - minVal)/(maxVal-minVal));
     }
     
     /**
@@ -662,26 +662,26 @@ protected:
      * 
      *  \param minVal Low value of the range
      *  \param maxVal High value of the range
-     *  \param value  Current value inside the range
+     *  \param val  Current value inside the range
      *  \param paramRange Range used by the parameter
      */
-    static float mapParameter (float value, float minVal, float maxVal, Range<float> paramRange, bool reversed = false)
+    static float mapParameter (float val, float minVal, float maxVal, Range<float> paramRange, bool reversed = false)
     {   
         // Prevents dividing by 0
-        if (minVal == maxVal && value == minVal) return paramRange.getStart();
+        if (minVal == maxVal && val == minVal) return paramRange.getStart();
         
         // Forces the interval to [0.0f 1.0f]
         if (paramRange.getStart() < 0.0f) paramRange.setStart (0.0f);
         if (paramRange.getEnd() > 1.0f)   paramRange.setEnd (1.0f);
         
         // Checks out of bounds values
-        if (value < minVal) return reversed ? paramRange.getEnd() : paramRange.getStart();
-        if (value > maxVal) return reversed ? paramRange.getStart() : paramRange.getEnd();
+        if (val < minVal) return reversed ? paramRange.getEnd() : paramRange.getStart();
+        if (val > maxVal) return reversed ? paramRange.getStart() : paramRange.getEnd();
         
         // normal case
-        if (!reversed) return (paramRange.getStart() + paramRange.getLength()*(value - minVal)/(maxVal - minVal));
+        if (!reversed) return (paramRange.getStart() + paramRange.getLength()*(val - minVal)/(maxVal - minVal));
         // reversed parameter
-        else           return (paramRange.getStart() + paramRange.getLength()*(maxVal - value)/(maxVal - minVal));
+        else           return (paramRange.getStart() + paramRange.getLength()*(maxVal - val)/(maxVal - minVal));
     }
     
      /**
@@ -692,12 +692,12 @@ protected:
      *  current min and max midi values to handle both 7 bits (midiMax 127) and 14 bits (midiMAx 16383) MIDI messages.
      *
      *  \param midiMessages Reference to a MidiBuffer in which to write.
-     *  \param value midi value to fit in the new range.
+     *  \param val midi value to fit in the new range.
      *  \param midiMin minimum of "value"'s range. Pretty much always 0.
      *  \param midiMin maximum of "value"'s range. Can be 127 or 16383.
      *  \param channel midi channel.
      */
-    void addMidiModeSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int value, int midiMin, int midiMax, int channel)
+    void addMidiModeSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int val, int midiMin, int midiMax, int channel)
     {
 		if (!isMidiMapped()) return; //Does nothing if not in midi map mode
 
@@ -707,7 +707,7 @@ protected:
         switch (midiType)
         {
 			case (Gesture::pitch):
-                newMidi = mapInt (value, midiMin, midiMax,
+                newMidi = mapInt (val, midiMin, midiMax,
                                   map (midiLow.getValue(), 0.0f, 1.0f, 0, 16383),
                                   map (midiHigh.getValue(),   0.0f, 1.0f, 0, 16383));
                                   
@@ -715,7 +715,7 @@ protected:
                 break;
             
 			case (Gesture::controlChange):
-                newMidi = mapInt (value, midiMin, midiMax,
+                newMidi = mapInt (val, midiMin, midiMax,
                                   map (midiLow.getValue(), 0.0f, 1.0f, 0, 127),
                                   map (midiHigh.getValue(),   0.0f, 1.0f, 0, 127));
                                   
@@ -723,7 +723,7 @@ protected:
                 break;
             
 			case (Gesture::afterTouch):
-                newMidi = mapInt (value, midiMin, midiMax,
+                newMidi = mapInt (val, midiMin, midiMax,
                                   map (midiLow.getValue(), 0.0f, 1.0f, 0, 127),
                                   map (midiHigh.getValue(),   0.0f, 1.0f, 0, 127));
                                   
