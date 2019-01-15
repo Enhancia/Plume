@@ -102,9 +102,9 @@ XmlElement* PresetHandler::getPresetXmlToLoad (int selectedPreset)
     }	
 }
 
-void PresetHandler::savePreset (XmlElement& presetXml)
+bool PresetHandler::savePreset (XmlElement& presetXml)
 {
-    if (!canSavePreset()) return;
+    if (!canSavePreset()) return false;
 
     // Tries to write the xml to the specified file
     if (userDir.getChildFile (currentPresetName + ".plume").exists())
@@ -112,20 +112,49 @@ void PresetHandler::savePreset (XmlElement& presetXml)
         if (presetXml.writeToFile (userDir.getChildFile (currentPresetName + ".plume"), String()))
         {
             DBG ("Preset file succesfully written");
+            return true;
 	    }
 	    else
         {
 	        DBG ("Failed to save preset");
+	        return false;
         }
     }
     else
     {
         DBG ("Couldn't find preset file : " << userDir.getFullPathName() << currentPresetName << ".plume");
+        return false;
     }
 }
 
-void PresetHandler::createNewUserPreset (String presetName)
+bool PresetHandler::createNewUserPreset (String presetName, XmlElement& presetXml)
 {
+    // If the file is succesfully created, changes current preset and saves
+    if (userDir.getChildFile (presetName + ".plume").create())
+    {
+        // Saves the current preset in case saving fails
+        String formerPreset = currentPresetName;
+        bool currentWasDefault = currentIsDefault;
+        
+        // Attempt to save preset
+        currentPresetName = presetName;
+		currentIsDefault = false;
+        if (savePreset (presetXml))
+        {
+            userPresets.add (new File (userDir.getChildFile (presetName + ".plume")));
+            return true;
+        }
+        else
+        {
+            // restores to former values and deletes file
+            currentPresetName = formerPreset;
+            currentIsDefault = currentWasDefault;
+            userDir.getChildFile (presetName + ".plume").deleteFile();
+            return false;
+        }
+    }
+    
+    return false;
 }
 
 

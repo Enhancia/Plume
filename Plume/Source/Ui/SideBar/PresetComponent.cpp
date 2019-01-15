@@ -17,8 +17,7 @@ PresetComponent::PresetComponent (PlumeProcessor& p)  : processor (p)
 {
     TRACE_IN;
     
-    presetBoxModel = new PresetBoxModel (processor);
-    addAndMakeVisible (presetBox = new ListBox (TRANS ("presetBox"), presetBoxModel));
+    addAndMakeVisible (presetBox = new PresetBox (TRANS ("presetBox"), processor));
     presetBox->setColour (ListBox::backgroundColourId, Colour (0x00000000));
     presetBox->setColour (ListBox::outlineColourId, Colour (0x00000000));
     presetBox->updateContent();
@@ -40,7 +39,6 @@ PresetComponent::~PresetComponent()
 {
     TRACE_IN;
     presetBox = nullptr;
-	presetBoxModel = nullptr;
 	saveButton = nullptr;
 	newButton = nullptr;
 }
@@ -100,6 +98,7 @@ void PresetComponent::buttonClicked (Button* bttn)
     
     else if (bttn == newButton)
     {
+        addNewPreset();
     }
 }
 
@@ -116,6 +115,7 @@ void PresetComponent::savePreset()
 
 void PresetComponent::addNewPreset()
 {
+    presetBox->startNewPresetEntry();
 }
 
 void PresetComponent::update()

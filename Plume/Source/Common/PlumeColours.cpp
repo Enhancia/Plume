@@ -64,6 +64,7 @@ PlumeTheme PlumeTheme::createDefaultTheme()
                          0xff000000, //presetsBoxHighlightedText
 						 0x10ffffff, //presetsBoxOutlineTop
 						 0x30ffffff, //presetsBoxOutlineBottom
+						 0xbbffffff, //presetsBoxScrollBar
             
                          // Info Panel
                          0xff606060, //infoPanelBackground
@@ -117,6 +118,7 @@ PlumeTheme PlumeTheme::createRedTheme()
                          0xff441818, //presetsBoxHighlightedText
 						 0x10ffffff, //presetsBoxOutlineTop
 						 0x30ffffff, //presetsBoxOutlineBottom
+						 0xbbcb4747, //presetsBoxScrollBar
             
                          // Info Panel
                          0xff606060, //infoPanelBackground

@@ -36,6 +36,7 @@ enum PlumeColourID
         presetsBoxHighlightedText,
         presetsBoxOutlineTop,
         presetsBoxOutlineBottom,
+        presetsBoxScrollBar,
             
         // InfoPanel
         infoPanelBackground,

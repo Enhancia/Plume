@@ -13,7 +13,7 @@
 #include "../../../JuceLibraryCode/JuceHeader.h"
 #include "Common/PlumeCommon.h"
 #include "Plugin/PluginProcessor.h"
-#include "Ui/SideBar/PresetBoxModel.h"
+#include "Ui/SideBar/PresetBox.h"
 
 //==============================================================================
 /*
@@ -44,13 +44,9 @@ public:
 
 private:
     //==============================================================================
-    ScopedPointer<ListBox> presetBox;
-    ScopedPointer<PresetBoxModel> presetBoxModel;
+    ScopedPointer<PresetBox> presetBox;
     ScopedPointer<TextButton> saveButton;
     ScopedPointer<TextButton> newButton;
-    
-    //==============================================================================
-    //String currentPreset;
     
     //==============================================================================
     PlumeProcessor& processor;

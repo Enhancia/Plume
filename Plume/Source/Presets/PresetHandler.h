@@ -30,8 +30,8 @@ public:
     //==============================================================================
     void storePresets();
     XmlElement* getPresetXmlToLoad (int selectedPreset);
-    void savePreset (XmlElement& presetXml);
-    void createNewUserPreset (String presetName);
+    bool savePreset (XmlElement& presetXml);
+    bool createNewUserPreset (String presetName, XmlElement& presetXml);
     void resetPreset();
     
 private:

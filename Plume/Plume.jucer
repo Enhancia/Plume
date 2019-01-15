@@ -81,10 +81,8 @@
                 file="Source/Ui/Header/HeaderComponent.h"/>
         </GROUP>
         <GROUP id="{50A59D03-EF8C-6884-6A1F-9905EDBD4B18}" name="SideBar">
-          <FILE id="qdqEga" name="PresetBoxModel.cpp" compile="1" resource="0"
-                file="Source/Ui/SideBar/PresetBoxModel.cpp"/>
-          <FILE id="vPMU3M" name="PresetBoxModel.h" compile="0" resource="0"
-                file="Source/Ui/SideBar/PresetBoxModel.h"/>
+          <FILE id="qdqEga" name="PresetBox.cpp" compile="1" resource="0" file="Source/Ui/SideBar/PresetBox.cpp"/>
+          <FILE id="vPMU3M" name="PresetBox.h" compile="0" resource="0" file="Source/Ui/SideBar/PresetBox.h"/>
           <FILE id="VoBRbA" name="PresetComponent.cpp" compile="1" resource="0"
                 file="Source/Ui/SideBar/PresetComponent.cpp"/>
           <FILE id="gfzO6n" name="PresetComponent.h" compile="0" resource="0"
