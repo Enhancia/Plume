@@ -17,8 +17,13 @@ DataReader::DataReader(): InterprocessConnection (true, 0x6a6d626e)
     // Data initialization
     data = new StringArray (StringArray::fromTokens ("0 0 0 0 0 0 0", " ", String()));
     
-    // Pipe creation
-	connectToExistingPipe();
+    #if JUCE_MAC
+        statutPipe = std::make_unique<StatutPipe> ();
+        statutPipe->addChangeListener(this);
+    #else
+        // Pipe creation
+        connectToExistingPipe();
+    #endif
     
     // Label creation
     addAndMakeVisible (connectedLabel = new Label ("connectedLabel", TRANS ("Disconnected")));
@@ -31,6 +36,7 @@ DataReader::~DataReader()
 {
     data = nullptr;
     connectedLabel = nullptr;
+    statutPipe = nullptr;
 }
 
 //==============================================================================
@@ -87,6 +93,18 @@ bool DataReader::connectToExistingPipe()
 	return connectToPipe ("mynamedpipe", -1);
 }
 
+bool DataReader::connectToExistingPipe(int nbPipe)
+{
+    //only happens on MacOS
+    
+    //get current userID
+    uid_t currentUID;
+    SCDynamicStoreCopyConsoleUser(NULL, &currentUID, NULL);
+    
+    //create namedpipe  with currentUID to enable multi user session
+    return connectToPipe("mynamedpipe" + String (currentUID) + String(nbPipe), -1);
+}
+
 bool DataReader::isConnected()
 {
     return connected;
@@ -97,6 +115,11 @@ void DataReader::connectionMade()
 {
     connected = true;
     
+    #if JUCE_MAC
+        String test = "Start";
+        sendMessage(MemoryBlock(test.toUTF8(), test.getNumBytesAsUTF8()));
+    #endif
+    
     connectedLabel->setColour (Label::textColourId, Colour (0xaa00ff00));
     connectedLabel->setText (TRANS ("<Connected>" /* : pipe " + String(pipeNumber)*/), dontSendNotification);
 }
@@ -104,6 +127,11 @@ void DataReader::connectionMade()
 void DataReader::connectionLost()
 {
     connected = false;
+    
+    #if JUCE_MAC
+        String test = "Stop";
+        sendMessage(MemoryBlock(test.toUTF8(), test.getNumBytesAsUTF8()));
+    #endif
     
     connectedLabel->setColour (Label::textColourId, Colour (0xaaff0000));
     connectedLabel->setText (TRANS ("Disconnected"), dontSendNotification);
@@ -118,4 +146,14 @@ void DataReader::messageReceived (const MemoryBlock &message)
             sendChangeMessage();
         }
     }
+}
+
+
+void DataReader::changeListenerCallback (ChangeBroadcaster * source)
+{
+    //only happens on MacOS
+    int nbPipeToConnect = statutPipe->getPipeToConnect();
+    connectToExistingPipe(nbPipeToConnect);
+    statutPipe->disconnect();
+    statutPipe.reset();
 }

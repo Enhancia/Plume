@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" jucerVersion="5.4.1"
-              pluginFormats="buildAU,buildStandalone,buildVST" version="1.1.8"
+              pluginFormats="buildAU,buildStandalone,buildVST" version="1.1.9"
               companyName="Enhancia" buildVST="1" buildVST3="0" buildAU="1"
               buildAUv3="0" buildRTAS="0" buildAAX="0" enableIAA="0" pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
               pluginManufacturer="Enhancia" pluginName="Plume" pluginDesc="Enhancia's Plume. Wraps other plugins, provides customizable and mappable gestures to use with Neova."
@@ -16,6 +16,8 @@
       <GROUP id="{9B740626-EAB3-638F-41B5-B9DE410DDCF6}" name="DataReader">
         <FILE id="vdUcyM" name="DataReader.cpp" compile="1" resource="0" file="Source/DataReader/DataReader.cpp"/>
         <FILE id="xokgvb" name="DataReader.h" compile="0" resource="0" file="Source/DataReader/DataReader.h"/>
+        <FILE id="tYhzCi" name="StatutPipe.cpp" compile="1" resource="0" file="Source/DataReader/StatutPipe.cpp"/>
+        <FILE id="DA42aZ" name="StatutPipe.h" compile="0" resource="0" file="Source/DataReader/StatutPipe.h"/>
       </GROUP>
       <GROUP id="{D6346BB4-85D0-4DE6-B98D-2B6F2B878441}" name="Gesture">
         <FILE id="BbeSU2" name="Gesture.h" compile="0" resource="0" file="Source/Gesture/Gesture.h"/>
@@ -137,6 +139,7 @@
   </MAINGROUP>
   <LIVE_SETTINGS>
     <WINDOWS buildEnabled="0"/>
+    <OSX/>
   </LIVE_SETTINGS>
   <EXPORTFORMATS>
     <VS2017 targetFolder="Builds/VisualStudio2017" bigIcon="YXx8Ce" smallIcon="YXx8Ce">

@@ -44,6 +44,7 @@ PlumeProcessor::PlumeProcessor()
 PlumeProcessor::~PlumeProcessor()
 {
     TRACE_IN;
+    dataReader->connectionLost();
     dataReader->removeChangeListener(gestureArray);
     dataReader = nullptr;
     gestureArray = nullptr;
