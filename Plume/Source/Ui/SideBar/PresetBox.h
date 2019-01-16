@@ -47,18 +47,23 @@ public:
     //Listener
     
     void labelTextChanged (Label* lbl) override;
+    void editorHidden (Label* lbl, TextEditor& ted) override;
     
     //==============================================================================
     //PresetBox methods
     
     void startNewPresetEntry();
+    void startRenameEntry();
     
 private:
+    void createUserPreset (const String& presetName);
+    void renamePreset (const String& newName);
+    
     //==============================================================================
     PlumeProcessor& processor;
     int presetIdToEdit = -1;
     bool newPresetEntry = false;
-    //ScopedPointer<Label> editLabel;
+    ScopedPointer<Label> editLabel;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PresetBox)

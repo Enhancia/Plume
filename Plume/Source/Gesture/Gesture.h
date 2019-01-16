@@ -252,7 +252,7 @@ public:
     /**
      *  \brief Helper function to send after touch MIDI messages in a buffer.
      *
-     *  First, the method will add an channel midi event to the buffer at time 1.
+     *  First, the method will add an channel midi event to the buffer at time 0.296875
      *  Additionnaly, goes through the buffer to change all the aftertouch/channel pressure messages.
      *  This method will change their values by adding the parameter midiValue.
      *

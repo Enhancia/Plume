@@ -129,6 +129,10 @@ bool PresetHandler::savePreset (XmlElement& presetXml)
 
 bool PresetHandler::createNewUserPreset (String presetName, XmlElement& presetXml)
 {
+    if (presetName.isEmpty()) return false;
+    
+    presetName = File::createLegalFileName (presetName);
+    
     // If the file is succesfully created, changes current preset and saves
     if (userDir.getChildFile (presetName + ".plume").create())
     {
@@ -141,6 +145,12 @@ bool PresetHandler::createNewUserPreset (String presetName, XmlElement& presetXm
 		currentIsDefault = false;
         if (savePreset (presetXml))
         {
+            // checks if the file exists already
+            for (auto* f : userPresets)
+            {
+                if (f->getFileNameWithoutExtension() == presetName) return false;
+            }
+            
             userPresets.add (new File (userDir.getChildFile (presetName + ".plume")));
             return true;
         }

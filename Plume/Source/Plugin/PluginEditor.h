@@ -98,12 +98,12 @@ private:
     //ScopedPointer<WrapperComponent> wrapperComp; /**< \brief Object allowing to choose a plugin to wrap and use with neova */
     //ScopedPointer<PresetComponent> presetComp; /**< \brief Object allowing to save or load presets, in the xml format */
     ScopedPointer<GesturePanel> gesturePanel; /**< \brief Object that handles the different gesture gui objects */
-    ScopedPointer<SideBarComponent> sideBar;
-    ScopedPointer<HeaderComponent> header;
-    ScopedPointer<ShapeButton> sideBarButton;
+    ScopedPointer<SideBarComponent> sideBar; /**< \brief Hideable SideBar object that displays the preset list, help, and buttons */
+    ScopedPointer<HeaderComponent> header; /**< \brief Header object that displays the preset, and the wrapping features */
+    ScopedPointer<ShapeButton> sideBarButton; /**< \brief Button that hides or shows the sidebar */
     
     //==============================================================================
-    void createSideBarButtonPath();
+    void createSideBarButtonPath(); //TODO mettre dans common avec les autres chemins
     
     //==============================================================================
     PlumeLookAndFeel plumeLookAndFeel;

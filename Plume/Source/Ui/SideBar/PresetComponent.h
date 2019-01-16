@@ -31,6 +31,7 @@ public:
     void paint (Graphics& g) override;
     void paintOverChildren (Graphics& g) override;
     void resized() override;
+    void focusLost (FocusChangeType cause) override;
     
     //==============================================================================
     void buttonClicked (Button* bttn) override;

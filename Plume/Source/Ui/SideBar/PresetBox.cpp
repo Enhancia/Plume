@@ -13,12 +13,12 @@
 PresetBox::PresetBox (const String& componentName, PlumeProcessor& p)  : ListBox (componentName, this),
                                                                          processor (p)
 {
-    /*
     editLabel = new Label ("editLabel", "NewPreset");
     editLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
     editLabel->setColour (Label::textColourId, UI::currentTheme.getColour (colour::presetsBoxStandartText));
     editLabel->setFont (Font (UI::font, float (getRowHeight())/2, Font::plain));
-    */
+    editLabel->setInterceptsMouseClicks (false, false);
+    editLabel->addListener (this);
     
     auto& scrollBar = getVerticalScrollBar();
     scrollBar.setColour (ScrollBar::thumbColourId, UI::currentTheme.getColour (colour::presetsBoxScrollBar));
@@ -26,6 +26,7 @@ PresetBox::PresetBox (const String& componentName, PlumeProcessor& p)  : ListBox
 
 PresetBox::~PresetBox()
 {
+    editLabel = nullptr;
 }
 
 //==============================================================================
@@ -67,25 +68,13 @@ Component* PresetBox::refreshComponentForRow (int rowNumber,
     // Creates a Label object only for the the presetIdToEdit row number
     if (rowNumber == presetIdToEdit)
     {
-        if (existingComponentToUpdate == nullptr)
-        {
-            lbl->setText ("NewPreset", dontSendNotification);
-            lbl->setColour (Label::backgroundColourId, Colour (0x00000000));
-            lbl->setColour (Label::textColourId, UI::currentTheme.getColour (colour::presetsBoxStandartText));
-            lbl->setFont (Font (UI::font, float (getRowHeight())/2, Font::plain));
-            
-            return lbl;
-        }
-        else if (auto* lbl = dynamic_cast<Label*> (existingComponentToUpdate))
-        {
-            lbl->setText ("NewPreset", dontSendNotification);
-            
-            return lbl;
-        }
+        editLabel->setVisible (true);
+        return editLabel;
     }
-    else if (existingComponentToUpdate != nullptr)
+    else if (existingComponentToUpdate == editLabel)
     {
-        existingComponentToUpdate = nullptr;
+        editLabel->setVisible (false);
+        return nullptr;
     }
 
 	return nullptr;
@@ -108,7 +97,7 @@ void PresetBox::listBoxItemDoubleClicked (int row, const MouseEvent& event)
             processor.setStateInformation (presetData.getData(), presetData.getSize());
 			presetXml->deleteAllChildElements(); // frees the memory
         }
-	    else
+	    else // failed to get preset xml somehow
         {
             processor.getPresetHandler().resetPreset();
         }
@@ -126,27 +115,50 @@ void PresetBox::backgroundClicked (const MouseEvent& event)
 //==============================================================================
 void PresetBox::labelTextChanged (Label* lbl)
 {
-    DBG ("LABEL CALLBACK");
-    lbl->removeListener (this);
-    String presetName = lbl->getText().replaceCharacter (' ', '_');
+    String presetName = editLabel->getText().replaceCharacter (' ', '_');
+    DBG ("Label callback ( text: " << presetName << " )");
     
-    if (presetName != "NewPreset")
+    if (XmlElement::isValidXmlName (presetName))
     {
-        // Creates the preset using the processor and PresetHandler
-        ScopedPointer<XmlElement> presetXml = new XmlElement (presetName);
-	    processor.createPluginXml (*presetXml);
-	    processor.createGestureXml (*presetXml);
-	
-        processor.getPresetHandler().createNewUserPreset (presetName, *presetXml);
-    
-        presetXml->deleteAllChildElements();
+        if (newPresetEntry)
+        {
+            createUserPreset (presetName);
+        }
+        else
+        {
+            renamePreset (presetName);
+        }
     }
     
     // Resets the box to non entry
-	//lbl = nullptr;
     newPresetEntry = false;
     presetIdToEdit = -1;
     updateContent();
+}
+
+void PresetBox::editorHidden (Label* lbl, TextEditor& ted)
+{
+    DBG ("Text Editor callback");
+    
+    if (newPresetEntry)
+    {
+        if (editLabel->getText() == "NewPreset")
+        {
+            // Resets the box to non entry
+            newPresetEntry = false;
+            presetIdToEdit = -1;
+            updateContent();
+        }
+    }
+    else // Preset being renamed
+    {
+        if (editLabel->getText() == processor.getPresetHandler().getCurrentPreset())
+        {
+            // Resets the box to non entry
+            presetIdToEdit = -1;
+            updateContent();
+        }
+    }
 }
 
 //==============================================================================
@@ -155,14 +167,14 @@ void PresetBox::startNewPresetEntry()
     // Adds a new row at the end to edit the preset name
     newPresetEntry = true;
     presetIdToEdit = processor.getPresetHandler().getNumPresets();
+    editLabel->setText ("NewPreset", dontSendNotification);
     updateContent();
     scrollToEnsureRowIsOnscreen (presetIdToEdit);
     
-    if (auto* lbl = dynamic_cast<Label*> (getComponentForRowNumber (presetIdToEdit)))
+    if (getComponentForRowNumber (presetIdToEdit) == editLabel)
     {
         // Gives the focus to the label and waits for the callback
-        lbl->addListener (this);
-        lbl->showEditor();
+        editLabel->showEditor();
     }
     else
     {
@@ -171,4 +183,25 @@ void PresetBox::startNewPresetEntry()
         presetIdToEdit = -1;
         updateContent();
     }
+}
+
+void PresetBox::startRenameEntry()
+{
+    // TODO put right id to edit
+}
+
+void PresetBox::createUserPreset (const String& presetName)
+{
+    ScopedPointer<XmlElement> presetXml = new XmlElement (presetName);
+	processor.createPluginXml (*presetXml);
+	processor.createGestureXml (*presetXml);
+	
+    processor.getPresetHandler().createNewUserPreset (presetName, *presetXml);
+    
+    presetXml->deleteAllChildElements();
+}
+
+void PresetBox::renamePreset (const String& newName)
+{
+    // TODO faire methode pour renommer preset (aussi dans preset handler)
 }

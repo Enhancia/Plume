@@ -89,6 +89,14 @@ void PresetComponent::resized()
     
 }
 
+void PresetComponent::focusLost (Component::FocusChangeType cause)
+{
+    if (cause == Component::focusChangedByMouseClick)
+    {
+        presetBox->deselectAllRows();
+    }
+}
+
 void PresetComponent::buttonClicked (Button* bttn)
 {
     if (bttn == saveButton)

@@ -99,10 +99,44 @@ public:
      */
     void setStateInformation (const void* data, int sizeInBytes) override;
     
+    /**
+     * \brief Xml creator for wrapped plugin related information.
+     *
+     * Creates the xml data concerning the wrapped plugin, which holds it's name, PluginDescription
+     * and it's state so that it may be restored to the very same state later.
+     * This Xml element is attached as a child element of the parameter XmlElement wrapperData.
+     *
+     * \param wrapperData XmlElement that will get the plugin Xml as a child element.
+     */  
     void createPluginXml (XmlElement& wrapperData);
+    
+    /**
+     * \brief Xml creator for gesture related information.
+     *
+     * Creates the xml data concerning the gestures, which holds their name, sensivities, mapped
+     * parameters and midi information.
+     * This Xml element is attached as a child element to the parameter XmlElement wrapperData.
+     *
+     * \param wrapperData XmlElement that will get the gesture Xml as a child element.
+     */  
     void createGestureXml (XmlElement& wrapperData);
     
+    /**
+     * \brief Method called by setStateInformation to load the wrapped plugin.
+     *
+     * Will attempt to restore plume to the state described by pluginData.
+     *
+     * \param pluginData XmlElement that is used to set Plume's wrapper state.
+     */  
     void loadPluginXml(const XmlElement& pluginData);
+    
+    /**
+     * \brief Method called by setStateInformation to load the gestures.
+     *
+     * Will attempt to restore plume's gestures to the state described by gestureData.
+     *
+     * \param pluginData XmlElement that is used to set Plume's wrapper state.
+     */   
     void loadGestureXml(const XmlElement& gestureData);
     
     //==============================================================================
