@@ -61,7 +61,7 @@ void MovingCursor::drawCursor (Graphics& g)
 	// New position
 	xCursor = getPosition();
 
-	// doesn't paint if the cursor is at either extreme position (meaning value is outside the display range)
+	// doesn't paint if the cursor is at either extreme position (ie the value is outside the display range)
 	if (xCursor == offset || xCursor == getWidth() - offset) return;
 
 	lastx = xCursor;

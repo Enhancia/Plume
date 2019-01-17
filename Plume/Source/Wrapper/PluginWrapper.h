@@ -57,7 +57,6 @@ public:
     AudioPluginFormat* getPluginFormat (File pluginFile);
     
     //==============================================================================
-    OwnedArray<File> createFileList();
     void addCustomDirectory (File newDir);
     void addPluginsToMenu (PopupMenu& menu, KnownPluginList::SortMethod sort);
     
@@ -82,7 +81,13 @@ public:
     void parameterValueChanged (int parameterIndex, float newValue) override;
     void parameterGestureChanged (int parameterIndex, bool gestureIsStarting) override {};
     
-private:       
+private:
+    //==============================================================================
+    OwnedArray<File> createFileList();
+    PluginDescription* getDescriptionToWrap (const PluginDescription& description);
+    void savePluginListToFile();
+    void loadPluginListFromFile();
+    
     //==============================================================================
     bool hasWrappedInstance;
     bool hasOpenedEditor;
@@ -96,14 +101,12 @@ private:
     ScopedPointer<WrapperEditorWindow> wrapperEditor;
 
     //==============================================================================
-    OwnedArray<PluginDescription>* wrappedPluginDescriptions;
     OwnedArray<File> customDirectories;
     ScopedPointer<KnownPluginList> pluginList;
     ScopedPointer<AudioPluginFormatManager> formatManager;
  
     PlumeProcessor& owner;
     GestureArray& gestArray;
-    
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginWrapper)
 };

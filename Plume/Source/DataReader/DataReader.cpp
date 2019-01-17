@@ -11,7 +11,6 @@
 //==============================================================================
 DataReader::DataReader(): InterprocessConnection (true, 0x6a6d626e)
 {
-    setSize (120, 50);
     connected = false;
     
     // Data initialization
@@ -19,28 +18,11 @@ DataReader::DataReader(): InterprocessConnection (true, 0x6a6d626e)
     
     // Pipe creation
 	connectToExistingPipe();
-    
-    // Label creation
-    addAndMakeVisible (connectedLabel = new Label ("connectedLabel", TRANS ("Disconnected")));
-    connectedLabel->setColour (Label::textColourId, Colour (0xaaff0000));
-    connectedLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
-    connectedLabel->setBounds (10, 5, 100, 40);
 }
 
 DataReader::~DataReader()
 {
     data = nullptr;
-    connectedLabel = nullptr;
-}
-
-//==============================================================================
-void DataReader::paint (Graphics& g)
-{
-    g.fillAll (Colour (0x42000000));
-}
-
-void DataReader::resized()
-{
 }
 
 //==============================================================================
@@ -96,17 +78,11 @@ bool DataReader::isConnected()
 void DataReader::connectionMade()
 {
     connected = true;
-    
-    connectedLabel->setColour (Label::textColourId, Colour (0xaa00ff00));
-    connectedLabel->setText (TRANS ("<Connected>" /* : pipe " + String(pipeNumber)*/), dontSendNotification);
 }
 
 void DataReader::connectionLost()
 {
     connected = false;
-    
-    connectedLabel->setColour (Label::textColourId, Colour (0xaaff0000));
-    connectedLabel->setText (TRANS ("Disconnected"), dontSendNotification);
 }
 
 void DataReader::messageReceived (const MemoryBlock &message)

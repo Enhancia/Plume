@@ -26,8 +26,7 @@ PluginWrapper::PluginWrapper (PlumeProcessor& p, GestureArray& gArr)
     hasOpenedEditor = false;
     
     // Creates the objects to wrap the plugin
-    wrappedPluginDescriptions = new OwnedArray<PluginDescription>;
-    formatManager = new AudioPluginFormatManager;
+    formatManager = new AudioPluginFormatManager();
     formatManager->addFormat (new VSTPluginFormat());
   #if JUCE_MAC
     formatManager->addFormat (new AudioUnitPluginFormat());
@@ -36,31 +35,42 @@ PluginWrapper::PluginWrapper (PlumeProcessor& p, GestureArray& gArr)
     formatManager->addFormat (new VST3PluginFormat());
   #endif
   
-    pluginList = new KnownPluginList ();
-    //scanAllPluginsInDirectories (false, true);
+    pluginList = new KnownPluginList();
+    loadPluginListFromFile();
 }
 
 PluginWrapper::~PluginWrapper()
 {
     TRACE_IN;
-    wrapperEditor = nullptr;
+    clearWrapperEditor();
 	wrapperProcessor = nullptr;
     wrappedInstance = nullptr;
     
+    pluginList->clear();
+    pluginList = nullptr;
+    
     formatManager = nullptr;
-    wrappedPluginDescriptions->clear();
-    delete wrappedPluginDescriptions;
+    
+    customDirectories.clear();
 }
 
 //==============================================================================
 bool PluginWrapper::wrapPlugin (PluginDescription& description)
 {
-    auto descToWrap = pluginList->getTypeForIdentifierString (description.createIdentifierString());
+    auto descToWrap = getDescriptionToWrap (description);
     
     if (descToWrap == nullptr)
     {
         DBG ("Error: Couldn't find the plugin for the specified description..\n" <<
-			 "Specified description ID : " << description.createIdentifierString() << "\n");
+			 "Specified description = Name : " << description.name << " | Id : " <<
+			 description.uid << " | Format : " << description.pluginFormatName << "\n");
+        return false;
+    }
+    
+    if (descToWrap->name == "Plume")
+    {
+        DBG ("Can't wrap yourself my dude..");
+        
         return false;
     }
     
@@ -112,9 +122,16 @@ bool PluginWrapper::wrapPlugin (int pluginMenuId)
         return false;
     }
     
+    if (pluginList->getType (pluginId)->name == "Plume")
+    {
+        DBG ("Can't wrap yourself my dude..");
+        
+        return false;
+    }
+    
     if (!(pluginList->getType (pluginId)->isInstrument))
     {
-        DBG ("Specified plugin is not an instrument!!");
+        DBG ("Specified plugin is not an instrument..");
         
         return false;
     }
@@ -374,11 +391,77 @@ void PluginWrapper::scanAllPluginsInDirectories (bool dontRescanIfAlreadyInList,
             DBG ("Scanning : " << pluginBeingScanned << " | Progress : " << scanProgress);
         }
     }
+    
+    savePluginListToFile();
 }
 
 void PluginWrapper::addPluginsToMenu (PopupMenu& menu, KnownPluginList::SortMethod sort)
 {
     pluginList->addToMenu (menu, sort);
+}
+
+PluginDescription* PluginWrapper::getDescriptionToWrap (const PluginDescription& description)
+{   
+    for (auto desc = pluginList->begin(); desc != pluginList->end(); desc++)
+    {
+        if ((*desc)->uid == description.uid &&
+			(*desc)->pluginFormatName == description.pluginFormatName &&
+			(*desc)->name == description.name)
+        {
+            return *desc;
+        }
+    }
+    
+    return nullptr;
+}
+void PluginWrapper::savePluginListToFile()
+{
+    // Create file if it doesn't exist yet
+    File scannedPlugins;
+    
+  #if JUCE_WINDOWS
+    scannedPlugins = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/")
+                                                                                  .getChildFile ("Plume/");
+  #elif JUCE_MAC
+    // TODO check ou mettre ça (application data??)
+    //scannedPlugins = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Audio/")
+  #endif
+  
+    scannedPlugins = scannedPlugins.getChildFile ("PluginList");
+  
+    if (!scannedPlugins.exists())
+    {
+        scannedPlugins.create();
+    }
+  
+    // Writes plugin list data into the file
+    ScopedPointer<XmlElement> listXml = pluginList->createXml();
+    listXml->writeToFile (scannedPlugins, StringRef());
+    listXml->deleteAllChildElements();
+}
+    
+void PluginWrapper::loadPluginListFromFile()
+{
+    // Attempts to find file
+	File scannedPlugins;
+
+  #if JUCE_WINDOWS
+    scannedPlugins = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/")
+                                                                                  .getChildFile ("Plume/");
+  #elif JUCE_MAC
+    // TODO check ou mettre ça (application data??)
+    //scannedPlugins = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Audio/")
+  #endif
+  
+    scannedPlugins = scannedPlugins.getChildFile ("PluginList");
+  
+    if (!scannedPlugins.exists())
+    {
+        DBG ("Couldn't load pluginlist, the file doesn't exist..");
+        return;
+    }
+    
+    pluginList->recreateFromXml (*XmlDocument::parse (scannedPlugins));
 }
 
 //==============================================================================

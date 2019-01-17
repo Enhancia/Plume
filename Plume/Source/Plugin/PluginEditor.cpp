@@ -88,13 +88,16 @@ void PlumeEditor::paint (Graphics& g)
     // Background
     g.fillAll (PLUME::UI::currentTheme.getColour (PLUME::colour::basePanelBackground));
     
-    // Version Text
-    g.setColour (Colour (0xff000000));
-    g.setFont (Font (10.0f, Font::italic).withTypefaceStyle ("Regular"));
-    g.drawText ("Plume " + String(JucePlugin_VersionString),
-		        sideBarButton->getToggleState() ? MARGIN : MARGIN + PLUME::UI::SIDEBAR_WIDTH, getHeight() - MARGIN,
-		        100, MARGIN,
-                Justification::centredLeft, true);
+    if (sideBarButton->getToggleState())
+    {
+        // Version Text
+        g.setColour (PLUME::UI::currentTheme.getColour (PLUME::colour::sideBarSubText));
+        g.setFont (Font (10.0f, Font::italic).withTypefaceStyle ("Regular"));
+        g.drawText ("Plume " + String(JucePlugin_VersionString),
+		            MARGIN , getHeight() - MARGIN,
+		            100, MARGIN,
+                    Justification::centredLeft, true);
+    }
 }
 
 void PlumeEditor::resized()

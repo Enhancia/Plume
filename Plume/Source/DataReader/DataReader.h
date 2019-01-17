@@ -27,8 +27,7 @@
  *  This is a class that is instanciated by the PlumeProcessor object. It inherits from InterprocessConnection
  *  so that it can create a pipe, to which a RawDataReader app can connect to send data.
  */
-class DataReader   : public Component,
-                     private InterprocessConnection,
+class DataReader   : private InterprocessConnection,
                      public ChangeBroadcaster
 {
 public:
@@ -37,10 +36,6 @@ public:
     //==============================================================================
     DataReader();
     ~DataReader();
-
-    //==============================================================================
-    void paint (Graphics&) override;
-    void resized() override;
 
     //==============================================================================
     bool readData(String s);
@@ -62,7 +57,6 @@ private:
     int pipeNumber = -1;
     
     ScopedPointer<StringArray> data;
-    ScopedPointer<Label> connectedLabel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DataReader)
 };
