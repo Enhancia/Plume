@@ -14,6 +14,9 @@
 //==============================================================================
 HeaderComponent::HeaderComponent (PlumeProcessor& proc) : processor (proc)
 {
+    setName ("Header");
+    setComponentID ("header");
+    
     // Plugin Name
     addAndMakeVisible (pluginNameLabel = new Label ("Plugin Name Label", processor.getWrapper().getWrappedPluginInfoString()));
     pluginNameLabel->setFont (Font (PLUME::UI::font, 15.00f, Font::plain).withTypefaceStyle ("Regular"));
@@ -54,6 +57,22 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc) : processor (proc)
 
 HeaderComponent::~HeaderComponent()
 {
+}
+
+//==============================================================================
+const String HeaderComponent::getInfoString()
+{
+    return "- Displays the current preset and plugin.\n"
+           "- Click on the arrow to display all the available plugins to use. If there are none"
+           "or they are not up to date, scan them using the option menu (button on the side bar).\n"
+           "- Click on the plugin name to open its interface.";
+}
+
+void HeaderComponent::update()
+{
+    pluginNameLabel->setText (processor.getWrapper().getWrappedPluginInfoString(), dontSendNotification);
+    presetNameLabel->setText (processor.getPresetHandler().getCurrentPreset(), dontSendNotification);
+    createPluginMenu (KnownPluginList::sortByFormat);
 }
 
 //==============================================================================
@@ -173,15 +192,6 @@ void HeaderComponent::handlePluginChoice (int chosenId)
         pluginNameLabel->setText (processor.getWrapper().getWrappedPluginInfoString(), dontSendNotification);
     }
 }
-
-//==============================================================================
-void HeaderComponent::update()
-{
-    pluginNameLabel->setText (processor.getWrapper().getWrappedPluginInfoString(), dontSendNotification);
-    presetNameLabel->setText (processor.getPresetHandler().getCurrentPreset(), dontSendNotification);
-    createPluginMenu (KnownPluginList::sortByFormat);
-}
-
 
 void HeaderComponent::createPluginMenu (KnownPluginList::SortMethod sort)
 {

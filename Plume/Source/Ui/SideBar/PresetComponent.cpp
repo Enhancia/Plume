@@ -17,6 +17,9 @@ PresetComponent::PresetComponent (PlumeProcessor& p)  : processor (p)
 {
     TRACE_IN;
     
+    setName ("Preset List");
+    setComponentID ("presetComponent");
+    
     addAndMakeVisible (presetBox = new PresetBox (TRANS ("presetBox"), processor));
     presetBox->setColour (ListBox::backgroundColourId, Colour (0x00000000));
     presetBox->setColour (ListBox::outlineColourId, Colour (0x00000000));

@@ -78,18 +78,14 @@ void \mbox{\hyperlink{class_plume_processor_ae06dd312c3dc3ba7389ce44fd74cbc18}{g
 \begin{DoxyCompactList}\small\item\em State save method. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{class_plume_processor_aa7ab9da73c37f6db69ea6c7e1e4a0211}{set\+State\+Information}} (const void $\ast$data, int size\+In\+Bytes) override
 \begin{DoxyCompactList}\small\item\em State load method. \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{class_plume_processor_ad29b07ddcd526e44529e361374c8c99e}\label{class_plume_processor_ad29b07ddcd526e44529e361374c8c99e}} 
-void {\bfseries create\+Plugin\+Xml} (Xml\+Element \&wrapper\+Data)
-\item 
-\mbox{\Hypertarget{class_plume_processor_a14455799e2ddefd50b860d4492845509}\label{class_plume_processor_a14455799e2ddefd50b860d4492845509}} 
-void {\bfseries create\+Gesture\+Xml} (Xml\+Element \&wrapper\+Data)
-\item 
-\mbox{\Hypertarget{class_plume_processor_a08587fb2663557a8250132502785205c}\label{class_plume_processor_a08587fb2663557a8250132502785205c}} 
-void {\bfseries load\+Plugin\+Xml} (const Xml\+Element \&plugin\+Data)
-\item 
-\mbox{\Hypertarget{class_plume_processor_a988e2a3ce47486bd8dfc5d5702420a7e}\label{class_plume_processor_a988e2a3ce47486bd8dfc5d5702420a7e}} 
-void {\bfseries load\+Gesture\+Xml} (const Xml\+Element \&gesture\+Data)
-\item 
+void \mbox{\hyperlink{class_plume_processor_ad29b07ddcd526e44529e361374c8c99e}{create\+Plugin\+Xml}} (Xml\+Element \&wrapper\+Data)
+\begin{DoxyCompactList}\small\item\em Xml creator for wrapped plugin related information. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_plume_processor_a14455799e2ddefd50b860d4492845509}{create\+Gesture\+Xml}} (Xml\+Element \&wrapper\+Data)
+\begin{DoxyCompactList}\small\item\em Xml creator for gesture related information. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_plume_processor_a08587fb2663557a8250132502785205c}{load\+Plugin\+Xml}} (const Xml\+Element \&plugin\+Data)
+\begin{DoxyCompactList}\small\item\em Method called by set\+State\+Information to load the wrapped plugin. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_plume_processor_a988e2a3ce47486bd8dfc5d5702420a7e}{load\+Gesture\+Xml}} (const Xml\+Element \&gesture\+Data)
+\begin{DoxyCompactList}\small\item\em Method called by set\+State\+Information to load the gestures. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{class_plugin_wrapper}{Plugin\+Wrapper}} \& \mbox{\hyperlink{class_plume_processor_a6ec4d89f181beea78034b81911c59aa8}{get\+Wrapper}} ()
 \begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{class_plugin_wrapper}{Plugin\+Wrapper}} getter. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{class_data_reader}{Data\+Reader}} $\ast$ \mbox{\hyperlink{class_plume_processor_ab24c4b6857ca26d462fce6be9e23cedd}{get\+Data\+Reader}} ()
@@ -97,7 +93,9 @@ void {\bfseries load\+Gesture\+Xml} (const Xml\+Element \&gesture\+Data)
 \mbox{\hyperlink{class_gesture_array}{Gesture\+Array}} \& \mbox{\hyperlink{class_plume_processor_a691a2f342167e257fabf74d0bb76a563}{get\+Gesture\+Array}} ()
 \begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{class_gesture_array}{Gesture\+Array}} getter. \end{DoxyCompactList}\item 
 Audio\+Processor\+Value\+Tree\+State \& \mbox{\hyperlink{class_plume_processor_a644209f6f5ffcd173b09cc897932bba2}{get\+Parameter\+Tree}} ()
-\begin{DoxyCompactList}\small\item\em Audio\+Processor\+Value\+Tree\+State getter. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Audio\+Processor\+Value\+Tree\+State getter. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_preset_handler}{Preset\+Handler}} \& \mbox{\hyperlink{class_plume_processor_af82034b4fb4b423a61761274d1969f77}{get\+Preset\+Handler}} ()
+\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{class_preset_handler}{Preset\+Handler}} getter. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
@@ -119,6 +117,40 @@ Constructor.
 Instanciates the objects used by the processor. 
 
 \subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_plume_processor_a14455799e2ddefd50b860d4492845509}\label{class_plume_processor_a14455799e2ddefd50b860d4492845509}} 
+\index{Plume\+Processor@{Plume\+Processor}!create\+Gesture\+Xml@{create\+Gesture\+Xml}}
+\index{create\+Gesture\+Xml@{create\+Gesture\+Xml}!Plume\+Processor@{Plume\+Processor}}
+\subsubsection{\texorpdfstring{create\+Gesture\+Xml()}{createGestureXml()}}
+{\footnotesize\ttfamily void Plume\+Processor\+::create\+Gesture\+Xml (\begin{DoxyParamCaption}\item[{Xml\+Element \&}]{wrapper\+Data }\end{DoxyParamCaption})}
+
+
+
+Xml creator for gesture related information. 
+
+Creates the xml data concerning the gestures, which holds their name, sensivities, mapped parameters and midi information. This Xml element is attached as a child element to the parameter Xml\+Element wrapper\+Data.
+
+
+\begin{DoxyParams}{Parameters}
+{\em wrapper\+Data} & Xml\+Element that will get the gesture Xml as a child element. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_plume_processor_ad29b07ddcd526e44529e361374c8c99e}\label{class_plume_processor_ad29b07ddcd526e44529e361374c8c99e}} 
+\index{Plume\+Processor@{Plume\+Processor}!create\+Plugin\+Xml@{create\+Plugin\+Xml}}
+\index{create\+Plugin\+Xml@{create\+Plugin\+Xml}!Plume\+Processor@{Plume\+Processor}}
+\subsubsection{\texorpdfstring{create\+Plugin\+Xml()}{createPluginXml()}}
+{\footnotesize\ttfamily void Plume\+Processor\+::create\+Plugin\+Xml (\begin{DoxyParamCaption}\item[{Xml\+Element \&}]{wrapper\+Data }\end{DoxyParamCaption})}
+
+
+
+Xml creator for wrapped plugin related information. 
+
+Creates the xml data concerning the wrapped plugin, which holds it\textquotesingle{}s name, Plugin\+Description and it\textquotesingle{}s state so that it may be restored to the very same state later. This Xml element is attached as a child element of the parameter Xml\+Element wrapper\+Data.
+
+
+\begin{DoxyParams}{Parameters}
+{\em wrapper\+Data} & Xml\+Element that will get the plugin Xml as a child element. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{class_plume_processor_ab24c4b6857ca26d462fce6be9e23cedd}\label{class_plume_processor_ab24c4b6857ca26d462fce6be9e23cedd}} 
 \index{Plume\+Processor@{Plume\+Processor}!get\+Data\+Reader@{get\+Data\+Reader}}
 \index{get\+Data\+Reader@{get\+Data\+Reader}!Plume\+Processor@{Plume\+Processor}}
@@ -158,6 +190,19 @@ Audio\+Processor\+Value\+Tree\+State getter.
 \begin{DoxyReturn}{Returns}
 Reference to the Audio\+Processor\+Value\+Tree\+State object. 
 \end{DoxyReturn}
+\mbox{\Hypertarget{class_plume_processor_af82034b4fb4b423a61761274d1969f77}\label{class_plume_processor_af82034b4fb4b423a61761274d1969f77}} 
+\index{Plume\+Processor@{Plume\+Processor}!get\+Preset\+Handler@{get\+Preset\+Handler}}
+\index{get\+Preset\+Handler@{get\+Preset\+Handler}!Plume\+Processor@{Plume\+Processor}}
+\subsubsection{\texorpdfstring{get\+Preset\+Handler()}{getPresetHandler()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_preset_handler}{Preset\+Handler}} \& Plume\+Processor\+::get\+Preset\+Handler (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+\mbox{\hyperlink{class_preset_handler}{Preset\+Handler}} getter. 
+
+\begin{DoxyReturn}{Returns}
+Reference to the \mbox{\hyperlink{class_preset_handler}{Preset\+Handler}} object. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{class_plume_processor_ae06dd312c3dc3ba7389ce44fd74cbc18}\label{class_plume_processor_ae06dd312c3dc3ba7389ce44fd74cbc18}} 
 \index{Plume\+Processor@{Plume\+Processor}!get\+State\+Information@{get\+State\+Information}}
 \index{get\+State\+Information@{get\+State\+Information}!Plume\+Processor@{Plume\+Processor}}
@@ -188,6 +233,40 @@ Creates the data representing the current state of the plugin. It will call both
 \begin{DoxyReturn}{Returns}
 Reference to the \mbox{\hyperlink{class_plugin_wrapper}{Plugin\+Wrapper}} object. 
 \end{DoxyReturn}
+\mbox{\Hypertarget{class_plume_processor_a988e2a3ce47486bd8dfc5d5702420a7e}\label{class_plume_processor_a988e2a3ce47486bd8dfc5d5702420a7e}} 
+\index{Plume\+Processor@{Plume\+Processor}!load\+Gesture\+Xml@{load\+Gesture\+Xml}}
+\index{load\+Gesture\+Xml@{load\+Gesture\+Xml}!Plume\+Processor@{Plume\+Processor}}
+\subsubsection{\texorpdfstring{load\+Gesture\+Xml()}{loadGestureXml()}}
+{\footnotesize\ttfamily void Plume\+Processor\+::load\+Gesture\+Xml (\begin{DoxyParamCaption}\item[{const Xml\+Element \&}]{gesture\+Data }\end{DoxyParamCaption})}
+
+
+
+Method called by set\+State\+Information to load the gestures. 
+
+Will attempt to restore plume\textquotesingle{}s gestures to the state described by gesture\+Data.
+
+
+\begin{DoxyParams}{Parameters}
+{\em plugin\+Data} & Xml\+Element that is used to set Plume\textquotesingle{}s wrapper state. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_plume_processor_a08587fb2663557a8250132502785205c}\label{class_plume_processor_a08587fb2663557a8250132502785205c}} 
+\index{Plume\+Processor@{Plume\+Processor}!load\+Plugin\+Xml@{load\+Plugin\+Xml}}
+\index{load\+Plugin\+Xml@{load\+Plugin\+Xml}!Plume\+Processor@{Plume\+Processor}}
+\subsubsection{\texorpdfstring{load\+Plugin\+Xml()}{loadPluginXml()}}
+{\footnotesize\ttfamily void Plume\+Processor\+::load\+Plugin\+Xml (\begin{DoxyParamCaption}\item[{const Xml\+Element \&}]{plugin\+Data }\end{DoxyParamCaption})}
+
+
+
+Method called by set\+State\+Information to load the wrapped plugin. 
+
+Will attempt to restore plume to the state described by plugin\+Data.
+
+
+\begin{DoxyParams}{Parameters}
+{\em plugin\+Data} & Xml\+Element that is used to set Plume\textquotesingle{}s wrapper state. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{class_plume_processor_aa7ab9da73c37f6db69ea6c7e1e4a0211}\label{class_plume_processor_aa7ab9da73c37f6db69ea6c7e1e4a0211}} 
 \index{Plume\+Processor@{Plume\+Processor}!set\+State\+Information@{set\+State\+Information}}
 \index{set\+State\+Information@{set\+State\+Information}!Plume\+Processor@{Plume\+Processor}}

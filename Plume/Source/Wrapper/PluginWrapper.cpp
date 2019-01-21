@@ -461,7 +461,11 @@ void PluginWrapper::loadPluginListFromFile()
         return;
     }
     
-    pluginList->recreateFromXml (*XmlDocument::parse (scannedPlugins));
+	ScopedPointer<XmlElement> listXml = XmlDocument::parse(scannedPlugins);
+
+    pluginList->recreateFromXml (*listXml);
+
+	listXml->deleteAllChildElements();
 }
 
 //==============================================================================

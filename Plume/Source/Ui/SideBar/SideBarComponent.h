@@ -19,7 +19,7 @@
 //==============================================================================
 /*
 */
-class SideBarComponent    : public Component,
+class SideBarComponent    : public PlumeComponent,
                             private Button::Listener
 {
 public:
@@ -28,6 +28,12 @@ public:
     ~SideBarComponent();
 
     //==============================================================================
+    // PlumeComponent
+    const String getInfoString() override;
+    void update() override;
+    
+    //==============================================================================
+    // Component
     void paint (Graphics&) override;
     void resized() override;
     

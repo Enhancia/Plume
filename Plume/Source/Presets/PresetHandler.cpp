@@ -175,6 +175,29 @@ void PresetHandler::resetPreset()
     currentPresetName = "-";
     currentIsDefault = false;
 }
+
+
+bool PresetHandler::deletePresetForId (int id)
+{
+    if (id < defaultPresets.size() || id >= getNumPresets()) return false;
+    
+    if (currentPresetName == getTextForPresetId (id))
+    {
+        resetPreset();
+    }
+    
+    id -= defaultPresets.size();
+    
+    if (userPresets[id]->deleteFile())
+    {
+        // succesful deletion
+        userPresets.remove (id);
+        return true;
+    }
+    
+    DBG ("Failed to delete file " << getTextForPresetId (id));
+    return false;
+}
     
 //==============================================================================
 void PresetHandler::initialiseDirectories()

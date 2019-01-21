@@ -177,7 +177,7 @@ void PlumeProcessor::getStateInformation (MemoryBlock& destData)
     ScopedPointer<XmlElement> wrapperData = new XmlElement ("PLUME");
     
     // Adds plugin and gestures data, and saves them in a binary file
-    createPluginXml   (*wrapperData);
+    createPluginXml  (*wrapperData);
     createGestureXml (*wrapperData);
     
     // Creates the binary data

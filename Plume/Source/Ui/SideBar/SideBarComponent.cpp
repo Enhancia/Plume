@@ -14,6 +14,9 @@
 //==============================================================================
 SideBarComponent::SideBarComponent (PlumeProcessor& proc)   : processor (proc)
 {
+    setName ("Side Bar");
+    setComponentID ("sideBar");
+    
     addAndMakeVisible (optionsButton = new ShapeButton ("Options Button",
                                                         PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFill),
 		                                                PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFillHighlighted),
@@ -27,6 +30,20 @@ SideBarComponent::~SideBarComponent()
 {
 }
 
+//==============================================================================
+const String SideBarComponent::getInfoString()
+{
+    return "- Hideable side bar.\n"
+           "- Click on the arrow to hide or show the side bar.\n"
+           "- The top right hand corner has an info button and an option button.\n";
+}
+
+void SideBarComponent::update()
+{
+    presetComponent->update();
+}
+
+//==============================================================================
 void SideBarComponent::paint (Graphics& g)
 {
 	using namespace PLUME::UI;

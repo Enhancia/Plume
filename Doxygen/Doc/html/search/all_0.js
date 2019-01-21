@@ -9,7 +9,7 @@ var searchData=
   ['addgesturefromxml',['addGestureFromXml',['../class_gesture_array.html#ae5cf63dc414a10fe3f59516706957d6d',1,'GestureArray']]],
   ['addgesturemidi',['addGestureMidi',['../class_gesture.html#a0f7616dd718b2abe1eaecc9f14f0373f',1,'Gesture::addGestureMidi()'],['../class_pitch_bend.html#a2c541902b4c3dde784caefbb459e6d80',1,'PitchBend::addGestureMidi()'],['../class_roll.html#a398ea01c88272acaffe50848c66820e4',1,'Roll::addGestureMidi()'],['../class_tilt.html#aee1282ae7931e43052fb8cb0bceacfa1',1,'Tilt::addGestureMidi()'],['../class_vibrato.html#a0d8646e4bd345055fc97a80b08e4a047',1,'Vibrato::addGestureMidi()'],['../class_wave.html#aaa76f48dddb4d3ae34f0c6a38fd4b043',1,'Wave::addGestureMidi()']]],
   ['addgesturemiditobuffer',['addGestureMidiToBuffer',['../class_gesture_array.html#af3405a704fd28ee2773fb45af00f3cb9',1,'GestureArray']]],
-  ['addmidimodesignaltobuffer',['addMidiModeSignalToBuffer',['../class_gesture.html#a5abd1b6d2ef79700a0ceef7ec198a6f2',1,'Gesture']]],
+  ['addmidimodesignaltobuffer',['addMidiModeSignalToBuffer',['../class_gesture.html#ae6aec155a1f1a25675cba6fcd4028d95',1,'Gesture']]],
   ['addparameter',['addParameter',['../class_gesture.html#a63dd26353ca6dc963d2f277c98ecb4ec',1,'Gesture']]],
   ['addparametertomapmodegesture',['addParameterToMapModeGesture',['../class_gesture_array.html#a3fab58ea058de4b0e831f171513998b5',1,'GestureArray']]],
   ['affectspitch',['affectsPitch',['../class_gesture.html#a7101f502fcf200653748ead88057ce72',1,'Gesture']]]

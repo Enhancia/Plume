@@ -16,7 +16,7 @@
  *
  *  \brief Plume's derived Component class.
  *
- *  This is a class derivied from JUCE's Component object. It's purpose is having
+ *  This is a class that derives from JUCE's Component object. It's purpose is having
  *  a generic method to update their content (update(), which can hence be called
  *  by any other object as they all know this class) and methods to easily implement
  *  the info panel (getInfoString() to write general info, and sendAlertMessage()
@@ -36,12 +36,12 @@ public:
     /**
     *  \brief Constructor.
     */
-    PlumeComponent();
+	PlumeComponent() {}
     
     /**
     *  \brief Destructor.
     */
-    ~PlumeComponent();
+    ~PlumeComponent() {}
     
     /**
     *  \brief Getter to an informative text on the component.
@@ -76,7 +76,7 @@ protected:
     *  \brief Alert message sender.
     *
     *  This method will send an action message describing an error or
-    *  a warning and directed to the user.
+    *  a warning directed to the user.
     *  In order for the method to work, the PlumeComponent must be Listened
     *  to by the InfoPanel object from the Editor.
     *

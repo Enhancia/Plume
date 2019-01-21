@@ -17,7 +17,7 @@
 //==============================================================================
 /*
 */
-class HeaderComponent    : public Component,
+class HeaderComponent    : public PlumeComponent,
                            public Button::Listener
 {
 public:
@@ -26,17 +26,23 @@ public:
     ~HeaderComponent();
 
     //==============================================================================
+    // PlumeComponent
+    const String getInfoString() override;
+    void update() override;
+    
+    //==============================================================================
+    // Component
     void paint (Graphics&) override;
     void resized() override;
     
     //==============================================================================
+    // Mouse Listener
     void mouseUp (const MouseEvent &event) override;
     void mouseEnter (const MouseEvent &event) override;
     void mouseExit (const MouseEvent &event) override;
     void buttonClicked (Button* bttn) override;
     
     //==============================================================================
-    void update();
     void drawPianoAndFolderPath (Path& pianoPath, Path& folderPath);
     void createPluginMenu (KnownPluginList::SortMethod sort);
 

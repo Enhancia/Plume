@@ -36,7 +36,7 @@ public:
     //void listBoxItemClicked (int row, const MouseEvent& event) override;
     void listBoxItemDoubleClicked (int row, const MouseEvent& event) override;
     void backgroundClicked (const MouseEvent& event) override;
-    //void deleteKeyPressed (int lastRowSelected) override;
+    void deleteKeyPressed (int lastRowSelected) override;
     //void returnKeyPressed (int lastRowSelected) override;
     //void listWasScrolled() override;
     //var getDragSourceDescription (const SparseSet<int>& rowsToDescribe) override;

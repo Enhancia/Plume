@@ -22,7 +22,7 @@
  *  the PresetComponent from the editor to allow saving and creating preset files.
  *
  */
-class PresetHandler
+class PresetHandler : private ChangeBroadcaster
 {
 public:
     //==============================================================================
@@ -80,6 +80,7 @@ public:
     bool savePreset (XmlElement& presetXml);
     bool createNewUserPreset (String presetName, XmlElement& presetXml);
     bool renamePreset (const String& newName);
+    bool deletePresetForId (int id);
     void resetPreset();
     
 private:
@@ -93,4 +94,7 @@ private:
     File userDir;
     String currentPresetName;
     bool currentIsDefault = false;
+    
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PresetHandler)
 };

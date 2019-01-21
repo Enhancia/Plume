@@ -112,6 +112,21 @@ void PresetBox::backgroundClicked (const MouseEvent& event)
     }
 }
 
+void PresetBox::deleteKeyPressed (int lastRowSelected)
+{
+    if (processor.getPresetHandler().deletePresetForId (lastRowSelected))
+    {
+        updateContent();
+        if (auto* hdr = dynamic_cast<PlumeComponent*> (  getParentComponent() // presetComp
+                                                       ->getParentComponent() // sideBarComp
+                                                       ->getParentComponent() // editor
+                                                       ->findChildWithID ("header")))
+        {
+            hdr->update();
+        }
+    }
+}
+
 //==============================================================================
 void PresetBox::labelTextChanged (Label* lbl)
 {
