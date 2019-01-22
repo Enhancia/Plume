@@ -43,7 +43,6 @@ public:
     void buttonClicked (Button* bttn) override;
     
     //==============================================================================
-    void drawPianoAndFolderPath (Path& pianoPath, Path& folderPath);
     void createPluginMenu (KnownPluginList::SortMethod sort);
 
 private:

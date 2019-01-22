@@ -11,17 +11,17 @@
 #include "../../../JuceLibraryCode/JuceHeader.h"
 #include "PlumeLookAndFeel.h"
 
-using namespace PLUME;
+using namespace PLUME::UI;
 
 PlumeLookAndFeel::PlumeLookAndFeel()
 {
 	// Sets the default colour scheme ( Default colors except
 	// 3rd value that sets the comboBox's menu background): ========
-	    
-	setColourScheme ({ 0xff323e44, 0xff263238, 0xff323232,
-                       0xff8e989b, 0xffffffff, 0xff42a2c8,
-                       0xffffffff, 0xff181f22, 0xffffffff });
-	    
+	/*
+	setColourScheme ({ 0xffee00ff, 0xfffffd00, 0xff323232,
+                       0xff8e989b, 0xffe5e5e5, 0xff42a2c8,
+                       0xffe5e5e5, 0xff323232, 0xffe5e5e5 });
+	*/
                            
 	// Sets the several components colours: ========================
 	setColours();
@@ -59,7 +59,7 @@ void PlumeLookAndFeel::setColours()
 	// PopupMenu
 	setColour (PopupMenu::backgroundColourId, Colour (0xff323232));
 	setColour (PopupMenu::textColourId, Colour (0xffe5e5e5));
-	setColour (PopupMenu::highlightedBackgroundColourId, Colour (0xffe5e5e5));
+	setColour (PopupMenu::highlightedBackgroundColourId, Colour (0xaae5e5e5));
 	setColour (PopupMenu::highlightedTextColourId, Colour (0xff323232));
 }
 

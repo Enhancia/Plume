@@ -27,7 +27,7 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc) : processor (proc)
     pluginNameLabel->addMouseListener (this, false);
     
     // Preset Name
-    addAndMakeVisible (presetNameLabel = new Label ("Preset Name Label", processor.getPresetHandler().getCurrentPreset()));
+    addAndMakeVisible (presetNameLabel = new Label ("Preset Name Label", processor.getPresetHandler().getCurrentPresetName()));
     presetNameLabel->setFont (Font (PLUME::UI::font, 15.00f, Font::plain).withTypefaceStyle ("Regular"));
     presetNameLabel->setJustificationType (Justification::centred);
     presetNameLabel->setEditable (false, false, false);
@@ -46,6 +46,7 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc) : processor (proc)
 		                                                   Colour(0x00000000)));
 	pluginListButton->setShape (arrow, false, true, false);
 	pluginListButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText), 2.0f);
+	pluginListButton->addMouseListener (this, false);
 	pluginListButton->addListener (this);
     
 	// Plugin List menu
@@ -71,7 +72,7 @@ const String HeaderComponent::getInfoString()
 void HeaderComponent::update()
 {
     pluginNameLabel->setText (processor.getWrapper().getWrappedPluginInfoString(), dontSendNotification);
-    presetNameLabel->setText (processor.getPresetHandler().getCurrentPreset(), dontSendNotification);
+    presetNameLabel->setText (processor.getPresetHandler().getCurrentPresetName(), dontSendNotification);
     createPluginMenu (KnownPluginList::sortByFormat);
 }
 
@@ -151,9 +152,15 @@ void HeaderComponent::mouseUp (const MouseEvent &event)
 
 void HeaderComponent::mouseEnter (const MouseEvent &event)
 {
-    if (event.eventComponent == pluginNameLabel)
+    if (event.eventComponent == pluginNameLabel && processor.getWrapper().isWrapping())
 	{
-        pluginNameLabel->setColour (Label::textColourId, PLUME::UI::currentTheme.getColour(PLUME::colour::headerHighlightedText));
+        pluginNameLabel->setColour (Label::textColourId,
+                                    PLUME::UI::currentTheme.getColour (PLUME::colour::headerHighlightedText));
+	}
+	
+	else if (event.eventComponent == pluginListButton)
+	{
+        pluginListButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerHighlightedText), 2.0f);
 	}
 }
 
@@ -161,7 +168,13 @@ void HeaderComponent::mouseExit (const MouseEvent &event)
 {
     if (event.eventComponent == pluginNameLabel)
 	{
-        pluginNameLabel->setColour (Label::textColourId, PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText));
+        pluginNameLabel->setColour (Label::textColourId,
+                                    PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText));
+	}
+	
+	else if (event.eventComponent == pluginListButton)
+	{
+        pluginListButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 2.0f);
 	}
 }
 
@@ -169,9 +182,12 @@ void HeaderComponent::buttonClicked (Button* bttn)
 {
     if (bttn == pluginListButton)
     {
-        pluginListMenu.showMenuAsync (PopupMenu::Options().withMinimumWidth (100)
+        pluginListMenu.showMenuAsync (PopupMenu::Options().withParentComponent (getParentComponent())
+                                                          .withMinimumWidth (100)
                                                           .withMaximumNumColumns (3)
-                                                          .withPreferredPopupDirection (PopupMenu::Options::PopupDirection::downwards)
+                                                          .withPreferredPopupDirection (PopupMenu::
+                                                                                        Options::
+                                                                                        PopupDirection::downwards)
                                                           .withTargetComponent (pluginListButton),
                                       ModalCallbackFunction::forComponent (pluginMenuCallback, this));
     }
@@ -196,11 +212,6 @@ void HeaderComponent::handlePluginChoice (int chosenId)
 void HeaderComponent::createPluginMenu (KnownPluginList::SortMethod sort)
 {
 	pluginListMenu.clear();
-	pluginListMenu.setLookAndFeel (&getTopLevelComponent()->getLookAndFeel());
 	pluginListMenu.addSectionHeader ("Plugins:");
     processor.getWrapper().addPluginsToMenu (pluginListMenu, sort);
-}
-
-void HeaderComponent::drawPianoAndFolderPath (Path& pianoPath, Path& folderPath)
-{
 }

@@ -19,15 +19,21 @@
 /*
 */
 
-class PresetComponent    : public Component,
+class PresetComponent    : public PlumeComponent,
                            private Button::Listener
 {
 public:
     //==============================================================================
-    PresetComponent(PlumeProcessor& p);
+    PresetComponent (PlumeProcessor& p);
     ~PresetComponent();
-
+    
     //==============================================================================
+    // PlumeComponent
+    const String getInfoString() override;
+    void update() override;
+    
+    //==============================================================================
+    // Component
     void paint (Graphics& g) override;
     void paintOverChildren (Graphics& g) override;
     void resized() override;
@@ -39,14 +45,11 @@ public:
     //==============================================================================
     void savePreset();
     void addNewPreset();
-    
-    //==============================================================================
-    void update();
 
 private:
     //==============================================================================
     ScopedPointer<PresetBox> presetBox;
-    ScopedPointer<TextButton> saveButton;
+    //ScopedPointer<TextButton> saveButton;
     ScopedPointer<TextButton> newButton;
     
     //==============================================================================

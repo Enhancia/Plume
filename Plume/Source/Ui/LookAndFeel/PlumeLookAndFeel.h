@@ -14,7 +14,9 @@
 
 namespace PLUME
 {
-
+namespace UI
+{
+        
 class PlumeLookAndFeel : public LookAndFeel_V4
 {
 public:
@@ -51,7 +53,7 @@ private:
 
 
 //==================================================================================================
-// DERIVED CLASSES: For other gesture sensibility schemes
+// INHERITED CLASSES: For other gesture sensibility schemes
 
 
 class OneRangeTunerLookAndFeel : public PlumeLookAndFeel
@@ -96,4 +98,5 @@ private:
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TwoRangeTunerLookAndFeel)
 };
 
+} // namespace UI
 } // namespace PLUME

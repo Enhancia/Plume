@@ -58,7 +58,7 @@ private:
     ScopedPointer<Label> rangeLabelMax;
     
     //==============================================================================
-    PLUME::OneRangeTunerLookAndFeel oneRangeTunerLookAndFeel;
+    PLUME::UI::OneRangeTunerLookAndFeel oneRangeTunerLookAndFeel;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OneRangeTuner)

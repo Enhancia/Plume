@@ -87,14 +87,17 @@ void PlumeEditor::paint (Graphics& g)
 {
     // Background
     g.fillAll (PLUME::UI::currentTheme.getColour (PLUME::colour::basePanelBackground));
-    
-    if (sideBarButton->getToggleState())
+}
+
+void PlumeEditor::paintOverChildren (Graphics& g)
+{
+    if (!(sideBarButton->getToggleState()))
     {
         // Version Text
-        g.setColour (PLUME::UI::currentTheme.getColour (PLUME::colour::sideBarSubText));
+        g.setColour (PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxStandartText));
         g.setFont (Font (10.0f, Font::italic).withTypefaceStyle ("Regular"));
         g.drawText ("Plume " + String(JucePlugin_VersionString),
-		            MARGIN , getHeight() - MARGIN,
+		            1, getHeight() - MARGIN,
 		            100, MARGIN,
                     Justification::centredLeft, true);
     }

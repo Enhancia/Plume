@@ -58,7 +58,7 @@ void PresetBox::paintListBoxItem (int rowNumber, Graphics& g, int width, int hei
     
         g.drawText (text, PLUME::UI::MARGIN, 0, width, height,
                     Justification::centredLeft, true);
-    }                             
+    }
 }
 
 Component* PresetBox::refreshComponentForRow (int rowNumber,
@@ -78,6 +78,30 @@ Component* PresetBox::refreshComponentForRow (int rowNumber,
     }
 
 	return nullptr;
+}
+
+void PresetBox::listBoxItemClicked (int row, const MouseEvent& event)
+{
+    if (event.mods.isPopupMenu())
+    {
+        rightClickMenu.clear();
+		bool isUser = processor.getPresetHandler().isUserPreset (row);
+
+        rightClickMenu.addItem (1, "Rename", isUser);
+        rightClickMenu.addItem (2, "Delete", isUser);
+        rightClickMenu.addItem (3, "Show In Explorer", isUser);
+        
+        handleMenuResult (row,
+                          rightClickMenu.showMenu (PopupMenu::Options().withParentComponent (  getParentComponent()
+                                                                                             ->getParentComponent()
+                                                                                             ->getParentComponent())
+                                                                       .withMaximumNumColumns (3)
+                                                                       .withPreferredPopupDirection (PopupMenu::
+																		                             Options::
+																		                             PopupDirection::
+																		                             downwards)
+                                                                       .withStandardItemHeight (15)));
+    }
 }
 
 void PresetBox::listBoxItemDoubleClicked (int row, const MouseEvent& event)
@@ -114,17 +138,6 @@ void PresetBox::backgroundClicked (const MouseEvent& event)
 
 void PresetBox::deleteKeyPressed (int lastRowSelected)
 {
-    if (processor.getPresetHandler().deletePresetForId (lastRowSelected))
-    {
-        updateContent();
-        if (auto* hdr = dynamic_cast<PlumeComponent*> (  getParentComponent() // presetComp
-                                                       ->getParentComponent() // sideBarComp
-                                                       ->getParentComponent() // editor
-                                                       ->findChildWithID ("header")))
-        {
-            hdr->update();
-        }
-    }
 }
 
 //==============================================================================
@@ -153,7 +166,9 @@ void PresetBox::labelTextChanged (Label* lbl)
 
 void PresetBox::editorHidden (Label* lbl, TextEditor& ted)
 {
-    DBG ("Text Editor callback");
+    // This callback is triggered when user finishes entering the text
+    // It will trigger regardless of the text changing or not.
+    // Here, cancels the new preset / rename entry if the text wasn't changed.
     
     if (newPresetEntry)
     {
@@ -167,7 +182,7 @@ void PresetBox::editorHidden (Label* lbl, TextEditor& ted)
     }
     else // Preset being renamed
     {
-        if (editLabel->getText() == processor.getPresetHandler().getCurrentPreset())
+        if (editLabel->getText() == processor.getPresetHandler().getTextForPresetId (getSelectedRow()))
         {
             // Resets the box to non entry
             presetIdToEdit = -1;
@@ -200,9 +215,78 @@ void PresetBox::startNewPresetEntry()
     }
 }
 
-void PresetBox::startRenameEntry()
+void PresetBox::startRenameEntry (const int row)
 {
-    // TODO put right id to edit
+    // Puts right id and text to edit
+    newPresetEntry = false;
+    presetIdToEdit = row;
+    editLabel->setText (processor.getPresetHandler().getTextForPresetId (row), dontSendNotification);
+    updateContent();
+    
+    if (getComponentForRowNumber (presetIdToEdit) == editLabel)
+    {
+        // Gives the focus to the label and waits for the callback
+        editLabel->showEditor();
+    }
+    else
+    {
+        // Aborts the changes
+        presetIdToEdit = -1;
+        updateContent();
+    }
+}
+
+void PresetBox::deletePreset (const int row)
+{
+    //TODO fenêtre d'avertissement avant suppression
+    
+    bool updateHeader = (processor.getPresetHandler().getCurrentPresetName()
+                            == processor.getPresetHandler().getTextForPresetId (row));
+    
+	if (processor.getPresetHandler().deletePresetForId(row))
+	{
+		updateContent();
+
+		// Updates the header in case the selected preset was deleted
+		if (updateHeader)
+		{
+			if (auto* hdr = dynamic_cast<PlumeComponent*> (  getParentComponent() // presetComp
+				                                           ->getParentComponent() // sideBarComp
+				                                           ->getParentComponent() // editor
+				                                           ->findChildWithID("header")))
+			{
+				hdr->update();
+			}
+	    }
+    }
+}
+//==============================================================================
+void PresetBox::handleMenuResult (const int row, const int menuResult)
+{
+    switch (menuResult)
+    {
+        case 0: // No choice
+            break;
+            
+        case 1: // Rename preset
+            DBG ("Rename wesh");
+            if (processor.getPresetHandler().isUserPreset (row))
+            {
+                startRenameEntry (row);
+            }
+            break;
+            
+        case 2: // Delete preset
+            DBG ("Delete Wesh");
+            deletePreset (row);
+            break;
+            
+        case 3: // Show in explorer
+            DBG ("Explorer wesh");
+			processor.getPresetHandler().showPresetInExplorer (row);
+    }
+    
+    repaint();
 }
 
 void PresetBox::createUserPreset (const String& presetName)
@@ -218,5 +302,5 @@ void PresetBox::createUserPreset (const String& presetName)
 
 void PresetBox::renamePreset (const String& newName)
 {
-    // TODO faire methode pour renommer preset (aussi dans preset handler)
+    processor.getPresetHandler().renamePreset (newName, presetIdToEdit);
 }

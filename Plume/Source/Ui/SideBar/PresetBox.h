@@ -33,7 +33,7 @@ public:
     void paintListBoxItem (int rowNumber, Graphics& g, int width, int height, bool rowIsSelected) override;
 
     Component* refreshComponentForRow (int rowNumber, bool isRowSelected, Component* existingComponentToUpdate) override;
-    //void listBoxItemClicked (int row, const MouseEvent& event) override;
+    void listBoxItemClicked (int row, const MouseEvent& event) override;
     void listBoxItemDoubleClicked (int row, const MouseEvent& event) override;
     void backgroundClicked (const MouseEvent& event) override;
     void deleteKeyPressed (int lastRowSelected) override;
@@ -53,9 +53,11 @@ public:
     //PresetBox methods
     
     void startNewPresetEntry();
-    void startRenameEntry();
+    void startRenameEntry (const int row);
+    void deletePreset (const int row);
     
 private:
+    void handleMenuResult (const int row, const int menuResult);
     void createUserPreset (const String& presetName);
     void renamePreset (const String& newName);
     
@@ -64,6 +66,7 @@ private:
     int presetIdToEdit = -1;
     bool newPresetEntry = false;
     ScopedPointer<Label> editLabel;
+    PopupMenu rightClickMenu;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PresetBox)

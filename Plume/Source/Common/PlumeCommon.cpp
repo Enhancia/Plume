@@ -17,7 +17,7 @@ namespace PLUME
         bool ANIMATE_UI_FLAG = false;
 
 		using namespace PLUME::colour;
-        PlumeTheme currentTheme = PlumeTheme::createPlumeTheme (PlumeTheme::plumeDefault);
+		PlumeTheme currentTheme = PlumeTheme::createPlumeTheme (PlumeTheme::plumeDefault);
     }
     
     namespace path

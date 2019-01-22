@@ -70,8 +70,8 @@ private:
     ScopedPointer<Label> rangeLabelMaxRight;
     
     //==============================================================================
-    PLUME::TwoRangeTunerLookAndFeel leftLookAndFeel;
-    PLUME::TwoRangeTunerLookAndFeel rightLookAndFeel;
+    PLUME::UI::TwoRangeTunerLookAndFeel leftLookAndFeel;
+    PLUME::UI::TwoRangeTunerLookAndFeel rightLookAndFeel;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TwoRangeTuner)
 };

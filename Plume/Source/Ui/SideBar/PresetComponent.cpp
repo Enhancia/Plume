@@ -25,14 +25,16 @@ PresetComponent::PresetComponent (PlumeProcessor& p)  : processor (p)
     presetBox->setColour (ListBox::outlineColourId, Colour (0x00000000));
     presetBox->updateContent();
     
+    /*
     addAndMakeVisible (saveButton = new TextButton ("saveButton"));
     saveButton->setButtonText ("Save");
     saveButton->addListener (this);
     saveButton->setColour (TextButton::buttonColourId, Colour (0x00323232));
     saveButton->setColour (TextButton::textColourOnId, Colour (0xaaffffff));
+    */
         
     addAndMakeVisible (newButton = new TextButton ("newButton"));
-    newButton->setButtonText ("New");
+    newButton->setButtonText ("New Preset");
     newButton->addListener (this);
     newButton->setColour (TextButton::buttonColourId, Colour (0x00323232));
     newButton->setColour (TextButton::textColourOnId, Colour (0xaaffffff));
@@ -42,7 +44,7 @@ PresetComponent::~PresetComponent()
 {
     TRACE_IN;
     presetBox = nullptr;
-	saveButton = nullptr;
+	//saveButton = nullptr;
 	newButton = nullptr;
 }
 
@@ -77,7 +79,7 @@ void PresetComponent::paintOverChildren (Graphics& g)
     g.drawRect (getLocalBounds());
     
 	g.drawHorizontalLine (getHeight()-PRESET_BUTTONS_HEIGHT, 0, getWidth());
-	g.drawVerticalLine (getWidth()/2, getHeight()-PRESET_BUTTONS_HEIGHT+1, getHeight()-1);
+	//g.drawVerticalLine (getWidth()/2, getHeight()-PRESET_BUTTONS_HEIGHT+1, getHeight()-1);
 }
 
 void PresetComponent::resized()
@@ -85,13 +87,27 @@ void PresetComponent::resized()
     auto area = getLocalBounds();
     
     auto buttonArea = area.removeFromBottom (PLUME::UI::PRESET_BUTTONS_HEIGHT);
-    saveButton->setBounds (buttonArea.removeFromRight (buttonArea.getWidth()/2));
+    //saveButton->setBounds (buttonArea.removeFromRight (buttonArea.getWidth()/2));
     newButton->setBounds (buttonArea);
     
     presetBox->setBounds (area);
     
 }
 
+//==============================================================================
+const String PresetComponent::getInfoString()
+{
+    return "- Preset List.\n"
+           "- Manages all your presets. Make sure you added a proper User directory"
+           "to create your custom presets.";
+}
+
+void PresetComponent::update()
+{
+    presetBox->updateContent();
+}
+
+//==============================================================================
 void PresetComponent::focusLost (Component::FocusChangeType cause)
 {
     if (cause == Component::focusChangedByMouseClick)
@@ -102,12 +118,14 @@ void PresetComponent::focusLost (Component::FocusChangeType cause)
 
 void PresetComponent::buttonClicked (Button* bttn)
 {
+    /*
     if (bttn == saveButton)
     {
         savePreset();
     }
+    */
     
-    else if (bttn == newButton)
+    if (bttn == newButton)
     {
         addNewPreset();
     }
@@ -115,7 +133,7 @@ void PresetComponent::buttonClicked (Button* bttn)
 
 void PresetComponent::savePreset()
 {
-    ScopedPointer<XmlElement> presetXml = new XmlElement (processor.getPresetHandler().getCurrentPreset());
+    ScopedPointer<XmlElement> presetXml = new XmlElement (processor.getPresetHandler().getCurrentPresetName());
 	processor.createPluginXml (*presetXml);
 	processor.createGestureXml (*presetXml);
 	    
@@ -127,8 +145,4 @@ void PresetComponent::savePreset()
 void PresetComponent::addNewPreset()
 {
     presetBox->startNewPresetEntry();
-}
-
-void PresetComponent::update()
-{
 }

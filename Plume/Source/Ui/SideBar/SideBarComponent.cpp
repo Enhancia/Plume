@@ -63,7 +63,7 @@ void SideBarComponent::paint (Graphics& g)
     // Plume. text
     g.setColour (currentTheme.getColour(PLUME::colour::sideBarMainText));
     g.setFont (Font (font, 25.0f, Font::bold));
-    g.drawText ("Plume.", area.removeFromTop (HEADER_HEIGHT).reduced (2*MARGIN, MARGIN),
+    g.drawText ("Plume.", area.removeFromTop (HEADER_HEIGHT).reduced (MARGIN),
                 Justification::centredLeft, true);
 
 	g.setGradientFill (grad);
@@ -77,7 +77,7 @@ void SideBarComponent::paint (Graphics& g)
     
     g.setFont (Font (font, 15.0f, Font::plain));
 	g.setColour(currentTheme.getColour(PLUME::colour::sideBarSubText));
-    g.drawText ("Presets", area.reduced (MARGIN),
+    g.drawText ("Presets", area.reduced (2*MARGIN, MARGIN),
                 Justification::topLeft, true);
 }
 
@@ -95,7 +95,7 @@ void SideBarComponent::resized()
     // Presets
 	area.removeFromTop (MARGIN + 15);
 	area.removeFromBottom (2*HEADER_HEIGHT);
-    presetComponent->setBounds (area.reduced (MARGIN));
+    presetComponent->setBounds (area.reduced (2*MARGIN, MARGIN));
     //area.removeFromTop (area.getHeight()/2);
 }
 
@@ -103,9 +103,10 @@ void SideBarComponent::buttonClicked (Button* bttn)
 {
     if (bttn == optionsButton)
     {
-        // WIP -> Whould trigger a message to open the options panel...
-        // For now only scans the plugins in the defaultDirs
+        // WIP -> Should trigger a message to open the options panel...
+        // For now only scans the plugins in the defaultDirs and updates preset box
         processor.getWrapper().scanAllPluginsInDirectories (false, true);
 		processor.sendActionMessage (PLUME::commands::updateInterface);
+		presetComponent->update();
     }
 }

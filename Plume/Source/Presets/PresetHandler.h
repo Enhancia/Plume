@@ -51,7 +51,7 @@ public:
      *
      * \returns The name of the preset file which is currently used.
      */
-    String getCurrentPreset();
+    String getCurrentPresetName();
     
     /**
      * \brief Getter for the total number of presets.
@@ -61,16 +61,23 @@ public:
     int getNumPresets();
     
     /**
-     * \brief Getter for the preset currently in use.
+     * \brief Getter for the name of a specified preset number.
      *
-     * \returns The name of the preset file which is currently used.
+     * \returns The name of the preset file corresponding to the id.
      */
     String getTextForPresetId (int id);
     
     /**
-     * \brief Getter for the preset currently in use.
+     * \brief Helper method that tells is the specified preset is from the user.
      *
-     * \returns The name of the preset file which is currently used.
+     * \returns True is the preset is user made, and therefore can be renamed and deleted.
+     */
+    bool isUserPreset (int id);
+    
+    /**
+     * \brief Helper method that tells is the current preset is can be saved by the user.
+     *
+     * \returns True is the user is allowed to save the current preset.
      */
     bool canSavePreset();
     
@@ -79,9 +86,10 @@ public:
     XmlElement* getPresetXmlToLoad (int selectedPreset);
     bool savePreset (XmlElement& presetXml);
     bool createNewUserPreset (String presetName, XmlElement& presetXml);
-    bool renamePreset (const String& newName);
+    bool renamePreset (String newName, const int id);
     bool deletePresetForId (int id);
     void resetPreset();
+    void showPresetInExplorer (int id);
     
 private:
     //==============================================================================

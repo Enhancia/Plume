@@ -61,6 +61,10 @@ public:
      */
     void paint (Graphics& g) override;
     /**
+     * \brief JUCE Components' paintOverChildren method to paint the plugin version.
+     */
+    void paintOverChildren (Graphics& g) override;
+    /**
      * \brief JUCE Components' resized method.
      */
     void resized() override;
@@ -106,7 +110,7 @@ private:
     void createSideBarButtonPath(); //TODO mettre dans common avec les autres chemins
     
     //==============================================================================
-    PlumeLookAndFeel plumeLookAndFeel;
+    PLUME::UI::PlumeLookAndFeel plumeLookAndFeel;
     ScopedPointer<ResizableCornerComponent> resizableCorner;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeEditor)
