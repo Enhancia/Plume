@@ -50,9 +50,7 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc) : processor (proc)
 	pluginListButton->addListener (this);
     
 	// Plugin List menu
-    createPluginMenu (KnownPluginList::sortByFormat);
-	
-    // drawPianoAndFolderPath (pianoPath, folderPath);
+    createPluginMenu (KnownPluginList::sortByManufacturer);
     
 }
 
@@ -73,7 +71,7 @@ void HeaderComponent::update()
 {
     pluginNameLabel->setText (processor.getWrapper().getWrappedPluginInfoString(), dontSendNotification);
     presetNameLabel->setText (processor.getPresetHandler().getCurrentPresetName(), dontSendNotification);
-    createPluginMenu (KnownPluginList::sortByFormat);
+    createPluginMenu (KnownPluginList::sortByManufacturer);
 }
 
 //==============================================================================
@@ -104,7 +102,7 @@ void HeaderComponent::paint (Graphics& g)
     g.fillPath (p);
     
     // Preset label Outline
-    g.drawRoundedRectangle (area.removeFromLeft (area.getWidth()/3).withLeft (area.getX() + getHeight()).reduced (MARGIN).toFloat(), 3, 1);
+    g.drawRoundedRectangle (area.removeFromLeft (area.getWidth()/3).withLeft (2*HEADER_HEIGHT).reduced (MARGIN).toFloat(), 3, 1);
     
     // Separator
     area.removeFromLeft (MARGIN); // Space before separator
@@ -129,7 +127,7 @@ void HeaderComponent::resized()
     
     auto area = getLocalBounds().withLeft (getHeight());
                           
-    presetNameLabel->setBounds (area.removeFromLeft (area.getWidth()/3).withLeft (area.getX() + getHeight()).reduced (MARGIN));
+    presetNameLabel->setBounds (area.removeFromLeft (area.getWidth()/3).withLeft (2*HEADER_HEIGHT).reduced (MARGIN));
                                                                                  
     area.removeFromLeft (MARGIN); // Space before separator
     pluginListButton->setBounds (area.removeFromRight (getHeight() - MARGIN).reduced (MARGIN));

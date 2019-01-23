@@ -363,7 +363,7 @@ void GesturePanel::parameterChanged (const String& parameterID, float newValue)
 {
     // if the ID is "x_value" or "x_vibrato_intensity" doesn't update
     // (only the MovingCursor object in the the GestureTuner Component is updated)
-    if (parameterID.endsWith ("ue") || parameterID.endsWith ("y")) return;
+    if (parameterID.endsWith ("ue") || parameterID.endsWith ("y") || !PLUME::UI::ANIMATE_UI_FLAG) return;
         
     
     int numGesture = parameterID.substring(0,1).getIntValue();
