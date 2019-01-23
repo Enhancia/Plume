@@ -21,7 +21,7 @@ namespace PLUME
     namespace UI
     {
         // Default settings
-        const int DEFAULT_WINDOW_WIDTH = 800;
+        const int DEFAULT_WINDOW_WIDTH = 890;
         const int DEFAULT_WINDOW_HEIGHT = 500;
     
         // Display panels values
@@ -147,9 +147,11 @@ namespace PLUME
 		extern const Path createGearPath();
 		extern const Path createPianoPath();
 		extern const Path createFolderPath();
+		extern const Path createMagnifyingGlassPath();
         
         const Path gearPath = createGearPath();
         const Path pianoPath = createPianoPath();
         const Path folderPath = createFolderPath();
+        const Path magnifyingGlassPath = createMagnifyingGlassPath();
     }
 }

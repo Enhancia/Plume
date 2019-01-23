@@ -329,12 +329,58 @@ OwnedArray<File> PluginWrapper::createFileList()
     
     if (useDefaultPaths)
     {
-        directories.add (new File (File::getSpecialLocation (File::currentApplicationFile).getParentDirectory().getFullPathName()));
+        // TEMP: adds plume directory (removed when custom directories are properly implemented)
+        directories.add (new File (File::getSpecialLocation (File::currentApplicationFile).getParentDirectory()));
         
+        // Adds OS specific paths if they exist
+        File f;
       #if JUCE_WINDOWS
-        // adds PF/Steinberg if it exists
+        // C:\Program Files\VSTPlugins 
+        f = File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("VSTPlugins/");
+        
+        if (f.exists()) directories.add (new File (f));
+        
+        // C:\Program Files\Steinberg\VSTPlugins
+        f = File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("Steinberg/")
+                                                                        .getChildFile ("VSTPlugins/");
+        if (f.exists()) directories.add (new File (f));
+        
+        // C:\Program Files\Common Files\VST2\                                                              
+        f = File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("Common Files/")
+                                                                        .getChildFile ("VST2/");
+        if (f.exists()) directories.add (new File (f));
+        
+        // C:\Program Files\Common Files\Steinberg\VST2                                                              
+        f = File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("Common Files/")
+                                                                        .getChildFile ("Steinberg/")
+                                                                        .getChildFile ("VST2/");
+        if (f.exists()) directories.add (new File (f));
+        
       #elif JUCE_MAC
-        // adds User and Local /Library/Audio/plug-Ins/
+        // Macintosh HD:/Library/Audio/Plug-Ins/Components/
+        f = File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Audio/")
+                                                                           .getChildFile ("Plug-Ins/")
+                                                                           .getChildFile ("Components/");
+        if (f.exists()) directories.add (new File (f));
+        
+        // Macintosh HD:/Library/Audio/Plug-Ins/VST/                                                               
+        f = File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Audio/")
+                                                                           .getChildFile ("Plug-Ins/")
+                                                                           .getChildFile ("VST/");
+        if (f.exists()) directories.add (new File (f));
+        
+        // ~/Library/Audio/Plug-Ins/Components/                                                               
+        f = File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Audio/")
+                                                                           .getChildFile ("Plug-Ins/")
+                                                                           .getChildFile ("Components/");
+        if (f.exists()) directories.add (new File (f));
+        
+        // ~/Library/Audio/Plug-Ins/VST/                                                            
+        f = File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Audio/")
+                                                                           .getChildFile ("Plug-Ins/")
+                                                                           .getChildFile ("VST/");
+        if (f.exists()) directories.add (new File (f));
+                                                                           
       #endif
     }
     
@@ -423,11 +469,11 @@ void PluginWrapper::savePluginListToFile()
     scannedPlugins = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/")
                                                                                   .getChildFile ("Plume/");
   #elif JUCE_MAC
-    // TODO check ou mettre ça (application data??)
-    //scannedPlugins = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Audio/")
+    scannedPlugins = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/")
+                                                                                  .getChildFile ("Plume/");
   #endif
   
-    scannedPlugins = scannedPlugins.getChildFile ("PluginList");
+    scannedPlugins = scannedPlugins.getChildFile ("plumepl.cfg");
   
     if (!scannedPlugins.exists())
     {
@@ -436,6 +482,12 @@ void PluginWrapper::savePluginListToFile()
   
     // Writes plugin list data into the file
     ScopedPointer<XmlElement> listXml = pluginList->createXml();
+    
+    if (!customDirectories.isEmpty())
+    {
+        // TODO save custom directories in Xml under tag < UserDirs >
+    }
+    
     listXml->writeToFile (scannedPlugins, StringRef());
     listXml->deleteAllChildElements();
 }
@@ -449,15 +501,15 @@ void PluginWrapper::loadPluginListFromFile()
     scannedPlugins = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/")
                                                                                   .getChildFile ("Plume/");
   #elif JUCE_MAC
-    // TODO check ou mettre ça (application data??)
-    //scannedPlugins = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Audio/")
+    scannedPlugins = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/")
+                                                                                  .getChildFile ("Plume/");
   #endif
   
-    scannedPlugins = scannedPlugins.getChildFile ("PluginList");
+    scannedPlugins = scannedPlugins.getChildFile ("plumepl.cfg");
   
     if (!scannedPlugins.exists())
     {
-        DBG ("Couldn't load pluginlist, the file doesn't exist..");
+        DBG ("Couldn't load plugin list, the file doesn't exist..");
         return;
     }
     
