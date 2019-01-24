@@ -15,7 +15,6 @@
 #include "../juce_serialport/juce_serialport.h"
 
 #if JUCE_MAC
-#include <SystemConfiguration/SystemConfiguration.h>
 #include "DataReader/StatutPipe.h"
 #endif
 
@@ -80,4 +79,4 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DataReader)
 };
 
-#endif
+#endif // __RAW_DATA_READER__

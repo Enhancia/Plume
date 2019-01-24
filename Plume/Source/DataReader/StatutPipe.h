@@ -15,7 +15,6 @@
 
 #if JUCE_MAC
 #include <SystemConfiguration/SystemConfiguration.h>
-#endif
 
 //==============================================================================
 
@@ -44,4 +43,5 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StatutPipe)
 };
 
-#endif
+#endif // JUCE_MAC
+#endif // __STATUTPIPE__

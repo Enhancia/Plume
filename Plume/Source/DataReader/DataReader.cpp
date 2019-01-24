@@ -105,9 +105,9 @@ bool DataReader::connectToExistingPipe(int nbPipe)
 
     //create namedpipe  with currentUID to enable multi user session
     return connectToPipe("mynamedpipe" + String (currentUID) + String(nbPipe), -1);
-  #endif
-
+  #elif JUCE_WINDOWS
 	return false;
+  #endif
 }
 
 bool DataReader::isConnected()
