@@ -5,7 +5,7 @@
  
  ==============================================================================
  */
-
+#if JUCE_MAC
 #include "DataReader/StatutPipe.h"
 
 //==============================================================================
@@ -28,7 +28,7 @@ bool StatutPipe::connectNewPipe()
     //get current userID
     uid_t currentUID;
     SCDynamicStoreCopyConsoleUser(NULL, &currentUID, NULL);
-    
+  
     return connectToPipe("StatutPipe" + String (currentUID), -1);
 }
 
@@ -62,3 +62,4 @@ void StatutPipe::messageReceived(const MemoryBlock &message)
         sendChangeMessage();
     }
 }
+#endif

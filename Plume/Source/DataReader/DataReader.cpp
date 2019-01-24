@@ -36,7 +36,9 @@ DataReader::~DataReader()
 {
     data = nullptr;
     connectedLabel = nullptr;
+  #if JUCE_MAC
     statutPipe = nullptr;
+  #endif
 }
 
 //==============================================================================
@@ -96,13 +98,16 @@ bool DataReader::connectToExistingPipe()
 bool DataReader::connectToExistingPipe(int nbPipe)
 {
     //only happens on MacOS
-    
+  #if JUCE_MAC
     //get current userID
     uid_t currentUID;
     SCDynamicStoreCopyConsoleUser(NULL, &currentUID, NULL);
-    
+
     //create namedpipe  with currentUID to enable multi user session
     return connectToPipe("mynamedpipe" + String (currentUID) + String(nbPipe), -1);
+  #endif
+
+	return false;
 }
 
 bool DataReader::isConnected()
@@ -152,8 +157,10 @@ void DataReader::messageReceived (const MemoryBlock &message)
 void DataReader::changeListenerCallback (ChangeBroadcaster * source)
 {
     //only happens on MacOS
+  #if JUCE_MAC
     int nbPipeToConnect = statutPipe->getPipeToConnect();
     connectToExistingPipe(nbPipeToConnect);
     statutPipe->disconnect();
     statutPipe.reset();
+  #endif
 }

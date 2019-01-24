@@ -13,8 +13,11 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "../juce_serialport/juce_serialport.h"
+
+#if JUCE_MAC
 #include <SystemConfiguration/SystemConfiguration.h>
 #include "DataReader/StatutPipe.h"
+#endif
 
 //==============================================================================
 /*
@@ -70,8 +73,10 @@ private:
     ScopedPointer<StringArray> data;
     ScopedPointer<Label> connectedLabel;
 
+	#if JUCE_MAC
     std::unique_ptr<StatutPipe> statutPipe;
-    
+	#endif
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DataReader)
 };
 

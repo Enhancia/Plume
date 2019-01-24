@@ -12,7 +12,11 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
+
+#if JUCE_MAC
 #include <SystemConfiguration/SystemConfiguration.h>
+#endif
+
 //==============================================================================
 
 class StatutPipe  : public Component, public InterprocessConnection, public ChangeBroadcaster
