@@ -124,7 +124,7 @@ bool PluginWrapper::wrapPlugin (int pluginMenuId)
     
     if (pluginList->getType (pluginId)->name == "Plume")
     {
-        DBG ("Can't wrap yourself my dude..");
+        DBG ("Can't wrap yourself..");
         
         return false;
     }

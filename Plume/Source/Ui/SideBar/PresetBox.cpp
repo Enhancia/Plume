@@ -144,7 +144,6 @@ void PresetBox::deleteKeyPressed (int lastRowSelected)
 void PresetBox::labelTextChanged (Label* lbl)
 {
     String presetName = editLabel->getText().replaceCharacter (' ', '_');
-    DBG ("Label callback ( text: " << presetName << " )");
     
     if (XmlElement::isValidXmlName (presetName))
     {
@@ -269,7 +268,6 @@ void PresetBox::handleMenuResult (const int row, const int menuResult)
             break;
             
         case 1: // Rename preset
-            DBG ("Rename wesh");
             if (processor.getPresetHandler().isUserPreset (row))
             {
                 startRenameEntry (row);
@@ -277,12 +275,10 @@ void PresetBox::handleMenuResult (const int row, const int menuResult)
             break;
             
         case 2: // Delete preset
-            DBG ("Delete Wesh");
             deletePreset (row);
             break;
             
         case 3: // Show in explorer
-            DBG ("Explorer wesh");
 			processor.getPresetHandler().showPresetInExplorer (row);
     }
     

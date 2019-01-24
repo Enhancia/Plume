@@ -162,8 +162,6 @@ void PlumeEditor::buttonClicked (Button* bttn)
 void PlumeEditor::createSideBarButtonPath()
 {
     using namespace PLUME::UI;
-    
-	DBG (int (sideBarButton->getToggleState()));
 
     Path p;
     
