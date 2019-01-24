@@ -11,56 +11,49 @@
 #pragma once
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
-#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
-
-#include "Plugin/PluginEditor.h"
+#include "Common/PlumeCommon.h"
+#include "Plugin/PluginProcessor.h"
+#include "Ui/SideBar/PresetBox.h"
 
 //==============================================================================
 /*
 */
-class PlumeEditor;
 
-class PresetComponent    : public Component,
-                           private Button::Listener,
-                           private Label::Listener,
-                           public ActionBroadcaster
+class PresetComponent    : public PlumeComponent,
+                           private Button::Listener
 {
 public:
     //==============================================================================
-    PresetComponent(PlumeProcessor& p, PlumeEditor& e);
+    PresetComponent (PlumeProcessor& p);
     ~PresetComponent();
-
+    
     //==============================================================================
+    // PlumeComponent
+    const String getInfoString() override;
+    void update() override;
+    
+    //==============================================================================
+    // Component
     void paint (Graphics& g) override;
+    void paintOverChildren (Graphics& g) override;
     void resized() override;
+    void focusLost (FocusChangeType cause) override;
     
     //==============================================================================
     void buttonClicked (Button* bttn) override;
-    void labelTextChanged (Label* lbl) override;
     
     //==============================================================================
     void savePreset();
-    void loadPreset();
-    
-    //==============================================================================
-    void update();
+    void addNewPreset();
 
 private:
     //==============================================================================
-    Result createPlumeAndPresetDir(File& initialDir);
-    
-    //==============================================================================
-    ScopedPointer<Label> nameLabel;
-
-    ScopedPointer<TextButton> saveButton;
-    ScopedPointer<TextButton> loadButton;
-    
-    //==============================================================================
-    //String currentPreset;
+    ScopedPointer<PresetBox> presetBox;
+    //ScopedPointer<TextButton> saveButton;
+    ScopedPointer<TextButton> newButton;
     
     //==============================================================================
     PlumeProcessor& processor;
-    PlumeEditor& editor;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PresetComponent)
 };

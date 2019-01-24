@@ -12,6 +12,7 @@
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
 #include "Ui/Gesture/Tuner/Tuner.h"
+#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
 
 #define W getWidth()
 #define H getHeight()
@@ -57,7 +58,7 @@ private:
     ScopedPointer<Label> rangeLabelMax;
     
     //==============================================================================
-    OneRangeTunerLookAndFeel oneRangeTunerLookAndFeel;
+    PLUME::UI::OneRangeTunerLookAndFeel oneRangeTunerLookAndFeel;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OneRangeTuner)

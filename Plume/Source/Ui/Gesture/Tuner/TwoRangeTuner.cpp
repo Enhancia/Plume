@@ -44,7 +44,7 @@ void TwoRangeTuner::paint (Graphics& g)
 	// Sets the text style
     Colour fillColour = Colour (0xffffffff);
     g.setColour (fillColour);
-    g.setFont (Font (12.0f, Font::plain).withTypefaceStyle ("Regular"));
+    g.setFont (Font (PLUME::UI::font, 12.0f, Font::plain).withTypefaceStyle ("Regular"));
         
     // Writes the "left" text
     int x = W*3/4,
@@ -300,22 +300,22 @@ void TwoRangeTuner::createLabels()
         
     // LabelMinLeft style
     rangeLabelMinLeft->setEditable (true, false, false);
-    rangeLabelMinLeft->setFont (Font (13.0f, Font::plain));
+    rangeLabelMinLeft->setFont (Font (PLUME::UI::font, 13.0f, Font::plain));
     rangeLabelMinLeft->setJustificationType (Justification::centred);
         
     // LabelMaxLeft style
     rangeLabelMaxLeft->setEditable (true, false, false);
-    rangeLabelMaxLeft->setFont (Font (13.0f, Font::plain));
+    rangeLabelMaxLeft->setFont (Font (PLUME::UI::font, 13.0f, Font::plain));
     rangeLabelMaxLeft->setJustificationType (Justification::centred);
         
     // LabelMinRight style
     rangeLabelMinRight->setEditable (true, false, false);
-    rangeLabelMinRight->setFont (Font (13.0f, Font::plain));
+    rangeLabelMinRight->setFont (Font (PLUME::UI::font, 13.0f, Font::plain));
     rangeLabelMinRight->setJustificationType (Justification::centred);
         
     // LabelMaxRight style
     rangeLabelMaxRight->setEditable (true, false, false);
-    rangeLabelMaxRight->setFont (Font (13.0f, Font::plain));
+    rangeLabelMaxRight->setFont (Font (PLUME::UI::font, 13.0f, Font::plain));
     rangeLabelMaxRight->setJustificationType (Justification::centred);
         
     // Labels settings

@@ -29,13 +29,22 @@ void \mbox{\hyperlink{class_plume_editor_a3b31e2023faf921f446b132b24a917c0}{pain
 \mbox{\Hypertarget{class_plume_editor_aa42064f898f3a543173c5b29c7b2932c}\label{class_plume_editor_aa42064f898f3a543173c5b29c7b2932c}} 
 void \mbox{\hyperlink{class_plume_editor_aa42064f898f3a543173c5b29c7b2932c}{resized}} () override
 \begin{DoxyCompactList}\small\item\em J\+U\+CE Components\textquotesingle{} resized method. \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{class_plume_editor_a5d593b33e5e4e33827928dbcdc272416}{change\+Listener\+Callback}} (Change\+Broadcaster $\ast$source) override
+void \mbox{\hyperlink{class_plume_editor_a04371047171d9eab921db9e8e7011bb8}{action\+Listener\+Callback}} (const String \&message) override
 \begin{DoxyCompactList}\small\item\em Callback to a change message sent by the processor. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_plume_editor_aefe952401cbabab09b3bf0fa8f4b0f91}\label{class_plume_editor_aefe952401cbabab09b3bf0fa8f4b0f91}} 
+void {\bfseries button\+Clicked} (Button $\ast$bttn) override
+\item 
 \mbox{\Hypertarget{class_plume_editor_a3d5df58d658438a09a9823b3a06d101d}\label{class_plume_editor_a3d5df58d658438a09a9823b3a06d101d}} 
 \mbox{\hyperlink{class_plume_processor}{Plume\+Processor}} \& {\bfseries get\+Processor} ()
 \item 
 void \mbox{\hyperlink{class_plume_editor_acddc96d095aeb53f7a4ee6cf1f3265e6}{update\+Full\+Interface}} ()
-\begin{DoxyCompactList}\small\item\em Method that sets a full interface update. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Method that sets a full interface update. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_plume_editor_a496bc069c9238a062e8f6a25df52e2ac}\label{class_plume_editor_a496bc069c9238a062e8f6a25df52e2ac}} 
+void {\bfseries set\+Interface\+Updates} (bool should\+Update)
+\item 
+\mbox{\Hypertarget{class_plume_editor_af7d2cbe20fd813653fc6a53e5b434f1e}\label{class_plume_editor_af7d2cbe20fd813653fc6a53e5b434f1e}} 
+void {\bfseries set\+Windows\+To\+Front} ()
+\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
@@ -64,11 +73,11 @@ Draws the background, calls the subcomponents and sets their bounds accordingly.
 
 
 \subsection{Member Function Documentation}
-\mbox{\Hypertarget{class_plume_editor_a5d593b33e5e4e33827928dbcdc272416}\label{class_plume_editor_a5d593b33e5e4e33827928dbcdc272416}} 
-\index{Plume\+Editor@{Plume\+Editor}!change\+Listener\+Callback@{change\+Listener\+Callback}}
-\index{change\+Listener\+Callback@{change\+Listener\+Callback}!Plume\+Editor@{Plume\+Editor}}
-\subsubsection{\texorpdfstring{change\+Listener\+Callback()}{changeListenerCallback()}}
-{\footnotesize\ttfamily void Plume\+Editor\+::change\+Listener\+Callback (\begin{DoxyParamCaption}\item[{Change\+Broadcaster $\ast$}]{source }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}}
+\mbox{\Hypertarget{class_plume_editor_a04371047171d9eab921db9e8e7011bb8}\label{class_plume_editor_a04371047171d9eab921db9e8e7011bb8}} 
+\index{Plume\+Editor@{Plume\+Editor}!action\+Listener\+Callback@{action\+Listener\+Callback}}
+\index{action\+Listener\+Callback@{action\+Listener\+Callback}!Plume\+Editor@{Plume\+Editor}}
+\subsubsection{\texorpdfstring{action\+Listener\+Callback()}{actionListenerCallback()}}
+{\footnotesize\ttfamily void Plume\+Editor\+::action\+Listener\+Callback (\begin{DoxyParamCaption}\item[{const String \&}]{message }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}}
 
 
 

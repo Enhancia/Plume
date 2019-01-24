@@ -45,14 +45,20 @@ public:
     ~PluginWrapper();
     
     //==============================================================================
-    bool wrapPlugin (String pluginFileOrId);
+    bool wrapPlugin (PluginDescription& description);
+    bool wrapPlugin (int pluginMenuId);
     void unwrapPlugin();
-    bool rewrapPlugin (String pluginFileOrId);
+    bool rewrapPlugin (PluginDescription& description);
+    bool rewrapPlugin (int pluginMenuId);
+    bool isWrapping();
     
+    //==============================================================================
+    void scanAllPluginsInDirectories (bool dontRescanIfAlreadyInList, bool ignoreBlackList = false);
     AudioPluginFormat* getPluginFormat (File pluginFile);
     
     //==============================================================================
-    bool isWrapping();
+    void addCustomDirectory (File newDir);
+    void addPluginsToMenu (PopupMenu& menu, KnownPluginList::SortMethod sort);
     
     //==============================================================================
     void createWrapperEditor (int x = 0, int y = 0);
@@ -60,10 +66,12 @@ public:
     void wrapperEditorToFront (bool shouldAlsoGiveFocus);
     
     //==============================================================================
-    String getWrappedPluginName();
     WrapperProcessor& getWrapperProcessor();
     PlumeProcessor& getOwner();
     bool hasOpenedWrapperEditor();
+    
+    String getWrappedPluginName();
+    String getWrappedPluginInfoString();
     
     //==============================================================================
     void fillInPluginDescription (PluginDescription& pd);
@@ -73,10 +81,19 @@ public:
     void parameterValueChanged (int parameterIndex, float newValue) override;
     void parameterGestureChanged (int parameterIndex, bool gestureIsStarting) override {};
     
-private:       
+private:
+    //==============================================================================
+    OwnedArray<File> createFileList();
+    PluginDescription* getDescriptionToWrap (const PluginDescription& description);
+    void savePluginListToFile();
+    void loadPluginListFromFile();
+    
     //==============================================================================
     bool hasWrappedInstance;
     bool hasOpenedEditor;
+    bool useDefaultPaths = true;
+    float scanProgress;
+    String pluginBeingScanned;
     
     //==============================================================================
     ScopedPointer<WrapperProcessor> wrapperProcessor;
@@ -84,12 +101,12 @@ private:
     ScopedPointer<WrapperEditorWindow> wrapperEditor;
 
     //==============================================================================
-    OwnedArray<PluginDescription>* wrappedPluginDescriptions;
+    OwnedArray<File> customDirectories;
+    ScopedPointer<KnownPluginList> pluginList;
     ScopedPointer<AudioPluginFormatManager> formatManager;
  
     PlumeProcessor& owner;
     GestureArray& gestArray;
-    
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginWrapper)
 };

@@ -65,11 +65,8 @@ public:
         Colour fillColour;
         
         // Fills the area for the Tuner and Mapper
-        { 
-            if (auto* lf = dynamic_cast<PlumeLookAndFeel*> (&getLookAndFeel()))
-            {
-			     g.setColour (lf->getPlumeColour (PlumeLookAndFeel::gestureActiveBackground));
-            }
+        {                              
+			g.setColour (PLUME::UI::currentTheme.getColour(PLUME::colour::basePanelGestureHighlightedBackground));
                 
             g.fillRoundedRectangle (0, 0, tunerWidth, getHeight(), MARGIN/2);
             g.fillRoundedRectangle (tunerWidth+2*MARGIN, 0, mapperWidth, getHeight(), MARGIN/2);
@@ -141,10 +138,8 @@ public:
                         
         if (onOffButton->getToggleState() == false)
         {
-            if (auto* lf = dynamic_cast<PlumeLookAndFeel*> (&getLookAndFeel()))
-            {
-			     g.setColour (lf->getPlumeColour (PlumeLookAndFeel::gestureInactiveBackground));
-            }
+            g.setColour (PLUME::UI::currentTheme.getColour(PLUME::colour::basePanelGestureBackground));
+            
             g.setOpacity (0.5f);
             g.fillRoundedRectangle (0, 0, tunerWidth, getHeight(), MARGIN/2);
             g.fillRoundedRectangle (tunerWidth+2*MARGIN, 0, mapperWidth, getHeight(), MARGIN/2);
@@ -246,7 +241,7 @@ private:
     void drawGestureText(Graphics& g, String text, int x, int y, int width, int height, float fontSize = 15.0f)
     {
         g.setColour (Colour(0xffffffff));                    
-        g.setFont (Font (fontSize, Font::plain).withTypefaceStyle ("Regular"));
+        g.setFont (Font (PLUME::UI::font, fontSize, Font::plain).withTypefaceStyle ("Regular"));
         g.drawText (TRANS(text), x, y, width, height,
                     Justification::centred, true);
     }
@@ -368,7 +363,7 @@ void GesturePanel::parameterChanged (const String& parameterID, float newValue)
 {
     // if the ID is "x_value" or "x_vibrato_intensity" doesn't update
     // (only the MovingCursor object in the the GestureTuner Component is updated)
-    if (parameterID.endsWith ("ue") || parameterID.endsWith ("y")) return;
+    if (parameterID.endsWith ("ue") || parameterID.endsWith ("y") || !PLUME::UI::ANIMATE_UI_FLAG) return;
         
     
     int numGesture = parameterID.substring(0,1).getIntValue();

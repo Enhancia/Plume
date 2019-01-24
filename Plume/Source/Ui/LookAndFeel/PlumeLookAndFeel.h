@@ -10,31 +10,22 @@
 
 #pragma once
 #include "../../../JuceLibraryCode/JuceHeader.h"
+#include "Common/PlumeCommon.h"
 
-
+namespace PLUME
+{
+namespace UI
+{
+        
 class PlumeLookAndFeel : public LookAndFeel_V4
 {
 public:
-    //==============================================================================
-    enum PlumeColour
-    {
-        background =0,
-        topPanelBackground,
-        topPanelObjects,
-        gestureActiveBackground,
-        gestureInactiveBackground,
-        gestureActiveMapButton,
-        
-        numColours
-    };
-    
     //==============================================================================
 	PlumeLookAndFeel();
 	~PlumeLookAndFeel();
 	
     //==============================================================================
-	Colour getPlumeColour (int colourId);
-	void setPlumeColour (int colourId, Colour colourValue);
+	void setColours();
     
     //==============================================================================
 	void drawLinearSlider (Graphics&, int x, int y, int width, int height,
@@ -44,18 +35,25 @@ public:
     void drawPointer (Graphics&, float x, float y, float diameter,
                       const Colour&, const Colour&, int direction) noexcept;
     //==============================================================================
-        
-protected:
-    Colour plumePalette[PlumeColour::numColours];
-
+    
+    //void drawPopupMenuBackground (Graphics&, int width, int height) override;
+	/*
+    void drawPopupMenuItem (Graphics&, const Rectangle<int>& area,
+                            bool isSeparator, bool isActive, bool isHighlighted, bool isTicked, bool hasSubMenu,
+                            const String& text, const String& shortcutKeyText,
+                            const Drawable* icon, const Colour* textColour) override;
+	*/
+    //==============================================================================
+    
 private:
+    
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlumeLookAndFeel)
 };
 
 
 
 //==================================================================================================
-// DERIVED CLASSES: For other gesture sensibility schemes
+// INHERITED CLASSES: For other gesture sensibility schemes
 
 
 class OneRangeTunerLookAndFeel : public PlumeLookAndFeel
@@ -100,3 +98,5 @@ private:
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TwoRangeTunerLookAndFeel)
 };
 
+} // namespace UI
+} // namespace PLUME

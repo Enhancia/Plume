@@ -8,7 +8,11 @@
   ==============================================================================
 */
 
+
 #pragma once
+#include "../JuceLibraryCode/JuceHeader.h"
+#include "PlumeColours.h"
+#include "Ui/Common/PlumeComponent.h"
 
 namespace PLUME
 {
@@ -17,12 +21,21 @@ namespace PLUME
     namespace UI
     {
         // Default settings
-        const int DEFAULT_WINDOW_WIDTH = 800;
-        const int DEFAULT_WINDOW_HEIGHT = jmin (NUM_GEST*150, 800);
+        const int DEFAULT_WINDOW_WIDTH = 890;
+        const int DEFAULT_WINDOW_HEIGHT = 500;
     
-        // Display settings
+        // Display panels values
         const int MARGIN = 8;
+        const int SIDEBAR_WIDTH = 200;
+        const int INFO_HEIGHT = 60;
+        const int PRESET_BUTTONS_HEIGHT = 20;
+        const int HEADER_HEIGHT = 40;
+        const int GESTURE_DETAIL_WIDTH = 300;
+        
+        // Display settings
         const int FRAMERATE = 60;
+        
+        const String font = "Tw Cen MT";
         
         extern bool ANIMATE_UI_FLAG;
         
@@ -40,6 +53,9 @@ namespace PLUME
     
         const float WAVE_DISPLAY_MIN = -90.0f;
         const float WAVE_DISPLAY_MAX =  90.0f;
+        
+        // Theme
+        extern PLUME::colour::PlumeTheme currentTheme;
     }
     
     // Value tree identifiers
@@ -126,4 +142,16 @@ namespace PLUME
         const String lockInterface ("lockInterface");
     }
     
+    namespace path
+    {
+		extern const Path createGearPath();
+		extern const Path createPianoPath();
+		extern const Path createFolderPath();
+		extern const Path createMagnifyingGlassPath();
+        
+        const Path gearPath = createGearPath();
+        const Path pianoPath = createPianoPath();
+        const Path folderPath = createFolderPath();
+        const Path magnifyingGlassPath = createMagnifyingGlassPath();
+    }
 }

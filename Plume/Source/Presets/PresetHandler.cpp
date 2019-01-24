@@ -1,0 +1,277 @@
+/*
+  ==============================================================================
+
+    PresetHandler.cpp
+    Created: 9 Jan 2019 12:15:28pm
+    Author:  Alex
+
+  ==============================================================================
+*/
+
+#include "Presets/PresetHandler.h"
+
+PresetHandler::PresetHandler()
+{
+    currentPresetName = "-";
+    initialiseDirectories();
+}
+
+PresetHandler::~PresetHandler()
+{
+    defaultPresets.clear();
+    userPresets.clear();
+}
+    
+//==============================================================================
+void PresetHandler::setUserDirectory (const File& newDir)
+{
+    userDir = newDir;
+}
+
+String PresetHandler::getCurrentPresetName()
+{
+    return currentPresetName.replaceCharacter (' ', '_');
+}
+
+void PresetHandler::storePresets()
+{
+    // Adds default presets
+    defaultPresets.clear();
+    if (defaultDir.exists() && defaultDir.getNumberOfChildFiles (File::findFiles + File::ignoreHiddenFiles, "*.plume") != 0)
+    {
+        for (auto f : defaultDir.findChildFiles (File::findFiles + File::ignoreHiddenFiles, false, "*.plume"))
+        {
+            defaultPresets.add (new File (f));
+        }
+    }
+    
+    // Adds user presets
+    userPresets.clear();
+    if (userDir.exists() && userDir.getNumberOfChildFiles (File::findFiles + File::ignoreHiddenFiles, "*.plume") != 0)
+    {
+        for (auto f : userDir.findChildFiles (File::findFiles + File::ignoreHiddenFiles, false, "*.plume"))
+        {
+            userPresets.add (new File (f));
+        }
+    }
+}
+
+int PresetHandler::getNumPresets()
+{
+    return (defaultPresets.size() + userPresets.size());
+}
+
+String PresetHandler::getTextForPresetId (int id)
+{
+    if (id < 0 || id >= getNumPresets()) return "-";
+    
+    bool isUser = id >= defaultPresets.size();
+    
+    if (isUser)
+    {
+        id -= defaultPresets.size();
+        return userPresets[id]->getFileNameWithoutExtension();
+    }
+    else
+    {
+        return defaultPresets[id]->getFileNameWithoutExtension();
+    }
+}
+
+bool PresetHandler::isUserPreset (int id)
+{
+	return (id >= defaultPresets.size() && id < getNumPresets());
+}
+
+bool PresetHandler::canSavePreset()
+{
+	return (currentPresetName != "-" && !currentIsDefault);
+}
+
+XmlElement* PresetHandler::getPresetXmlToLoad (int selectedPreset)
+{
+	if (selectedPreset < 0 || selectedPreset > getNumPresets()) return nullptr;
+	
+	currentIsDefault = selectedPreset < defaultPresets.size();
+	
+	currentPresetName = getTextForPresetId (selectedPreset);
+	
+	if (currentIsDefault)
+	{
+	    return XmlDocument::parse (*defaultPresets[selectedPreset]);
+	}
+	else
+    {
+	    selectedPreset -= defaultPresets.size();
+	    return XmlDocument::parse (*userPresets[selectedPreset]);
+    }	
+}
+
+bool PresetHandler::savePreset (XmlElement& presetXml)
+{
+    if (!canSavePreset()) return false;
+
+    // Tries to write the xml to the specified file
+    if (userDir.getChildFile (currentPresetName + ".plume").exists())
+    {
+        if (presetXml.writeToFile (userDir.getChildFile (currentPresetName + ".plume"), String()))
+        {
+            DBG ("Preset file succesfully written");
+            return true;
+	    }
+	    else
+        {
+	        DBG ("Failed to save preset");
+	        return false;
+        }
+    }
+    else
+    {
+        DBG ("Couldn't find preset file : " << userDir.getFullPathName() << currentPresetName << ".plume");
+        return false;
+    }
+}
+
+bool PresetHandler::createNewUserPreset (String presetName, XmlElement& presetXml)
+{
+    if (presetName.isEmpty()) return false;
+    
+    presetName = File::createLegalFileName (presetName);
+    
+    // If the file is succesfully created, changes current preset and saves
+    if (userDir.getChildFile (presetName + ".plume").create())
+    {
+        // Saves the current preset in case saving fails
+        String formerPreset = currentPresetName;
+        bool currentWasDefault = currentIsDefault;
+        
+        // Attempt to save preset
+        currentPresetName = presetName;
+		currentIsDefault = false;
+        if (savePreset (presetXml))
+        {
+            // checks if the file exists already
+            for (auto* f : userPresets)
+            {
+                if (f->getFileNameWithoutExtension() == presetName) return false;
+            }
+            
+            userPresets.add (new File (userDir.getChildFile (presetName).withFileExtension("plume")));
+            return true;
+        }
+        else
+        {
+            // restores to former values and deletes file
+            currentPresetName = formerPreset;
+            currentIsDefault = currentWasDefault;
+            userDir.getChildFile (presetName + ".plume").deleteFile();
+            return false;
+        }
+    }
+    
+    return false;
+}
+
+
+bool PresetHandler::renamePreset (String newName, const int id)
+{
+    if (newName.isEmpty()) return false;
+    
+    newName = File::createLegalFileName (newName);
+    File presetToRename = userDir.getChildFile (getTextForPresetId (id)).withFileExtension ("plume");
+    
+    if (presetToRename.exists())
+    {
+        if (ScopedPointer<XmlElement> presetXml = XmlDocument::parse (*userPresets[id - defaultPresets.size()]))
+        {
+            // Changes name of the preset for the main Xml tag
+            presetXml->setTagName (newName);
+            
+            // Writes the new xml to the old file
+            if (presetXml->writeToFile (presetToRename, String()))
+            {
+                // Renames the file
+                if (presetToRename.moveFileTo (presetToRename.getSiblingFile (newName).withFileExtension ("plume")))
+                {
+                    presetXml->deleteAllChildElements();
+                    
+                    // Changes the file in the array..
+                    userPresets.set(id - defaultPresets.size(), new File (userDir.getChildFile (newName)
+                                                                                 .withFileExtension ("plume")));
+                    return true;
+                }
+            }
+            // Avoids memory leaks if the file wasn't written succesfully
+            presetXml->deleteAllChildElements();
+        }
+    }
+    
+    return false;
+}
+    
+void PresetHandler::resetPreset()
+{
+    DBG ("Preset Reset!");
+    
+    currentPresetName = "-";
+    currentIsDefault = false;
+}
+
+
+bool PresetHandler::deletePresetForId (int id)
+{
+    if (id < defaultPresets.size() || id >= getNumPresets()) return false;
+    
+    if (currentPresetName == getTextForPresetId (id))
+    {
+        resetPreset();
+    }
+    
+    id -= defaultPresets.size();
+    
+    if (userPresets[id]->deleteFile())
+    {
+        // succesful deletion
+        userPresets.remove (id);
+        return true;
+    }
+    
+    DBG ("Failed to delete file " << getTextForPresetId (id));
+    return false;
+}
+
+void PresetHandler::showPresetInExplorer (int id)
+{
+    if (id < 0 || id >= getNumPresets()) return;
+        
+    File* f;
+    
+    if (!isUserPreset (id)) f = defaultPresets[id]; 
+    else                    f = userPresets[id - defaultPresets.size()];
+    
+    f->revealToUser();
+}
+    
+//==============================================================================
+void PresetHandler::initialiseDirectories()
+{
+    File baseDir;
+    
+  #if JUCE_WINDOWS
+    baseDir = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/")
+                                                                           .getChildFile ("Plume/")
+                                                                           .getChildFile ("Presets/");
+  #elif JUCE_MAC
+    baseDir = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Audio/")
+                                                                           .getChildFile ("Presets/")
+                                                                           .getChildFile ("Enhancia/")
+                                                                           .getChildFile ("Plume/");
+  #else
+    return; //Should only compile on win or mac
+  #endif
+    
+    defaultDir = baseDir.getChildFile ("Default/");
+    userDir = baseDir.getChildFile ("User/");
+    
+    storePresets();
+}

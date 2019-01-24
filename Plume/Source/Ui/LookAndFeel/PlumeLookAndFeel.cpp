@@ -11,43 +11,40 @@
 #include "../../../JuceLibraryCode/JuceHeader.h"
 #include "PlumeLookAndFeel.h"
 
+using namespace PLUME::UI;
+
 PlumeLookAndFeel::PlumeLookAndFeel()
 {
-    // Sets plume UI colours: ======================================
-	    
-	const Colour c[] = {Colour (0xffd0d0d0),  // background
-	                    Colour (0xff909090),  // topPanelBackground
-	                    Colour (0xff323232),  // topPanelObjects
-	                    Colour (0xffa0a0a0),  // gestureActiveBackground 
-	                    Colour (0xff606060),  // gestureInactiveBackground
-	                    Colour (0xff943cb0)}; // gestureActiveMapButton
-	    
-	// Checks if there are enough colours in c[]
-	jassert (sizeof(c)/sizeof(c[0]) == numColours);
-	        
-	for (int i=0; i<numColours; i++)
-	{
-	    plumePalette[i] = c[i];
-	}
-	    
 	// Sets the default colour scheme ( Default colors except
 	// 3rd value that sets the comboBox's menu background): ========
-	    
-	setColourScheme ({ 0xff323e44, 0xff263238, 0xff323232,
-                       0xff8e989b, 0xffffffff, 0xff42a2c8,
-                       0xffffffff, 0xff181f22, 0xffffffff });
-	    
+	/*
+	setColourScheme ({ 0xffee00ff, 0xfffffd00, 0xff323232,
+                       0xff8e989b, 0xffe5e5e5, 0xff42a2c8,
+                       0xffe5e5e5, 0xff323232, 0xffe5e5e5 });
+	*/
                            
 	// Sets the several components colours: ========================
+	setColours();
+	
+	
+}
 
-	// Label
+PlumeLookAndFeel::~PlumeLookAndFeel()
+{
+}
+
+void PlumeLookAndFeel::setColours()
+{
+    using namespace PLUME;
+    
+    // Label
 	setColour (Label::textColourId, Colour (0xffffffff));
 	setColour (Label::backgroundColourId, Colour (0xff000000));
 	setColour (Label::outlineColourId, Colour (0x00000000));
 
 	// Slider
-	setColour (Slider::thumbColourId, Colour (plumePalette[gestureActiveBackground]));
-	setColour (Slider::trackColourId, Colour (plumePalette[gestureActiveBackground]));
+	setColour (Slider::thumbColourId, Colour (UI::currentTheme[colour::PlumeColourID::basePanelGestureHighlightedBackground]));
+	setColour (Slider::trackColourId, Colour (UI::currentTheme[colour::PlumeColourID::basePanelGestureHighlightedBackground]));
 	setColour (Slider::backgroundColourId, Colour (0xff101010));
 
 	// TextButton
@@ -57,28 +54,13 @@ PlumeLookAndFeel::PlumeLookAndFeel()
 	setColour (ComboBox::backgroundColourId, Colour (0x00000000));
 	setColour (ComboBox::textColourId, Colour (0xff000000));
 	setColour (ComboBox::arrowColourId, Colour (0xff000000));
-	setColour (ComboBox::outlineColourId, Colour (0x00000000));
-}
-
-PlumeLookAndFeel::~PlumeLookAndFeel()
-{
-}
-
-Colour PlumeLookAndFeel::getPlumeColour (int colourId)
-{
-    if (colourId > numColours)
-	{
-	    return plumePalette[1];
-	}
-	    
-	return plumePalette[colourId];
-}
-
-void PlumeLookAndFeel::setPlumeColour (int colourId, Colour colourValue)
-{
-    if (colourId > numColours) return;
-        
-    plumePalette[colourId] = colourValue;
+	setColour (ComboBox::outlineColourId, Colour (0x00000000)); // Necessary to not draw Label outlines due to an Error in the JUCE code..
+	
+	// PopupMenu
+	setColour (PopupMenu::backgroundColourId, Colour (0xff323232));
+	setColour (PopupMenu::textColourId, Colour (0xffe5e5e5));
+	setColour (PopupMenu::highlightedBackgroundColourId, Colour (0xaae5e5e5));
+	setColour (PopupMenu::highlightedTextColourId, Colour (0xff323232));
 }
 
 void PlumeLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int width, int height,

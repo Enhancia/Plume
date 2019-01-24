@@ -88,19 +88,13 @@ void MapperComponent::paint (Graphics& g)
     
     if (midiMapButton->getToggleState() == false)
     {
-        if (auto* lf = dynamic_cast<PlumeLookAndFeel*> (&getLookAndFeel()))
-        {
-		    c1 = lf->getPlumeColour (PlumeLookAndFeel::gestureActiveBackground);
-		    c2 = lf->getPlumeColour (PlumeLookAndFeel::gestureInactiveBackground);
-        }
+		c1 = PLUME::UI::currentTheme.getColour(PLUME::colour::basePanelGestureHighlightedBackground);
+		c2 = PLUME::UI::currentTheme.getColour(PLUME::colour::basePanelGestureBackground);
     }
     else
     {
-        if (auto* lf = dynamic_cast<PlumeLookAndFeel*> (&getLookAndFeel()))
-        {
-		    c1 = lf->getPlumeColour (PlumeLookAndFeel::gestureInactiveBackground);
-		    c2 = lf->getPlumeColour (PlumeLookAndFeel::gestureActiveBackground);
-        }
+        c1 = PLUME::UI::currentTheme.getColour(PLUME::colour::basePanelGestureBackground);
+		c2 = PLUME::UI::currentTheme.getColour(PLUME::colour::basePanelGestureHighlightedBackground);
     }
     
     g.setColour (c1);
@@ -151,10 +145,8 @@ void MapperComponent::buttonClicked (Button* bttn)
             gestureArray.cancelMapMode();
             gesture.mapModeOn = true;
             gestureArray.mapModeOn = true;
-            if (auto* lf = dynamic_cast<PlumeLookAndFeel*> (&getLookAndFeel()))
-            {
-			     mapButton->setColour (TextButton::buttonColourId, lf->getPlumeColour (PlumeLookAndFeel::gestureActiveMapButton));
-            }
+            mapButton->setColour (TextButton::buttonColourId, PLUME::UI::currentTheme.getColour(PLUME::colour::detailPanelActiveMapping));
+            
             wrapper.createWrapperEditor();
         }
         
@@ -347,7 +339,7 @@ void MapperComponent::drawMapperText (Graphics& g, String text, int x, int y, in
     if (opaqueWhenMidiMode)     g.setColour (gesture.isMidiMapped() ? Colour (0xffffffff) : Colour (0x80ffffff));
     else                        g.setColour (gesture.isMidiMapped() ? Colour (0x80ffffff) : Colour (0xffffffff));
     
-    g.setFont (Font (fontSize, Font::plain).withTypefaceStyle ("Regular"));
+    g.setFont (Font (PLUME::UI::font, fontSize, Font::plain).withTypefaceStyle ("Regular"));
     g.drawText (TRANS(text), x, y, width, height,
                 Justification::centred, true);
 }

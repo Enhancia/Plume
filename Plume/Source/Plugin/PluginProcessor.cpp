@@ -25,20 +25,30 @@ PlumeProcessor::PlumeProcessor()
 {
     TRACE_IN;
     
+    // Logger
     Time t;
     plumeLogger = FileLogger::createDefaultAppLogger ("Enhancia/Plume/Logs/",
                                                       "plumeLog.txt",
-                                                      "Plume Log "+String(t.getYear())+String(t.getMonth())+String(t.getDayOfMonth()));
+                                                      "Plume Log " + String (t.getYear())
+                                                                   + String (t.getMonth())
+                                                                   + String (t.getDayOfMonth())
+                                                      +"\n Host application : "
+                                                      + File::getSpecialLocation (File::hostApplicationPath)
+                                                            .getFullPathName());
     
     Logger::setCurrentLogger (plumeLogger);
     
+    // Parameters
     initializeParameters();
     parameters.replaceState (ValueTree (PLUME::plumeIdentifier));
     
+    // Objects
     dataReader = new DataReader();
     gestureArray = new GestureArray (*dataReader, parameters);
     wrapper = new PluginWrapper (*this, *gestureArray);
-    dataReader->addChangeListener(gestureArray);
+    presetHandler = new PresetHandler();
+    
+    dataReader->addChangeListener (gestureArray);
 }
 
 PlumeProcessor::~PlumeProcessor()
@@ -109,58 +119,6 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
 			//Logger::writeToLog("Playing ? " + String(int(pos.isPlaying)));
 		}
     }
-    
-    DBG ("\nInput Buses : " << getBusCount (true) << " | Output Buses : " << getBusCount (false));
-    DBG ("Main input enabled ? " << int (!(getBusesLayout().getMainInputChannelSet().isDisabled())) << " | Main Output Enabled ? "
-                                 << int (!(getBusesLayout().getMainOutputChannelSet().isDisabled())));
-    
-    
-    {
-		
-        File abf = File (File::getSpecialLocation (File::userDesktopDirectory).getFullPathName() + "/AudioBuff.txt");
-        if (!(abf.exists()))
-		{
-			abf.create();
-			DBG ("Attempted to create file : " + abf.getFullPathName());
-		}
-
-		for (int i = 0; i < 4; i++)
-		{
-		    int sample = i * (buffer.getNumSamples() / 4);
-			abf.appendText( String (sample) + " : " + String (buffer.getSample (1, sample)) + "\n");
-		}
-		
-
-        File mbf = File (File::getSpecialLocation (File::userDesktopDirectory).getFullPathName() + "/MidiBuff.txt");
-		if (!(mbf.exists()))
-		{
-			mbf.create();
-			DBG ("Attempted to create file : " + mbf.getFullPathName());
-		}
-
-		if (!midiMessages.isEmpty())
-        {
-			mbf.appendText ("\nNew Buffer: size " + String (buffer.getNumSamples()) + "\n");
-
-		    MidiMessage m; int time;
-            for (MidiBuffer::Iterator i (midiMessages); i.getNextEvent (m, time);)
-            {
-                mbf.appendText (m.getDescription() + " | " + String(time) + "\n" );
-			    
-                //for (const uint8* p = m.getRawData(); p < p + m.getRawDataSize(); p++)
-                //{
-                //    mbf.appendText (String(*p));
-                //}
-                //mbf.appendText ("\n\n");
-            }
-            mbf.appendText ("\n");
-        }
-        else 
-        {
-            mbf.appendText ("\nEmpty Buffer\n");
-        }
-        
-    }
     */
     
     // Adds the gesture's MIDI messages to the buffer, and changes parameters if needed
@@ -201,6 +159,12 @@ AudioProcessorValueTreeState& PlumeProcessor::getParameterTree()
     return parameters;
 }
 
+
+PresetHandler& PlumeProcessor::getPresetHandler()
+{
+    return *presetHandler;
+}
+
 //==============================================================================
 bool PlumeProcessor::hasEditor() const
 {
@@ -219,7 +183,7 @@ void PlumeProcessor::getStateInformation (MemoryBlock& destData)
     ScopedPointer<XmlElement> wrapperData = new XmlElement ("PLUME");
     
     // Adds plugin and gestures data, and saves them in a binary file
-    createPluginXml   (*wrapperData);
+    createPluginXml  (*wrapperData);
     createGestureXml (*wrapperData);
     
     // Creates the binary data
@@ -319,8 +283,13 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
             
         if (pd.loadFromXml (*(pluginData.getChildByName ("PLUGIN"))))
         {
-			bool requiresSearch = true;
-
+            if (!(pd.fileOrIdentifier.isEmpty()))
+            {
+                if (wrapper->isWrapping()) wrapper->rewrapPlugin (pd);
+                else                       wrapper->wrapPlugin (pd);
+            }
+			
+            /*
             // First searches the direct path
             if (!(pd.fileOrIdentifier.isEmpty()))
             {
@@ -367,7 +336,10 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
                     if (wrapper->isWrapping()) wrapper->unwrapPlugin();
                     return;
                 }
+                
             }
+			*/
+            
         }
     }
     // If there is no plugin in the preset only unwraps

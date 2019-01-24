@@ -36,7 +36,7 @@ void OneRangeTuner::paint (Graphics& g)
 	// Sets the text style
     Colour fillColour = Colour (0xffffffff);
     g.setColour (fillColour);
-    g.setFont (Font (12.0f, Font::plain).withTypefaceStyle ("Regular"));
+    g.setFont (Font (PLUME::UI::font, 12.0f, Font::plain).withTypefaceStyle ("Regular"));
         
     // Writes the "min" text
     int x = W*3/4,
@@ -190,12 +190,12 @@ void OneRangeTuner::createLabels()
         
     // LabelMin style
     rangeLabelMin->setEditable (true, false, false);
-    rangeLabelMin->setFont (Font (13.0f, Font::plain));
+    rangeLabelMin->setFont (Font (PLUME::UI::font, 13.0f, Font::plain));
     rangeLabelMin->setJustificationType (Justification::centred);
         
     // LabelMax style
     rangeLabelMax->setEditable (true, false, false);
-    rangeLabelMax->setFont (Font (13.0f, Font::plain));
+    rangeLabelMax->setFont (Font (PLUME::UI::font, 13.0f, Font::plain));
     rangeLabelMax->setJustificationType (Justification::centred);
         
     // Labels settings

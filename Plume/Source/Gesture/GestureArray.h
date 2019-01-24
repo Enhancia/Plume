@@ -25,6 +25,7 @@
  *  \class GestureArray GestureArray.h
  *
  *  \brief Class that holds an array of Gesture, with several methods to use them.
+ *  \sa Gesture, GestureArray(), process()
  *
  */
 class GestureArray	: public ChangeListener,

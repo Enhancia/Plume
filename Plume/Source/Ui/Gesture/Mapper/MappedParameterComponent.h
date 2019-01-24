@@ -85,12 +85,12 @@ public:
             //DBG ("Displaying parameter: " << mappedParameter.parameter.getName (20));
             //name
             String text (mappedParameter.parameter.getName (20));
-            g.setFont (Font (10.0f, Font::plain).withTypefaceStyle ("Regular"));
+            g.setFont (Font (PLUME::UI::font, 10.0f, Font::plain).withTypefaceStyle ("Regular"));
             g.drawText (text, x, y, width, height,
                         Justification::centred, true);
             //number
             /*
-            g.setFont (Font (10.0f, Font::italic).withTypefaceStyle ("Regular"));
+            g.setFont (Font (PLUME::UI::font, 10.0f, Font::italic).withTypefaceStyle ("Regular"));
             g.drawText (String (paramId), x, y, width, height,
                         Justification::topLeft, true);
             */
@@ -198,7 +198,7 @@ private:
         addAndMakeVisible (valueLabel = new Label ("Value Label", String (mappedParameter.parameter.getValue(), 2)));
         
         valueLabel->setEditable (false, false, false);
-        valueLabel->setFont (Font (11.0f, Font::plain));
+        valueLabel->setFont (Font (PLUME::UI::font, 11.0f, Font::plain));
         valueLabel->setColour (Label::textColourId, Colour (0xff000000));
         valueLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
         valueLabel->setJustificationType (Justification::centredBottom);
@@ -213,12 +213,12 @@ private:
         
         // LabelMin style
         rangeLabelMin->setEditable (true, false, false);
-        rangeLabelMin->setFont (Font (11.0f, Font::plain));
+        rangeLabelMin->setFont (Font (PLUME::UI::font, 11.0f, Font::plain));
         rangeLabelMin->setJustificationType (Justification::centred);
         
         // LabelMax style
         rangeLabelMax->setEditable (true, false, false);
-        rangeLabelMax->setFont (Font (11.0f, Font::plain));
+        rangeLabelMax->setFont (Font (PLUME::UI::font, 11.0f, Font::plain));
         rangeLabelMax->setJustificationType (Justification::centred);
         
         // Labels settings

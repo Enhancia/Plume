@@ -12,6 +12,7 @@
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
 #include "Ui/Gesture/Tuner/Tuner.h"
+#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
 
 #define W Component::getWidth()
 #define H Component::getHeight()
@@ -69,8 +70,8 @@ private:
     ScopedPointer<Label> rangeLabelMaxRight;
     
     //==============================================================================
-    TwoRangeTunerLookAndFeel leftLookAndFeel;
-    TwoRangeTunerLookAndFeel rightLookAndFeel;
+    PLUME::UI::TwoRangeTunerLookAndFeel leftLookAndFeel;
+    PLUME::UI::TwoRangeTunerLookAndFeel rightLookAndFeel;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TwoRangeTuner)
 };
