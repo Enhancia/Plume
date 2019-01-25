@@ -12,6 +12,7 @@
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
 #include "Common/PlumeCommon.h"
+#include "Plugin/PluginProcessor.h"
 
 //==============================================================================
 /*
@@ -20,7 +21,7 @@ class OptionsPanel    : public Component
 {
 public:
     //==============================================================================
-    OptionsPanel();
+    OptionsPanel (PlumeProcessor& proc);
     ~OptionsPanel();
 
     //==============================================================================
@@ -28,9 +29,20 @@ public:
     void resized() override;
     
     //==============================================================================
-
+    void mouseUp (const MouseEvent& event) override;
 
 private:
+    //==============================================================================
+    void createAndAddProperties();
+    
+    //==============================================================================
+    Rectangle<int> optionsArea;
+    ScopedPointer<PropertyPanel> settings;
+    PlumeProcessor& processor;
+    
+    Value pluginDir;
+    Value presetDir;
+    
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OptionsPanel)
 };

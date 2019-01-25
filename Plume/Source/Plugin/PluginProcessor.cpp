@@ -38,7 +38,16 @@ PlumeProcessor::PlumeProcessor()
     
     // Parameters
     initializeParameters();
-    parameters.replaceState (ValueTree (PLUME::plumeIdentifier));
+    
+    using namespace PLUME::treeId;
+    parameters.replaceState (ValueTree (plume));
+    parameters.state.addChild (ValueTree (general)
+                                   .setProperty (presetDir, File::getSpecialLocation (File::userApplicationDataDirectory)
+                                                            .getFullPathName() + "Enhancia/Plume/Presets/User/", 
+                                                            nullptr)
+                                   .setProperty (pluginDir, "", nullptr),
+                                   
+                               0, nullptr);
     
     // Objects
     dataReader = new DataReader();
@@ -468,6 +477,15 @@ void PlumeProcessor::initializeParameters()
         }
     }
 }
+
+/*
+void PlumeProcessor::initializeValueTree()
+{
+    ValueTree generalTree (general);
+    generalTree.setProperty (userPresets, "", nullptr);
+    parameters.state.addChild (ValueTree (general));
+}
+*/
 
 void PlumeProcessor::updateTrackProperties (const AudioProcessor::TrackProperties& properties)
 {

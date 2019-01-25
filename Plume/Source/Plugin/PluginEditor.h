@@ -19,6 +19,7 @@
 #include "Ui/Header/HeaderComponent.h"
 #include "Ui/Gesture/GesturePanel.h"
 #include "Ui/LookAndFeel/PlumeLookAndFeel.h"
+#include "Ui/Top/OptionsPanel.h"
 
 //#define TRACE_IN  Logger::writeToLog ("[FNC] Entering function: " + __FUNCTION__);
 //#define TRACE_OUT Logger::writeToLog ("[FNC] Entering function: " + __FUNCTION__);
@@ -63,7 +64,7 @@ public:
     /**
      * \brief JUCE Components' paintOverChildren method to paint the plugin version.
      */
-    void paintOverChildren (Graphics& g) override;
+    //void paintOverChildren (Graphics& g) override;
     /**
      * \brief JUCE Components' resized method.
      */
@@ -105,7 +106,7 @@ private:
     ScopedPointer<SideBarComponent> sideBar; /**< \brief Hideable SideBar object that displays the preset list, help, and buttons */
     ScopedPointer<HeaderComponent> header; /**< \brief Header object that displays the preset, and the wrapping features */
     ScopedPointer<ShapeButton> sideBarButton; /**< \brief Button that hides or shows the sidebar */
-    OptionsPanel options;
+    ScopedPointer<OptionsPanel> options;
     
     //==============================================================================
     void createSideBarButtonPath(); //TODO mettre dans common avec les autres chemins

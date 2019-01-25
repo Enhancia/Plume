@@ -24,7 +24,7 @@ class SideBarComponent    : public PlumeComponent,
 {
 public:
     //==============================================================================
-    SideBarComponent (PlumeProcessor& proc);
+    SideBarComponent (PlumeProcessor& proc, Component& optsPanel);
     ~SideBarComponent();
 
     //==============================================================================
@@ -43,6 +43,7 @@ public:
 private:
     //==============================================================================
     PlumeProcessor& processor;
+    Component& options;
     ScopedPointer<PresetComponent> presetComponent;
     ScopedPointer<ShapeButton> optionsButton;
 

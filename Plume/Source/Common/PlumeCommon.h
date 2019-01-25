@@ -15,7 +15,6 @@
 #include "Ui/Common/PlumeComponent.h"
 
 // Preprocessor expressions
-#define MARGIN PLUME::UI::MARGIN
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 #define TRACE_OUT Logger::writeToLog ("[-FNC]  Leaving: " + String(__FUNCTION__))
 
@@ -63,16 +62,24 @@ namespace PLUME
         extern PLUME::colour::PlumeTheme currentTheme;
     }
     
-    // Value tree identifiers
-    const Identifier parametersIdentifier ("Parameters");
-    const Identifier plumeIdentifier ("Plume");
-    const Identifier groupIdentifier ("group");
-    const Identifier typeIdentifier ("type");
-    const Identifier gestureIdentifier ("gesture");
-    const Identifier parameterIdentifier ("parameter");
-    const Identifier windowWIdentifier ("window_w");
-    const Identifier windowHIdentifier ("window_h");
-    
+    namespace treeId
+    {
+		// Value tree identifiers
+	    static Identifier parameters ("parameters");
+	    static Identifier plume ("plume");
+	    static Identifier group ("group");
+	    static Identifier setting ("setting");
+	    static Identifier value ("value");
+	    static Identifier general ("general");
+	    static Identifier instance ("instance");
+	    static Identifier presetDir ("presetDir");
+	    static Identifier pluginDir ("pluginDir");
+	    static Identifier winX ("window_x");
+	    static Identifier winY ("window_y");
+	    static Identifier winW ("window_w");
+	    static Identifier winH ("window_h");
+    }
+
     // gesture max range values
     const float VIBRATO_RANGE_MAX  = 500.0f;
     const float VIBRATO_THRESH_MAX = 300.0f;

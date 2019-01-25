@@ -179,6 +179,7 @@ private:
     //==============================================================================
     //void initializeSettings();
     void initializeParameters();
+    void initializeValueTree();
     
     //==============================================================================
     ScopedPointer<FileLogger> plumeLogger; /**< \brief Logger object. Allows to write logs for testing purposes. */

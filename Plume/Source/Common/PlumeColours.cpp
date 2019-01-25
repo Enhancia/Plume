@@ -95,13 +95,13 @@ PlumeTheme PlumeTheme::createDefaultTheme()
                          0xffffffff, //detailPanelHighlightedMainText
                          0xffffffff, //detailPanelHighlightedSubText
                          0xff000000, //detailPanelSubComponentsOutline
-                         0xff943cb0  //detailPanelActiveMapping
+                         0xff943cb0,  //detailPanelActiveMapping
                          
                          // Top Panels
                          0xff606060, //topPanelBackground
-                         0xaa606060, //topPanelTransparentArea
+                         0xc0000000, //topPanelTransparentArea
                          0xffffffff, //topPanelMainText
-                         0xffbbbbbb, //topPanelSubText
+                         0xffbbbbbb  //topPanelSubText
                        }));
 }
 
@@ -155,12 +155,12 @@ PlumeTheme PlumeTheme::createRedTheme()
                          0xffffffff, //detailPanelHighlightedMainText
                          0xffffffff, //detailPanelHighlightedSubText
                          0xff000000, //detailPanelSubComponentsOutline
-                         0xff943cb0  //detailPanelActiveMapping
+                         0xff943cb0,  //detailPanelActiveMapping
                          
                          // Top Panels
                          0xff606060, //topPanelBackground
-                         0xaa606060, //topPanelTransparentArea
+                         0xc0000000, //topPanelTransparentArea
                          0xffffffff, //topPanelMainText
-                         0xffbbbbbb, //topPanelSubText
+                         0xffbbbbbb  //topPanelSubText
                        }));
 }

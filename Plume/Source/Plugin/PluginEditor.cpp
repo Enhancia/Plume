@@ -24,9 +24,15 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	setMouseClickGrabsKeyboardFocus(false);
 	setBroughtToFrontOnMouseClick (true);
 
+	// Creates the Top Panels
+	addAndMakeVisible (options = new OptionsPanel (processor));
+	options->setVisible(false);
+	options->setAlwaysOnTop (true);
+	options->setBounds (getBounds());
+
     // Creates the main components
     addAndMakeVisible (header = new HeaderComponent (processor));
-    addAndMakeVisible (sideBar = new SideBarComponent (processor));
+    addAndMakeVisible (sideBar = new SideBarComponent (processor, *options));
     
 	addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
 	                                                    processor.getParameterTree(), PLUME::UI::FRAMERATE));
@@ -41,13 +47,7 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	sideBarButton->setToggleState (sideBarHidden, dontSendNotification); // side bar visible at first
     sideBarButton->setClickingTogglesState (true);
 	createSideBarButtonPath();
-    sideBarButton->addListener (this);
-	
-    // Top Panels
-    
-    options.setVisible (false);
-    options.
-    
+	sideBarButton->addListener(this);
     
     // Adds itself as a change listener for plume's processor
     processor.addActionListener (this);
@@ -94,20 +94,6 @@ void PlumeEditor::paint (Graphics& g)
     g.fillAll (PLUME::UI::currentTheme.getColour (PLUME::colour::basePanelBackground));
 }
 
-void PlumeEditor::paintOverChildren (Graphics& g)
-{
-    if (!(sideBarButton->getToggleState()))
-    {
-        // Version Text
-        g.setColour (PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxStandartText));
-        g.setFont (Font (10.0f, Font::italic).withTypefaceStyle ("Regular"));
-        g.drawText ("Plume " + String(JucePlugin_VersionString),
-		            1, getHeight() - MARGIN,
-		            100, MARGIN,
-                    Justification::centredLeft, true);
-    }
-}
-
 void PlumeEditor::resized()
 {
     using namespace PLUME::UI;
@@ -124,6 +110,7 @@ void PlumeEditor::resized()
 	header->setBounds (area.removeFromTop (HEADER_HEIGHT));
 	gesturePanel->setBounds(area.reduced (2*MARGIN, 2*MARGIN));
 	resizableCorner->setBounds (getWidth() - 20, getHeight() - 20, 20, 20);
+	options->setBounds (0, 0, getWidth(), getHeight());
 
 	repaint();
 }
