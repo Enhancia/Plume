@@ -78,6 +78,11 @@
                 file="Source/Ui/Common/MovingCursor.cpp"/>
           <FILE id="QhDpZl" name="MovingCursor.h" compile="0" resource="0" file="Source/Ui/Common/MovingCursor.h"/>
         </GROUP>
+        <GROUP id="{B4604567-1941-DD36-C775-AB9FE7EF3408}" name="Top">
+          <FILE id="Gn44ST" name="OptionsPanel.cpp" compile="1" resource="0"
+                file="Source/Ui/Top/OptionsPanel.cpp"/>
+          <FILE id="y9sRww" name="OptionsPanel.h" compile="0" resource="0" file="Source/Ui/Top/OptionsPanel.h"/>
+        </GROUP>
         <GROUP id="{ACEA364D-47F4-BE67-B3B0-D0FEC5CE7BA7}" name="Header">
           <FILE id="hBml6T" name="HeaderComponent.cpp" compile="1" resource="0"
                 file="Source/Ui/Header/HeaderComponent.cpp"/>

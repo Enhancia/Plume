@@ -11,8 +11,6 @@
 #include "Plugin/PluginProcessor.h"
 #include "Plugin/PluginEditor.h"
 
-#define TOP_PANEL 70
-#define MARGIN PLUME::UI::MARGIN
 
 
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
@@ -32,6 +30,7 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     
 	addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
 	                                                    processor.getParameterTree(), PLUME::UI::FRAMERATE));
+	// SideBarButton
 	bool sideBarHidden = false;
 
 	addAndMakeVisible (sideBarButton = new ShapeButton ("Side Bar Button",
@@ -44,6 +43,12 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	createSideBarButtonPath();
     sideBarButton->addListener (this);
 	
+    // Top Panels
+    
+    options.setVisible (false);
+    options.
+    
+    
     // Adds itself as a change listener for plume's processor
     processor.addActionListener (this);
 

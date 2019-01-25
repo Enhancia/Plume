@@ -14,6 +14,11 @@
 #include "PlumeColours.h"
 #include "Ui/Common/PlumeComponent.h"
 
+// Preprocessor expressions
+#define MARGIN PLUME::UI::MARGIN
+#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
+#define TRACE_OUT Logger::writeToLog ("[-FNC]  Leaving: " + String(__FUNCTION__))
+
 namespace PLUME
 {
     const int NUM_GEST = 3;

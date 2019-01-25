@@ -96,6 +96,12 @@ PlumeTheme PlumeTheme::createDefaultTheme()
                          0xffffffff, //detailPanelHighlightedSubText
                          0xff000000, //detailPanelSubComponentsOutline
                          0xff943cb0  //detailPanelActiveMapping
+                         
+                         // Top Panels
+                         0xff606060, //topPanelBackground
+                         0xaa606060, //topPanelTransparentArea
+                         0xffffffff, //topPanelMainText
+                         0xffbbbbbb, //topPanelSubText
                        }));
 }
 
@@ -150,5 +156,11 @@ PlumeTheme PlumeTheme::createRedTheme()
                          0xffffffff, //detailPanelHighlightedSubText
                          0xff000000, //detailPanelSubComponentsOutline
                          0xff943cb0  //detailPanelActiveMapping
+                         
+                         // Top Panels
+                         0xff606060, //topPanelBackground
+                         0xaa606060, //topPanelTransparentArea
+                         0xffffffff, //topPanelMainText
+                         0xffbbbbbb, //topPanelSubText
                        }));
 }

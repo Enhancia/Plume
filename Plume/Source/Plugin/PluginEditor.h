@@ -105,6 +105,7 @@ private:
     ScopedPointer<SideBarComponent> sideBar; /**< \brief Hideable SideBar object that displays the preset list, help, and buttons */
     ScopedPointer<HeaderComponent> header; /**< \brief Header object that displays the preset, and the wrapping features */
     ScopedPointer<ShapeButton> sideBarButton; /**< \brief Button that hides or shows the sidebar */
+    OptionsPanel options;
     
     //==============================================================================
     void createSideBarButtonPath(); //TODO mettre dans common avec les autres chemins
