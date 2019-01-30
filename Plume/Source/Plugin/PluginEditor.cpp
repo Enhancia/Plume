@@ -193,6 +193,7 @@ void PlumeEditor::updateFullInterface()
 	gesturePanel->setBounds(gpbounds);
 	gesturePanel->addMouseListener (this, true);
 	header->update();
+	sideBar->update();
 	
 	PLUME::UI::ANIMATE_UI_FLAG = true;
 }

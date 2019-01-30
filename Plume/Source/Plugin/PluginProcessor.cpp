@@ -38,22 +38,15 @@ PlumeProcessor::PlumeProcessor()
     
     // Parameters
     initializeParameters();
-    
-    using namespace PLUME::treeId;
-    parameters.replaceState (ValueTree (plume));
-    parameters.state.addChild (ValueTree (general)
-                                   .setProperty (presetDir, File::getSpecialLocation (File::userApplicationDataDirectory)
-                                                            .getFullPathName() + "Enhancia/Plume/Presets/User/", 
-                                                            nullptr)
-                                   .setProperty (pluginDir, "", nullptr),
-                                   
-                               0, nullptr);
+    initializeSettings();
     
     // Objects
     dataReader = new DataReader();
     gestureArray = new GestureArray (*dataReader, parameters);
-    wrapper = new PluginWrapper (*this, *gestureArray);
-    presetHandler = new PresetHandler();
+    wrapper = new PluginWrapper (*this, *gestureArray, parameters.state.getChildWithName(PLUME::treeId::general)
+		                                                         .getChildWithName(PLUME::treeId::pluginDirs));
+    presetHandler = new PresetHandler (parameters.state.getChildWithName (PLUME::treeId::general)
+		                                               .getChildWithName (PLUME::treeId::presetDir));
     
     dataReader->addChangeListener (gestureArray);
 }
@@ -190,12 +183,12 @@ void PlumeProcessor::getStateInformation (MemoryBlock& destData)
     ScopedPointer<XmlElement> wrapperData = new XmlElement ("PLUME");
     
     // Adds plugin and gestures data, and saves them in a binary file
+    createGeneralXml (*wrapperData);
     createPluginXml  (*wrapperData);
     createGestureXml (*wrapperData);
     
     // Creates the binary data
     copyXmlToBinary (*wrapperData, destData);
-    
     wrapperData->deleteAllChildElements();
 }
 
@@ -216,6 +209,14 @@ void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
     
 	bool notifyEditor = false;
 	
+	// Plugin configuration loading
+    if (wrapperData->getChildByName ("GENERAL") != nullptr)
+    {
+		PLUME::UI::ANIMATE_UI_FLAG = false;
+        parameters.replaceState (ValueTree::fromXml (*wrapperData->getChildByName ("PLUME")));
+        notifyEditor = true;
+    }
+    
 	// Plugin configuration loading
     if (wrapperData->getChildByName ("WRAPPED_PLUGIN") != nullptr)
     {
@@ -239,6 +240,11 @@ void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
 
     wrapperData = nullptr;
     suspendProcessing (false);
+}
+
+void PlumeProcessor::createGeneralXml(XmlElement& wrapperData)
+{
+    wrapperData.addChildElement (parameters.state.createXml());
 }
 
 void PlumeProcessor::createPluginXml(XmlElement& wrapperData)
@@ -478,14 +484,25 @@ void PlumeProcessor::initializeParameters()
     }
 }
 
-/*
-void PlumeProcessor::initializeValueTree()
+void PlumeProcessor::initializeSettings()
 {
-    ValueTree generalTree (general);
-    generalTree.setProperty (userPresets, "", nullptr);
-    parameters.state.addChild (ValueTree (general));
+    using namespace PLUME::treeId;
+    parameters.replaceState (ValueTree (plume));
+    parameters.state.addChild (ValueTree (general), 0, nullptr);
+    
+	auto generalTree = parameters.state.getChildWithName (general);
+    generalTree.addChild (ValueTree (winW).setProperty (value, var (PLUME::UI::DEFAULT_WINDOW_WIDTH), nullptr), 0, nullptr);
+    generalTree.addChild (ValueTree (winH).setProperty (value, var (PLUME::UI::DEFAULT_WINDOW_HEIGHT), nullptr), 1, nullptr);
+    
+    generalTree.addChild (ValueTree (presetDir).setProperty (value,
+                                                             File::getSpecialLocation (File::userApplicationDataDirectory)
+                                                                .getFullPathName()
+                                                                + "\\Enhancia\\Plume\\Presets\\User\\", 
+                                                             nullptr), 2, nullptr);
+    generalTree.addChild (ValueTree (pluginDirs), 3, nullptr);
+    generalTree.getChild (3).addChild (ValueTree (directory).setProperty (value, "", nullptr),
+                                       0, nullptr);
 }
-*/
 
 void PlumeProcessor::updateTrackProperties (const AudioProcessor::TrackProperties& properties)
 {

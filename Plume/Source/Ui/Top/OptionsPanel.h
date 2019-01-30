@@ -17,7 +17,10 @@
 //==============================================================================
 /*
 */
-class OptionsPanel    : public Component
+class OptionsPanel    : public Component,
+                        private TextPropertyComponent::Listener,
+                        private Button::Listener
+                        
 {
 public:
     //==============================================================================
@@ -30,6 +33,9 @@ public:
     
     //==============================================================================
     void mouseUp (const MouseEvent& event) override;
+    void visibilityChanged() override;
+    void textPropertyComponentChanged (TextPropertyComponent* tpc) override;
+    void buttonClicked (Button* bttn) override;
 
 private:
     //==============================================================================
@@ -38,6 +44,9 @@ private:
     //==============================================================================
     Rectangle<int> optionsArea;
     ScopedPointer<PropertyPanel> settings;
+    ScopedPointer<ShapeButton> scanButton;
+    PlumeProgressBar* bar = nullptr;
+    
     PlumeProcessor& processor;
     
     Value pluginDir;

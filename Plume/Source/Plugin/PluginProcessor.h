@@ -101,6 +101,13 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
     
     /**
+     * \brief Xml creator for general plume information.
+     *
+     * \param wrapperData XmlElement that will get the general Xml as a child element.
+     */  
+    void createGeneralXml (XmlElement& wrapperData);
+    
+    /**
      * \brief Xml creator for wrapped plugin related information.
      *
      * Creates the xml data concerning the wrapped plugin, which holds it's name, PluginDescription
@@ -177,9 +184,9 @@ public:
     
 private:
     //==============================================================================
-    //void initializeSettings();
     void initializeParameters();
     void initializeValueTree();
+    void initializeSettings();
     
     //==============================================================================
     ScopedPointer<FileLogger> plumeLogger; /**< \brief Logger object. Allows to write logs for testing purposes. */

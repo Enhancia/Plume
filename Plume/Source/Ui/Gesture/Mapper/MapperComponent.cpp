@@ -64,7 +64,7 @@ MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr, PluginWr
 MapperComponent::~MapperComponent()
 {
     TRACE_IN;
-    gesture.removeChangeListener (this);
+    //gesture.removeChangeListener (this);
     gestureArray.removeChangeListener (this);
     wrapper.removeChangeListener (this);
     paramCompArray.clear();
@@ -336,8 +336,11 @@ void MapperComponent::setAlphas()
 
 void MapperComponent::drawMapperText (Graphics& g, String text, int x, int y, int width, int height, bool opaqueWhenMidiMode, float fontSize)
 {
-    if (opaqueWhenMidiMode)     g.setColour (gesture.isMidiMapped() ? Colour (0xffffffff) : Colour (0x80ffffff));
-    else                        g.setColour (gesture.isMidiMapped() ? Colour (0x80ffffff) : Colour (0xffffffff));
+    if (opaqueWhenMidiMode)     g.setColour (midiMapButton->getToggleState() ? Colour (0xffffffff) :
+                                                                               Colour (0x80ffffff));
+                                                                               
+    else                        g.setColour (midiMapButton->getToggleState() ? Colour (0x80ffffff) :
+                                                                               Colour (0xffffffff));
     
     g.setFont (Font (PLUME::UI::font, fontSize, Font::plain).withTypefaceStyle ("Regular"));
     g.drawText (TRANS(text), x, y, width, height,

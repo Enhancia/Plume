@@ -9,6 +9,7 @@
 */
 
 #include "Plugin/PluginProcessor.h"
+#include "Common/PlumeCommon.h"
 
 #if ! (JUCE_PLUGINHOST_VST || JUCE_PLUGINHOST_VST3 || JUCE_PLUGINHOST_AU)
  #error "If you're building the wrapper, you probably want to enable VST and/or AU support"
@@ -17,8 +18,8 @@
 
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 
-PluginWrapper::PluginWrapper (PlumeProcessor& p, GestureArray& gArr)
-    : owner (p), gestArray (gArr)
+PluginWrapper::PluginWrapper (PlumeProcessor& p, GestureArray& gArr, ValueTree pluginDirs)
+    : owner (p), gestArray (gArr), customDirectories (pluginDirs)
 {
     TRACE_IN;
     // Initializes the booleans
@@ -34,14 +35,18 @@ PluginWrapper::PluginWrapper (PlumeProcessor& p, GestureArray& gArr)
   #if JUCE_PLUGINHOST_VST3
     formatManager->addFormat (new VST3PluginFormat());
   #endif
-  
+    
     pluginList = new KnownPluginList();
     loadPluginListFromFile();
+    
+    bar = new PlumeProgressBar (scanProgress, pluginBeingScanned, "Scanning : ", "Finished Scanning");
 }
 
 PluginWrapper::~PluginWrapper()
 {
     TRACE_IN;
+    removeAllChangeListeners();
+    
     clearWrapperEditor();
 	wrapperProcessor = nullptr;
     wrappedInstance = nullptr;
@@ -50,8 +55,7 @@ PluginWrapper::~PluginWrapper()
     pluginList = nullptr;
     
     formatManager = nullptr;
-    
-    customDirectories.clear();
+    bar = nullptr;
 }
 
 //==============================================================================
@@ -322,15 +326,20 @@ bool PluginWrapper::hasOpenedWrapperEditor()
     return hasOpenedEditor;
 }
 
-//==============================================================================
-OwnedArray<File> PluginWrapper::createFileList()
+PlumeProgressBar* PluginWrapper::getProgressBar()
 {
-    OwnedArray<File> directories;
+    return bar;
+}
+
+//==============================================================================
+Array<File*> PluginWrapper::createFileList()
+{
+    Array<File*> directories;
     
     if (useDefaultPaths)
     {
         // TEMP: adds plume directory (removed when custom directories are properly implemented)
-        directories.add (new File (File::getSpecialLocation (File::currentApplicationFile).getParentDirectory()));
+        //directories.add (new File (File::getSpecialLocation (File::currentApplicationFile).getParentDirectory()));
         
         // Adds OS specific paths if they exist
         File f;
@@ -384,9 +393,12 @@ OwnedArray<File> PluginWrapper::createFileList()
       #endif
     }
     
-    if (!customDirectories.isEmpty())
+    if (customDirectories.getNumChildren() != 0)
     {
-        directories.addArray (customDirectories);
+		for (int i = 0; i < customDirectories.getNumChildren(); i++)
+		{
+			directories.add (new File (getCustomDirectory (i)));
+		}
     }
 
 	return directories;
@@ -394,26 +406,55 @@ OwnedArray<File> PluginWrapper::createFileList()
 
 void PluginWrapper::addCustomDirectory (File newDir)
 {
+    // TODO virer cette ligne et decommenter code quand implémentation plusieurs path
+    customDirectories.getChild (0).setProperty (PLUME::treeId::value,
+                                                newDir.getFullPathName(),
+                                                nullptr);
+    
+    /*
     if (newDir.exists() && newDir.isDirectory())
     {
         // Checks if it's not already in the array
-        for (auto* file : customDirectories)
+        for (int i = 0; i < customDirectories.getNumChildren(); i++)
         {
-            if (*file == newDir)
+            if (newDir.getFullPathName() == getCustomDirectory (i))
             {
                 return;
             }
         }
         
-        // Creates a copy of the file to prevent any memory leak
-        customDirectories.add (new File (newDir));
+        // Adds the file to the end of the list
+        customDirectories.appendChild (ValueTree (PLUME::treeId::directory).setProperty (PLUME::treeId::value,
+                                                                                         var (newDir.getFullPathName()),
+                                                                                         nullptr),
+                                        nullptr);
     }
+    */
+    
+    savePluginListToFile();
+}
+
+String PluginWrapper::getCustomDirectory (int numDir)
+{
+    if (numDir < 0 || numDir > customDirectories.getNumChildren()) return "";
+    
+    else return customDirectories.getChild (numDir)
+                                 .getProperty (PLUME::treeId::value)
+                                 .toString();
+}
+
+void PluginWrapper::clearCustomDirectories()
+{
+    //TODO 2eme ligne quand implementation plusieurs paths
+    customDirectories.getChild (0).setProperty (PLUME::treeId::value, "", nullptr);
+    
+    //customDirectories.removeAllChildren (nullptr);
 }
 
 void PluginWrapper::scanAllPluginsInDirectories (bool dontRescanIfAlreadyInList, bool ignoreBlackList)
 {
     if (formatManager->getNumFormats() == 0 ||
-        (!useDefaultPaths && customDirectories.isEmpty())) return;
+        (!useDefaultPaths && customDirectories.getNumChildren() == 0)) return;
     
     if (!dontRescanIfAlreadyInList)
     {
@@ -425,17 +466,25 @@ void PluginWrapper::scanAllPluginsInDirectories (bool dontRescanIfAlreadyInList,
     for (auto* file : createFileList())
     {
         fsp.add (File (*file)); // Creates a copy of the file to prevent leakage / nullptr bad access
+		delete file;
     }
         
     for (int i=0; i<formatManager->getNumFormats(); i++)
     {
         PluginDirectoryScanner dirScanner (*pluginList, *formatManager->getFormat (i), fsp, false, File(), false);
+        scanProgress = 0.0f;
         
-        while (dirScanner.scanNextFile (dontRescanIfAlreadyInList, pluginBeingScanned)) // Rescans until scanNextFile returns false
+        // Rescans until scanNextFile returns false
+        while (dirScanner.scanNextFile (dontRescanIfAlreadyInList, pluginBeingScanned))
         {
             scanProgress = dirScanner.getProgress();
+            pluginBeingScanned = pluginBeingScanned.fromLastOccurrenceOf ("\\", false, false);	
+            bar->repaint();
             DBG ("Scanning : " << pluginBeingScanned << " | Progress : " << scanProgress);
         }
+        
+        scanProgress = dirScanner.getProgress();
+        bar->repaint();
     }
     
     savePluginListToFile();
@@ -460,6 +509,7 @@ PluginDescription* PluginWrapper::getDescriptionToWrap (const PluginDescription&
     
     return nullptr;
 }
+
 void PluginWrapper::savePluginListToFile()
 {
     // Create file if it doesn't exist yet
@@ -479,14 +529,14 @@ void PluginWrapper::savePluginListToFile()
     {
         scannedPlugins.create();
     }
-  
-    // Writes plugin list data into the file
-    ScopedPointer<XmlElement> listXml = pluginList->createXml();
     
-    if (!customDirectories.isEmpty())
-    {
-        // TODO save custom directories in Xml under tag < UserDirs >
-    }
+    ScopedPointer<XmlElement> listXml = new XmlElement ("PLUME_PLUGINLIST_CONFIG");
+    
+    // Writes plugin list data into the file
+    listXml->addChildElement (pluginList->createXml());
+    
+    XmlElement* userDirs = listXml->createNewChildElement ("USER_DIRECTORIES");
+    userDirs->addChildElement (customDirectories.createXml());
     
     listXml->writeToFile (scannedPlugins, StringRef());
     listXml->deleteAllChildElements();
@@ -513,10 +563,15 @@ void PluginWrapper::loadPluginListFromFile()
         return;
     }
     
+    // Recreates plugin List
 	ScopedPointer<XmlElement> listXml = XmlDocument::parse(scannedPlugins);
 
-    pluginList->recreateFromXml (*listXml);
-
+	// Recreates custom directories list
+	customDirectories.copyPropertiesAndChildrenFrom (ValueTree::fromXml (*listXml->getChildByName ("USER_DIRECTORIES")
+	                                                                             ->getChildByName (PLUME::treeId::pluginDirs)),
+	                                                                     nullptr);
+    
+    pluginList->recreateFromXml (*listXml->getChildByName("KNOWNPLUGINS"));
 	listXml->deleteAllChildElements();
 }
 

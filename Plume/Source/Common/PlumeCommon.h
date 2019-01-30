@@ -13,6 +13,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PlumeColours.h"
 #include "Ui/Common/PlumeComponent.h"
+#include "Ui/Common/PlumeProgressBar.h"
 
 // Preprocessor expressions
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
@@ -65,15 +66,16 @@ namespace PLUME
     namespace treeId
     {
 		// Value tree identifiers
-	    static Identifier parameters ("parameters");
-	    static Identifier plume ("plume");
+	    static Identifier parameter ("parameter");
+	    static Identifier plume ("PLUME");
 	    static Identifier group ("group");
 	    static Identifier setting ("setting");
 	    static Identifier value ("value");
-	    static Identifier general ("general");
+	    static Identifier general ("GENERAL");
 	    static Identifier instance ("instance");
-	    static Identifier presetDir ("presetDir");
-	    static Identifier pluginDir ("pluginDir");
+	    static Identifier presetDir ("PRESETDIR");
+	    static Identifier pluginDirs ("PLUGINDIRS");
+	    static Identifier directory ("DIR");
 	    static Identifier winX ("window_x");
 	    static Identifier winY ("window_y");
 	    static Identifier winW ("window_w");

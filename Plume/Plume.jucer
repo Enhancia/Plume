@@ -72,6 +72,10 @@
                 file="Source/Ui/LookAndFeel/PlumeLookAndFeel.h"/>
         </GROUP>
         <GROUP id="{4CA36361-EB23-BED0-3C51-3F19F9BE9F00}" name="Common">
+          <FILE id="x5Koo2" name="PlumeProgressBar.cpp" compile="1" resource="0"
+                file="Source/Ui/Common/PlumeProgressBar.cpp"/>
+          <FILE id="nCmXVc" name="PlumeProgressBar.h" compile="0" resource="0"
+                file="Source/Ui/Common/PlumeProgressBar.h"/>
           <FILE id="G8QEm8" name="PlumeComponent.h" compile="0" resource="0"
                 file="Source/Ui/Common/PlumeComponent.h"/>
           <FILE id="cZ9UZJ" name="MovingCursor.cpp" compile="1" resource="0"

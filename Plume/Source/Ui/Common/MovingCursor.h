@@ -12,6 +12,7 @@
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
 #include "Ui/LookAndFeel/PlumeLookAndFeel.h"
+#include "Common/PlumeCommon.h"
 
 class MovingCursor  : public Component
 {

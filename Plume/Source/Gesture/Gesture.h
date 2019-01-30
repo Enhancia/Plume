@@ -121,6 +121,7 @@ public:
      */
     ~Gesture()
     {
+        removeAllChangeListeners();
         clearAllParameters();
     }
 

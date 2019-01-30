@@ -35,6 +35,7 @@ public:
     void drawPointer (Graphics&, float x, float y, float diameter,
                       const Colour&, const Colour&, int direction) noexcept;
     //==============================================================================
+    Font getLabelFont (Label& lbl) override;
     
     //void drawPopupMenuBackground (Graphics&, int width, int height) override;
 	/*
