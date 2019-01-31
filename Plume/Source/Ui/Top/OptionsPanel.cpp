@@ -14,9 +14,23 @@
 //==============================================================================
 OptionsPanel::OptionsPanel (PlumeProcessor& proc)   : processor (proc)
 {
+    // Area
     optionsArea = getBounds().reduced (getWidth()/4, getHeight()/6);
-    addAndMakeVisible (settings = new PropertyPanel ("Settings Panel"));
-    createAndAddProperties();
+    
+    // Labels
+    //addAndMakeVisible (settings = new PropertyPanel ("Settings Panel"));
+    //createAndAddProperties();
+    
+    addAndMakeVisible (presetDirLabel = new Label ("Preset Directory Label", processor.getPresetHandler()
+                                                                                      .getUserDirectory()
+                                                                                      .getFullPathName()));
+    presetDirLabel->setEditable (true, false, true);                                                                           
+    presetDirLabel->addListener (this);
+                                                                                      
+    addAndMakeVisible (pluginDirLabel = new Label ("Plugin Directory Label", processor.getWrapper()
+                                                                                      .getCustomDirectory (0)));
+    pluginDirLabel->setEditable (true, false, true);
+    pluginDirLabel->addListener (this);
     
     addAndMakeVisible (scanButton = new ShapeButton ("Scan Button",
                                                      PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFill),
@@ -69,24 +83,24 @@ void OptionsPanel::paint (Graphics& g)
     g.drawText ("Settings :", 
                 area.removeFromTop (UI::HEADER_HEIGHT).reduced (2*UI::MARGIN),
                 Justification::topLeft, true);
+    
+    auto labelArea = area.removeFromTop (jmax (optionsArea.getHeight()/4, 40 + UI::MARGIN)).reduced (4*UI::MARGIN, 0);
+    labelArea.removeFromRight (labelArea.getWidth()*2/3);
+    
+    g.setFont (Font (UI::font, 15.0f, Font::plain));
+    g.drawText ("User Presets Path :", 
+                labelArea.removeFromTop (labelArea.getHeight()/2),
+                Justification::centredLeft, true);
                 
+    g.drawText ("Plugins Path :", 
+                labelArea,
+                Justification::centredLeft, true);
     
-    //g.drawRect (area.withHeight (optionsArea.getHeight()/4).reduced (4*UI::MARGIN, 2*UI::MARGIN)); // outline 1
-    area.removeFromTop (optionsArea.getHeight()/4); // Custom Dirs
+    auto scanArea = area.removeFromTop (20 + 2*UI::MARGIN).reduced (4*UI::MARGIN, UI::MARGIN);
     
-    //g.drawRect (area.withHeight (20).reduced (4*UI::MARGIN, 0)); // outline 2
-    
-    // outline 3
-    //g.drawRect (area.withHeight (20).reduced (4*UI::MARGIN, 0)
-    //                                .withWidth (optionsArea.getWidth()/3));
-    
-    
-    auto scanArea = area.removeFromTop (20).reduced (4*UI::MARGIN, 0);
-    
-    g.setFont (Font (15.0f, Font::plain));
     g.drawText ("Scan Plugins :", 
                 scanArea.withWidth (scanArea.getWidth()/3),
-                Justification::centred, true);
+                Justification::centredLeft, true);
 }
 
 void OptionsPanel::resized()
@@ -97,10 +111,14 @@ void OptionsPanel::resized()
     
     auto area = optionsArea;
     area.removeFromTop (HEADER_HEIGHT); // "Settings" text
-    settings->setBounds (area.removeFromTop (optionsArea.getHeight()/4)
-                             .reduced (4*MARGIN, 2*MARGIN));
+    
+    auto labelArea = area.removeFromTop (jmax (optionsArea.getHeight()/4, 40 + UI::MARGIN)).reduced (4*UI::MARGIN, 0); // Custom Dirs
+    labelArea.removeFromLeft (labelArea.getWidth()/3);
+    
+    presetDirLabel->setBounds (labelArea.withHeight (20).translated (0, labelArea.getHeight()/4 - 10));
+    pluginDirLabel->setBounds (labelArea.withHeight (20).translated (0, labelArea.getHeight()*3/4 - 10));
                              
-    auto scanArea = area.removeFromTop (20).reduced (4*MARGIN, 0);
+    auto scanArea = area.removeFromTop (20 + 2*UI::MARGIN).reduced (4*UI::MARGIN, UI::MARGIN);
     scanArea.removeFromLeft (scanArea.getWidth()/3); // "Scan Plugins" text
     
     scanButton->setBounds (scanArea.removeFromLeft (20));
@@ -169,38 +187,45 @@ void OptionsPanel::textPropertyComponentChanged (TextPropertyComponent* tpc)
         else
         {
             processor.getWrapper().clearCustomDirectories();
-            //tpc->setText (processor.getWrapper().getCustomDirectory (0));
         }
     }
 }
 
-//==============================================================================
-void OptionsPanel::createAndAddProperties()
+void OptionsPanel::labelTextChanged (Label* lbl)
 {
-    Array<PropertyComponent*> props;
-    props.add (new TextPropertyComponent (processor.getParameterTree().state
-		                                           .getChildWithName (PLUME::treeId::general)
-		                                           .getChildWithName (PLUME::treeId::presetDir)
-                                                   .getPropertyAsValue (PLUME::treeId::value, nullptr),
-                                          "Custom Preset Directory :", 100, false));
-                                          
-    props.add (new TextPropertyComponent (processor.getParameterTree().state
-		                                           .getChildWithName (PLUME::treeId::general)
-		                                           .getChildWithName (PLUME::treeId::pluginDirs)
-		                                           .getChildWithName (PLUME::treeId::directory)
-                                                   .getPropertyAsValue (PLUME::treeId::value, nullptr),
-                                          "Custom Plugin Directory :", 100, false));
-                                          
-    for (auto* p : props)
+    // Preset Directory Label
+    if (lbl == presetDirLabel)
     {
-        if (auto* tpc = dynamic_cast<TextPropertyComponent*> (p))
+        if (File::isAbsolutePath (lbl->getText()) && File (lbl->getText()).exists())
         {
-            p->setLookAndFeel (&getLookAndFeel());
-            p->setColour (PropertyComponent::backgroundColourId, Colour (0x00000000));
+            processor.getPresetHandler().setUserDirectory (lbl->getText());
+            processor.getPresetHandler().storePresets();
             
-            tpc->addListener (this);
+            if (auto* sideBar = dynamic_cast<PlumeComponent*> (getParentComponent()->findChildWithID ("sideBar")))
+            {
+                sideBar->update();
+            }
+        }
+        else
+        {
+            lbl->setText (processor.getPresetHandler().getUserDirectory().getFullPathName(), dontSendNotification);
         }
     }
     
-    settings->addProperties (props);
+    // Plugin Directory Label
+    if (lbl == pluginDirLabel)
+    {
+        if (File::isAbsolutePath (lbl->getText()) && File (lbl->getText()).exists())
+        {
+            processor.getWrapper().addCustomDirectory (lbl->getText());
+        }
+        else if (lbl->getText() == "")
+        {
+            processor.getWrapper().clearCustomDirectories();
+        }
+        else
+        {
+            lbl->setText (processor.getWrapper().getCustomDirectory (0), dontSendNotification);
+        }
+    }
 }

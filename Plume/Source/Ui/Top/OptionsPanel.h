@@ -19,7 +19,8 @@
 */
 class OptionsPanel    : public Component,
                         private TextPropertyComponent::Listener,
-                        private Button::Listener
+                        private Button::Listener,
+                        private Label::Listener
                         
 {
 public:
@@ -36,14 +37,15 @@ public:
     void visibilityChanged() override;
     void textPropertyComponentChanged (TextPropertyComponent* tpc) override;
     void buttonClicked (Button* bttn) override;
+    void labelTextChanged (Label* lbl) override;
 
 private:
     //==============================================================================
-    void createAndAddProperties();
-    
-    //==============================================================================
     Rectangle<int> optionsArea;
     ScopedPointer<PropertyPanel> settings;
+    ScopedPointer<Label> presetDirLabel;
+    ScopedPointer<Label> pluginDirLabel;
+    
     ScopedPointer<ShapeButton> scanButton;
     PlumeProgressBar* bar = nullptr;
     
