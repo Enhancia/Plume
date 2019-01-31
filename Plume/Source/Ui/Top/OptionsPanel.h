@@ -13,12 +13,12 @@
 #include "../../../JuceLibraryCode/JuceHeader.h"
 #include "Common/PlumeCommon.h"
 #include "Plugin/PluginProcessor.h"
+#include "Ui/Top/ScannerComponent.h"
 
 //==============================================================================
 /*
 */
 class OptionsPanel    : public Component,
-                        private TextPropertyComponent::Listener,
                         private Button::Listener,
                         private Label::Listener
                         
@@ -35,19 +35,17 @@ public:
     //==============================================================================
     void mouseUp (const MouseEvent& event) override;
     void visibilityChanged() override;
-    void textPropertyComponentChanged (TextPropertyComponent* tpc) override;
     void buttonClicked (Button* bttn) override;
     void labelTextChanged (Label* lbl) override;
 
 private:
     //==============================================================================
     Rectangle<int> optionsArea;
-    ScopedPointer<PropertyPanel> settings;
     ScopedPointer<Label> presetDirLabel;
     ScopedPointer<Label> pluginDirLabel;
     
     ScopedPointer<ShapeButton> scanButton;
-    PlumeProgressBar* bar = nullptr;
+    ScopedPointer<ScannerComponent> scanner;
     
     PlumeProcessor& processor;
     

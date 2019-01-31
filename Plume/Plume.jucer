@@ -72,9 +72,9 @@
                 file="Source/Ui/LookAndFeel/PlumeLookAndFeel.h"/>
         </GROUP>
         <GROUP id="{4CA36361-EB23-BED0-3C51-3F19F9BE9F00}" name="Common">
-          <FILE id="x5Koo2" name="PlumeProgressBar.cpp" compile="1" resource="0"
+          <FILE id="QUY8ep" name="PlumeProgressBar.cpp" compile="1" resource="0"
                 file="Source/Ui/Common/PlumeProgressBar.cpp"/>
-          <FILE id="nCmXVc" name="PlumeProgressBar.h" compile="0" resource="0"
+          <FILE id="KjXDjo" name="PlumeProgressBar.h" compile="0" resource="0"
                 file="Source/Ui/Common/PlumeProgressBar.h"/>
           <FILE id="G8QEm8" name="PlumeComponent.h" compile="0" resource="0"
                 file="Source/Ui/Common/PlumeComponent.h"/>
@@ -86,6 +86,10 @@
           <FILE id="Gn44ST" name="OptionsPanel.cpp" compile="1" resource="0"
                 file="Source/Ui/Top/OptionsPanel.cpp"/>
           <FILE id="y9sRww" name="OptionsPanel.h" compile="0" resource="0" file="Source/Ui/Top/OptionsPanel.h"/>
+          <FILE id="szq63m" name="ScannerComponent.cpp" compile="1" resource="0"
+                file="Source/Ui/Top/ScannerComponent.cpp"/>
+          <FILE id="qcCMzi" name="ScannerComponent.h" compile="0" resource="0"
+                file="Source/Ui/Top/ScannerComponent.h"/>
         </GROUP>
         <GROUP id="{ACEA364D-47F4-BE67-B3B0-D0FEC5CE7BA7}" name="Header">
           <FILE id="hBml6T" name="HeaderComponent.cpp" compile="1" resource="0"

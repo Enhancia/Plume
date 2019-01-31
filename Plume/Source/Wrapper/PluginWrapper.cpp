@@ -38,8 +38,6 @@ PluginWrapper::PluginWrapper (PlumeProcessor& p, GestureArray& gArr, ValueTree p
     
     pluginList = new KnownPluginList();
     loadPluginListFromFile();
-    
-    bar = new PlumeProgressBar (scanProgress, pluginBeingScanned, "Scanning : ", "Finished Scanning");
 }
 
 PluginWrapper::~PluginWrapper()
@@ -55,7 +53,6 @@ PluginWrapper::~PluginWrapper()
     pluginList = nullptr;
     
     formatManager = nullptr;
-    bar = nullptr;
 }
 
 //==============================================================================
@@ -326,11 +323,6 @@ bool PluginWrapper::hasOpenedWrapperEditor()
     return hasOpenedEditor;
 }
 
-PlumeProgressBar* PluginWrapper::getProgressBar()
-{
-    return bar;
-}
-
 //==============================================================================
 Array<File*> PluginWrapper::createFileList()
 {
@@ -455,11 +447,12 @@ void PluginWrapper::scanAllPluginsInDirectories (bool dontRescanIfAlreadyInList,
 {
     if (formatManager->getNumFormats() == 0 ||
         (!useDefaultPaths && customDirectories.getNumChildren() == 0)) return;
-    
+    /*
     if (!dontRescanIfAlreadyInList)
     {
         pluginList->clear();
     }
+    */
     
     // Sets all the files to search
     FileSearchPath fsp;
@@ -471,23 +464,38 @@ void PluginWrapper::scanAllPluginsInDirectories (bool dontRescanIfAlreadyInList,
         
     for (int i=0; i<formatManager->getNumFormats(); i++)
     {
-        PluginDirectoryScanner dirScanner (*pluginList, *formatManager->getFormat (i), fsp, false, File(), false);
+        PluginDirectoryScanner dirScanner (*pluginList, *formatManager->getFormat (i), fsp, true, File(), true);
         scanProgress = 0.0f;
         
         // Rescans until scanNextFile returns false
         while (dirScanner.scanNextFile (dontRescanIfAlreadyInList, pluginBeingScanned))
         {
             scanProgress = dirScanner.getProgress();
-            pluginBeingScanned = pluginBeingScanned.fromLastOccurrenceOf ("\\", false, false);	
-            bar->repaint();
+            pluginBeingScanned = pluginBeingScanned.fromLastOccurrenceOf ("\\", false, false);
             DBG ("Scanning : " << pluginBeingScanned << " | Progress : " << scanProgress);
         }
         
         scanProgress = dirScanner.getProgress();
-        bar->repaint();
     }
     
     savePluginListToFile();
+}
+
+PluginDirectoryScanner* PluginWrapper::getDirectoryScannerForFormat (int formatToScan)
+{
+    if (formatManager->getNumFormats() == 0 ||
+        (!useDefaultPaths && customDirectories.getNumChildren() == 0)) return nullptr;
+        
+    // Sets all the files to search
+    FileSearchPath fsp;
+    for (auto* file : createFileList())
+    {
+        fsp.add (File (*file)); // Creates a copy of the file to prevent leakage / nullptr bad access
+		delete file;
+    }
+        
+    return new PluginDirectoryScanner (*pluginList, *formatManager->getFormat (formatToScan),
+                                                    fsp, true, File(), true);
 }
 
 void PluginWrapper::addPluginsToMenu (PopupMenu& menu, KnownPluginList::SortMethod sort)

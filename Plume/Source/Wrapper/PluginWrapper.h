@@ -56,6 +56,9 @@ public:
     
     //==============================================================================
     void scanAllPluginsInDirectories (bool dontRescanIfAlreadyInList, bool ignoreBlackList = false);
+    PluginDirectoryScanner* getDirectoryScannerForFormat (int formatToScan);
+    void savePluginListToFile();
+    
     AudioPluginFormat* getPluginFormat (File pluginFile);
     
     //==============================================================================
@@ -77,8 +80,6 @@ public:
     String getWrappedPluginName();
     String getWrappedPluginInfoString();
     
-    PlumeProgressBar* getProgressBar();
-    
     //==============================================================================
     void fillInPluginDescription (PluginDescription& pd);
     void addParametersToGestureFromXml (XmlElement& gesture, int gestureNum);
@@ -91,7 +92,6 @@ private:
     //==============================================================================
     Array<File*> createFileList();
     PluginDescription* getDescriptionToWrap (const PluginDescription& description);
-    void savePluginListToFile();
     void loadPluginListFromFile();
     
     //==============================================================================

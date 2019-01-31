@@ -18,9 +18,6 @@ OptionsPanel::OptionsPanel (PlumeProcessor& proc)   : processor (proc)
     optionsArea = getBounds().reduced (getWidth()/4, getHeight()/6);
     
     // Labels
-    //addAndMakeVisible (settings = new PropertyPanel ("Settings Panel"));
-    //createAndAddProperties();
-    
     addAndMakeVisible (presetDirLabel = new Label ("Preset Directory Label", processor.getPresetHandler()
                                                                                       .getUserDirectory()
                                                                                       .getFullPathName()));
@@ -32,24 +29,14 @@ OptionsPanel::OptionsPanel (PlumeProcessor& proc)   : processor (proc)
     pluginDirLabel->setEditable (true, false, true);
     pluginDirLabel->addListener (this);
     
-    addAndMakeVisible (scanButton = new ShapeButton ("Scan Button",
-                                                     PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFill),
-		                                             PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFill)
-		                                                                                .withAlpha (0.5f),
-		                                             PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFill)
-		                                                                                .withAlpha (0.7f)));
-		                                                                                
-	scanButton->setShape (PLUME::path::magnifyingGlassPath, false, true, false);
-	scanButton->addListener (this);
-	
-	addAndMakeVisible (bar = processor.getWrapper().getProgressBar());
+    // Scanner
+    addAndMakeVisible (scanner = new ScannerComponent (processor));
 }
 
 OptionsPanel::~OptionsPanel()
 {
-    settings = nullptr;
     scanButton = nullptr;
-    bar = nullptr;
+    scanner = nullptr;
 }
 
 //==============================================================================
@@ -121,9 +108,7 @@ void OptionsPanel::resized()
     auto scanArea = area.removeFromTop (20 + 2*UI::MARGIN).reduced (4*UI::MARGIN, UI::MARGIN);
     scanArea.removeFromLeft (scanArea.getWidth()/3); // "Scan Plugins" text
     
-    scanButton->setBounds (scanArea.removeFromLeft (20));
-    
-    if (bar != nullptr) bar->setBounds (scanArea.reduced (4*MARGIN, 0));
+    scanner->setBounds (scanArea);
 }
 
 //==============================================================================
@@ -141,54 +126,6 @@ void OptionsPanel::visibilityChanged()
 
 void OptionsPanel::buttonClicked (Button* bttn)
 {
-    if (bttn == scanButton)
-    {
-        processor.getWrapper().scanAllPluginsInDirectories (true, true);
-        
-        if (auto* header = dynamic_cast<PlumeComponent*> (getParentComponent()->findChildWithID ("header")))
-        {
-            header->update();
-        }
-    }
-}
-
-void OptionsPanel::textPropertyComponentChanged (TextPropertyComponent* tpc)
-{
-    // Preset Directory Property
-    if (tpc->getName()[8] == 'r')
-    {
-        if (File::isAbsolutePath (tpc->getText()) && File (tpc->getText()).exists())
-        {
-            processor.getPresetHandler().setUserDirectory (tpc->getText());
-            processor.getPresetHandler().storePresets();
-            
-            if (auto* sideBar = dynamic_cast<PlumeComponent*> (getParentComponent()->findChildWithID ("sideBar")))
-            {
-                sideBar->update();
-            }
-        }
-        else
-        {
-            tpc->setText (processor.getPresetHandler().getUserDirectory().getFullPathName());
-        }
-    }
-    
-    // Plugin Directory Property
-    else if (tpc->getName()[8] == 'l')
-    {
-        if (File::isAbsolutePath (tpc->getText()) && File (tpc->getText()).exists())
-        {
-            processor.getWrapper().addCustomDirectory (tpc->getText());
-        }
-        else if (tpc->getText() == "")
-        {
-            processor.getWrapper().clearCustomDirectories();
-        }
-        else
-        {
-            processor.getWrapper().clearCustomDirectories();
-        }
-    }
 }
 
 void OptionsPanel::labelTextChanged (Label* lbl)
