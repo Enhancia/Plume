@@ -517,6 +517,8 @@ public:
     void addParameter (AudioProcessorParameter& param, Range<float> r = Range<float> (0.0f, 1.0f), bool rev = false)
     {
         TRACE_IN;
+        ScopedLock paramlock (parameterArrayLock);
+        
         if (parameterArray.size() < MAX_PARAMETER)
         {
             parameterArray.add ( new MappedParameter (param, r, rev));
@@ -532,6 +534,8 @@ public:
     void deleteParameter(int paramId)
     {
         TRACE_IN;
+        ScopedLock paramlock (parameterArrayLock);
+        
         parameterArray.remove (paramId);
         
         if (parameterArray.isEmpty()) mapped = false;
@@ -545,6 +549,8 @@ public:
     void clearAllParameters()
     {
         TRACE_IN;
+        ScopedLock paramlock (parameterArrayLock);
+        
 		mapped = false;
         parameterArray.clear();
         sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
@@ -565,6 +571,8 @@ public:
      */
     bool parameterIsMapped (int parameterId)
     {
+        ScopedLock paramlock (parameterArrayLock);
+        
         for (auto* param : parameterArray)
         {
             if (param->parameter.getParameterIndex() == parameterId) return true;
@@ -755,4 +763,8 @@ protected:
 	RangedAudioParameter& cc; /**< \brief Float parameter with an integer value for CC used by the gesture in midiMap mode (default 1: modwheel). */
     
     OwnedArray<MappedParameter> parameterArray;  /**< \brief Array of all the MappedParameter that the gesture controls. */
+    CriticalSection parameterArrayLock;
+
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Gesture)
 };

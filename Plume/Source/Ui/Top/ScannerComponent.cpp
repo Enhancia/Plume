@@ -31,7 +31,7 @@ ScannerComponent::ScannerComponent (PlumeProcessor& proc)   : processor (proc)
 	
 	addAndMakeVisible (bar = new PlumeProgressBar (scanProgress, pluginBeingScanned, "Scanning :"));
 
-	//setComponentsVisible();
+	setComponentsVisible();
 }
 
 ScannerComponent::~ScannerComponent()
@@ -49,7 +49,7 @@ void ScannerComponent::resized()
 {
     auto area = getLocalBounds();
     scanButton->setBounds (area.removeFromLeft (20));
-    //cancelButton->setBounds (area.removeFromRight(100).reduced (PLUME::UI::MARGIN, 0));
+    cancelButton->setBounds (area.removeFromRight(100).reduced (PLUME::UI::MARGIN, 0));
     bar->setBounds (area.reduced (PLUME::UI::MARGIN, 0));
 }
 
@@ -57,13 +57,8 @@ void ScannerComponent::buttonClicked (Button* bttn)
 {
     if (bttn == scanButton)
     {
-        //processor.getWrapper().scanAllPluginsInDirectories (true, true);
+        formatToScan = 0;
 		scanPlugins();
-        
-        if (auto* header = dynamic_cast<PlumeComponent*> (getParentComponent()->findChildWithID ("header")))
-        {
-            header->update();
-        }
     }
     
     else if (bttn == cancelButton)
@@ -82,6 +77,8 @@ void ScannerComponent::timerCallback()
     {
         bar->repaint();
         stopTimer();
+        
+        scanFinished();
     }
 }
 
@@ -90,53 +87,84 @@ void ScannerComponent::scanPlugins()
     enterModalState (false, nullptr, false);
     DBG ("Scan Start");
     
+    dirScanner = processor.getWrapper().getDirectoryScannerForFormat (formatToScan);
     scanning = true;
-    //setComponentsVisible();
-    startTimer (20);
+    setComponentsVisible();
     
-    int i = 0;
-    for (int i =0; i < PluginWrapper::Formats::numFormats; i++)
+    threadPool.reset (new ThreadPool (numThreads));
+    for (int i =0; i < numThreads; i++)
     {
-        ScopedPointer<PluginDirectoryScanner> dirScanner = processor.getWrapper().getDirectoryScannerForFormat (i);
-        
-        // Rescans until scanNextFile returns false
-        while (dirScanner->scanNextFile (true, pluginBeingScanned))
-        {
-            scanProgress = dirScanner->getProgress();
-            pluginBeingScanned = pluginBeingScanned.fromLastOccurrenceOf ("\\", false, false);
-            DBG ("Scanning : " << pluginBeingScanned << " | Progress : " << scanProgress);
-            
-            if (scanning == false) break; 
-        }
-        
-        if (scanning == false) break;
-        
-        scanProgress = dirScanner->getProgress();
+		threadPool->addJob (new ScanJob(*this), true);
     }
     
-    scanFinished();
+    setComponentsVisible();
+    startTimer (20);
+}
+
+bool ScannerComponent::doNextScan()
+{
+    if (dirScanner->scanNextFile (true, pluginBeingScanned))
+    {
+		scanProgress = (dirScanner->getProgress() + float (formatToScan))/PluginWrapper::Formats::numFormats;
+        pluginBeingScanned = pluginBeingScanned.fromLastOccurrenceOf ("\\", false, false);
+        return true;
+    }
+    
+	scanProgress = (dirScanner->getProgress() + float (formatToScan))/PluginWrapper::Formats::numFormats;
+    scanning = false;
+    return false;
 }
 
 void ScannerComponent::cancelScan()
 {
-    scanning = false;
-    //setComponentsVisible();
+    if (threadPool->removeAllJobs (true, 5000))
+    {
+        stopTimer();
+        scanning = false;
+        scanProgress = 0.0f;
+        pluginBeingScanned = "";
+        bar->repaint();
+        dirScanner.reset();
+        setComponentsVisible(); 
+        if (auto* header = dynamic_cast<PlumeComponent*> (getParentComponent()
+                                                        ->getParentComponent()
+                                                        ->findChildWithID ("header")))
+        {
+            header->update();
+        }
     
-    exitModalState (0);
+        exitModalState (0);
+    }
 }
 
 void ScannerComponent::scanFinished()
 {
-    scanning = false;
-    //setComponentsVisible();
+    formatToScan++;
+    if (formatToScan < PluginWrapper::Formats::numFormats)
+    {
+        // Scans next format (if there is one)
+        scanPlugins();
+        return;
+    }
     
+    // Else reverts to non scan mode and saves plugins to external list
+    setComponentsVisible();
     bar->repaint();
+    
+    dirScanner.reset();
     processor.getWrapper().savePluginListToFile();
+    
+    if (auto* header = dynamic_cast<PlumeComponent*> (getParentComponent()
+                                                        ->getParentComponent()
+                                                        ->findChildWithID ("header")))
+    {
+        header->update();
+    }
+        
     exitModalState (1);
 }
 
 void ScannerComponent::setComponentsVisible()
 {
-    bar->setVisible (scanning);
     cancelButton->setVisible (scanning);
 }

@@ -40,4 +40,7 @@ public:
     //==============================================================================
     RangedAudioParameter& rangeLow; /**< \brief Tilt's low range value. The full effect will happend between this and rangeHigh. */
 	RangedAudioParameter& rangeHigh; /**< \brief Tilt's high range value. The full effect will happend between rangeLow and this. */
+
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Roll)
 };

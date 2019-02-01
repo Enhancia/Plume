@@ -42,4 +42,6 @@ public:
 	RangedAudioParameter& rangeHigh; /**< \brief Tilt's high range value. The full effect will happend between rangeLow and this. */
 	
 private:
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Tilt)
 };
