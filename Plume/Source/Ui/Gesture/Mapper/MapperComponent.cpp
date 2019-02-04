@@ -8,17 +8,12 @@
   ==============================================================================
 */
 
-#include "../../../../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
-
 #include "Ui/Gesture/Mapper/MapperComponent.h"
 
 #define W getWidth()
 #define H getHeight()
 #define MARGIN PLUME::UI::MARGIN
 
-#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
-#define TRACE_OUT Logger::writeToLog ("[-FNC]  Leaving: " + String(__FUNCTION__))
 //==============================================================================
 MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr, PluginWrapper& wrap)
     :   gesture (gest), gestureArray (gestArr), wrapper (wrap)

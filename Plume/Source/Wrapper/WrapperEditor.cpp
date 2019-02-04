@@ -10,7 +10,6 @@
 
 #include "Wrapper/PluginWrapper.h"
 
-#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 //==============================================================================
 WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc, int x, int y)
        : DocumentWindow (wrapProc.getName(),

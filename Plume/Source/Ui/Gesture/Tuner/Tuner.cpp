@@ -12,8 +12,6 @@
 
 #define CURSOR_SIZE 4
 
-#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
-
 Tuner::Tuner (const float& val, NormalisableRange<float> gestRange, const Range<float> dispRange, const String unit, bool show)
 	: value(val), gestureRange(gestRange), displayRange(dispRange), valueUnit(unit), showValue(show)
 {

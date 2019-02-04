@@ -14,9 +14,6 @@
 #include "Common/PlumeCommon.h"
 #define MAX_PARAMETER 4
 
-#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
-#define TRACE_OUT Logger::writeToLog ("[-FNC]  Leaving: " + String(__FUNCTION__))
-
 using namespace PLUME;
 /**
  *  \class Gesture Gesture.h

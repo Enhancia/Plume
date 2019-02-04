@@ -11,9 +11,6 @@
 #include "Plugin/PluginProcessor.h"
 #include "Plugin/PluginEditor.h"
 
-
-
-#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 //==============================================================================
 PlumeEditor::PlumeEditor (PlumeProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
@@ -99,7 +96,7 @@ void PlumeEditor::resized()
     using namespace PLUME::UI;
     auto area = getLocalBounds();
     
-    auto sideBarArea = Rectangle<int> (sideBarButton->getToggleState() ? 0 : SIDEBAR_WIDTH, 0,
+    auto sideBarArea = juce::Rectangle<int> (sideBarButton->getToggleState() ? 0 : SIDEBAR_WIDTH, 0,
 	                                   HEADER_HEIGHT, HEADER_HEIGHT);
 	sideBarButton->setBounds (sideBarArea.reduced ((3*MARGIN)/2));
 	if (!sideBarButton->getToggleState())

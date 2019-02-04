@@ -9,14 +9,10 @@
 */
 
 #include "Plugin/PluginProcessor.h"
-#include "Common/PlumeCommon.h"
 
 #if ! (JUCE_PLUGINHOST_VST || JUCE_PLUGINHOST_VST3 || JUCE_PLUGINHOST_AU)
  #error "If you're building the wrapper, you probably want to enable VST and/or AU support"
 #endif
-
-
-#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 
 PluginWrapper::PluginWrapper (PlumeProcessor& p, GestureArray& gArr, ValueTree pluginDirs)
     : owner (p), gestArray (gArr), customDirectories (pluginDirs)
@@ -573,11 +569,14 @@ void PluginWrapper::loadPluginListFromFile()
     
     // Recreates plugin List
 	ScopedPointer<XmlElement> listXml = XmlDocument::parse(scannedPlugins);
-
-	// Recreates custom directories list
-	customDirectories.copyPropertiesAndChildrenFrom (ValueTree::fromXml (*listXml->getChildByName ("USER_DIRECTORIES")
-	                                                                             ->getChildByName (PLUME::treeId::pluginDirs)),
-	                                                                     nullptr);
+	
+	if (listXml->getChildByName ("USER_DIRECTORIES")) // checks the file for the right XML
+    {
+	    // Recreates custom directories list
+	    customDirectories.copyPropertiesAndChildrenFrom (ValueTree::fromXml (*listXml->getChildByName ("USER_DIRECTORIES")
+	                                                                                ->getChildByName (PLUME::treeId::pluginDirs)),
+	                                                                        nullptr);
+    }
     
     pluginList->recreateFromXml (*listXml->getChildByName("KNOWNPLUGINS"));
 	listXml->deleteAllChildElements();

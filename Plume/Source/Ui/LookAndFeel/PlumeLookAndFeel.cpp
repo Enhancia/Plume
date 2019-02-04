@@ -65,7 +65,7 @@ void PlumeLookAndFeel::setColours()
 
 Font PlumeLookAndFeel::getLabelFont (Label& lbl)
 {
-    return Font (PLUME::UI::font, 15.00f, Font::plain);
+    return Font (PLUME::UI::font, 12.00f, Font::plain);
 }
 
 void PlumeLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int width, int height,

@@ -72,6 +72,11 @@ void ScannerComponent::timerCallback()
     if (scanning)
     {
 		bar->repaint();
+		
+		if (threadPool->getNumJobs() == 0) // Late job removal
+        {
+            cancelScan();
+        }
     }
     else
     {
@@ -106,7 +111,8 @@ bool ScannerComponent::doNextScan()
     if (dirScanner->scanNextFile (true, pluginBeingScanned))
     {
 		scanProgress = (dirScanner->getProgress() + float (formatToScan))/PluginWrapper::Formats::numFormats;
-        pluginBeingScanned = pluginBeingScanned.fromLastOccurrenceOf ("\\", false, false);
+        pluginBeingScanned = pluginBeingScanned.fromLastOccurrenceOf ("\\", false, false)
+                                               .fromLastOccurrenceOf ("/", false, false);
         return true;
     }
     
@@ -117,10 +123,11 @@ bool ScannerComponent::doNextScan()
 
 void ScannerComponent::cancelScan()
 {
-    if (threadPool->removeAllJobs (true, 5000))
+    if (threadPool->getNumJobs() == 0 || threadPool->removeAllJobs (true, 6000))
     {
-        stopTimer();
         scanning = false;
+        
+        stopTimer();
         scanProgress = 0.0f;
         pluginBeingScanned = "";
         bar->repaint();

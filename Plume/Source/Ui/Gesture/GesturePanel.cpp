@@ -8,9 +8,6 @@
   ==============================================================================
 */
 
-#include "../../../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
-
 #include "Gesture/GestureArray.h"
 #include "Ui/Gesture/GesturePanel.h"
 #include "Ui/Gesture/Tuner/GesturesTuner.h"
@@ -18,7 +15,6 @@
 
 #define MARGIN PLUME::UI::MARGIN
 
-#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 //==============================================================================
 class  GesturePanel::GestureComponent   : public Component,
 										  private Button::Listener

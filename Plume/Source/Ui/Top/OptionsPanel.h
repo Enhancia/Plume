@@ -10,10 +10,17 @@
 
 #pragma once
 
+
 #include "../../../JuceLibraryCode/JuceHeader.h"
 #include "Common/PlumeCommon.h"
 #include "Plugin/PluginProcessor.h"
 #include "Ui/Top/ScannerComponent.h"
+
+
+#if JUCE_WINDOWS
+#include <windows.h>
+#include <ShellAPI.h>
+#endif
 
 //==============================================================================
 /*
@@ -40,12 +47,13 @@ public:
 
 private:
     //==============================================================================
-    Rectangle<int> optionsArea;
+    juce::Rectangle<int> optionsArea;
     ScopedPointer<Label> presetDirLabel;
     ScopedPointer<Label> pluginDirLabel;
     
     ScopedPointer<ShapeButton> scanButton;
     ScopedPointer<ScannerComponent> scanner;
+    ScopedPointer<TextButton> mailButton;
     
     PlumeProcessor& processor;
     

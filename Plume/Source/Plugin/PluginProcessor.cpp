@@ -27,12 +27,16 @@ PlumeProcessor::PlumeProcessor()
     Time t;
     plumeLogger = FileLogger::createDefaultAppLogger ("Enhancia/Plume/Logs/",
                                                       "plumeLog.txt",
-                                                      "Plume Log " + String (t.getYear())
-                                                                   + String (t.getMonth())
-                                                                   + String (t.getDayOfMonth())
-                                                      +"\n Host application : "
+                                                      "Plume Log | Host application : "
                                                       + File::getSpecialLocation (File::hostApplicationPath)
-                                                            .getFullPathName());
+                                                            .getFullPathName()
+                                                      + " | OS :"
+                                                      #if JUCE_MAC
+                                                        " MAC "
+                                                      #elif JUCE_WINDOWS
+                                                        " Windows "
+                                                      #endif
+                                                      + " | Plume v" + JucePlugin_VersionString + " \n");
     
     Logger::setCurrentLogger (plumeLogger);
     

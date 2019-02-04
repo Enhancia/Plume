@@ -11,6 +11,7 @@
 #pragma once
 
 #include "../../JuceLibraryCode/JuceHeader.h"
+#include "Common/PlumeCommon.h"
 
 class PluginWrapper;
 

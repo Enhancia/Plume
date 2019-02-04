@@ -11,6 +11,7 @@
 #pragma once
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
+#include "Common/PlumeCommon.h"
 #include "Wrapper/PluginWrapper.h"
 #include "Ui/LookAndFeel/PlumeLookAndFeel.h"
 
