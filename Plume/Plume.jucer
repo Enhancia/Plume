@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" jucerVersion="5.4.1"
-              pluginFormats="buildAU,buildStandalone,buildVST" version="1.2.0"
+              pluginFormats="buildAU,buildStandalone,buildVST" version="1.2.1"
               companyName="Enhancia" buildVST="1" buildVST3="0" buildAU="1"
               buildAUv3="0" buildRTAS="0" buildAAX="0" enableIAA="0" pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
               pluginManufacturer="Enhancia" pluginName="Plume" pluginDesc="Enhancia's Plume. Wraps other plugins, provides customizable and mappable gestures to use with Neova."
@@ -74,9 +74,22 @@
         <GROUP id="{4CA36361-EB23-BED0-3C51-3F19F9BE9F00}" name="Common">
           <FILE id="G8QEm8" name="PlumeComponent.h" compile="0" resource="0"
                 file="Source/Ui/Common/PlumeComponent.h"/>
+          <FILE id="QUY8ep" name="PlumeProgressBar.cpp" compile="1" resource="0"
+                file="Source/Ui/Common/PlumeProgressBar.cpp"/>
+          <FILE id="KjXDjo" name="PlumeProgressBar.h" compile="0" resource="0"
+                file="Source/Ui/Common/PlumeProgressBar.h"/>
           <FILE id="cZ9UZJ" name="MovingCursor.cpp" compile="1" resource="0"
                 file="Source/Ui/Common/MovingCursor.cpp"/>
           <FILE id="QhDpZl" name="MovingCursor.h" compile="0" resource="0" file="Source/Ui/Common/MovingCursor.h"/>
+        </GROUP>
+        <GROUP id="{B4604567-1941-DD36-C775-AB9FE7EF3408}" name="Top">
+          <FILE id="Gn44ST" name="OptionsPanel.cpp" compile="1" resource="0"
+                file="Source/Ui/Top/OptionsPanel.cpp"/>
+          <FILE id="y9sRww" name="OptionsPanel.h" compile="0" resource="0" file="Source/Ui/Top/OptionsPanel.h"/>
+          <FILE id="szq63m" name="ScannerComponent.cpp" compile="1" resource="0"
+                file="Source/Ui/Top/ScannerComponent.cpp"/>
+          <FILE id="qcCMzi" name="ScannerComponent.h" compile="0" resource="0"
+                file="Source/Ui/Top/ScannerComponent.h"/>
         </GROUP>
         <GROUP id="{ACEA364D-47F4-BE67-B3B0-D0FEC5CE7BA7}" name="Header">
           <FILE id="hBml6T" name="HeaderComponent.cpp" compile="1" resource="0"

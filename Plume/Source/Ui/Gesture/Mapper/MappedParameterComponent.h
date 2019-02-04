@@ -11,12 +11,11 @@
 #pragma once
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
+#include "Common/PlumeCommon.h"
 #include "Gesture/Gesture.h"
 
 #define W getWidth()
 #define H getHeight()
-
-#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 
 //==============================================================================
 /*

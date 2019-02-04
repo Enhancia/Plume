@@ -29,7 +29,7 @@ public:
     /**
      * \brief Constructor.
      */
-    PresetHandler();
+    PresetHandler (ValueTree presetDirValue);
     /**
      * \brief Destructor.
      */
@@ -45,6 +45,13 @@ public:
      * \param newDir the directory that should be used.
      */  
     void setUserDirectory (const File& newDir);
+    
+    /**
+     * \brief Getter for the user directory.
+     *
+     * \returns The user preset directory.
+     */  
+    File getUserDirectory();
     
     /**
      * \brief Getter for the preset currently in use.
@@ -99,7 +106,7 @@ private:
     OwnedArray<File> defaultPresets;
     OwnedArray<File> userPresets;
     File defaultDir;
-    File userDir;
+    ValueTree userDirValue;
     String currentPresetName;
     bool currentIsDefault = false;
     

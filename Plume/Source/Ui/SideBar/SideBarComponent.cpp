@@ -12,7 +12,8 @@
 #include "SideBarComponent.h"
 
 //==============================================================================
-SideBarComponent::SideBarComponent (PlumeProcessor& proc)   : processor (proc)
+SideBarComponent::SideBarComponent (PlumeProcessor& proc, Component& optsPanel)   : processor (proc),
+                                                                                    options (optsPanel)
 {
     setName ("Side Bar");
     setComponentID ("sideBar");
@@ -21,7 +22,7 @@ SideBarComponent::SideBarComponent (PlumeProcessor& proc)   : processor (proc)
                                                         PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFill),
 		                                                PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFillHighlighted),
 		                                                PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFillClicked)));
-	optionsButton->setShape (PLUME::path::magnifyingGlassPath, false, true, false);
+	optionsButton->setShape (PLUME::path::gearPath, false, true, false);
 	optionsButton->addListener (this);
     addAndMakeVisible (presetComponent = new PresetComponent (processor));
 }
@@ -79,6 +80,14 @@ void SideBarComponent::paint (Graphics& g)
 	g.setColour(currentTheme.getColour(PLUME::colour::sideBarSubText));
     g.drawText ("Presets", area.reduced (2*MARGIN, MARGIN),
                 Justification::topLeft, true);
+    
+    // Version Text
+    g.setColour (currentTheme.getColour (PLUME::colour::presetsBoxStandartText));
+    g.setFont (Font (10.0f, Font::italic).withTypefaceStyle ("Regular"));
+    g.drawText ("Plume " + String(JucePlugin_VersionString),
+	            1, getHeight() - MARGIN,
+	            100, MARGIN,
+                Justification::centredLeft, true);
 }
 
 void SideBarComponent::resized()
@@ -103,10 +112,12 @@ void SideBarComponent::buttonClicked (Button* bttn)
 {
     if (bttn == optionsButton)
     {
-        // WIP -> Should trigger a message to open the options panel...
-        // For now only scans the plugins in the defaultDirs and updates preset box
-        processor.getWrapper().scanAllPluginsInDirectories (false, true);
-		processor.sendActionMessage (PLUME::commands::updateInterface);
-		presetComponent->update();
+        // OLD (scans plugins)
+        //processor.getWrapper().scanAllPluginsInDirectories (false, true);
+		//processor.sendActionMessage (PLUME::commands::updateInterface);
+		//presetComponent->update();
+		
+		// NEW Displays options
+		options.setVisible (true);
     }
 }

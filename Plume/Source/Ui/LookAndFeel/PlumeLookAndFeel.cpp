@@ -63,6 +63,11 @@ void PlumeLookAndFeel::setColours()
 	setColour (PopupMenu::highlightedTextColourId, Colour (0xff323232));
 }
 
+Font PlumeLookAndFeel::getLabelFont (Label& lbl)
+{
+    return Font (PLUME::UI::font, 12.00f, Font::plain);
+}
+
 void PlumeLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int width, int height,
                                        float sliderPos,
                                        float minSliderPos,

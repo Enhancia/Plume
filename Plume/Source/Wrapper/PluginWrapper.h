@@ -11,9 +11,11 @@
 #pragma once
 
 #include "../../JuceLibraryCode/JuceHeader.h"
+#include "Common/PlumeCommon.h"
 
 #include "Gesture/GestureArray.h"
 #include "Wrapper/WrapperEditor.h"
+
 /**
  *  \class PluginWrapper PluginWrapper.h
  *
@@ -41,7 +43,7 @@ public:
     };
    
     //==============================================================================
-    PluginWrapper(PlumeProcessor&, GestureArray&);
+    PluginWrapper(PlumeProcessor&, GestureArray&, ValueTree pluginDirs);
     ~PluginWrapper();
     
     //==============================================================================
@@ -54,10 +56,15 @@ public:
     
     //==============================================================================
     void scanAllPluginsInDirectories (bool dontRescanIfAlreadyInList, bool ignoreBlackList = false);
+    PluginDirectoryScanner* getDirectoryScannerForFormat (int formatToScan);
+    void savePluginListToFile();
+    
     AudioPluginFormat* getPluginFormat (File pluginFile);
     
     //==============================================================================
     void addCustomDirectory (File newDir);
+    String getCustomDirectory (int numDir);
+    void clearCustomDirectories();
     void addPluginsToMenu (PopupMenu& menu, KnownPluginList::SortMethod sort);
     
     //==============================================================================
@@ -83,25 +90,25 @@ public:
     
 private:
     //==============================================================================
-    OwnedArray<File> createFileList();
+    Array<File*> createFileList();
     PluginDescription* getDescriptionToWrap (const PluginDescription& description);
-    void savePluginListToFile();
     void loadPluginListFromFile();
     
     //==============================================================================
     bool hasWrappedInstance;
     bool hasOpenedEditor;
     bool useDefaultPaths = true;
-    float scanProgress;
+    float scanProgress = 0.0f;
     String pluginBeingScanned;
     
     //==============================================================================
     ScopedPointer<WrapperProcessor> wrapperProcessor;
     ScopedPointer<AudioPluginInstance> wrappedInstance;
     ScopedPointer<WrapperEditorWindow> wrapperEditor;
+    ScopedPointer<PlumeProgressBar> bar;
 
     //==============================================================================
-    OwnedArray<File> customDirectories;
+    ValueTree customDirectories;
     ScopedPointer<KnownPluginList> pluginList;
     ScopedPointer<AudioPluginFormatManager> formatManager;
  

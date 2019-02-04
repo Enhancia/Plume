@@ -116,7 +116,7 @@ void PresetBox::listBoxItemDoubleClicked (int row, const MouseEvent& event)
             
             // Calls the plugin's setStateInformation method to load the preset
 	        PLUME::UI::ANIMATE_UI_FLAG = false;
-	        Time::waitForMillisecondCounter(Time::getMillisecondCounter() + 100);
+	        Time::waitForMillisecondCounter(Time::getMillisecondCounter() + 10);
 
             processor.setStateInformation (presetData.getData(), presetData.getSize());
 			presetXml->deleteAllChildElements(); // frees the memory

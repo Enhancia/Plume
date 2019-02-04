@@ -50,4 +50,7 @@ public:
 private:
     bool send = false; /**< \brief Boolean used to know if the gesture should send midi */
     bool pbLast = false; /**< \brief Boolean to know if the gesture sent midi in the last buffer*/
+    
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PitchBend)
 };

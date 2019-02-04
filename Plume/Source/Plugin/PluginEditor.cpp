@@ -11,11 +11,6 @@
 #include "Plugin/PluginProcessor.h"
 #include "Plugin/PluginEditor.h"
 
-#define TOP_PANEL 70
-#define MARGIN PLUME::UI::MARGIN
-
-
-#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 //==============================================================================
 PlumeEditor::PlumeEditor (PlumeProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
@@ -26,12 +21,19 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	setMouseClickGrabsKeyboardFocus(false);
 	setBroughtToFrontOnMouseClick (true);
 
+	// Creates the Top Panels
+	addAndMakeVisible (options = new OptionsPanel (processor));
+	options->setVisible(false);
+	options->setAlwaysOnTop (true);
+	options->setBounds (getBounds());
+
     // Creates the main components
     addAndMakeVisible (header = new HeaderComponent (processor));
-    addAndMakeVisible (sideBar = new SideBarComponent (processor));
+    addAndMakeVisible (sideBar = new SideBarComponent (processor, *options));
     
 	addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
 	                                                    processor.getParameterTree(), PLUME::UI::FRAMERATE));
+	// SideBarButton
 	bool sideBarHidden = false;
 
 	addAndMakeVisible (sideBarButton = new ShapeButton ("Side Bar Button",
@@ -42,8 +44,8 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	sideBarButton->setToggleState (sideBarHidden, dontSendNotification); // side bar visible at first
     sideBarButton->setClickingTogglesState (true);
 	createSideBarButtonPath();
-    sideBarButton->addListener (this);
-	
+	sideBarButton->addListener(this);
+    
     // Adds itself as a change listener for plume's processor
     processor.addActionListener (this);
 
@@ -89,26 +91,12 @@ void PlumeEditor::paint (Graphics& g)
     g.fillAll (PLUME::UI::currentTheme.getColour (PLUME::colour::basePanelBackground));
 }
 
-void PlumeEditor::paintOverChildren (Graphics& g)
-{
-    if (!(sideBarButton->getToggleState()))
-    {
-        // Version Text
-        g.setColour (PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxStandartText));
-        g.setFont (Font (10.0f, Font::italic).withTypefaceStyle ("Regular"));
-        g.drawText ("Plume " + String(JucePlugin_VersionString),
-		            1, getHeight() - MARGIN,
-		            100, MARGIN,
-                    Justification::centredLeft, true);
-    }
-}
-
 void PlumeEditor::resized()
 {
     using namespace PLUME::UI;
     auto area = getLocalBounds();
     
-    auto sideBarArea = Rectangle<int> (sideBarButton->getToggleState() ? 0 : SIDEBAR_WIDTH, 0,
+    auto sideBarArea = juce::Rectangle<int> (sideBarButton->getToggleState() ? 0 : SIDEBAR_WIDTH, 0,
 	                                   HEADER_HEIGHT, HEADER_HEIGHT);
 	sideBarButton->setBounds (sideBarArea.reduced ((3*MARGIN)/2));
 	if (!sideBarButton->getToggleState())
@@ -119,6 +107,7 @@ void PlumeEditor::resized()
 	header->setBounds (area.removeFromTop (HEADER_HEIGHT));
 	gesturePanel->setBounds(area.reduced (2*MARGIN, 2*MARGIN));
 	resizableCorner->setBounds (getWidth() - 20, getHeight() - 20, 20, 20);
+	options->setBounds (0, 0, getWidth(), getHeight());
 
 	repaint();
 }
@@ -201,6 +190,7 @@ void PlumeEditor::updateFullInterface()
 	gesturePanel->setBounds(gpbounds);
 	gesturePanel->addMouseListener (this, true);
 	header->update();
+	sideBar->update();
 	
 	PLUME::UI::ANIMATE_UI_FLAG = true;
 }

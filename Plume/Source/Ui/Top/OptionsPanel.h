@@ -1,8 +1,8 @@
 /*
   ==============================================================================
 
-    SideBarComponent.h
-    Created: 12 Dec 2018 4:52:31pm
+    OptionsPanel.h
+    Created: 24 Jan 2019 5:23:26pm
     Author:  Alex
 
   ==============================================================================
@@ -10,43 +10,56 @@
 
 #pragma once
 
+
 #include "../../../JuceLibraryCode/JuceHeader.h"
 #include "Common/PlumeCommon.h"
-#include "Ui/SideBar/PresetComponent.h"
 #include "Plugin/PluginProcessor.h"
+#include "Ui/Top/ScannerComponent.h"
 
+
+#if JUCE_WINDOWS
+#include <windows.h>
+#include <ShellAPI.h>
+#endif
 
 //==============================================================================
 /*
 */
-class SideBarComponent    : public PlumeComponent,
-                            private Button::Listener
+class OptionsPanel    : public Component,
+                        private Button::Listener,
+                        private Label::Listener
+                        
 {
 public:
     //==============================================================================
-    SideBarComponent (PlumeProcessor& proc, Component& optsPanel);
-    ~SideBarComponent();
+    OptionsPanel (PlumeProcessor& proc);
+    ~OptionsPanel();
 
     //==============================================================================
-    // PlumeComponent
-    const String getInfoString() override;
-    void update() override;
-    
-    //==============================================================================
-    // Component
     void paint (Graphics&) override;
     void resized() override;
     
     //==============================================================================
+    void mouseUp (const MouseEvent& event) override;
+    void visibilityChanged() override;
     void buttonClicked (Button* bttn) override;
+    void labelTextChanged (Label* lbl) override;
 
 private:
     //==============================================================================
+    juce::Rectangle<int> optionsArea;
+    ScopedPointer<Label> presetDirLabel;
+    ScopedPointer<Label> pluginDirLabel;
+    
+    ScopedPointer<ShapeButton> scanButton;
+    ScopedPointer<ScannerComponent> scanner;
+    ScopedPointer<TextButton> mailButton;
+    
     PlumeProcessor& processor;
-    Component& options;
-    ScopedPointer<PresetComponent> presetComponent;
-    ScopedPointer<ShapeButton> optionsButton;
-
+    
+    Value pluginDir;
+    Value presetDir;
+    
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SideBarComponent)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OptionsPanel)
 };

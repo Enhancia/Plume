@@ -10,7 +10,7 @@
 
 #include "Presets/PresetHandler.h"
 
-PresetHandler::PresetHandler()
+PresetHandler::PresetHandler (ValueTree presetDirValue) : userDirValue (presetDirValue)
 {
     currentPresetName = "-";
     initialiseDirectories();
@@ -25,7 +25,12 @@ PresetHandler::~PresetHandler()
 //==============================================================================
 void PresetHandler::setUserDirectory (const File& newDir)
 {
-    userDir = newDir;
+    userDirValue.setProperty (PLUME::treeId::value, newDir.getFullPathName(), nullptr);
+}
+
+File PresetHandler::getUserDirectory()
+{
+    return File (userDirValue.getProperty (PLUME::treeId::value, var("")).toString());
 }
 
 String PresetHandler::getCurrentPresetName()
@@ -47,6 +52,8 @@ void PresetHandler::storePresets()
     
     // Adds user presets
     userPresets.clear();
+    File userDir (getUserDirectory());
+    
     if (userDir.exists() && userDir.getNumberOfChildFiles (File::findFiles + File::ignoreHiddenFiles, "*.plume") != 0)
     {
         for (auto f : userDir.findChildFiles (File::findFiles + File::ignoreHiddenFiles, false, "*.plume"))
@@ -112,9 +119,9 @@ bool PresetHandler::savePreset (XmlElement& presetXml)
     if (!canSavePreset()) return false;
 
     // Tries to write the xml to the specified file
-    if (userDir.getChildFile (currentPresetName + ".plume").exists())
+    if (getUserDirectory().getChildFile (currentPresetName + ".plume").exists())
     {
-        if (presetXml.writeToFile (userDir.getChildFile (currentPresetName + ".plume"), String()))
+        if (presetXml.writeToFile (getUserDirectory().getChildFile (currentPresetName + ".plume"), String()))
         {
             DBG ("Preset file succesfully written");
             return true;
@@ -127,7 +134,7 @@ bool PresetHandler::savePreset (XmlElement& presetXml)
     }
     else
     {
-        DBG ("Couldn't find preset file : " << userDir.getFullPathName() << currentPresetName << ".plume");
+        DBG ("Couldn't find preset file : " << getUserDirectory().getFullPathName() << currentPresetName << ".plume");
         return false;
     }
 }
@@ -139,7 +146,7 @@ bool PresetHandler::createNewUserPreset (String presetName, XmlElement& presetXm
     presetName = File::createLegalFileName (presetName);
     
     // If the file is succesfully created, changes current preset and saves
-    if (userDir.getChildFile (presetName + ".plume").create())
+    if (getUserDirectory().getChildFile (presetName + ".plume").create())
     {
         // Saves the current preset in case saving fails
         String formerPreset = currentPresetName;
@@ -156,7 +163,7 @@ bool PresetHandler::createNewUserPreset (String presetName, XmlElement& presetXm
                 if (f->getFileNameWithoutExtension() == presetName) return false;
             }
             
-            userPresets.add (new File (userDir.getChildFile (presetName).withFileExtension("plume")));
+            userPresets.add (new File (getUserDirectory().getChildFile (presetName).withFileExtension("plume")));
             return true;
         }
         else
@@ -164,7 +171,7 @@ bool PresetHandler::createNewUserPreset (String presetName, XmlElement& presetXm
             // restores to former values and deletes file
             currentPresetName = formerPreset;
             currentIsDefault = currentWasDefault;
-            userDir.getChildFile (presetName + ".plume").deleteFile();
+			getUserDirectory().getChildFile (presetName + ".plume").deleteFile();
             return false;
         }
     }
@@ -178,7 +185,7 @@ bool PresetHandler::renamePreset (String newName, const int id)
     if (newName.isEmpty()) return false;
     
     newName = File::createLegalFileName (newName);
-    File presetToRename = userDir.getChildFile (getTextForPresetId (id)).withFileExtension ("plume");
+    File presetToRename = getUserDirectory().getChildFile (getTextForPresetId (id)).withFileExtension ("plume");
     
     if (presetToRename.exists())
     {
@@ -196,8 +203,8 @@ bool PresetHandler::renamePreset (String newName, const int id)
                     presetXml->deleteAllChildElements();
                     
                     // Changes the file in the array..
-                    userPresets.set(id - defaultPresets.size(), new File (userDir.getChildFile (newName)
-                                                                                 .withFileExtension ("plume")));
+                    userPresets.set(id - defaultPresets.size(), new File (getUserDirectory().getChildFile (newName)
+                                                                                            .withFileExtension ("plume")));
                     return true;
                 }
             }
@@ -271,7 +278,7 @@ void PresetHandler::initialiseDirectories()
   #endif
     
     defaultDir = baseDir.getChildFile ("Default/");
-    userDir = baseDir.getChildFile ("User/");
+    setUserDirectory (baseDir.getChildFile ("User/"));
     
     storePresets();
 }

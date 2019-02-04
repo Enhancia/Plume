@@ -73,7 +73,13 @@ enum PlumeColourID
             detailPanelHighlightedSubText,
             detailPanelSubComponentsOutline,
             detailPanelActiveMapping,
-                
+            
+    // Top Panel
+        topPanelBackground,
+        topPanelTransparentArea,
+        topPanelMainText,
+        topPanelSubText,
+    
     numColours
 };
         

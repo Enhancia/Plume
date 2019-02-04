@@ -13,6 +13,11 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PlumeColours.h"
 #include "Ui/Common/PlumeComponent.h"
+#include "Ui/Common/PlumeProgressBar.h"
+
+// Preprocessor expressions
+#define TRACE_IN  Logger::writeToLog ("[+] Entering: " + String(__FUNCTION__) + "\n")
+#define TRACE_OUT Logger::writeToLog ("[-]  Leaving: " + String(__FUNCTION__) + "\n")
 
 namespace PLUME
 {
@@ -58,16 +63,25 @@ namespace PLUME
         extern PLUME::colour::PlumeTheme currentTheme;
     }
     
-    // Value tree identifiers
-    const Identifier parametersIdentifier ("Parameters");
-    const Identifier plumeIdentifier ("Plume");
-    const Identifier groupIdentifier ("group");
-    const Identifier typeIdentifier ("type");
-    const Identifier gestureIdentifier ("gesture");
-    const Identifier parameterIdentifier ("parameter");
-    const Identifier windowWIdentifier ("window_w");
-    const Identifier windowHIdentifier ("window_h");
-    
+    namespace treeId
+    {
+		// Value tree identifiers
+	    static Identifier parameter ("parameter");
+	    static Identifier plume ("PLUME");
+	    static Identifier group ("group");
+	    static Identifier setting ("setting");
+	    static Identifier value ("value");
+	    static Identifier general ("GENERAL");
+	    static Identifier instance ("instance");
+	    static Identifier presetDir ("PRESETDIR");
+	    static Identifier pluginDirs ("PLUGINDIRS");
+	    static Identifier directory ("DIR");
+	    static Identifier winX ("window_x");
+	    static Identifier winY ("window_y");
+	    static Identifier winW ("window_w");
+	    static Identifier winH ("window_h");
+    }
+
     // gesture max range values
     const float VIBRATO_RANGE_MAX  = 500.0f;
     const float VIBRATO_THRESH_MAX = 300.0f;

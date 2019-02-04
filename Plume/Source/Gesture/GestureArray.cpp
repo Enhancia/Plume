@@ -10,9 +10,6 @@
 
 #include "Gesture/GestureArray.h"
 
-#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
-#define TRACE_OUT Logger::writeToLog ("[-FNC]  Leaving: " + String(__FUNCTION__))
-
 GestureArray::GestureArray(DataReader& reader, AudioProcessorValueTreeState& params)  : dataReader (reader),
                                                                                         parameters (params)
 {
@@ -45,6 +42,8 @@ void GestureArray::process (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 
 void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 {
+    ScopedLock gestlock (gestureArrayLock);
+        
     if (shouldMergePitch)
     {
         // Adds non-pitch midi
@@ -75,6 +74,8 @@ void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages, MidiBuffer&
 
 void GestureArray::updateAllMappedParameters()
 {
+    ScopedLock gestlock (gestureArrayLock);
+    
     // calls updateMappedParameters for every gestures that isn't in
     // mapMode (to prevent the parameter from changing) and that is mapped
     for (auto* g : gestures)
@@ -94,6 +95,8 @@ void GestureArray::updateAllValues()
     // Gets the rawData in the array, and calls updateValue for each gesture
     if (dataReader.getRawDataAsFloatArray(rawData))
     {
+        ScopedLock gestlock (gestureArrayLock);
+    
         for (auto* g : gestures)
         {
             g->updateValue (rawData);
@@ -109,6 +112,8 @@ void GestureArray::updateAllValues()
 //==============================================================================
 Gesture* GestureArray::getGestureByName (const String nameToSearch)
 {
+    ScopedLock gestlock (gestureArrayLock);
+    
     // Browses every gesture to compare their name with nameToSearch
     for (auto* g : gestures)
     {
@@ -124,6 +129,8 @@ Gesture* GestureArray::getGestureByName (const String nameToSearch)
 
 Gesture* GestureArray::getGestureById (const int idToSearch)
 {
+    ScopedLock gestlock (gestureArrayLock);
+    
     if (idToSearch >= gestures.size() || idToSearch < 0)
     {
         DBG ("Gesture n°" << idToSearch << " doesn't exist. Number of gestures: " << gestures.size());
@@ -145,6 +152,8 @@ int GestureArray::size()
 
 bool GestureArray::parameterIsMapped (int parameterId)
 {
+    ScopedLock gestlock (gestureArrayLock);
+    
     for (auto* g : gestures)
     {
         if (g->parameterIsMapped (parameterId)) return true;
@@ -199,6 +208,8 @@ void GestureArray::addParameterToMapModeGesture (AudioProcessorParameter& param)
         return;
     }
     
+    ScopedLock gestlock (gestureArrayLock);
+    
     // else adds the parameter and cancels mapMode
     for (auto* g : gestures)
     {
@@ -219,6 +230,7 @@ void GestureArray::addAndSetParameter (AudioProcessorParameter& param, int gestu
     // else adds the parameter and cancels mapMode
     if (gestureId < size())
     {
+        ScopedLock gestlock (gestureArrayLock);
         gestures[gestureId]->addParameter (param, Range<float> (start, end), rev);
     }
 }
@@ -233,6 +245,8 @@ void GestureArray::clearAllGestures()
 void GestureArray::clearAllParameters()
 {
     TRACE_IN;
+    ScopedLock gestlock (gestureArrayLock);
+    
     for (auto* g : gestures)
     {
         g->mapModeOn = false;
@@ -242,6 +256,8 @@ void GestureArray::clearAllParameters()
 
 void GestureArray::cancelMapMode()
 {
+    ScopedLock gestlock (gestureArrayLock);
+    
     for (auto* g : gestures)
     {
         if (g->mapModeOn) g->mapModeOn = false;
@@ -255,6 +271,8 @@ void GestureArray::cancelMapMode()
 //==============================================================================
 void GestureArray::checkPitchMerging()
 {
+    ScopedLock gestlock (gestureArrayLock);
+    
     bool pitchGest = false;
     
     for (auto* g : gestures)
@@ -277,6 +295,8 @@ void GestureArray::checkPitchMerging()
 
 void GestureArray::addMergedPitchMessage (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 {
+    ScopedLock gestlock (gestureArrayLock);
+    
     int pitchVal = 8192;
     bool send = false;
     
@@ -340,6 +360,8 @@ void GestureArray::addMergedPitchMessage (MidiBuffer& midiMessages, MidiBuffer& 
 //==============================================================================
 void GestureArray::addGestureFromXml (XmlElement& gesture)
 {
+    ScopedLock gestlock (gestureArrayLock);
+    
     // Adds the right gesture
     switch (gesture.getIntAttribute ("type", -1))
     {
@@ -393,6 +415,8 @@ void GestureArray::addGestureFromXml (XmlElement& gesture)
 
 void GestureArray::createGestureXml (XmlElement& gesturesData)
 {
+    ScopedLock gestlock (gestureArrayLock);
+    
     for (auto* g : gestures)
     {
         auto gestXml = new XmlElement (g->name);
