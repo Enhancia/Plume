@@ -101,6 +101,8 @@ public:
 private:
     //==============================================================================
     void initialiseDirectories();
+    void createAllSubdirectories();
+    
     
     //==============================================================================
     OwnedArray<File> defaultPresets;

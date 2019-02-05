@@ -20,6 +20,8 @@
 #if JUCE_WINDOWS
 #include <windows.h>
 #include <ShellAPI.h>
+#elif JUCE_MAC
+#include <stdlib.h>
 #endif
 
 //==============================================================================

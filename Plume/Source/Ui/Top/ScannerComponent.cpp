@@ -89,7 +89,7 @@ void ScannerComponent::timerCallback()
 
 void ScannerComponent::scanPlugins()
 {
-    enterModalState (false, nullptr, false);
+    if (!isCurrentlyModal()) enterModalState (false, nullptr, false);
     DBG ("Scan Start");
     
     dirScanner = processor.getWrapper().getDirectoryScannerForFormat (formatToScan);
