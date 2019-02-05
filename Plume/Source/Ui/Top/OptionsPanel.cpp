@@ -163,7 +163,7 @@ void OptionsPanel::buttonClicked (Button* bttn)
 		                  "", "", SW_SHOWNORMAL);
 		  #elif JUCE_MAC					          
 			String mail_str ("open mailto:damien.leboulaire@enhancia.co"
-                             "?Subject=	\"[Plume Report]\""
+                             "?Subject=\"[Plume Report]\""
 			                 "\\&cc=alex.levacher@enhancia.co"
 		                     "\\&body=\"" + fullLog.substring (startIndex) + "\"");
 		    
