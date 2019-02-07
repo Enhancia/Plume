@@ -76,24 +76,14 @@ int PresetHandler::getNumSearchedPresets()
 
 String PresetHandler::getTextForPresetId (int id)
 {
-    if (id < 0 || id >= getNumPresets()) return "-";
+    if (id < 0 || id >= getNumSearchedPresets()) return "-";
     
-    bool isUser = id >= defaultPresets.size();
-    
-    if (isUser)
-    {
-        id -= defaultPresets.size();
-        return userPresets[id]->getFile().getFileNameWithoutExtension();
-    }
-    else
-    {
-        return defaultPresets[id]->getFile().getFileNameWithoutExtension();
-    }
+    return searchedPresets[id]->getName();
 }
 
 bool PresetHandler::isUserPreset (int id)
 {
-	return (id >= defaultPresets.size() && id < getNumPresets());
+	return (searchedPresets[id]->presetType == PlumePreset::userPreset);
 }
 
 bool PresetHandler::canSavePreset()
@@ -103,28 +93,20 @@ bool PresetHandler::canSavePreset()
 
 XmlElement* PresetHandler::getPresetXmlToLoad (int selectedPreset)
 {
-	if (selectedPreset < 0 || selectedPreset > getNumPresets()) return nullptr;
+	if (selectedPreset < 0 || selectedPreset > getNumSearchedPresets()) return nullptr;
 
 	currentPreset = getPresetForId (selectedPreset);
 	
-	if (currentPreset.presetType == PlumePreset::defaultPreset)
-	{
-	    return XmlDocument::parse (defaultPresets[selectedPreset]->getFile());
-	}
-	else
-    {
-	    selectedPreset -= defaultPresets.size();
-	    XmlDocument doc (userPresets[selectedPreset]->getFile());
+	XmlDocument doc (searchedPresets[selectedPreset]->getFile());
 	    
-	    if (XmlElement* el = doc.getDocumentElement())
-        {
-            return el;
-        }
-        else
-        {
-            DBG ("Failed to parse : " << doc.getLastParseError());
-            return nullptr;
-        }
+	if (XmlElement* elem = doc.getDocumentElement())
+    {
+        return elem;
+    }
+    else
+    {
+        DBG ("Failed to parse : " << doc.getLastParseError());
+        return nullptr;
     }	
 }
 
@@ -181,6 +163,8 @@ bool PresetHandler::createNewUserPreset (String presetName, XmlElement& presetXm
             }
             
             userPresets.add (new PlumePreset (getUserDirectory().getChildFile (presetName).withFileExtension("plume")));
+            
+            updateSearchedPresets();
             return true;
         }
         else
@@ -222,6 +206,7 @@ bool PresetHandler::renamePreset (String newName, const int id)
                     // Changes the file in the array..
                     userPresets.set(id - defaultPresets.size(), new PlumePreset (getUserDirectory().getChildFile (newName)
                                                                                                    .withFileExtension ("plume")));
+                    updateSearchedPresets();
                     return true;
                 }
             }
@@ -242,38 +227,25 @@ void PresetHandler::resetPreset()
 
 PlumePreset PresetHandler::getPresetForId(int id)
 {
-	if (id >= getNumPresets()) return PlumePreset();
-
-	if (currentPreset.getName() == getTextForPresetId(id))
-	{
-		resetPreset();
-	}
-
-	if (id < defaultPresets.size())
-	{
-		return (*defaultPresets[id]);
-	}
-
-    id -= defaultPresets.size();
+	if (id >= getNumSearchedPresets() || id < 0) return PlumePreset();
     
-	return (*userPresets[id]);
+	return (*searchedPresets[id]);
 }
 
 bool PresetHandler::deletePresetForId (int id)
 {
-    if (id < defaultPresets.size() || id >= getNumPresets()) return false;
+    if (id < 0 || id >= getNumSearchedPresets()) return false;
     
     if (currentPreset.getName() == getTextForPresetId (id))
     {
         resetPreset();
     }
     
-    id -= defaultPresets.size();
-    
-    if (userPresets[id]->getFile().deleteFile())
+    if (searchedPresets[id]->presetType == PlumePreset::userPreset)
     {
-        // succesful deletion
-        userPresets.remove (id);
+		searchedPresets[id]->getFile().deleteFile();
+        userPresets.removeObject (searchedPresets[id]);
+        searchedPresets.remove (id);
         return true;
     }
     
@@ -285,12 +257,7 @@ void PresetHandler::showPresetInExplorer (int id)
 {
     if (id < 0 || id >= getNumPresets()) return;
         
-    File f;
-    
-    if (!isUserPreset (id)) f = defaultPresets[id]->getFile();
-    else                    f = userPresets[id - defaultPresets.size()]->getFile();
-    
-    f.revealToUser();
+    searchedPresets[id]->getFile().revealToUser();
 }
     
 //==============================================================================
@@ -342,6 +309,61 @@ void PresetHandler::setSearchSettings (int type, int filter, String pluginName, 
     
     if (settings.plugin     != pluginName) settings.plugin     = pluginName;
     if (settings.nameSearch != name)       settings.nameSearch = name;
+    
+    updateSearchedPresets();
+}
+
+
+void PresetHandler::setTypeSearchSetting (PlumePreset::PresetType type)
+{
+    if (settings.presetType == type)
+    {
+        return; //No update if nothing changed
+    }
+    
+    // Sets the value and updates the searched presets list
+    if (type > -1 && type < 2) settings.presetType = type;
+    else                       settings.presetType = -1;
+    
+    updateSearchedPresets();
+}
+
+void PresetHandler::setFilterSearchSetting (PlumePreset::FilterType filter)
+{
+    if (settings.filterType == filter)
+    {
+        return; //No update if nothing changed
+    }
+    
+    // Sets the value and updates the searched presets list
+    if (filter > -1 && filter < PlumePreset::numFilters) settings.filterType = filter;
+    else                                                 settings.filterType = -1;
+    
+    updateSearchedPresets();
+}
+
+void PresetHandler::setPluginSearchSetting (String pluginName)
+{
+    if (settings.plugin == pluginName)
+    {
+        return; //No update if nothing changed
+    }
+    
+    // Sets the value and updates the searched presets list
+    settings.plugin = pluginName;
+    
+    updateSearchedPresets();
+}
+
+void PresetHandler::setNameSearchSetting (String name)
+{
+    if (settings.nameSearch == name)
+    {
+        return; //No update if nothing changed
+    }
+    
+    // Sets the value and updates the searched presets list
+    settings.nameSearch = name;
     
     updateSearchedPresets();
 }

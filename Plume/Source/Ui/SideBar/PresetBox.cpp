@@ -32,7 +32,7 @@ PresetBox::~PresetBox()
 //==============================================================================
 int PresetBox::getNumRows()
 {
-    return processor.getPresetHandler().getNumPresets() + newPresetEntry;
+    return processor.getPresetHandler().getNumSearchedPresets() + newPresetEntry;
 }
 
 void PresetBox::paintListBoxItem (int rowNumber, Graphics& g, int width, int height, bool rowIsSelected)
@@ -108,23 +108,7 @@ void PresetBox::listBoxItemDoubleClicked (int row, const MouseEvent& event)
 {
     if (event.mods.isLeftButtonDown())
     {
-        // Gets the preset Xml and loads it using the processor
-        if (ScopedPointer<XmlElement> presetXml = processor.getPresetHandler().getPresetXmlToLoad (row))
-        {
-            MemoryBlock presetData;
-            AudioProcessor::copyXmlToBinary (*presetXml, presetData);
-            
-            // Calls the plugin's setStateInformation method to load the preset
-	        PLUME::UI::ANIMATE_UI_FLAG = false;
-	        Time::waitForMillisecondCounter(Time::getMillisecondCounter() + 10);
-
-            processor.setStateInformation (presetData.getData(), presetData.getSize());
-			presetXml->deleteAllChildElements(); // frees the memory
-        }
-	    else // failed to get preset xml somehow
-        {
-            processor.getPresetHandler().resetPreset();
-        }
+        setPreset (row);
     }
 }
 
@@ -195,7 +179,7 @@ void PresetBox::startNewPresetEntry()
 {
     // Adds a new row at the end to edit the preset name
     newPresetEntry = true;
-    presetIdToEdit = processor.getPresetHandler().getNumPresets();
+    presetIdToEdit = processor.getPresetHandler().getNumSearchedPresets();
     editLabel->setText ("NewPreset", dontSendNotification);
     updateContent();
     scrollToEnsureRowIsOnscreen (presetIdToEdit);
@@ -239,7 +223,7 @@ void PresetBox::deletePreset (const int row)
 {
     //TODO fenêtre d'avertissement avant suppression
     
-    bool updateHeader = (processor.getPresetHandler().getCurrentPresetName()
+    bool shouldUpdateHeader = (processor.getPresetHandler().getCurrentPresetName()
                             == processor.getPresetHandler().getTextForPresetId (row));
     
 	if (processor.getPresetHandler().deletePresetForId(row))
@@ -247,15 +231,9 @@ void PresetBox::deletePreset (const int row)
 		updateContent();
 
 		// Updates the header in case the selected preset was deleted
-		if (updateHeader)
+		if (shouldUpdateHeader)
 		{
-			if (auto* hdr = dynamic_cast<PlumeComponent*> (  getParentComponent() // presetComp
-				                                           ->getParentComponent() // sideBarComp
-				                                           ->getParentComponent() // editor
-				                                           ->findChildWithID("header")))
-			{
-				hdr->update();
-			}
+			updateHeader();
 	    }
     }
 }
@@ -285,6 +263,27 @@ void PresetBox::handleMenuResult (const int row, const int menuResult)
     repaint();
 }
 
+void PresetBox::setPreset (const int row)
+{
+    // Gets the preset Xml and loads it using the processor
+    if (ScopedPointer<XmlElement> presetXml = processor.getPresetHandler().getPresetXmlToLoad (row))
+    {
+        MemoryBlock presetData;
+        AudioProcessor::copyXmlToBinary (*presetXml, presetData);
+            
+        // Calls the plugin's setStateInformation method to load the preset
+	    PLUME::UI::ANIMATE_UI_FLAG = false;
+       //Time::waitForMillisecondCounter(Time::getMillisecondCounter() + 10);
+
+        processor.setStateInformation (presetData.getData(), presetData.getSize());
+        presetXml->deleteAllChildElements(); // frees the memory
+    }
+    else // failed to get preset xml somehow
+    {
+        processor.getPresetHandler().resetPreset();
+    }
+}
+
 void PresetBox::createUserPreset (const String& presetName)
 {
     ScopedPointer<XmlElement> presetXml = new XmlElement (presetName.replace (" ", "_"));
@@ -292,6 +291,7 @@ void PresetBox::createUserPreset (const String& presetName)
 	processor.createGestureXml (*presetXml);
 	
     processor.getPresetHandler().createNewUserPreset (presetName, *presetXml);
+    updateHeader();
     
     presetXml->deleteAllChildElements();
 }
@@ -299,4 +299,15 @@ void PresetBox::createUserPreset (const String& presetName)
 void PresetBox::renamePreset (const String& newName)
 {
     processor.getPresetHandler().renamePreset (newName, presetIdToEdit);
+}
+
+void PresetBox::updateHeader()
+{
+    if (auto* hdr = dynamic_cast<PlumeComponent*> ( getParentComponent() // presetComp
+				                                   ->getParentComponent() // sideBarComp
+				                                   ->getParentComponent() // editor
+				                                   ->findChildWithID("header")))
+	{
+		hdr->update();
+	}
 }
