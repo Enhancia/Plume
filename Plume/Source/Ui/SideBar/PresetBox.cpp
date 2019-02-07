@@ -143,9 +143,9 @@ void PresetBox::deleteKeyPressed (int lastRowSelected)
 //==============================================================================
 void PresetBox::labelTextChanged (Label* lbl)
 {
-    String presetName = editLabel->getText().replaceCharacter (' ', '_');
+    String presetName = editLabel->getText();
     
-    if (XmlElement::isValidXmlName (presetName))
+    if (XmlElement::isValidXmlName (presetName.replace (" ", "_")))
     {
         if (newPresetEntry)
         {
@@ -287,7 +287,7 @@ void PresetBox::handleMenuResult (const int row, const int menuResult)
 
 void PresetBox::createUserPreset (const String& presetName)
 {
-    ScopedPointer<XmlElement> presetXml = new XmlElement (presetName);
+    ScopedPointer<XmlElement> presetXml = new XmlElement (presetName.replace (" ", "_"));
 	processor.createPluginXml (*presetXml);
 	processor.createGestureXml (*presetXml);
 	

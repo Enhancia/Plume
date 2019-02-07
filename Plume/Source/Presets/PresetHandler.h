@@ -13,6 +13,8 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Common/PlumeCommon.h"
 
+#include "PlumePreset.h"
+
 /**
  *  \class PresetHandler PresetHandler.h
  *
@@ -25,6 +27,23 @@
 class PresetHandler : private ChangeBroadcaster
 {
 public:
+
+    struct presetSearchSettings
+    {
+        presetSearchSettings (int type = -1, int filter = -1, String pluginName = "All", String name = "")
+        {
+            presetType = type;
+            filterType = filter;
+            plugin = pluginName;
+            nameSearch = name;
+        }
+        
+        int presetType;
+        int filterType;
+        String plugin = "All";
+        String nameSearch = "";
+    };
+    
     //==============================================================================
     /**
      * \brief Constructor.
@@ -65,7 +84,14 @@ public:
      *
      * \returns Total number of presets, regardless of them being default or user presets.
      */
-    int getNumPresets();
+    int getNumPresets ();
+    
+    /**
+     * \brief Getter for the number of presets that match the search.
+     *
+     * \returns Number of presets that matches the request. Used fot displaying the preset list.
+     */
+    int getNumSearchedPresets ();
     
     /**
      * \brief Getter for the name of a specified preset number.
@@ -94,23 +120,36 @@ public:
     bool savePreset (XmlElement& presetXml);
     bool createNewUserPreset (String presetName, XmlElement& presetXml);
     bool renamePreset (String newName, const int id);
+	PlumePreset getPresetForId (const int id);
     bool deletePresetForId (int id);
     void resetPreset();
     void showPresetInExplorer (int id);
     
+    //==============================================================================
+    void setSearchSettings (int type, int filter, String pluginName, String name);
+    
 private:
     //==============================================================================
     void initialiseDirectories();
-    void createAllSubdirectories();
-    
+    //void createDirectoryArborescence (File& dir);
+    //void createAllSubdirectories();
     
     //==============================================================================
-    OwnedArray<File> defaultPresets;
-    OwnedArray<File> userPresets;
+    void updateSearchedPresets();
+    
+    //==============================================================================
+    OwnedArray<PlumePreset> defaultPresets;
+    OwnedArray<PlumePreset> userPresets;
+    
     File defaultDir;
     ValueTree userDirValue;
-    String currentPresetName;
+    
+    PlumePreset currentPreset;
     bool currentIsDefault = false;
+    
+    //==============================================================================
+    Array<PlumePreset*> searchedPresets;
+    presetSearchSettings settings;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PresetHandler)

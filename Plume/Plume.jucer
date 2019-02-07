@@ -19,6 +19,8 @@
               file="Source/Plugin/PluginProcessor.h"/>
       </GROUP>
       <GROUP id="{AE0F84C5-94EC-13BD-B9DC-2AC22EE3F6D0}" name="Presets">
+        <FILE id="S1sDCS" name="PlumePreset.cpp" compile="1" resource="0" file="Source/Presets/PlumePreset.cpp"/>
+        <FILE id="AwGZm2" name="PlumePreset.h" compile="0" resource="0" file="Source/Presets/PlumePreset.h"/>
         <FILE id="zJjRDW" name="PresetHandler.cpp" compile="1" resource="0"
               file="Source/Presets/PresetHandler.cpp"/>
         <FILE id="nBqgBr" name="PresetHandler.h" compile="0" resource="0" file="Source/Presets/PresetHandler.h"/>
