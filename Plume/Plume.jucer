@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" jucerVersion="5.4.1"
+<JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" jucerVersion="5.4.2"
               pluginFormats="buildAU,buildStandalone,buildVST" version="1.2.1"
               companyName="Enhancia" buildVST="1" buildVST3="0" buildAU="1"
               buildAUv3="0" buildRTAS="0" buildAAX="0" enableIAA="0" pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
               pluginManufacturer="Enhancia" pluginName="Plume" pluginDesc="Enhancia's Plume. Wraps other plugins, provides customizable and mappable gestures to use with Neova."
               binaryDataNamespace="PlumeData" includeBinaryInJuceHeader="1"
-              id="PjN2uz" pluginManufacturerCode="Enhn" pluginCode="Plum">
+              id="PjN2uz" pluginManufacturerCode="Enhn" pluginCode="Plum" compilerFlagSchemes="NewScheme">
   <MAINGROUP id="RYgD59" name="Plume">
     <GROUP id="{9375F276-9F56-CF4A-C1B1-D4B5B9CE68B9}" name="Source">
       <GROUP id="{C4265A58-C7CC-0AD4-EB4C-B191A90D4C34}" name="Plugin">
@@ -101,6 +101,10 @@
         </GROUP>
         <GROUP id="{50A59D03-EF8C-6884-6A1F-9905EDBD4B18}" name="SideBar">
           <GROUP id="{922E7A2E-047F-B1E6-F663-0CA731B3EF8D}" name="Presets">
+            <FILE id="fBUhLf" name="TypeToggleComponent.cpp" compile="1" resource="0"
+                  file="Source/Ui/SideBar/TypeToggleComponent.cpp"/>
+            <FILE id="glyl8Y" name="TypeToggleComponent.h" compile="0" resource="0"
+                  file="Source/Ui/SideBar/TypeToggleComponent.h"/>
             <FILE id="HqBBQd" name="FilterBox.cpp" compile="1" resource="0" file="Source/Ui/SideBar/FilterBox.cpp"/>
             <FILE id="Cykhy0" name="FilterBox.h" compile="0" resource="0" file="Source/Ui/SideBar/FilterBox.h"/>
             <FILE id="qdqEga" name="PresetBox.cpp" compile="1" resource="0" file="Source/Ui/SideBar/PresetBox.cpp"/>

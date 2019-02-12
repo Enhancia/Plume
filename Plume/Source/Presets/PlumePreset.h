@@ -36,12 +36,14 @@ public:
 	{
 		defaultPreset = 0,
 		userPreset,
-		communityPreset
+		communityPreset,
+
+		numTypes
 	};
 
 	//==============================================================================
 	PlumePreset (String name, File pathToPreset, PresetType pType =userPreset, FilterType category =custom,
-	             String auth ="", String ver ="1.0");
+	             String auth ="", String ver ="1.0", String plug = "");
 	PlumePreset (File pathToPreset, PresetType pType=userPreset);
 	PlumePreset();
 	PlumePreset (PlumePreset& other);
@@ -50,9 +52,11 @@ public:
 
 	PlumePreset& operator= (PlumePreset& other) noexcept;
 	//==============================================================================
+	static String getFilterTypeString (int filterTypeId);
+	
+	//==============================================================================
 	bool setFile(const File& newFile);
 	File& getFile();
-	String getFilterTypeString (int filterTypeId);
 
 	//==============================================================================
 	bool isValid();
@@ -67,6 +71,7 @@ private:
 	bool hasInfoXml();
 	void loadPresetInfoFromFile();
 	void loadPresetFromFile (File& file);
+	void getPluginFromFile (File& file);
 	void setPresetInfoToFile();
 	
 	//==============================================================================

@@ -30,7 +30,7 @@ public:
 
     struct presetSearchSettings
     {
-        presetSearchSettings (int type = -1, int filter = 7, String pluginName = "All", String name = "")
+        presetSearchSettings (int type = -1, int filter = -1, String pluginName = String(), String name = String())
         {
             presetType = type;
             filterType = filter;
@@ -39,8 +39,8 @@ public:
         }
         int presetType;
         int filterType;
-        String plugin = "All";
-        String nameSearch = "";
+        String plugin;
+        String nameSearch;
     };
     
     //==============================================================================
@@ -126,8 +126,8 @@ public:
     
     //==============================================================================
     void setSearchSettings (int type, int filter, String pluginName, String name);
-    void setTypeSearchSetting (PlumePreset::PresetType type);
-    void setFilterSearchSetting (PlumePreset::FilterType filter);
+    void setTypeSearchSetting (int type);
+    void setFilterSearchSetting (int filter);
     void setPluginSearchSetting (String pluginName);
     void setNameSearchSetting (String name);
     

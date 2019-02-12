@@ -13,6 +13,15 @@
 PresetBox::PresetBox (const String& componentName, PlumeProcessor& p)  : ListBox (componentName, this),
                                                                          processor (p)
 {
+    setComponentID ("presetBox");
+    
+    //sets own colours
+    setColour (ListBox::backgroundColourId, Colour (0x00000000));
+    setColour (ListBox::outlineColourId, Colour (0x00000000));
+	setOutlineThickness (1);
+    setRowHeight (16);
+    
+    // Sub components
     editLabel = new Label ("editLabel", "NewPreset");
     editLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
     editLabel->setColour (Label::textColourId, UI::currentTheme.getColour (colour::presetsBoxStandartText));
@@ -27,6 +36,42 @@ PresetBox::PresetBox (const String& componentName, PlumeProcessor& p)  : ListBox
 PresetBox::~PresetBox()
 {
     editLabel = nullptr;
+}
+
+void PresetBox::paint (Graphics& g)
+{
+    ListBox::paint (g);
+    
+    using namespace PLUME::UI;
+    
+    //Gradient for the box's inside
+    auto gradIn = ColourGradient::vertical (Colour (0x30000000),
+                                            0, 
+                                            Colour (0x20000000),
+                                            getHeight());
+                                          
+    gradIn.addColour (0.6, Colour (0x00000000));
+    gradIn.addColour (0.8, Colour (0x25000000));
+    g.setGradientFill (gradIn);
+    g.fillRect (1, 1, getWidth()-2, getHeight()-2);
+}
+
+void PresetBox::paintOverChildren (Graphics& g)
+{
+    if (getOutlineThickness() > 0)
+    {
+        using namespace PLUME::UI;
+    
+        //Gradient for the box's outline
+        auto gradOut = ColourGradient::horizontal (currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
+                                                   MARGIN, 
+                                                   currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
+                                                   getWidth() - MARGIN);
+        gradOut.addColour (0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
+
+        g.setGradientFill (gradOut);
+        g.drawRect (getLocalBounds(), getOutlineThickness());
+    }
 }
 
 //==============================================================================
@@ -53,7 +98,7 @@ void PresetBox::paintListBoxItem (int rowNumber, Graphics& g, int width, int hei
         g.setColour (rowIsSelected ? UI::currentTheme.getColour (colour::presetsBoxHighlightedText)
                                    : UI::currentTheme.getColour (colour::presetsBoxStandartText));
                                
-        g.setFont (Font (UI::font, float (height)/2, Font::plain));
+        g.setFont (Font (UI::font, float (height*2)/3, Font::plain));
         String text = processor.getPresetHandler().getTextForPresetId (rowNumber);
     
         g.drawText (text, PLUME::UI::MARGIN, 0, width, height,

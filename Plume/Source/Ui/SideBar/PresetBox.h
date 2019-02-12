@@ -26,6 +26,9 @@ public:
     //==============================================================================
     //ListBox methods
     
+    void paint (Graphics& g) override;
+    void paintOverChildren (Graphics& g) override;
+    
     //==============================================================================
     //ListBoxModel methods
     

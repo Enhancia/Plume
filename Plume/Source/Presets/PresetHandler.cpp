@@ -297,8 +297,8 @@ void PresetHandler::setSearchSettings (int type, int filter, String pluginName, 
     // Sets the values and updates the searched presets list
     if (settings.presetType != type)
     {
-        if (type > -1 && type < 2) settings.presetType = type;
-        else                       settings.presetType = -1;
+        if (type > -1 && type < PlumePreset::numTypes) settings.presetType = type;
+        else                                           settings.presetType = -1;
     }
     
     if (settings.filterType != filter)
@@ -314,7 +314,7 @@ void PresetHandler::setSearchSettings (int type, int filter, String pluginName, 
 }
 
 
-void PresetHandler::setTypeSearchSetting (PlumePreset::PresetType type)
+void PresetHandler::setTypeSearchSetting (int type)
 {
     if (settings.presetType == type)
     {
@@ -322,13 +322,13 @@ void PresetHandler::setTypeSearchSetting (PlumePreset::PresetType type)
     }
     
     // Sets the value and updates the searched presets list
-    if (type > -1 && type < 2) settings.presetType = type;
-    else                       settings.presetType = -1;
+    if (type > -1 && type < PlumePreset::numTypes) settings.presetType = type;
+    else                                           settings.presetType = -1;
     
     updateSearchedPresets();
 }
 
-void PresetHandler::setFilterSearchSetting (PlumePreset::FilterType filter)
+void PresetHandler::setFilterSearchSetting (int filter)
 {
     if (settings.filterType == filter)
     {

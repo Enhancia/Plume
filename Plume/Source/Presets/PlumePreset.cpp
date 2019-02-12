@@ -13,11 +13,12 @@
 
 //==============================================================================
 PlumePreset::PlumePreset (String presetName, File pathToPreset, PresetType pType,
-                          FilterType category, String auth, String ver)
+                          FilterType category, String auth, String ver, String plug)
 {
     name = presetName;
     author = auth;
     version = ver;
+    plugin = plug;
     presetType = (int) pType;
     filterType = (int) category;
     
@@ -33,6 +34,7 @@ PlumePreset::PlumePreset (String presetName, File pathToPreset, PresetType pType
 PlumePreset::PlumePreset (File pathToPreset, PresetType pType)
 {
     name = "";
+    plugin = "";
     author = (pType == defaultPreset) ? "Enhancia" : "";
     version = "1.0";
     presetType = (int) pType;
@@ -57,6 +59,7 @@ PlumePreset::PlumePreset (File pathToPreset, PresetType pType)
         }
         else
         {
+            getPluginFromFile (pathToPreset);
             setPresetInfoToFile();
         }
     }
@@ -66,6 +69,7 @@ PlumePreset::PlumePreset()
 {
     name = "";
     author = "";
+    plugin = "";
     version = "1.0";
     presetType = (int) PresetType::userPreset;
     filterType = (int) FilterType::custom;
@@ -79,6 +83,7 @@ PlumePreset::PlumePreset (PlumePreset& other)
 {
 	name = "";
 	author = "";
+    plugin = "";
 	version = "1.0";
 	presetType = (int)PresetType::userPreset;
 	filterType = (int)FilterType::custom;
@@ -120,15 +125,15 @@ String PlumePreset::getFilterTypeString (int filterTypeId)
 {
     switch (filterTypeId)
     {
-        case arp:        return "arp";
-		case bass:       return "bass";
-		case harsh:      return "harsh";
-		case keys:       return "keys";
-		case lead:       return "lead";
-		case pad:        return "pad";
-		case percussion: return "percussion";
-		case sfx:        return "sfx";
-		default:         return "custom";
+        case arp:        return "Arp";
+		case bass:       return "Bass";
+		case harsh:      return "Harsh";
+		case keys:       return "Keys";
+		case lead:       return "Lead";
+		case pad:        return "Pad";
+		case percussion: return "Percussion";
+		case sfx:        return "Sfx";
+		default:         return "Custom";
     }
 }
 
@@ -139,8 +144,8 @@ bool PlumePreset::isValid()
 
 bool PlumePreset::matchesSettings (int filter, String pluginName, String nameSearch)
 {
-    return (filter == -1 || filter == filterType)        &&
-           (pluginName == "All" || pluginName == plugin) &&
+    return (filter == -1 || filter == filterType)         &&
+           (pluginName.isEmpty() || pluginName == plugin) &&
            (nameSearch.isEmpty() || name.removeCharacters (" -_").containsIgnoreCase(nameSearch));
 }
 
@@ -185,6 +190,7 @@ void PlumePreset::loadPresetInfoFromFile()
         {
             author = info->getStringAttribute ("author", "");
             version = info->getStringAttribute ("version", "1.0");
+            plugin = info->getStringAttribute ("plugin", "");
             presetType = info->getIntAttribute ("type", 1);
             filterType = info->getIntAttribute ("filter", PlumePreset::FilterType::custom);
         }
@@ -207,6 +213,26 @@ void PlumePreset::loadPresetFromFile (File& file)
     }
 }
 
+void PlumePreset::getPluginFromFile (File& file)
+{
+    ScopedPointer<XmlElement> xml = XmlDocument::parse (presetFile);
+    
+	XmlElement* wrap = xml->getChildByName ("WRAPPED_PLUGIN");
+	
+    if (wrap != nullptr)
+    {
+        if (wrap->getBoolAttribute ("hasWrappedPlugin", false))
+        {
+            if (wrap->getChildByName ("PLUGIN") != nullptr)
+            {
+                plugin = wrap->getChildByName ("PLUGIN")->getStringAttribute ("name", "");
+            }
+        }
+    }   
+    
+    xml = nullptr;
+}
+
 void PlumePreset::setPresetInfoToFile()
 {
     ScopedPointer<XmlElement> xml = XmlDocument::parse (presetFile);
@@ -217,6 +243,7 @@ void PlumePreset::setPresetInfoToFile()
         
         info->setAttribute ("author", author);
         info->setAttribute ("version", version);
+        info->setAttribute ("plugin", plugin);
         info->setAttribute ("type", presetType);
         info->setAttribute ("filter", filterType);
         
