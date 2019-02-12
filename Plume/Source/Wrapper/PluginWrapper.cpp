@@ -319,6 +319,12 @@ bool PluginWrapper::hasOpenedWrapperEditor()
     return hasOpenedEditor;
 }
 
+
+KnownPluginList& PluginWrapper::getList()
+{
+    return *pluginList;
+}
+
 //==============================================================================
 Array<File*> PluginWrapper::createFileList()
 {
@@ -450,6 +456,8 @@ void PluginWrapper::scanAllPluginsInDirectories (bool dontRescanIfAlreadyInList,
     }
     */
     
+    pluginList->clear();
+    
     // Sets all the files to search
     FileSearchPath fsp;
     for (auto* file : createFileList())
@@ -460,7 +468,7 @@ void PluginWrapper::scanAllPluginsInDirectories (bool dontRescanIfAlreadyInList,
         
     for (int i=0; i<formatManager->getNumFormats(); i++)
     {
-        PluginDirectoryScanner dirScanner (*pluginList, *formatManager->getFormat (i), fsp, true, File(), true);
+        PluginDirectoryScanner dirScanner (*pluginList, *formatManager->getFormat (i), fsp, false, File(), true);
         scanProgress = 0.0f;
         
         // Rescans until scanNextFile returns false

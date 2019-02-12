@@ -14,13 +14,17 @@
 #include "Common/PlumeCommon.h"
 #include "Plugin/PluginProcessor.h"
 #include "Ui/SideBar/PresetBox.h"
+#include "Ui/SideBar/FilterBox.h"
+#include "Ui/SideBar/TypeToggleComponent.h"
+#include "Ui/SideBar/PresetSearchBar.h"
 
 //==============================================================================
 /*
 */
 
 class PresetComponent    : public PlumeComponent,
-                           private Button::Listener
+                           private Button::Listener,
+                           private ComboBox::Listener
 {
 public:
     //==============================================================================
@@ -41,6 +45,7 @@ public:
     
     //==============================================================================
     void buttonClicked (Button* bttn) override;
+    void comboBoxChanged (ComboBox* cmbx) override;
     
     //==============================================================================
     void savePreset();
@@ -48,7 +53,15 @@ public:
 
 private:
     //==============================================================================
+    void createComboBox();
+    
+    //==============================================================================
     ScopedPointer<PresetBox> presetBox;
+    ScopedPointer<FilterBox> filterBox;
+    ScopedPointer<TypeToggleComponent> typeToggle;
+    ScopedPointer<ComboBox> pluginSelectBox;
+    ScopedPointer<PresetSearchBar> searchBar;
+    
     //ScopedPointer<TextButton> saveButton;
     ScopedPointer<TextButton> newButton;
     

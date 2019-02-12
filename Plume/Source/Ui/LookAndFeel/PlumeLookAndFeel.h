@@ -36,6 +36,7 @@ public:
                       const Colour&, const Colour&, int direction) noexcept;
     //==============================================================================
     Font getLabelFont (Label& lbl) override;
+    Font getTextButtonFont (TextButton& bttn, int buttonHeight) override;
     
     //void drawPopupMenuBackground (Graphics&, int width, int height) override;
 	/*

@@ -481,7 +481,7 @@ void GestureArray::createParameterXml(XmlElement& gestureXml, OwnedArray<Gesture
 {
     for (auto* mParam : mParams)
     {
-        auto paramXml = new XmlElement (mParam->parameter.getName(30));
+        auto paramXml = new XmlElement (mParam->parameter.getName(30).replace (" ", "_"));
         
         paramXml->setAttribute ("id", mParam->parameter.getParameterIndex());
         paramXml->setAttribute ("start", mParam->range.getStart());

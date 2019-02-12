@@ -22,7 +22,9 @@ SideBarComponent::SideBarComponent (PlumeProcessor& proc, Component& optsPanel) 
                                                         PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFill),
 		                                                PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFillHighlighted),
 		                                                PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFillClicked)));
-	optionsButton->setShape (PLUME::path::gearPath, false, true, false);
+	
+		                                                
+    optionsButton->setShape (PLUME::path::gearPath, false, true, false);
 	optionsButton->addListener (this);
     addAndMakeVisible (presetComponent = new PresetComponent (processor));
 }
@@ -72,14 +74,15 @@ void SideBarComponent::paint (Graphics& g)
     
 	area.removeFromTop (MARGIN/2); // Extra space
 
-                
+    /*            
     // Presets Panel
-    //g.drawHorizontalLine (area.getY() + MARGIN, MARGIN, getWidth() - MARGIN);
+    g.drawHorizontalLine (area.getY() + MARGIN, MARGIN, getWidth() - MARGIN);
     
     g.setFont (Font (font, 15.0f, Font::plain));
 	g.setColour(currentTheme.getColour(PLUME::colour::sideBarSubText));
     g.drawText ("Presets", area.reduced (2*MARGIN, MARGIN),
                 Justification::topLeft, true);
+    */
     
     // Version Text
     g.setColour (currentTheme.getColour (PLUME::colour::presetsBoxStandartText));
@@ -102,7 +105,7 @@ void SideBarComponent::resized()
     optionsButton->setBounds (buttonsArea.removeFromRight (buttonsArea.getWidth()/2).reduced (MARGIN));
     
     // Presets
-	area.removeFromTop (MARGIN + 15);
+	area.removeFromTop (MARGIN);
 	area.removeFromBottom (2*HEADER_HEIGHT);
     presetComponent->setBounds (area.reduced (2*MARGIN, MARGIN));
     //area.removeFromTop (area.getHeight()/2);

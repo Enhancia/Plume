@@ -92,6 +92,7 @@ void ScannerComponent::scanPlugins()
     if (!isCurrentlyModal()) enterModalState (false, nullptr, false);
     DBG ("Scan Start");
     
+    processor.getWrapper().getList().clear();
     dirScanner = processor.getWrapper().getDirectoryScannerForFormat (formatToScan);
     scanning = true;
     setComponentsVisible();

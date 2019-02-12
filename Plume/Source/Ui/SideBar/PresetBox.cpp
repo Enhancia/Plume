@@ -13,6 +13,15 @@
 PresetBox::PresetBox (const String& componentName, PlumeProcessor& p)  : ListBox (componentName, this),
                                                                          processor (p)
 {
+    setComponentID ("presetBox");
+    
+    //sets own colours
+    setColour (ListBox::backgroundColourId, Colour (0x00000000));
+    setColour (ListBox::outlineColourId, Colour (0x00000000));
+	setOutlineThickness (1);
+    setRowHeight (16);
+    
+    // Sub components
     editLabel = new Label ("editLabel", "NewPreset");
     editLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
     editLabel->setColour (Label::textColourId, UI::currentTheme.getColour (colour::presetsBoxStandartText));
@@ -29,10 +38,46 @@ PresetBox::~PresetBox()
     editLabel = nullptr;
 }
 
+void PresetBox::paint (Graphics& g)
+{
+    ListBox::paint (g);
+    
+    using namespace PLUME::UI;
+    
+    //Gradient for the box's inside
+    auto gradIn = ColourGradient::vertical (Colour (0x30000000),
+                                            0, 
+                                            Colour (0x20000000),
+                                            getHeight());
+                                          
+    gradIn.addColour (0.6, Colour (0x00000000));
+    gradIn.addColour (0.8, Colour (0x25000000));
+    g.setGradientFill (gradIn);
+    g.fillRect (1, 1, getWidth()-2, getHeight()-2);
+}
+
+void PresetBox::paintOverChildren (Graphics& g)
+{
+    if (getOutlineThickness() > 0)
+    {
+        using namespace PLUME::UI;
+    
+        //Gradient for the box's outline
+        auto gradOut = ColourGradient::horizontal (currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
+                                                   MARGIN, 
+                                                   currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
+                                                   getWidth() - MARGIN);
+        gradOut.addColour (0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
+
+        g.setGradientFill (gradOut);
+        g.drawRect (getLocalBounds(), getOutlineThickness());
+    }
+}
+
 //==============================================================================
 int PresetBox::getNumRows()
 {
-    return processor.getPresetHandler().getNumPresets() + newPresetEntry;
+    return processor.getPresetHandler().getNumSearchedPresets() + newPresetEntry;
 }
 
 void PresetBox::paintListBoxItem (int rowNumber, Graphics& g, int width, int height, bool rowIsSelected)
@@ -53,7 +98,7 @@ void PresetBox::paintListBoxItem (int rowNumber, Graphics& g, int width, int hei
         g.setColour (rowIsSelected ? UI::currentTheme.getColour (colour::presetsBoxHighlightedText)
                                    : UI::currentTheme.getColour (colour::presetsBoxStandartText));
                                
-        g.setFont (Font (UI::font, float (height)/2, Font::plain));
+        g.setFont (Font (UI::font, float (height*2)/3, Font::plain));
         String text = processor.getPresetHandler().getTextForPresetId (rowNumber);
     
         g.drawText (text, PLUME::UI::MARGIN, 0, width, height,
@@ -108,23 +153,7 @@ void PresetBox::listBoxItemDoubleClicked (int row, const MouseEvent& event)
 {
     if (event.mods.isLeftButtonDown())
     {
-        // Gets the preset Xml and loads it using the processor
-        if (ScopedPointer<XmlElement> presetXml = processor.getPresetHandler().getPresetXmlToLoad (row))
-        {
-            MemoryBlock presetData;
-            AudioProcessor::copyXmlToBinary (*presetXml, presetData);
-            
-            // Calls the plugin's setStateInformation method to load the preset
-	        PLUME::UI::ANIMATE_UI_FLAG = false;
-	        Time::waitForMillisecondCounter(Time::getMillisecondCounter() + 10);
-
-            processor.setStateInformation (presetData.getData(), presetData.getSize());
-			presetXml->deleteAllChildElements(); // frees the memory
-        }
-	    else // failed to get preset xml somehow
-        {
-            processor.getPresetHandler().resetPreset();
-        }
+        setPreset (row);
     }
 }
 
@@ -143,9 +172,9 @@ void PresetBox::deleteKeyPressed (int lastRowSelected)
 //==============================================================================
 void PresetBox::labelTextChanged (Label* lbl)
 {
-    String presetName = editLabel->getText().replaceCharacter (' ', '_');
+    String presetName = editLabel->getText();
     
-    if (XmlElement::isValidXmlName (presetName))
+    if (XmlElement::isValidXmlName (presetName.replace (" ", "_")))
     {
         if (newPresetEntry)
         {
@@ -195,7 +224,7 @@ void PresetBox::startNewPresetEntry()
 {
     // Adds a new row at the end to edit the preset name
     newPresetEntry = true;
-    presetIdToEdit = processor.getPresetHandler().getNumPresets();
+    presetIdToEdit = processor.getPresetHandler().getNumSearchedPresets();
     editLabel->setText ("NewPreset", dontSendNotification);
     updateContent();
     scrollToEnsureRowIsOnscreen (presetIdToEdit);
@@ -239,7 +268,7 @@ void PresetBox::deletePreset (const int row)
 {
     //TODO fenêtre d'avertissement avant suppression
     
-    bool updateHeader = (processor.getPresetHandler().getCurrentPresetName()
+    bool shouldUpdateHeader = (processor.getPresetHandler().getCurrentPresetName()
                             == processor.getPresetHandler().getTextForPresetId (row));
     
 	if (processor.getPresetHandler().deletePresetForId(row))
@@ -247,15 +276,9 @@ void PresetBox::deletePreset (const int row)
 		updateContent();
 
 		// Updates the header in case the selected preset was deleted
-		if (updateHeader)
+		if (shouldUpdateHeader)
 		{
-			if (auto* hdr = dynamic_cast<PlumeComponent*> (  getParentComponent() // presetComp
-				                                           ->getParentComponent() // sideBarComp
-				                                           ->getParentComponent() // editor
-				                                           ->findChildWithID("header")))
-			{
-				hdr->update();
-			}
+			updateHeader();
 	    }
     }
 }
@@ -285,13 +308,35 @@ void PresetBox::handleMenuResult (const int row, const int menuResult)
     repaint();
 }
 
+void PresetBox::setPreset (const int row)
+{
+    // Gets the preset Xml and loads it using the processor
+    if (ScopedPointer<XmlElement> presetXml = processor.getPresetHandler().getPresetXmlToLoad (row))
+    {
+        MemoryBlock presetData;
+        AudioProcessor::copyXmlToBinary (*presetXml, presetData);
+            
+        // Calls the plugin's setStateInformation method to load the preset
+	    PLUME::UI::ANIMATE_UI_FLAG = false;
+       //Time::waitForMillisecondCounter(Time::getMillisecondCounter() + 10);
+
+        processor.setStateInformation (presetData.getData(), presetData.getSize());
+        presetXml->deleteAllChildElements(); // frees the memory
+    }
+    else // failed to get preset xml somehow
+    {
+        processor.getPresetHandler().resetPreset();
+    }
+}
+
 void PresetBox::createUserPreset (const String& presetName)
 {
-    ScopedPointer<XmlElement> presetXml = new XmlElement (presetName);
+    ScopedPointer<XmlElement> presetXml = new XmlElement (presetName.replace (" ", "_"));
 	processor.createPluginXml (*presetXml);
 	processor.createGestureXml (*presetXml);
 	
     processor.getPresetHandler().createNewUserPreset (presetName, *presetXml);
+    updateHeader();
     
     presetXml->deleteAllChildElements();
 }
@@ -299,4 +344,15 @@ void PresetBox::createUserPreset (const String& presetName)
 void PresetBox::renamePreset (const String& newName)
 {
     processor.getPresetHandler().renamePreset (newName, presetIdToEdit);
+}
+
+void PresetBox::updateHeader()
+{
+    if (auto* hdr = dynamic_cast<PlumeComponent*> ( getParentComponent() // presetComp
+				                                   ->getParentComponent() // sideBarComp
+				                                   ->getParentComponent() // editor
+				                                   ->findChildWithID("header")))
+	{
+		hdr->update();
+	}
 }

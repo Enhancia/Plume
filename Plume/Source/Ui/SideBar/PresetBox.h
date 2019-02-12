@@ -26,6 +26,9 @@ public:
     //==============================================================================
     //ListBox methods
     
+    void paint (Graphics& g) override;
+    void paintOverChildren (Graphics& g) override;
+    
     //==============================================================================
     //ListBoxModel methods
     
@@ -57,9 +60,13 @@ public:
     void deletePreset (const int row);
     
 private:
+    //==============================================================================
     void handleMenuResult (const int row, const int menuResult);
+    void setPreset (const int row);
     void createUserPreset (const String& presetName);
     void renamePreset (const String& newName);
+
+    void updateHeader();
     
     //==============================================================================
     PlumeProcessor& processor;

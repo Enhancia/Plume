@@ -65,7 +65,9 @@ public:
     void addCustomDirectory (File newDir);
     String getCustomDirectory (int numDir);
     void clearCustomDirectories();
+    
     void addPluginsToMenu (PopupMenu& menu, KnownPluginList::SortMethod sort);
+    KnownPluginList& getList();
     
     //==============================================================================
     void createWrapperEditor (int x = 0, int y = 0);
