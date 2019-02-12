@@ -79,7 +79,7 @@ PlumePreset::~PlumePreset()
 {
 }
 
-PlumePreset::PlumePreset (PlumePreset& other)
+PlumePreset::PlumePreset (const PlumePreset& other)
 {
 	name = "";
 	author = "";
@@ -88,13 +88,13 @@ PlumePreset::PlumePreset (PlumePreset& other)
 	presetType = (int)PresetType::userPreset;
 	filterType = (int)FilterType::custom;
 
-    File& f = other.getFile();
+    File f = other.getFile();
     loadPresetFromFile (f);
 }
 
-PlumePreset& PlumePreset::operator= (PlumePreset& other) noexcept
+PlumePreset& PlumePreset::operator= (const PlumePreset& other) noexcept
 {
-	File& f = other.getFile();
+	File f = other.getFile();
     loadPresetFromFile (f);
 	return *this;
 }
@@ -114,7 +114,7 @@ bool PlumePreset::setFile (const File& newFile)
     return false;
 }
 
-File& PlumePreset::getFile()
+File PlumePreset::getFile() const
 {
     if (valid) return presetFile;
     

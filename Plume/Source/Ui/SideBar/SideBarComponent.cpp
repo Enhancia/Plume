@@ -22,7 +22,9 @@ SideBarComponent::SideBarComponent (PlumeProcessor& proc, Component& optsPanel) 
                                                         PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFill),
 		                                                PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFillHighlighted),
 		                                                PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFillClicked)));
-	optionsButton->setShape (PLUME::path::gearPath, false, true, false);
+	
+		                                                
+    optionsButton->setShape (PLUME::path::gearPath, false, true, false);
 	optionsButton->addListener (this);
     addAndMakeVisible (presetComponent = new PresetComponent (processor));
 }

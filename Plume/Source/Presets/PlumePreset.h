@@ -46,17 +46,17 @@ public:
 	             String auth ="", String ver ="1.0", String plug = "");
 	PlumePreset (File pathToPreset, PresetType pType=userPreset);
 	PlumePreset();
-	PlumePreset (PlumePreset& other);
+	PlumePreset (const PlumePreset& other);
 	
 	~PlumePreset();
 
-	PlumePreset& operator= (PlumePreset& other) noexcept;
+	PlumePreset& operator= (const PlumePreset& other) noexcept;
 	//==============================================================================
 	static String getFilterTypeString (int filterTypeId);
 	
 	//==============================================================================
-	bool setFile(const File& newFile);
-	File& getFile();
+	bool setFile (const File& newFile);
+	File getFile() const;
 
 	//==============================================================================
 	bool isValid();
