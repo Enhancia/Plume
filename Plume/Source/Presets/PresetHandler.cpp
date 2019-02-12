@@ -357,6 +357,8 @@ void PresetHandler::setPluginSearchSetting (String pluginName)
 
 void PresetHandler::setNameSearchSetting (String name)
 {
+    name = name.removeCharacters (" -_");
+    
     if (settings.nameSearch == name)
     {
         return; //No update if nothing changed

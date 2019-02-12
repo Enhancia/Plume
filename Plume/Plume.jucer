@@ -101,6 +101,10 @@
         </GROUP>
         <GROUP id="{50A59D03-EF8C-6884-6A1F-9905EDBD4B18}" name="SideBar">
           <GROUP id="{922E7A2E-047F-B1E6-F663-0CA731B3EF8D}" name="Presets">
+            <FILE id="sfzzO7" name="PresetSearchBar.cpp" compile="1" resource="0"
+                  file="Source/Ui/SideBar/PresetSearchBar.cpp"/>
+            <FILE id="Lr157P" name="PresetSearchBar.h" compile="0" resource="0"
+                  file="Source/Ui/SideBar/PresetSearchBar.h"/>
             <FILE id="fBUhLf" name="TypeToggleComponent.cpp" compile="1" resource="0"
                   file="Source/Ui/SideBar/TypeToggleComponent.cpp"/>
             <FILE id="glyl8Y" name="TypeToggleComponent.h" compile="0" resource="0"

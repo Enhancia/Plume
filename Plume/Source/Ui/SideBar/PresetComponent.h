@@ -16,6 +16,7 @@
 #include "Ui/SideBar/PresetBox.h"
 #include "Ui/SideBar/FilterBox.h"
 #include "Ui/SideBar/TypeToggleComponent.h"
+#include "Ui/SideBar/PresetSearchBar.h"
 
 //==============================================================================
 /*
@@ -59,6 +60,7 @@ private:
     ScopedPointer<FilterBox> filterBox;
     ScopedPointer<TypeToggleComponent> typeToggle;
     ScopedPointer<ComboBox> pluginSelectBox;
+    ScopedPointer<PresetSearchBar> searchBar;
     
     //ScopedPointer<TextButton> saveButton;
     ScopedPointer<TextButton> newButton;

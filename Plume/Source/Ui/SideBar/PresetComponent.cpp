@@ -30,9 +30,11 @@ PresetComponent::PresetComponent (PlumeProcessor& p)  : processor (p)
     pluginSelectBox->setJustificationType (Justification::centredLeft);
     pluginSelectBox->setColour (ComboBox::outlineColourId, Colour (0x00000000));
     pluginSelectBox->setColour (ComboBox::textColourId,
-                                PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxStandartText));
+                                PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxStandartText)
+                                                       .withAlpha (0.6f));
     pluginSelectBox->setColour (ComboBox::arrowColourId,
-                                PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxStandartText));
+                                PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxStandartText)
+                                                       .withAlpha (0.6f));
                                 
     pluginSelectBox->setColour (ComboBox::backgroundColourId, Colour (0x30000000));
         
@@ -46,6 +48,9 @@ PresetComponent::PresetComponent (PlumeProcessor& p)  : processor (p)
     
     // Type toggle
     addAndMakeVisible (typeToggle = new TypeToggleComponent (processor));
+    
+    // Search Bar
+    addAndMakeVisible (searchBar = new PresetSearchBar (processor));
     
     // newButton    
     addAndMakeVisible (newButton = new TextButton ("newButton"));
@@ -65,6 +70,7 @@ PresetComponent::~PresetComponent()
 	newButton = nullptr;
 	typeToggle = nullptr;
 	pluginSelectBox = nullptr;
+	searchBar = nullptr;
 }
 
 void PresetComponent::paint (Graphics& g)
@@ -91,10 +97,8 @@ void PresetComponent::paintOverChildren (Graphics& g)
     // Draws some outlines
     auto area = getLocalBounds();
     
-    typeToggle->setBounds (area.removeFromTop (PRESET_BUTTONS_HEIGHT + MARGIN)
-                               .withTrimmedBottom (MARGIN)); // Type toggle
-                               
-    //area.removeFromTop (PRESET_BUTTONS_HEIGHT + MARGIN); // Search Bar
+    area.removeFromTop (PRESET_BUTTONS_HEIGHT + MARGIN); // Search Bar
+    area.removeFromTop (PRESET_BUTTONS_HEIGHT + MARGIN); // Type Toggle
     area.removeFromTop (4*PRESET_BUTTONS_HEIGHT + MARGIN); // Filter Box
     
     // ComboBox
@@ -110,8 +114,11 @@ void PresetComponent::resized()
     
     auto area = getLocalBounds();
     
-    area.removeFromTop (PRESET_BUTTONS_HEIGHT + MARGIN); // Type toggle
-    //area.removeFromTop (PRESET_BUTTONS_HEIGHT + MARGIN); // Search Bar
+    searchBar->setBounds (area.removeFromTop (PRESET_BUTTONS_HEIGHT + MARGIN)
+                              .withTrimmedBottom (MARGIN)); // Search Bar
+                              
+    typeToggle->setBounds (area.removeFromTop (PRESET_BUTTONS_HEIGHT + MARGIN)
+                               .withTrimmedBottom (MARGIN)); // Type toggle
     
     // Filter Box
     filterBox->setBounds (area.removeFromTop (4*PRESET_BUTTONS_HEIGHT + MARGIN)

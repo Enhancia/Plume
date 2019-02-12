@@ -141,8 +141,8 @@ public:
         // checks that the string is numbers only (and dot)
         if (lbl->getText().containsOnly ("-.0123456789") == false)
         {
-            if (lbl == rangeLabelMin)       lbl->setText (String (mappedParameter.range.getStart(), 2), dontSendNotification);
-            else if (lbl == rangeLabelMax)  lbl->setText (String (mappedParameter.range.getEnd(), 2), dontSendNotification);
+            if (lbl == rangeLabelMin)       lbl->setText (String (mappedParameter.range.getStart(), 1), dontSendNotification);
+            else if (lbl == rangeLabelMax)  lbl->setText (String (mappedParameter.range.getEnd(), 1), dontSendNotification);
 
             return;
         }
@@ -162,7 +162,7 @@ public:
             // Normal case
             {
                 mappedParameter.range.setStart(val);
-                lbl->setText (String (mappedParameter.range.getStart(), 2), dontSendNotification);
+                lbl->setText (String (mappedParameter.range.getStart(), 1), dontSendNotification);
             }
         }
         else if (lbl == rangeLabelMax)
@@ -173,7 +173,7 @@ public:
             // Normal case
             {
 				mappedParameter.range.setEnd (val);
-                lbl->setText (String (mappedParameter.range.getEnd(), 2), dontSendNotification);
+                lbl->setText (String (mappedParameter.range.getEnd(), 1), dontSendNotification);
             }
         }
         
@@ -184,7 +184,7 @@ public:
     {
         if (allowDisplayUpdate)
         {
-            valueLabel->setText (String (mappedParameter.parameter.getValue(), 4), dontSendNotification);
+            valueLabel->setText (String (mappedParameter.parameter.getValue(), 2), dontSendNotification);
         }
     }
     
@@ -207,17 +207,17 @@ private:
         
         //=== range Control labels ===
         
-        addAndMakeVisible (rangeLabelMin = new Label ("Min Label", String (mappedParameter.range.getStart(), 2)));
-        addAndMakeVisible (rangeLabelMax = new Label ("Max Label", String (mappedParameter.range.getEnd(), 2)));
+        addAndMakeVisible (rangeLabelMin = new Label ("Min Label", String (mappedParameter.range.getStart(), 1)));
+        addAndMakeVisible (rangeLabelMax = new Label ("Max Label", String (mappedParameter.range.getEnd(), 1)));
         
         // LabelMin style
         rangeLabelMin->setEditable (true, false, false);
-        rangeLabelMin->setFont (Font (PLUME::UI::font, 11.0f, Font::plain));
+        rangeLabelMin->setFont (Font (PLUME::UI::font, 8.0f, Font::plain));
         rangeLabelMin->setJustificationType (Justification::centred);
         
         // LabelMax style
         rangeLabelMax->setEditable (true, false, false);
-        rangeLabelMax->setFont (Font (PLUME::UI::font, 11.0f, Font::plain));
+        rangeLabelMax->setFont (Font (PLUME::UI::font, 8.0f, Font::plain));
         rangeLabelMax->setJustificationType (Justification::centred);
         
         // Labels settings
