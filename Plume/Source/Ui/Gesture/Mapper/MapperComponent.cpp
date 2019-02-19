@@ -337,7 +337,7 @@ void MapperComponent::drawMapperText (Graphics& g, String text, int x, int y, in
     else                        g.setColour (midiMapButton->getToggleState() ? Colour (0x80ffffff) :
                                                                                Colour (0xffffffff));
     
-    g.setFont (Font (PLUME::UI::font, fontSize, Font::plain).withTypefaceStyle ("Regular"));
+    g.setFont (PLUME::UI::plumeFont.withHeight (fontSize));
     g.drawText (TRANS(text), x, y, width, height,
                 Justification::centred, true);
 }

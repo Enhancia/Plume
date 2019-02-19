@@ -19,7 +19,7 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc) : processor (proc)
     
     // Plugin Name
     addAndMakeVisible (pluginNameLabel = new Label ("Plugin Name Label", processor.getWrapper().getWrappedPluginInfoString()));
-    pluginNameLabel->setFont (Font (PLUME::UI::font, 15.00f, Font::plain).withTypefaceStyle ("Regular"));
+    pluginNameLabel->setFont (PLUME::UI::plumeFont.withHeight (15.00f));
     pluginNameLabel->setJustificationType (Justification::centred);
     pluginNameLabel->setEditable (false, false, false);
     pluginNameLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
@@ -28,7 +28,7 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc) : processor (proc)
     
     // Preset Name
     addAndMakeVisible (presetNameLabel = new Label ("Preset Name Label", processor.getPresetHandler().getCurrentPresetName()));
-    presetNameLabel->setFont (Font (PLUME::UI::font, 15.00f, Font::plain).withTypefaceStyle ("Regular"));
+    presetNameLabel->setFont (PLUME::UI::plumeFont.withHeight (15.00f));
     presetNameLabel->setJustificationType (Justification::centred);
     presetNameLabel->setEditable (false, false, false);
     presetNameLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
@@ -56,15 +56,17 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc) : processor (proc)
 
 HeaderComponent::~HeaderComponent()
 {
+    pluginNameLabel = nullptr;
+    presetNameLabel = nullptr;
+    pluginListButton = nullptr;
 }
 
 //==============================================================================
 const String HeaderComponent::getInfoString()
 {
-    return "- Displays the current preset and plugin.\n"
-           "- Click on the arrow to display all the available plugins to use. If there are none"
-           "or they are not up to date, scan them using the option menu (button on the side bar).\n"
-           "- Click on the plugin name to open its interface.";
+    return "Header :\n\n"
+           "- Click on the arrow to display all the available plugins to use.\n"
+           "- Click on the plugin name to open its interface.\n";
 }
 
 void HeaderComponent::update()
@@ -193,7 +195,7 @@ void HeaderComponent::buttonClicked (Button* bttn)
 
 void HeaderComponent::pluginMenuCallback (int result, HeaderComponent* header)
 {
-    if (result != 0 && header != nullptr)
+    if (header != nullptr)
     {
 		header->handlePluginChoice (result);
     }
@@ -201,7 +203,12 @@ void HeaderComponent::pluginMenuCallback (int result, HeaderComponent* header)
 
 void HeaderComponent::handlePluginChoice (int chosenId)
 {
-    if (processor.getWrapper().wrapPlugin (chosenId))
+    if (chosenId == 0)
+    {   
+        // resets the button colour if no choice was made
+        pluginListButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 2.0f);
+    }
+    else if (processor.getWrapper().wrapPlugin (chosenId))
     {
         pluginNameLabel->setText (processor.getWrapper().getWrappedPluginInfoString(), dontSendNotification);
     }

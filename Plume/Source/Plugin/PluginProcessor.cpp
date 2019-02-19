@@ -499,9 +499,9 @@ void PlumeProcessor::initializeSettings()
     generalTree.addChild (ValueTree (winH).setProperty (value, var (PLUME::UI::DEFAULT_WINDOW_HEIGHT), nullptr), 1, nullptr);
     
     generalTree.addChild (ValueTree (presetDir).setProperty (value,
-                                                             File::getSpecialLocation (File::userApplicationDataDirectory)
+                                                             File::getSpecialLocation (File::userDocumentsDirectory)
                                                                 .getFullPathName()
-                                                                + "\\Enhancia\\Plume\\Presets\\User\\", 
+                                                                + "\\Enhancia\\Plume\\Presets\\User\\",
                                                              nullptr), 2, nullptr);
     generalTree.addChild (ValueTree (pluginDirs), 3, nullptr);
     generalTree.getChild (3).addChild (ValueTree (directory).setProperty (value, "", nullptr),

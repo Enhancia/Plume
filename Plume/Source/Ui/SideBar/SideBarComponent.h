@@ -13,6 +13,7 @@
 #include "../../../JuceLibraryCode/JuceHeader.h"
 #include "Common/PlumeCommon.h"
 #include "Ui/SideBar/PresetComponent.h"
+#include "Ui/SideBar/InfoPanel.h"
 #include "Plugin/PluginProcessor.h"
 
 
@@ -24,7 +25,7 @@ class SideBarComponent    : public PlumeComponent,
 {
 public:
     //==============================================================================
-    SideBarComponent (PlumeProcessor& proc, Component& optsPanel);
+    SideBarComponent (PlumeProcessor& proc, Component& optsPanel, Component& newPrst);
     ~SideBarComponent();
 
     //==============================================================================
@@ -38,14 +39,26 @@ public:
     void resized() override;
     
     //==============================================================================
+    void addInfoPanelAsMouseListener (Component* componentToListen);
+
+    //==============================================================================
     void buttonClicked (Button* bttn) override;
+    void mouseEnter (const MouseEvent &event) override;
+    void mouseExit (const MouseEvent &event) override;
 
 private:
     //==============================================================================
+    void createHideInfoButtonPath();
+
+    //==============================================================================
     PlumeProcessor& processor;
-    Component& options;
+    Component& optionsPanel;
     ScopedPointer<PresetComponent> presetComponent;
+    ScopedPointer<InfoPanel> infoPanel;
     ScopedPointer<ShapeButton> optionsButton;
+    ScopedPointer<ShapeButton> hideInfoButton;
+
+    bool infoHidden = false;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SideBarComponent)

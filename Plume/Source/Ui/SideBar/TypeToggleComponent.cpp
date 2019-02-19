@@ -157,6 +157,7 @@ void TypeToggleComponent::toggleButton (int buttonId)
 			                                              ->findChildWithID("presetBox")))
 		{
 			presetBox->updateContent();
+            presetBox->repaint();
 		}
 	}
 }

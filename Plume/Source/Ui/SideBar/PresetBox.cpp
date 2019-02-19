@@ -25,7 +25,7 @@ PresetBox::PresetBox (const String& componentName, PlumeProcessor& p)  : ListBox
     editLabel = new Label ("editLabel", "NewPreset");
     editLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
     editLabel->setColour (Label::textColourId, UI::currentTheme.getColour (colour::presetsBoxStandartText));
-    editLabel->setFont (Font (UI::font, float (getRowHeight())/2, Font::plain));
+    editLabel->setFont (PLUME::UI::plumeFont.withHeight (float (getRowHeight())/2));
     editLabel->setInterceptsMouseClicks (false, false);
     editLabel->addListener (this);
     
@@ -98,7 +98,7 @@ void PresetBox::paintListBoxItem (int rowNumber, Graphics& g, int width, int hei
         g.setColour (rowIsSelected ? UI::currentTheme.getColour (colour::presetsBoxHighlightedText)
                                    : UI::currentTheme.getColour (colour::presetsBoxStandartText));
                                
-        g.setFont (Font (UI::font, float (height*2)/3, Font::plain));
+        g.setFont (PLUME::UI::plumeFont.withHeight (float (height*2)/3));
         String text = processor.getPresetHandler().getTextForPresetId (rowNumber);
     
         g.drawText (text, PLUME::UI::MARGIN, 0, width, height,

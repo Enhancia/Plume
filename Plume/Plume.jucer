@@ -85,6 +85,10 @@
           <FILE id="QhDpZl" name="MovingCursor.h" compile="0" resource="0" file="Source/Ui/Common/MovingCursor.h"/>
         </GROUP>
         <GROUP id="{B4604567-1941-DD36-C775-AB9FE7EF3408}" name="Top">
+          <FILE id="zVz8oR" name="NewPresetPanel.cpp" compile="1" resource="0"
+                file="Source/Ui/Top/NewPresetPanel.cpp"/>
+          <FILE id="HulRFa" name="NewPresetPanel.h" compile="0" resource="0"
+                file="Source/Ui/Top/NewPresetPanel.h"/>
           <FILE id="Gn44ST" name="OptionsPanel.cpp" compile="1" resource="0"
                 file="Source/Ui/Top/OptionsPanel.cpp"/>
           <FILE id="y9sRww" name="OptionsPanel.h" compile="0" resource="0" file="Source/Ui/Top/OptionsPanel.h"/>
@@ -100,6 +104,14 @@
                 file="Source/Ui/Header/HeaderComponent.h"/>
         </GROUP>
         <GROUP id="{50A59D03-EF8C-6884-6A1F-9905EDBD4B18}" name="SideBar">
+          <FILE id="CzkUFf" name="SideBarComponent.cpp" compile="1" resource="0"
+                file="Source/Ui/SideBar/SideBarComponent.cpp"/>
+          <FILE id="lr3xWX" name="SideBarComponent.h" compile="0" resource="0"
+                file="Source/Ui/SideBar/SideBarComponent.h"/>
+          <GROUP id="{693F65FB-8648-1EA3-28B9-CF29DBC1C443}" name="Info">
+            <FILE id="NlkNio" name="InfoPanel.cpp" compile="1" resource="0" file="Source/Ui/SideBar/InfoPanel.cpp"/>
+            <FILE id="r6lplr" name="InfoPanel.h" compile="0" resource="0" file="Source/Ui/SideBar/InfoPanel.h"/>
+          </GROUP>
           <GROUP id="{922E7A2E-047F-B1E6-F663-0CA731B3EF8D}" name="Presets">
             <FILE id="sfzzO7" name="PresetSearchBar.cpp" compile="1" resource="0"
                   file="Source/Ui/SideBar/PresetSearchBar.cpp"/>
@@ -118,10 +130,6 @@
             <FILE id="gfzO6n" name="PresetComponent.h" compile="0" resource="0"
                   file="Source/Ui/SideBar/PresetComponent.h"/>
           </GROUP>
-          <FILE id="CzkUFf" name="SideBarComponent.cpp" compile="1" resource="0"
-                file="Source/Ui/SideBar/SideBarComponent.cpp"/>
-          <FILE id="lr3xWX" name="SideBarComponent.h" compile="0" resource="0"
-                file="Source/Ui/SideBar/SideBarComponent.h"/>
         </GROUP>
         <GROUP id="{3CFEC0E3-E11C-6973-B8F6-2519E7B63825}" name="Gesture">
           <FILE id="tb4LAs" name="GesturePanel.cpp" compile="1" resource="0"
@@ -156,7 +164,18 @@
       </GROUP>
     </GROUP>
     <GROUP id="{546D02F0-3AB6-3299-2C87-A268693EF763}" name="Resources">
-      <GROUP id="{27E3E65B-7279-1B0D-BCF6-0DB2823FEC54}" name="Fonts"/>
+      <GROUP id="{27E3E65B-7279-1B0D-BCF6-0DB2823FEC54}" name="Fonts">
+        <FILE id="u44Odk" name="Ahmet Altun - HalisGR-Bold.otf" compile="0"
+              resource="1" file="Resources/Fonts/Ahmet Altun - HalisGR-Bold.otf"/>
+        <FILE id="S2WGKv" name="Ahmet Altun - HalisGR-Book.otf" compile="0"
+              resource="1" file="Resources/Fonts/Ahmet Altun - HalisGR-Book.otf"/>
+        <FILE id="Oa6jYa" name="Ahmet Altun - HalisGR-Light.otf" compile="0"
+              resource="1" file="Resources/Fonts/Ahmet Altun - HalisGR-Light.otf"/>
+        <FILE id="cEZGQJ" name="Ahmet Altun - HalisGR-Medium.otf" compile="0"
+              resource="1" file="Resources/Fonts/Ahmet Altun - HalisGR-Medium.otf"/>
+        <FILE id="ZM3i46" name="Ahmet Altun - HalisGR-Regular.otf" compile="0"
+              resource="1" file="Resources/Fonts/Ahmet Altun - HalisGR-Regular.otf"/>
+      </GROUP>
       <GROUP id="{C68567B8-DFE3-8FC9-B013-03678584A057}" name="Images">
         <GROUP id="{3FD5E2A0-1ED1-28E0-6BB9-5FF273A9EF0B}" name="Backgrounds"/>
         <GROUP id="{20DFADED-00CA-0C8D-0252-C1692DB76059}" name="Gestures">

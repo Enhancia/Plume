@@ -12,33 +12,50 @@
 #include "SideBarComponent.h"
 
 //==============================================================================
-SideBarComponent::SideBarComponent (PlumeProcessor& proc, Component& optsPanel)   : processor (proc),
-                                                                                    options (optsPanel)
+SideBarComponent::SideBarComponent (PlumeProcessor& proc, Component& optsPanel, Component& newPrst)
+        : processor (proc), optionsPanel (optsPanel)
 {
     setName ("Side Bar");
     setComponentID ("sideBar");
     
+    // Option button
     addAndMakeVisible (optionsButton = new ShapeButton ("Options Button",
                                                         PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFill),
 		                                                PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFillHighlighted),
 		                                                PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFillClicked)));
-	
-		                                                
     optionsButton->setShape (PLUME::path::gearPath, false, true, false);
 	optionsButton->addListener (this);
-    addAndMakeVisible (presetComponent = new PresetComponent (processor));
+
+    // Info Panel
+    addAndMakeVisible (infoPanel = new InfoPanel());
+    addAndMakeVisible (hideInfoButton = new ShapeButton ("Hide Info Button",
+                                                         Colour (0x00000000),
+                                                         Colour (0x00000000),
+                                                         Colour (0x00000000)));
+    hideInfoButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarSeparatorIn),
+                                1.0f);
+    hideInfoButton->setToggleState (infoHidden, dontSendNotification); // side bar visible at first
+    hideInfoButton->setClickingTogglesState (true);
+    createHideInfoButtonPath();
+    hideInfoButton->addMouseListener (this, false);
+    hideInfoButton->addListener (this);
+
+    // Preset Component
+    addAndMakeVisible (presetComponent = new PresetComponent (processor, newPrst));
 }
 
 SideBarComponent::~SideBarComponent()
 {
+    presetComponent = nullptr;
+    infoPanel = nullptr;
 }
 
 //==============================================================================
 const String SideBarComponent::getInfoString()
 {
-    return "- Hideable side bar.\n"
-           "- Click on the arrow to hide or show the side bar.\n"
-           "- The top right hand corner has an info button and an option button.\n";
+    return "Hideable side bar :\n\n"
+           "- Click on the arrow on the header to hide or show the side bar.\n"
+           "- The top left hand corner has an option button to configure the plugin.";
 }
 
 void SideBarComponent::update()
@@ -65,9 +82,9 @@ void SideBarComponent::paint (Graphics& g)
     
     // Plume. text
     g.setColour (currentTheme.getColour(PLUME::colour::sideBarMainText));
-    g.setFont (Font (font, 25.0f, Font::bold));
+    g.setFont (PLUME::UI::plumeFontBold.withHeight (25.0f));
     g.drawText ("Plume.", area.removeFromTop (HEADER_HEIGHT).reduced (MARGIN),
-                Justification::centredLeft, true);
+                Justification::centredRight, true);
 
 	g.setGradientFill (grad);
 	g.drawHorizontalLine (area.getY(), MARGIN, getWidth() - MARGIN);
@@ -84,9 +101,15 @@ void SideBarComponent::paint (Graphics& g)
                 Justification::topLeft, true);
     */
     
+    if (hideInfoButton->getToggleState()) // Lines that represents hidden infoPanel
+    {
+        g.drawHorizontalLine (getHeight() - 2*MARGIN, MARGIN, getWidth()/2 - MARGIN);
+        g.drawHorizontalLine (getHeight() - 2*MARGIN, getWidth()/2 + MARGIN, getWidth() - MARGIN);
+    }
+
     // Version Text
     g.setColour (currentTheme.getColour (PLUME::colour::presetsBoxStandartText));
-    g.setFont (Font (10.0f, Font::italic).withTypefaceStyle ("Regular"));
+    g.setFont (PLUME::UI::plumeFont.withHeight (10.0f));
     g.drawText ("Plume " + String(JucePlugin_VersionString),
 	            1, getHeight() - MARGIN,
 	            100, MARGIN,
@@ -100,13 +123,24 @@ void SideBarComponent::resized()
     auto area = getLocalBounds();
     
     // Buttons
-    auto buttonsArea = area.removeFromTop (HEADER_HEIGHT).removeFromRight (SIDEBAR_WIDTH/3);
+    auto buttonsArea = area.removeFromTop (HEADER_HEIGHT).removeFromLeft (SIDEBAR_WIDTH/3);
     
-    optionsButton->setBounds (buttonsArea.removeFromRight (buttonsArea.getWidth()/2).reduced (MARGIN));
+    optionsButton->setBounds (buttonsArea.removeFromLeft (buttonsArea.getWidth()/2).reduced (MARGIN));
     
     // Presets
 	area.removeFromTop (MARGIN);
-	area.removeFromBottom (2*HEADER_HEIGHT);
+    if (!hideInfoButton->getToggleState())
+    {
+        infoPanel->setBounds (area.removeFromBottom (3*HEADER_HEIGHT).withTrimmedBottom (MARGIN)
+                                                                     .reduced (MARGIN));
+    }
+    else 
+    {
+        infoPanel->setBounds (area.removeFromBottom (3*MARGIN).withTrimmedBottom (2*MARGIN)
+                                                              .withTrimmedTop (MARGIN));
+    }
+
+    hideInfoButton->setBounds (getWidth()/2 - MARGIN, infoPanel->getY() - MARGIN/2, 2*MARGIN, MARGIN);
     presetComponent->setBounds (area.reduced (2*MARGIN, MARGIN));
     //area.removeFromTop (area.getHeight()/2);
 }
@@ -115,12 +149,63 @@ void SideBarComponent::buttonClicked (Button* bttn)
 {
     if (bttn == optionsButton)
     {
-        // OLD (scans plugins)
-        //processor.getWrapper().scanAllPluginsInDirectories (false, true);
-		//processor.sendActionMessage (PLUME::commands::updateInterface);
-		//presetComponent->update();
-		
-		// NEW Displays options
-		options.setVisible (true);
+		// Displays options
+		optionsPanel.setVisible (true);
     }
+
+    else if (bttn == hideInfoButton)
+    {
+        infoPanel->setVisible (!hideInfoButton->getToggleState());
+        resized();
+
+        createHideInfoButtonPath();
+        hideInfoButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarSeparatorIn),
+                                    1.0f);
+        repaint();
+    }
+}
+
+void SideBarComponent::mouseEnter (const MouseEvent &event)
+{
+    if (event.eventComponent == hideInfoButton)
+    {
+        hideInfoButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::sideBarSeparatorOut),
+                                    1.0f);
+    }
+}
+
+void SideBarComponent::mouseExit (const MouseEvent &event)
+{
+    if (event.eventComponent == hideInfoButton)
+    {
+        hideInfoButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::sideBarSeparatorIn),
+                                    1.0f);
+    }
+}
+
+void SideBarComponent::addInfoPanelAsMouseListener (Component* componentToListen)
+{
+    componentToListen->addMouseListener (infoPanel, true);
+}
+
+void SideBarComponent::createHideInfoButtonPath()
+{
+    using namespace PLUME::UI;
+
+    Path p;
+    
+    if (hideInfoButton->getToggleState())
+    {
+        p.startNewSubPath (0, HEADER_HEIGHT);
+        p.lineTo (HEADER_HEIGHT/2, 0);
+        p.lineTo (HEADER_HEIGHT, HEADER_HEIGHT);
+    }
+    else
+    {
+        p.startNewSubPath (0,0);
+        p.lineTo (HEADER_HEIGHT/2, HEADER_HEIGHT);
+        p.lineTo (HEADER_HEIGHT, 0);
+    }
+    
+    hideInfoButton->setShape (p, false, true, false);
 }

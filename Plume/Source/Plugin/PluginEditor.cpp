@@ -16,20 +16,27 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
 {
     TRACE_IN;
-    
+	setComponentID ("plumeEditor");
+
 	setLookAndFeel (&plumeLookAndFeel);
 	setMouseClickGrabsKeyboardFocus(false);
 	setBroughtToFrontOnMouseClick (true);
 
 	// Creates the Top Panels
-	addAndMakeVisible (options = new OptionsPanel (processor));
-	options->setVisible(false);
-	options->setAlwaysOnTop (true);
-	options->setBounds (getBounds());
+	addAndMakeVisible (optionsPanel = new OptionsPanel (processor));
+	optionsPanel->setVisible (false);
+	optionsPanel->setAlwaysOnTop (true);
+	optionsPanel->setBounds (getBounds());
+	
+	addAndMakeVisible (newPresetPanel = new NewPresetPanel (processor));
+	newPresetPanel->setVisible (false);
+	newPresetPanel->setAlwaysOnTop (true);
+	newPresetPanel->setBounds (getBounds());
 
     // Creates the main components
     addAndMakeVisible (header = new HeaderComponent (processor));
-    addAndMakeVisible (sideBar = new SideBarComponent (processor, *options));
+    addAndMakeVisible (sideBar = new SideBarComponent (processor, *optionsPanel, *newPresetPanel));
+    sideBar->addInfoPanelAsMouseListener (this);
     
 	addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
 	                                                    processor.getParameterTree(), PLUME::UI::FRAMERATE));
@@ -80,6 +87,8 @@ PlumeEditor::~PlumeEditor()
     processor.removeActionListener (this);
     gesturePanel = nullptr;
     resizableCorner = nullptr;
+    optionsPanel = nullptr;
+    newPresetPanel = nullptr;
 
     setLookAndFeel (nullptr);
 }
@@ -107,7 +116,8 @@ void PlumeEditor::resized()
 	header->setBounds (area.removeFromTop (HEADER_HEIGHT));
 	gesturePanel->setBounds(area.reduced (2*MARGIN, 2*MARGIN));
 	resizableCorner->setBounds (getWidth() - 20, getHeight() - 20, 20, 20);
-	options->setBounds (0, 0, getWidth(), getHeight());
+	optionsPanel->setBounds (0, 0, getWidth(), getHeight());
+	newPresetPanel->setBounds (0, 0, getWidth(), getHeight());
 
 	repaint();
 }

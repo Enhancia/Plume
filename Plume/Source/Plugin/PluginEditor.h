@@ -20,6 +20,7 @@
 #include "Ui/Gesture/GesturePanel.h"
 #include "Ui/LookAndFeel/PlumeLookAndFeel.h"
 #include "Ui/Top/OptionsPanel.h"
+#include "Ui/Top/NewPresetPanel.h"
 
 //#define TRACE_IN  Logger::writeToLog ("[FNC] Entering function: " + __FUNCTION__);
 //#define TRACE_OUT Logger::writeToLog ("[FNC] Entering function: " + __FUNCTION__);
@@ -106,7 +107,9 @@ private:
     ScopedPointer<SideBarComponent> sideBar; /**< \brief Hideable SideBar object that displays the preset list, help, and buttons */
     ScopedPointer<HeaderComponent> header; /**< \brief Header object that displays the preset, and the wrapping features */
     ScopedPointer<ShapeButton> sideBarButton; /**< \brief Button that hides or shows the sidebar */
-    ScopedPointer<OptionsPanel> options;
+    ScopedPointer<OptionsPanel> optionsPanel;
+    ScopedPointer<NewPresetPanel> newPresetPanel;
+    
     
     //==============================================================================
     void createSideBarButtonPath(); //TODO mettre dans common avec les autres chemins

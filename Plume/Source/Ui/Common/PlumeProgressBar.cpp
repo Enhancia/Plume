@@ -44,7 +44,7 @@ void PlumeProgressBar::paint (Graphics& g)
         if (!smallBar)
         {
             g.setColour (Colours::white);
-            g.setFont (Font (PLUME::UI::font, 10.0f, Font::plain));
+            g.setFont (PLUME::UI::plumeFont.withHeight (10.0f));
             
             if (progress != 1.0f)
             {

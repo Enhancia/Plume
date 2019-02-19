@@ -28,15 +28,26 @@ class PresetHandler : private ChangeBroadcaster
 {
 public:
 
-    struct presetSearchSettings
+    struct PresetSearchSettings
     {
-        presetSearchSettings (int type = -1, int filter = -1, String pluginName = String(), String name = String())
+        PresetSearchSettings (int type = -1, int filter = -1, String pluginName = String(), String name = String())
         {
             presetType = type;
             filterType = filter;
-            plugin = pluginName;
+            plugin     = pluginName;
             nameSearch = name;
         }
+        
+	    PresetSearchSettings& operator= (const PresetSearchSettings& other) noexcept
+        {
+            this->presetType = other.presetType;
+            this->filterType = other.filterType;
+            this->plugin     = other.plugin;
+            this->nameSearch = other.nameSearch;
+            
+            return *this;
+        }
+        
         int presetType;
         int filterType;
         String plugin;
@@ -62,7 +73,7 @@ public:
      *
      * \param newDir the directory that should be used.
      */  
-    void setUserDirectory (const File& newDir);
+    void setUserDirectory (const File& newDir, bool moveFiles = true);
     
     /**
      * \brief Getter for the user directory.
@@ -113,16 +124,20 @@ public:
      */
     bool canSavePreset();
     
+    String getFilterTextForPresetId (const int id);
+
     //==============================================================================
     void storePresets();
     XmlElement* getPresetXmlToLoad (int selectedPreset);
-    bool savePreset (XmlElement& presetXml);
+    bool savePreset (XmlElement& presetXml, String filterType);
     bool createNewUserPreset (String presetName, XmlElement& presetXml);
     bool renamePreset (String newName, const int id);
 	PlumePreset getPresetForId (const int id);
     bool deletePresetForId (int id);
     void resetPreset();
     void showPresetInExplorer (int id);
+    void savePresetDirectoryToFile();
+    void loadPresetDirectoryFromFile();
     
     //==============================================================================
     void setSearchSettings (int type, int filter, String pluginName, String name);
@@ -131,10 +146,13 @@ public:
     void setPluginSearchSetting (String pluginName);
     void setNameSearchSetting (String name);
     
+    const PresetSearchSettings getCurrentSettings();
+    
 private:
     //==============================================================================
     void initialiseDirectories();
-    //void createDirectoryArborescence (File& dir);
+    void createDirectoryArborescence (File& dir);
+    void deleteArborescence (File& dir);
     //void createAllSubdirectories();
     
     //==============================================================================
@@ -152,7 +170,7 @@ private:
     
     //==============================================================================
     Array<PlumePreset*> searchedPresets;
-    presetSearchSettings settings;
+    PresetSearchSettings settings;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PresetHandler)
