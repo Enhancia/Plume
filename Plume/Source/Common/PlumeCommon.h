@@ -41,12 +41,6 @@ namespace PLUME
         // Display settings
         const int FRAMERATE = 60;
         
-        extern const Font getPlumeFont (String type = "");
-        
-        static Font plumeFont = getPlumeFont();
-        static Font plumeFontBold = getPlumeFont ("bold");
-        static Font plumeFontBook = getPlumeFont ("book");
-        
         static String font = "Tw Cen MT";
         
         extern bool ANIMATE_UI_FLAG;
@@ -68,7 +62,22 @@ namespace PLUME
         
         // Theme
         using namespace PLUME::colour;
-        static PlumeTheme currentTheme = PlumeTheme::createPlumeTheme (PlumeTheme::plumeDefault);
+        extern PlumeTheme currentTheme;
+    }
+    
+    namespace font
+    {
+        enum PlumeFontId
+        {
+            regular =0,
+            bold,
+            book,
+            light
+        };
+        
+        extern const Font plumeFont;
+        extern const Font plumeFontBold;
+        extern const Font plumeFontBook;
     }
     
     namespace treeId

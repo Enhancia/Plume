@@ -81,7 +81,7 @@ void NewPresetPanel::paint (Graphics& g)
     
     // Text
     g.setColour (currentTheme.getColour (colour::topPanelMainText));
-    g.setFont (plumeFont.withHeight (12.0f));
+    g.setFont (PLUME::font::plumeFont.withHeight (12.0f));
     
     g.drawText ("Name :", 
                 textArea.removeFromTop (OPTIONS_HEIGHT + MARGIN).withTrimmedBottom (MARGIN),
@@ -254,7 +254,7 @@ void NewPresetPanel::createLabels()
     nameLabel->setColour (Label::backgroundColourId, Colour (0x30000000));
     nameLabel->setColour (Label::textColourId, UI::currentTheme.getColour (colour::topPanelMainText)
                                                                .withAlpha (0.6f));
-    nameLabel->setFont (PLUME::UI::plumeFont.withHeight (11.0f));
+    nameLabel->setFont (PLUME::font::plumeFont.withHeight (11.0f));
     nameLabel->setEditable (true, false, false);
     nameLabel->setMouseCursor (MouseCursor (MouseCursor::IBeamCursor));
     nameLabel->addListener (this);
@@ -263,7 +263,7 @@ void NewPresetPanel::createLabels()
     authorLabel->setColour (Label::backgroundColourId, Colour (0x30000000));
     authorLabel->setColour (Label::textColourId, UI::currentTheme.getColour (colour::topPanelMainText)
                                                                  .withAlpha (0.6f));
-    authorLabel->setFont (PLUME::UI::plumeFont.withHeight (11.0f));
+    authorLabel->setFont (PLUME::font::plumeFont.withHeight (11.0f));
     authorLabel->setEditable (true, false, false);
     authorLabel->setMouseCursor (MouseCursor (MouseCursor::IBeamCursor));
     authorLabel->addListener (this);
@@ -272,7 +272,7 @@ void NewPresetPanel::createLabels()
     verLabel->setColour (Label::backgroundColourId, Colour (0x30000000));
     verLabel->setColour (Label::textColourId, UI::currentTheme.getColour (colour::topPanelMainText)
                                                               .withAlpha (0.6f));
-    verLabel->setFont (PLUME::UI::plumeFont.withHeight (11.0f));
+    verLabel->setFont (PLUME::font::plumeFont.withHeight (11.0f));
     verLabel->setEditable (true, false, false);
     verLabel->setMouseCursor (MouseCursor (MouseCursor::IBeamCursor));
     verLabel->addListener (this);
@@ -281,7 +281,7 @@ void NewPresetPanel::createLabels()
     pluginLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
     pluginLabel->setColour (Label::textColourId, UI::currentTheme.getColour (colour::topPanelMainText)
                                                                  .withAlpha (0.6f));
-    pluginLabel->setFont (PLUME::UI::plumeFont.withHeight (11.0f));
+    pluginLabel->setFont (PLUME::font::plumeFont.withHeight (11.0f));
     pluginLabel->setEditable (false, false, false);
     pluginLabel->addListener (this);
 }

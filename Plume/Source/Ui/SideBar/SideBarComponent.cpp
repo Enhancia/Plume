@@ -82,7 +82,7 @@ void SideBarComponent::paint (Graphics& g)
     
     // Plume. text
     g.setColour (currentTheme.getColour(PLUME::colour::sideBarMainText));
-    g.setFont (PLUME::UI::plumeFontBold.withHeight (25.0f));
+    g.setFont (PLUME::font::plumeFontBold.withHeight (25.0f));
     g.drawText ("Plume.", area.removeFromTop (HEADER_HEIGHT).reduced (MARGIN),
                 Justification::centredRight, true);
 
@@ -109,7 +109,7 @@ void SideBarComponent::paint (Graphics& g)
 
     // Version Text
     g.setColour (currentTheme.getColour (PLUME::colour::presetsBoxStandartText));
-    g.setFont (PLUME::UI::plumeFont.withHeight (10.0f));
+    g.setFont (PLUME::font::plumeFont.withHeight (10.0f));
     g.drawText ("Plume " + String(JucePlugin_VersionString),
 	            1, getHeight() - MARGIN,
 	            100, MARGIN,

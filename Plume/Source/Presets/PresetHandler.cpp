@@ -59,7 +59,7 @@ void PresetHandler::setUserDirectory (const File& newDir, bool moveFiles)
         }
 
 		userDirValue.setProperty(PLUME::treeId::value, newDirUser.getFullPathName(), nullptr);
-		createDirectoryArborescence (getUserDirectory());
+		createDirectoryArborescence (newDirUser);
 		savePresetDirectoryToFile();
 
 		storePresets();
@@ -372,7 +372,9 @@ void PresetHandler::initialiseDirectories()
   #endif
 
     //createDirectoryArborescence (defaultDir);
-    createDirectoryArborescence (getUserDirectory());
+    
+    File f = getUserDirectory();
+    createDirectoryArborescence (f);
 
     storePresets();
 }
@@ -554,11 +556,7 @@ void PresetHandler::savePresetDirectoryToFile()
         presetDirFile.create();
     }
     
-    ScopedPointer<XmlElement> presetDirXml = new XmlElement ("PLUME_PRESETDIR");
-    
-    XmlElement* dirXml = presetDirXml->createNewChildElement (PLUME::treeId::presetDir);
-    dirXml->setAttribute (PLUME::treeId::value, getUserDirectory().getFullPathName());
-    
+    ScopedPointer<XmlElement> presetDirXml = userDirValue.createXml();
     presetDirXml->writeToFile (presetDirFile, StringRef());
     presetDirXml->deleteAllChildElements();
 }
@@ -580,18 +578,12 @@ void PresetHandler::loadPresetDirectoryFromFile()
     if (presetDirFile.exists())
     {
         ScopedPointer<XmlElement> presetDirXml = XmlDocument::parse (presetDirFile);
-
-        if (presetDirXml->getChildByName (PLUME::treeId::presetDir) != nullptr)
+        
+        if (presetDirXml != nullptr)
         {
-            File newUserDir = File (presetDirXml->getChildByName (PLUME::treeId::presetDir)
-                                                ->getStringAttribute (PLUME::treeId::value, ""));
-
-            if (newUserDir.exists())
-            {
-                setUserDirectory (newUserDir);
-            }
+            userDirValue = ValueTree::fromXml (*presetDirXml);
         }
-
+        
         presetDirXml->deleteAllChildElements();
     }
 }

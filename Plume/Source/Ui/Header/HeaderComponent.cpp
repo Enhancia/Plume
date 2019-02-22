@@ -19,7 +19,7 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc) : processor (proc)
     
     // Plugin Name
     addAndMakeVisible (pluginNameLabel = new Label ("Plugin Name Label", processor.getWrapper().getWrappedPluginInfoString()));
-    pluginNameLabel->setFont (PLUME::UI::plumeFont.withHeight (15.00f));
+    pluginNameLabel->setFont (PLUME::font::plumeFont.withHeight (15.00f));
     pluginNameLabel->setJustificationType (Justification::centred);
     pluginNameLabel->setEditable (false, false, false);
     pluginNameLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
@@ -28,7 +28,7 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc) : processor (proc)
     
     // Preset Name
     addAndMakeVisible (presetNameLabel = new Label ("Preset Name Label", processor.getPresetHandler().getCurrentPresetName()));
-    presetNameLabel->setFont (PLUME::UI::plumeFont.withHeight (15.00f));
+    presetNameLabel->setFont (PLUME::font::plumeFont.withHeight (15.00f));
     presetNameLabel->setJustificationType (Justification::centred);
     presetNameLabel->setEditable (false, false, false);
     presetNameLabel->setColour (Label::backgroundColourId, Colour (0x00000000));

@@ -72,13 +72,13 @@ void PlumeLookAndFeel::setColours()
 
 Font PlumeLookAndFeel::getLabelFont (Label& lbl)
 {
-    return PLUME::UI::plumeFont;
+    return PLUME::font::plumeFont;
 }
 
 Font PlumeLookAndFeel::getTextButtonFont (TextButton& bttn, int buttonHeight)
 {
     //return Font (PLUME::UI::font, float (buttonHeight*6)/10.0f, Font::plain);
-    return PLUME::UI::plumeFont;
+    return PLUME::font::plumeFont;
 }
 
 void PlumeLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int width, int height,

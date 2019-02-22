@@ -16,39 +16,45 @@ namespace PLUME
     {
         bool ANIMATE_UI_FLAG = false;
         
-        const Font getPlumeFont (String type)
+		using namespace PLUME::colour;
+		PlumeTheme currentTheme = PlumeTheme::createPlumeTheme (PlumeTheme::plumeDefault);
+    }
+    
+    namespace font
+    {
+        const Font getPlumeFont (PlumeFontId type = regular)
         {
-            Font plmFont;
+            if (type == regular)
+            {
+                return Font (Typeface::createSystemTypefaceFor (PlumeData::Ahmet_Altun__HalisGRRegular_otf,
+                                                                PlumeData::Ahmet_Altun__HalisGRRegular_otfSize));
+            }
             
-            if (type == "book")
+            else if (type == book)
             {
-                plmFont = (Font (Typeface::createSystemTypefaceFor (PlumeData::Ahmet_Altun__HalisGRBook_otf,
-                                                                              PlumeData::Ahmet_Altun__HalisGRBook_otfSize)));
+                return Font (Typeface::createSystemTypefaceFor (PlumeData::Ahmet_Altun__HalisGRBook_otf,
+                                                                PlumeData::Ahmet_Altun__HalisGRBook_otfSize));
             }
 
-            else if (type == "bold")
+            else if (type == bold)
             {
-                plmFont = (Font (Typeface::createSystemTypefaceFor (PlumeData::Ahmet_Altun__HalisGRBold_otf,
-                                                                              PlumeData::Ahmet_Altun__HalisGRBold_otfSize)));
+                return Font (Typeface::createSystemTypefaceFor (PlumeData::Ahmet_Altun__HalisGRBold_otf,
+                                                                PlumeData::Ahmet_Altun__HalisGRBold_otfSize));
             }
 
-            else if (type == "light")
+            else if (type == light)
             {
-                plmFont = (Font (Typeface::createSystemTypefaceFor (PlumeData::Ahmet_Altun__HalisGRLight_otf,
-                                                                              PlumeData::Ahmet_Altun__HalisGRLight_otfSize)));
+                return Font (Typeface::createSystemTypefaceFor (PlumeData::Ahmet_Altun__HalisGRLight_otf,
+                                                                PlumeData::Ahmet_Altun__HalisGRLight_otfSize));
             }
 
-            else
-            {
-                plmFont = (Font (Typeface::createSystemTypefaceFor (PlumeData::Ahmet_Altun__HalisGRRegular_otf,
-                                                                              PlumeData::Ahmet_Altun__HalisGRRegular_otfSize)));
-            }
-
-            return plmFont;
+            return Font();
         }
         
-		//using namespace PLUME::colour;
-		//PlumeTheme currentTheme = PlumeTheme::createPlumeTheme (PlumeTheme::plumeDefault);
+        const Font plumeFont = getPlumeFont();
+        const Font plumeFontBold = getPlumeFont (bold);
+        const Font plumeFontBook = getPlumeFont (book);
+        
     }
     
     namespace path
