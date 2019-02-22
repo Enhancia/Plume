@@ -15,9 +15,46 @@ namespace PLUME
     namespace UI
     {
         bool ANIMATE_UI_FLAG = false;
-
+        
 		using namespace PLUME::colour;
 		PlumeTheme currentTheme = PlumeTheme::createPlumeTheme (PlumeTheme::plumeDefault);
+    }
+    
+    namespace font
+    {
+        const Font getPlumeFont (PlumeFontId type = regular)
+        {
+            if (type == regular)
+            {
+                return Font (Typeface::createSystemTypefaceFor (PlumeData::Ahmet_Altun__HalisGRRegular_otf,
+                                                                PlumeData::Ahmet_Altun__HalisGRRegular_otfSize));
+            }
+            
+            else if (type == book)
+            {
+                return Font (Typeface::createSystemTypefaceFor (PlumeData::Ahmet_Altun__HalisGRBook_otf,
+                                                                PlumeData::Ahmet_Altun__HalisGRBook_otfSize));
+            }
+
+            else if (type == bold)
+            {
+                return Font (Typeface::createSystemTypefaceFor (PlumeData::Ahmet_Altun__HalisGRBold_otf,
+                                                                PlumeData::Ahmet_Altun__HalisGRBold_otfSize));
+            }
+
+            else if (type == light)
+            {
+                return Font (Typeface::createSystemTypefaceFor (PlumeData::Ahmet_Altun__HalisGRLight_otf,
+                                                                PlumeData::Ahmet_Altun__HalisGRLight_otfSize));
+            }
+
+            return Font();
+        }
+        
+        const Font plumeFont = getPlumeFont();
+        const Font plumeFontBold = getPlumeFont (bold);
+        const Font plumeFontBook = getPlumeFont (book);
+        
     }
     
     namespace path

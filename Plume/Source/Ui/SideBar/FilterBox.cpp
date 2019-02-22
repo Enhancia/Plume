@@ -85,7 +85,7 @@ void FilterBox::paintListBoxItem (int rowNumber, Graphics& g, int width, int hei
     g.setColour (rowIsSelected ? UI::currentTheme.getColour (colour::presetsBoxHighlightedText)
                                : UI::currentTheme.getColour (colour::presetsBoxStandartText));
                                
-    g.setFont (Font (UI::font, float (height)*2/3, Font::plain));
+    g.setFont (PLUME::font::plumeFont.withHeight (float (height)*2/3));
     String text = rowNumber == 0 ? "All" : PlumePreset::getFilterTypeString (rowNumber - 1);
 
     g.drawText (text, PLUME::UI::MARGIN, 0, width, height,
@@ -102,6 +102,7 @@ void FilterBox::listBoxItemClicked (int row, const MouseEvent& event)
                                                           ->findChildWithID ("presetBox"))) 
 	    {
 		    presetBox->updateContent();
+            presetBox->repaint();
 	    }
     }
 }

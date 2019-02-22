@@ -36,11 +36,12 @@ namespace PLUME
         const int PRESET_BUTTONS_HEIGHT = 20;
         const int HEADER_HEIGHT = 40;
         const int GESTURE_DETAIL_WIDTH = 300;
+        const int OPTIONS_HEIGHT = 30;
         
         // Display settings
         const int FRAMERATE = 60;
         
-        const String font = "Tw Cen MT";
+        static String font = "Tw Cen MT";
         
         extern bool ANIMATE_UI_FLAG;
         
@@ -60,7 +61,23 @@ namespace PLUME
         const float WAVE_DISPLAY_MAX =  90.0f;
         
         // Theme
-        extern PLUME::colour::PlumeTheme currentTheme;
+        using namespace PLUME::colour;
+        extern PlumeTheme currentTheme;
+    }
+    
+    namespace font
+    {
+        enum PlumeFontId
+        {
+            regular =0,
+            bold,
+            book,
+            light
+        };
+        
+        extern const Font plumeFont;
+        extern const Font plumeFontBold;
+        extern const Font plumeFontBook;
     }
     
     namespace treeId
@@ -150,10 +167,10 @@ namespace PLUME
     // commands strings
     namespace commands
     {
-        const String toFront ("toFront");
-        const String updateInterface ("updateInterface");
-        const String unlockInterface ("unlockInterface");
-        const String lockInterface ("lockInterface");
+        static const String toFront ("toFront");
+        static const String updateInterface ("updateInterface");
+        static const String unlockInterface ("unlockInterface");
+        static const String lockInterface ("lockInterface");
     }
     
     namespace path
@@ -163,9 +180,9 @@ namespace PLUME
 		extern const Path createFolderPath();
 		extern const Path createMagnifyingGlassPath();
         
-        const Path gearPath = createGearPath();
-        const Path pianoPath = createPianoPath();
-        const Path folderPath = createFolderPath();
-        const Path magnifyingGlassPath = createMagnifyingGlassPath();
+        static Path gearPath = createGearPath();
+        static Path pianoPath = createPianoPath();
+        static Path folderPath = createFolderPath();
+        static Path magnifyingGlassPath = createMagnifyingGlassPath();
     }
 }

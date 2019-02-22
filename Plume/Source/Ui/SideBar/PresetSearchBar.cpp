@@ -18,8 +18,9 @@ PresetSearchBar::PresetSearchBar (PlumeProcessor& proc) : processor (proc)
     searchLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
     searchLabel->setColour (Label::textColourId, UI::currentTheme.getColour (colour::presetsBoxStandartText)
                                                                  .withAlpha (0.6f));
-    searchLabel->setFont (Font (PLUME::UI::font, 10.0f, Font::plain));
+    searchLabel->setFont (PLUME::font::plumeFont.withHeight (10.0f));
     searchLabel->setEditable (true, false, false);
+    searchLabel->setMouseCursor (MouseCursor (MouseCursor::IBeamCursor));
     searchLabel->addListener (this);
     
     addAndMakeVisible (cancelButton = new ShapeButton ("Cancel Button",

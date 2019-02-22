@@ -12,7 +12,8 @@
 
 #define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
 
-PresetComponent::PresetComponent (PlumeProcessor& p)  : processor (p)
+PresetComponent::PresetComponent (PlumeProcessor& p, Component& newPrst)  : processor (p),
+                                                                            newPresetPanel (newPrst)
 {
     TRACE_IN;
     
@@ -54,7 +55,7 @@ PresetComponent::PresetComponent (PlumeProcessor& p)  : processor (p)
     
     // newButton    
     addAndMakeVisible (newButton = new TextButton ("newButton"));
-    newButton->setButtonText ("New Preset");
+    newButton->setButtonText ("Save As...");
     newButton->addListener (this);
     newButton->setColour (TextButton::buttonColourId, Colour (0x00323232));
     newButton->setColour (TextButton::textColourOnId, Colour (0xaaffffff));
@@ -137,9 +138,10 @@ void PresetComponent::resized()
 //==============================================================================
 const String PresetComponent::getInfoString()
 {
-    return "- Preset List.\n"
-           "- Manages all your presets. Make sure you added a proper User directory"
-           "to create your custom presets.";
+    return "Preset List :\n\n"
+           "- Manages all your presets.\n"
+           "- Use the upper part to filter the presets you want. \n"
+           "- Double click a preset to load it.";
 }
 
 void PresetComponent::update()
@@ -169,7 +171,8 @@ void PresetComponent::buttonClicked (Button* bttn)
     
     if (bttn == newButton)
     {
-        addNewPreset();
+        newPresetPanel.setVisible (true);
+        //addNewPreset();
     }
 }
 
@@ -188,7 +191,7 @@ void PresetComponent::savePreset()
 	processor.createPluginXml (*presetXml);
 	processor.createGestureXml (*presetXml);
 	    
-	processor.getPresetHandler().savePreset (*presetXml);
+	//processor.getPresetHandler().savePreset (*presetXml);
 
 	presetXml->deleteAllChildElements();
 }

@@ -152,12 +152,17 @@ bool PlumePreset::matchesSettings (int filter, String pluginName, String nameSea
 void PlumePreset::setName (const String newName)
 {
     name = newName;
-    valid = !name.isEmpty();
+    valid = presetFile.exists() && !name.isEmpty();
 }
 
 const String PlumePreset::getName()
 {
     return name;
+}
+
+const String PlumePreset::getFilterString()
+{
+    return getFilterTypeString (filterType);
 }
 
 bool PlumePreset::hasInfoXml()
@@ -216,7 +221,8 @@ void PlumePreset::loadPresetFromFile (File& file)
 void PlumePreset::getPluginFromFile (File& file)
 {
     ScopedPointer<XmlElement> xml = XmlDocument::parse (presetFile);
-    
+	if (xml == nullptr) return;
+
 	XmlElement* wrap = xml->getChildByName ("WRAPPED_PLUGIN");
 	
     if (wrap != nullptr)
@@ -262,4 +268,21 @@ void PlumePreset::setPresetInfoToFile()
     }
     
     xml = nullptr;
+}
+
+void PlumePreset::addPresetInfoXml (XmlElement& presetXml, String author,
+                                                           String version,
+                                                           String plugin,
+                                                           int presetType,
+                                                           int filterType)
+{
+    auto* info= new XmlElement ("INFO");
+        
+    info->setAttribute ("author", author);
+    info->setAttribute ("version", version);
+    info->setAttribute ("plugin", plugin);
+    info->setAttribute ("type", presetType);
+    info->setAttribute ("filter", filterType);
+
+    presetXml.insertChildElement (info, 0);
 }

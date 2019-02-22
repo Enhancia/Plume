@@ -21,13 +21,13 @@ public:
 	{
 		arp = 0,
 		bass,
+		custom,
 		harsh,
 		keys,
 		lead,
 		pad,
 		percussion,
 		sfx,
-		custom,
 		
 		numFilters
 	};
@@ -53,6 +53,8 @@ public:
 	PlumePreset& operator= (const PlumePreset& other) noexcept;
 	//==============================================================================
 	static String getFilterTypeString (int filterTypeId);
+	static void addPresetInfoXml (XmlElement& presetXml, String author, String version,
+                                  String plugin, int presetType, int filterType);
 	
 	//==============================================================================
 	bool setFile (const File& newFile);
@@ -62,6 +64,7 @@ public:
 	bool isValid();
 	void setName (const String newName);
 	const String getName();
+	const String getFilterString();
 	bool matchesSettings (int filter, String pluginName, String nameSearch);
 
 	int presetType;

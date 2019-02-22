@@ -73,7 +73,7 @@ void OptionsPanel::paint (Graphics& g)
     auto area = optionsArea;
     
     g.setColour (UI::currentTheme.getColour (colour::topPanelMainText));
-    g.setFont (Font (UI::font, 20.0f, Font::bold));
+    g.setFont (font::plumeFontBold.withHeight (20.0f));
     g.drawText ("Settings :", 
                 area.removeFromTop (UI::HEADER_HEIGHT).reduced (2*UI::MARGIN),
                 Justification::topLeft, true);
@@ -81,7 +81,7 @@ void OptionsPanel::paint (Graphics& g)
     auto labelArea = area.removeFromTop (jmax (optionsArea.getHeight()/4, 40 + UI::MARGIN)).reduced (4*UI::MARGIN, 0);
     labelArea.removeFromRight (labelArea.getWidth()*2/3);
     
-    g.setFont (Font (UI::font, 14.0f, Font::plain));
+    g.setFont (font::plumeFont.withHeight (14.0f));
     g.drawText ("User Presets Path :", 
                 labelArea.removeFromTop (labelArea.getHeight()/2),
                 Justification::centredLeft, true);

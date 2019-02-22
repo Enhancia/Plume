@@ -1,8 +1,8 @@
 /*
   ==============================================================================
 
-    OptionsPanel.h
-    Created: 24 Jan 2019 5:23:26pm
+    NewPresetPanel.h
+    Created: 12 Feb 2019 4:08:14pm
     Author:  Alex
 
   ==============================================================================
@@ -13,53 +13,49 @@
 #include "../../../JuceLibraryCode/JuceHeader.h"
 #include "Common/PlumeCommon.h"
 #include "Plugin/PluginProcessor.h"
-#include "Ui/Top/ScannerComponent.h"
-
-
-#if JUCE_WINDOWS
-#include <windows.h>
-#include <ShellAPI.h>
-#elif JUCE_MAC
-#include <stdlib.h>
-#endif
 
 //==============================================================================
 /*
 */
-class OptionsPanel    : public Component,
-                        private Button::Listener,
-                        private Label::Listener
+class NewPresetPanel    : public Component,
+                          private Label::Listener,
+                          private Button::Listener
 {
 public:
     //==============================================================================
-    OptionsPanel (PlumeProcessor& proc);
-    ~OptionsPanel();
+    NewPresetPanel (PlumeProcessor& proc);
+    ~NewPresetPanel();
 
     //==============================================================================
     void paint (Graphics&) override;
     void resized() override;
     
     //==============================================================================
-    void mouseUp (const MouseEvent& event) override;
     void visibilityChanged() override;
     void buttonClicked (Button* bttn) override;
     void labelTextChanged (Label* lbl) override;
+    void editorShown (Label* lbl, TextEditor& ed) override;
 
 private:
     //==============================================================================
-    juce::Rectangle<int> optionsArea;
-    ScopedPointer<Label> presetDirLabel;
-    ScopedPointer<Label> pluginDirLabel;
+    void update();
+    void createLabels();
+    void createBox();
+    void createUserPreset();
     
-    ScopedPointer<ShapeButton> scanButton;
-    ScopedPointer<ScannerComponent> scanner;
-    ScopedPointer<TextButton> mailButton;
+    //==============================================================================
+    juce::Rectangle<int> panelArea;
+    
+    ScopedPointer<Label> nameLabel;
+    ScopedPointer<Label> authorLabel;
+    ScopedPointer<Label> verLabel;
+    ScopedPointer<Label> pluginLabel;
+    ScopedPointer<ComboBox> typeBox;
+    ScopedPointer<TextButton> cancelButton;
+    ScopedPointer<TextButton> saveButton;
     
     PlumeProcessor& processor;
     
-    Value pluginDir;
-    Value presetDir;
-    
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OptionsPanel)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NewPresetPanel)
 };

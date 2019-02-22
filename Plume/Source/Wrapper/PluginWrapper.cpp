@@ -586,7 +586,11 @@ void PluginWrapper::loadPluginListFromFile()
 	                                                                        nullptr);
     }
     
-    pluginList->recreateFromXml (*listXml->getChildByName("KNOWNPLUGINS"));
+    if (listXml->getChildByName ("KNOWNPLUGINS") != nullptr)
+    {
+        pluginList->recreateFromXml (*listXml->getChildByName("KNOWNPLUGINS"));
+    }
+    
 	listXml->deleteAllChildElements();
 }
 

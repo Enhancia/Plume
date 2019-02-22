@@ -28,7 +28,7 @@ class PresetComponent    : public PlumeComponent,
 {
 public:
     //==============================================================================
-    PresetComponent (PlumeProcessor& p);
+    PresetComponent (PlumeProcessor& p, Component& newPrst);
     ~PresetComponent();
     
     //==============================================================================
@@ -67,6 +67,7 @@ private:
     
     //==============================================================================
     PlumeProcessor& processor;
+    Component& newPresetPanel;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PresetComponent)
 };

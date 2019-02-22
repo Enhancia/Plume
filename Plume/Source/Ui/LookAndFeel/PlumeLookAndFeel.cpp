@@ -42,6 +42,13 @@ void PlumeLookAndFeel::setColours()
 	setColour (Label::backgroundColourId, Colour (0xff000000));
 	setColour (Label::outlineColourId, Colour (0x00000000));
 
+    // Text 
+    setColour (TextEditor::outlineColourId, Colour (0x00000000));
+    setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    setColour (TextEditor::focusedOutlineColourId, Colour (0x10a0a0a0));
+    setColour (TextEditor::highlightColourId, Colour (0x50ffffff));
+    setColour (CaretComponent::caretColourId, Colour (0xffffffff));
+
 	// Slider
 	setColour (Slider::thumbColourId, Colour (UI::currentTheme[colour::PlumeColourID::basePanelGestureHighlightedBackground]));
 	setColour (Slider::trackColourId, Colour (UI::currentTheme[colour::PlumeColourID::basePanelGestureHighlightedBackground]));
@@ -65,12 +72,13 @@ void PlumeLookAndFeel::setColours()
 
 Font PlumeLookAndFeel::getLabelFont (Label& lbl)
 {
-    return Font (PLUME::UI::font, 12.00f, Font::plain);
+    return PLUME::font::plumeFont;
 }
 
 Font PlumeLookAndFeel::getTextButtonFont (TextButton& bttn, int buttonHeight)
 {
-    return Font (PLUME::UI::font, float (buttonHeight*6)/10.0f, Font::plain);
+    //return Font (PLUME::UI::font, float (buttonHeight*6)/10.0f, Font::plain);
+    return PLUME::font::plumeFont;
 }
 
 void PlumeLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int width, int height,

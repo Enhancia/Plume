@@ -497,12 +497,21 @@ void PlumeProcessor::initializeSettings()
 	auto generalTree = parameters.state.getChildWithName (general);
     generalTree.addChild (ValueTree (winW).setProperty (value, var (PLUME::UI::DEFAULT_WINDOW_WIDTH), nullptr), 0, nullptr);
     generalTree.addChild (ValueTree (winH).setProperty (value, var (PLUME::UI::DEFAULT_WINDOW_HEIGHT), nullptr), 1, nullptr);
-    
+
+  #if JUCE_WINDOWS
+    generalTree.addChild (ValueTree (presetDir).setProperty (value,
+                                                             File::getSpecialLocation (File::userDocumentsDirectory)
+                                                                .getFullPathName()
+                                                                + "\\Enhancia\\Plume\\Presets\\User\\",
+                                                             nullptr), 2, nullptr);
+  #elif JUCE_MAC
     generalTree.addChild (ValueTree (presetDir).setProperty (value,
                                                              File::getSpecialLocation (File::userApplicationDataDirectory)
                                                                 .getFullPathName()
-                                                                + "\\Enhancia\\Plume\\Presets\\User\\", 
+                                                                + "\\Enhancia\\Plume\\Presets\\User\\",
                                                              nullptr), 2, nullptr);
+  #endif
+    
     generalTree.addChild (ValueTree (pluginDirs), 3, nullptr);
     generalTree.getChild (3).addChild (ValueTree (directory).setProperty (value, "", nullptr),
                                        0, nullptr);
