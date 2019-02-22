@@ -79,7 +79,6 @@ void InfoPanel::actionListenerCallback (const String &message)
 
 void InfoPanel::mouseMove (const MouseEvent& event)
 {
-    DBG ("Entered comp");
     if (auto* plumeComp = dynamic_cast<PlumeComponent*> (event.eventComponent))
     {
         textEditor->setText (plumeComp->getInfoString(), false);

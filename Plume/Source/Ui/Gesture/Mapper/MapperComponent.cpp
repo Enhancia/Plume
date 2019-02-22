@@ -48,6 +48,7 @@ MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr, PluginWr
     midiMapButton->addListener (this);
     
     // Adding the mapper as a change listener
+    gesture.removeAllChangeListeners(); // In case the gesture had a previous listener
     gesture.addChangeListener (this);
     gestureArray.addChangeListener (this);
     wrapper.addChangeListener (this);
