@@ -51,6 +51,7 @@ private:
     ScopedPointer<ScannerComponent> scanner;
     ScopedPointer<TextButton> mailButton;
     
+    //==============================================================================
     PlumeProcessor& processor;
     
     Value pluginDir;

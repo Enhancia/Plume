@@ -40,13 +40,16 @@ private:
     //==============================================================================
     struct Tab
     {
-        Tab (Component* panelToUse, String tabName = "")
+        Tab (Component* panelToUse, String tabName)	: name (tabName)
         {
-            tabName = name;
             panel = panelToUse;
 
             button = new TextButton (name);
             button->setButtonText (name);
+            //button->setColour (TextButton::textColourOffId, PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText));
+            //button->setColour (TextButton::textColourOnId, PLUME::UI::currentTheme.getColour(PLUME::colour::topPanelSubText));
+            button->setColour (TextButton::buttonColourId, Colour (0x00000000));
+            button->setColour (TextButton::buttonOnColourId, Colour (0x00000000));
         }
 
         ~Tab ()
@@ -62,7 +65,7 @@ private:
     //==============================================================================
     PlumeProcessor& processor;
     OwnedArray<Tab> tabs;
-    int selectedTab = -1;
+    int selectedTab = 0;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TabbedPanelComponent)

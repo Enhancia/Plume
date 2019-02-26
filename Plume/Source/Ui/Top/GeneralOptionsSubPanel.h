@@ -13,18 +13,16 @@
 #include "../../../JuceLibraryCode/JuceHeader.h"
 #include "Common/PlumeCommon.h"
 #include "Plugin/PluginProcessor.h"
+#include "SubPanelComponent.h"
 
 //==============================================================================
 /*
 */
-class GeneralOptionsSubPanel    : public Component
+class GeneralOptionsSubPanel    : public SubPanelComponent
 {
 public:
-    GeneralOptionsSubPanel();
+    GeneralOptionsSubPanel ();
     ~GeneralOptionsSubPanel();
-
-    void paint (Graphics&) override;
-    void resized() override;
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GeneralOptionsSubPanel)

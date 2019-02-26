@@ -87,6 +87,10 @@
         <GROUP id="{B4604567-1941-DD36-C775-AB9FE7EF3408}" name="Top">
           <GROUP id="{B03353CF-5CB6-41A4-05AE-137A69E9D361}" name="Options">
             <GROUP id="{952393B8-A5FA-1485-594F-CA3D4037A8B6}" name="SubPanels">
+              <FILE id="PCbKtE" name="SubPanelComponent.cpp" compile="1" resource="0"
+                    file="Source/Ui/Top/SubPanelComponent.cpp"/>
+              <FILE id="WNF4Mg" name="SubPanelComponent.h" compile="0" resource="0"
+                    file="Source/Ui/Top/SubPanelComponent.h"/>
               <FILE id="dgGDrQ" name="AppearanceOptionsSubPanel.cpp" compile="1"
                     resource="0" file="Source/Ui/Top/AppearanceOptionsSubPanel.cpp"/>
               <FILE id="eSC4QR" name="AppearanceOptionsSubPanel.h" compile="0" resource="0"
