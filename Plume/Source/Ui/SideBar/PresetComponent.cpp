@@ -10,8 +10,6 @@
 
 #include "Ui/SideBar/PresetComponent.h"
 
-#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
-
 PresetComponent::PresetComponent (PlumeProcessor& p, Component& newPrst)  : processor (p),
                                                                             newPresetPanel (newPrst)
 {

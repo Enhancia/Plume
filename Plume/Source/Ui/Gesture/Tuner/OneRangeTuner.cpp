@@ -206,17 +206,17 @@ void OneRangeTuner::createLabels()
     rangeLabelMax->addListener (this);
 }
     
-void OneRangeTuner::setRangeLow (float value)
+void OneRangeTuner::setRangeLow (float val)
 {
     rangeLow.beginChangeGesture();
-    rangeLow.setValueNotifyingHost (rangeLow.convertTo0to1 (value));
+    rangeLow.setValueNotifyingHost (rangeLow.convertTo0to1 (val));
     rangeLow.endChangeGesture();
 }
     
-void OneRangeTuner::setRangeHigh (float value)
+void OneRangeTuner::setRangeHigh (float val)
 {
     rangeHigh.beginChangeGesture();
-    rangeHigh.setValueNotifyingHost (rangeHigh.convertTo0to1 (value));
+    rangeHigh.setValueNotifyingHost (rangeHigh.convertTo0to1 (val));
     rangeHigh.endChangeGesture();
 }
     

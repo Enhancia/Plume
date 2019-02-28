@@ -78,6 +78,7 @@ namespace PLUME
         extern const Font plumeFont;
         extern const Font plumeFontBold;
         extern const Font plumeFontBook;
+        extern const Font plumeFontLight;
     }
     
     namespace treeId

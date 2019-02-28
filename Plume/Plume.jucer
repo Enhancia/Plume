@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" jucerVersion="5.4.2"
+<JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" jucerVersion="5.4.3"
               pluginFormats="buildAU,buildStandalone,buildVST" version="1.2.2"
               companyName="Enhancia" buildVST="1" buildVST3="0" buildAU="1"
               buildAUv3="0" buildRTAS="0" buildAAX="0" enableIAA="0" pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
@@ -85,17 +85,37 @@
           <FILE id="QhDpZl" name="MovingCursor.h" compile="0" resource="0" file="Source/Ui/Common/MovingCursor.h"/>
         </GROUP>
         <GROUP id="{B4604567-1941-DD36-C775-AB9FE7EF3408}" name="Top">
+          <GROUP id="{B03353CF-5CB6-41A4-05AE-137A69E9D361}" name="Options">
+            <GROUP id="{952393B8-A5FA-1485-594F-CA3D4037A8B6}" name="SubPanels">
+              <FILE id="PCbKtE" name="SubPanelComponent.cpp" compile="1" resource="0"
+                    file="Source/Ui/Top/SubPanelComponent.cpp"/>
+              <FILE id="WNF4Mg" name="SubPanelComponent.h" compile="0" resource="0"
+                    file="Source/Ui/Top/SubPanelComponent.h"/>
+              <FILE id="IUeALq" name="FileOptionsSubPanel.cpp" compile="1" resource="0"
+                    file="Source/Ui/Top/FileOptionsSubPanel.cpp"/>
+              <FILE id="abfpns" name="FileOptionsSubPanel.h" compile="0" resource="0"
+                    file="Source/Ui/Top/FileOptionsSubPanel.h"/>
+              <FILE id="hGTelb" name="GeneralOptionsSubPanel.cpp" compile="1" resource="0"
+                    file="Source/Ui/Top/GeneralOptionsSubPanel.cpp"/>
+              <FILE id="JZY8BU" name="GeneralOptionsSubPanel.h" compile="0" resource="0"
+                    file="Source/Ui/Top/GeneralOptionsSubPanel.h"/>
+            </GROUP>
+            <FILE id="Gn44ST" name="OptionsPanel.cpp" compile="1" resource="0"
+                  file="Source/Ui/Top/OptionsPanel.cpp"/>
+            <FILE id="y9sRww" name="OptionsPanel.h" compile="0" resource="0" file="Source/Ui/Top/OptionsPanel.h"/>
+            <FILE id="szq63m" name="ScannerComponent.cpp" compile="1" resource="0"
+                  file="Source/Ui/Top/ScannerComponent.cpp"/>
+            <FILE id="qcCMzi" name="ScannerComponent.h" compile="0" resource="0"
+                  file="Source/Ui/Top/ScannerComponent.h"/>
+            <FILE id="gayD6d" name="TabbedPanelComponent.cpp" compile="1" resource="0"
+                  file="Source/Ui/Top/TabbedPanelComponent.cpp"/>
+            <FILE id="Tritv3" name="TabbedPanelComponent.h" compile="0" resource="0"
+                  file="Source/Ui/Top/TabbedPanelComponent.h"/>
+          </GROUP>
           <FILE id="zVz8oR" name="NewPresetPanel.cpp" compile="1" resource="0"
                 file="Source/Ui/Top/NewPresetPanel.cpp"/>
           <FILE id="HulRFa" name="NewPresetPanel.h" compile="0" resource="0"
                 file="Source/Ui/Top/NewPresetPanel.h"/>
-          <FILE id="Gn44ST" name="OptionsPanel.cpp" compile="1" resource="0"
-                file="Source/Ui/Top/OptionsPanel.cpp"/>
-          <FILE id="y9sRww" name="OptionsPanel.h" compile="0" resource="0" file="Source/Ui/Top/OptionsPanel.h"/>
-          <FILE id="szq63m" name="ScannerComponent.cpp" compile="1" resource="0"
-                file="Source/Ui/Top/ScannerComponent.cpp"/>
-          <FILE id="qcCMzi" name="ScannerComponent.h" compile="0" resource="0"
-                file="Source/Ui/Top/ScannerComponent.h"/>
         </GROUP>
         <GROUP id="{ACEA364D-47F4-BE67-B3B0-D0FEC5CE7BA7}" name="Header">
           <FILE id="hBml6T" name="HeaderComponent.cpp" compile="1" resource="0"

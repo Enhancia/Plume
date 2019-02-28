@@ -163,9 +163,9 @@ void SymmetricalTuner::createLabels()
     rangeLabel->addListener (this);
 }
     
-void SymmetricalTuner::setParameter (float value)
+void SymmetricalTuner::setParameter (float val)
 {
     parameter.beginChangeGesture();
-    parameter.setValueNotifyingHost (parameter.convertTo0to1 (value));
+    parameter.setValueNotifyingHost (parameter.convertTo0to1 (val));
     parameter.endChangeGesture();
 }

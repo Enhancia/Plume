@@ -54,6 +54,7 @@ namespace PLUME
         const Font plumeFont = getPlumeFont();
         const Font plumeFontBold = getPlumeFont (bold);
         const Font plumeFontBook = getPlumeFont (book);
+        const Font plumeFontLight = getPlumeFont (light);
         
     }
     
