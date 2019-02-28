@@ -16,7 +16,6 @@
 #include "Ui/Top/ScannerComponent.h"
 #include "Ui/Top/TabbedPanelComponent.h"
 #include "Ui/Top/FileOptionsSubPanel.h"
-#include "Ui/Top/AppearanceOptionsSubPanel.h"
 #include "Ui/Top/GeneralOptionsSubPanel.h"
 
 //==============================================================================

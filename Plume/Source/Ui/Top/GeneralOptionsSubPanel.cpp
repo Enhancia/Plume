@@ -14,9 +14,6 @@
 //==============================================================================
 GeneralOptionsSubPanel::GeneralOptionsSubPanel (PlumeProcessor& proc) : processor (proc)
 {
-	addSeparatorRow ("Appearance");
-	//addButtonRow ("Send report", "mailB", "Report");
-
 	addSeparatorRow ("Bug Report");
 	addButtonRow ("Send report", "mailB", "Report");
 }

@@ -91,10 +91,6 @@
                     file="Source/Ui/Top/SubPanelComponent.cpp"/>
               <FILE id="WNF4Mg" name="SubPanelComponent.h" compile="0" resource="0"
                     file="Source/Ui/Top/SubPanelComponent.h"/>
-              <FILE id="dgGDrQ" name="AppearanceOptionsSubPanel.cpp" compile="1"
-                    resource="0" file="Source/Ui/Top/AppearanceOptionsSubPanel.cpp"/>
-              <FILE id="eSC4QR" name="AppearanceOptionsSubPanel.h" compile="0" resource="0"
-                    file="Source/Ui/Top/AppearanceOptionsSubPanel.h"/>
               <FILE id="IUeALq" name="FileOptionsSubPanel.cpp" compile="1" resource="0"
                     file="Source/Ui/Top/FileOptionsSubPanel.cpp"/>
               <FILE id="abfpns" name="FileOptionsSubPanel.h" compile="0" resource="0"

@@ -19,7 +19,8 @@
 */
 class SubPanelComponent    : public Component,
                              public Label::Listener,
-                             public Button::Listener
+                             public Button::Listener,
+                             private ChangeListener
 {
 public:
     //==============================================================================
@@ -33,6 +34,7 @@ public:
     //==============================================================================
     virtual void buttonClicked (Button*) override {}
     virtual void labelTextChanged (Label*) override {}
+    virtual void fileScanned (const String& scannerID, const File& fileThatWasScanned) {}
 
     //==============================================================================
     void addRow (String rowText, Component* rowCompToAdd, int height = 16);
@@ -40,6 +42,15 @@ public:
     void addToggleRow (String rowText, String buttonID);
     void addButtonRow (String rowText, String buttonID, String buttonText);
     void addLabelRow (String rowText, String labelID, String labelText);
+    void addScannerRow (String rowText, String scannerID,
+                        const String& dialogBoxTitle,
+                        const File& initialFileOrDirectory =File(),
+                        const String& filePatternsAllowed =String(),
+                        File initialStoredFile =File(), bool searchDirs = false);
+ 
+
+
+
 
 private:
     //==============================================================================
@@ -51,7 +62,7 @@ private:
 
         void paint(Graphics& g) override
         {
-            g.setColour(Colour (0x50ffffff));
+            g.setColour(PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelSubText));
             //g.fillAll();
             g.drawHorizontalLine(this->getHeight() / 2, 0.0f, float (this->getWidth()));
         }
@@ -71,15 +82,17 @@ private:
             toggle,
             button,
             label,
+            scanner,
             value,
 
             custom
         };
 
-        Row (Component* compToUse, String rowName, rowType t, int rowH = 16) : name (rowName), height (rowH)
+        Row (Component* compToUse, String rowName, rowType t, int rowH = 16) : name (rowName), 
+                                                                               height (rowH),
+                                                                               type (t)
         {
             comp = compToUse;
-            type = t;
         }
 
         ~Row () { comp = nullptr; }
@@ -88,9 +101,41 @@ private:
 
         ScopedPointer<Component> comp;
         const String name;
-        rowType type;
+        const rowType type;
         const int height;
     };
+
+    //==============================================================================
+    class ScannerRowComponent : public Component,
+                                public ChangeBroadcaster,
+                                private Button::Listener
+    {
+    public:
+        ScannerRowComponent  (const String& scannerID,
+                              const String &dialogBoxTitle, 
+                              const File &initialFileOrDirectory=File(),
+                              const String &filePatternsAllowed=String(),
+                              File& initialStoredFile =File(),
+                              bool searchDirs =false);
+        ~ScannerRowComponent();
+
+        void paint (Graphics&) override;
+        void resized() override;
+        void buttonClicked (Button*) override;
+
+        const File getFile();
+
+    private:
+        ScopedPointer<FileChooser> chooser;
+        ScopedPointer<TextButton> scanButton;
+        File lastFile;
+        const bool searchDirectories;
+
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ScannerRowComponent)
+    };
+
+    //==============================================================================
+    void changeListenerCallback (ChangeBroadcaster*) override;
 
     //==============================================================================
     OwnedArray<Row> rows;

@@ -32,12 +32,13 @@ void SubPanelComponent::paint (Graphics& g)
     {
 		for (auto* row : rows)
 		{
-			g.setColour (row->isSeparator() ? Colour (0x50ffffff)
+			g.setColour (row->isSeparator() ? currentTheme.getColour (PLUME::colour::topPanelSubText)
 											: currentTheme.getColour (PLUME::colour::topPanelMainText));
 
-    		g.setFont (PLUME::font::plumeFont.withHeight (12.0f));
+    		g.setFont (row->isSeparator() ? PLUME::font::plumeFontBook.withHeight (14.0f)
+    			                          : PLUME::font::plumeFont.withHeight (13.0f));
 
-    		if (row->type == Row::separator && row != rows.getFirst())
+    		if (row->isSeparator() && row != rows.getFirst())
     		{
     			textArea.removeFromTop (MARGIN);  // Additional space between sections
     		}
@@ -70,12 +71,13 @@ void SubPanelComponent::resized()
         	{
         		case Row::separator:
         			if (i != 0) compArea.removeFromTop (MARGIN); // Additional space between sections
-
-        			getChildComponent (i)->setBounds (jmin (row.name.length()*7, compArea.getX()),
+        			/*
+        			getChildComponent (i)->setBounds (jmin (row.name.length()*7, compArea.getX(),
         											  compArea.getY(),
         											  getWidth() - jmin (row.name.length()*7, compArea.getX()),
-        											  row.height);
-        			compArea.removeFromTop (row.height);
+        											  row.height);*/
+        			getChildComponent (i)->setBounds (compArea.removeFromTop (row.height));
+        			//compArea.removeFromTop (row.height);
         			break;
 
         		case Row::toggle:
@@ -143,4 +145,102 @@ void SubPanelComponent::addLabelRow (String rowText, String labelID, String labe
 	rows.add (new Row (lbl, rowText, Row::label));
 	addAndMakeVisible (lbl);
 	lbl->addListener(this);
+}
+
+void SubPanelComponent::addScannerRow (String rowText, String scannerID,
+                                       const String& dialogBoxTitle,
+                                       const File& initialFileOrDirectory,
+                                       const String& filePatternsAllowed,
+                                       File initialStoredFile, bool searchDirs)
+{
+	ScannerRowComponent* src = new ScannerRowComponent (scannerID, dialogBoxTitle,
+		                                                initialFileOrDirectory, filePatternsAllowed,
+		                                                initialStoredFile, searchDirs);
+
+
+	rows.add (new Row (src, rowText, Row::scanner));
+	addAndMakeVisible (src);
+	src->addChangeListener(this);
+}
+
+void SubPanelComponent::changeListenerCallback (ChangeBroadcaster* cb)
+{
+	if (auto* scannerComp = dynamic_cast<ScannerRowComponent*> (cb))
+	{
+		fileScanned (scannerComp->getComponentID(), scannerComp->getFile());
+	}
+}
+
+//==============================================================================
+SubPanelComponent::ScannerRowComponent::ScannerRowComponent  (const String& scannerID,
+															  const String &dialogBoxTitle, 
+                                							  const File &initialFileOrDirectory,
+                              								  const String &filePatternsAllowed,
+                              								  File& initialStoredFile,
+                              								  bool searchDirs)
+															  : searchDirectories (searchDirs)
+{
+	setComponentID (scannerID);
+	lastFile = initialStoredFile;
+
+	chooser = new FileChooser (dialogBoxTitle, initialFileOrDirectory, filePatternsAllowed);
+	addAndMakeVisible (scanButton = new TextButton ("scanButton"));
+	scanButton->setButtonText ("Search");
+	scanButton->addListener (this);
+}
+
+SubPanelComponent::ScannerRowComponent::~ScannerRowComponent()
+{
+	scanButton->removeListener (this);
+	scanButton = nullptr;
+	chooser = nullptr;
+}
+
+void SubPanelComponent::ScannerRowComponent::paint (Graphics& g)
+{
+	using namespace PLUME::UI;
+
+	g.setColour (currentTheme.getColour (PLUME::colour::topPanelSubText));
+	g.setFont (PLUME::font::plumeFont.withHeight (11.0f));
+
+	g.drawFittedText (lastFile.getFullPathName(),
+		              getLocalBounds().removeFromRight (getWidth() - 4*getHeight())
+							          .reduced (MARGIN, 0),
+		              Justification::centredLeft,
+		              1);
+}
+
+void SubPanelComponent::ScannerRowComponent::resized()
+{
+	scanButton->setBounds (getLocalBounds().removeFromLeft (jmin (4*getHeight(), getWidth()/2)));
+}
+
+void SubPanelComponent::ScannerRowComponent::buttonClicked (Button* bttn)
+{
+	if (bttn == scanButton)
+	{
+		if (searchDirectories)
+		{
+			if (chooser->browseForDirectory())
+			{
+				lastFile = chooser->getResult();
+				sendChangeMessage();
+				repaint();
+			}
+		}
+		else
+		{
+			if (chooser->browseForFileToOpen())
+			{
+				lastFile = chooser->getResult();
+				sendChangeMessage();
+				repaint();
+			}
+		}
+	}
+}
+
+const File SubPanelComponent::ScannerRowComponent::getFile()
+{
+	return lastFile;
 }

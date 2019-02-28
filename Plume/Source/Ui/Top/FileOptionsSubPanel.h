@@ -27,7 +27,7 @@ public:
     ~FileOptionsSubPanel();
     
     //==============================================================================
-    void labelTextChanged (Label* lbl) override;
+    void fileScanned (const String& scannerID, const File& fileThatWasScanned) override;
 
 private:
     //==============================================================================

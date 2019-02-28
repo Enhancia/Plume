@@ -17,8 +17,10 @@ FileOptionsSubPanel::FileOptionsSubPanel (PlumeProcessor& proc)   : processor (p
     // Plugin section
     addSeparatorRow ("Plugin Sources");
 
-    addLabelRow ("User plugin path", "pluginDir", processor.getWrapper()
-                                                           .getCustomDirectory (0));
+    addScannerRow ("User plugin path", "pluginDir", TRANS("Select your custom plugin directory:"),
+                   File::getSpecialLocation (File::userHomeDirectory), String(),
+                   processor.getWrapper().getCustomDirectory (0), true);
+
     addRow ("Scan Plugins", new ScannerComponent (processor), 20);
 
 
@@ -26,16 +28,44 @@ FileOptionsSubPanel::FileOptionsSubPanel (PlumeProcessor& proc)   : processor (p
     // Preset section
     addSeparatorRow ("Preset Sources");
 
-    addLabelRow ("User presets path", "presetDir", processor.getPresetHandler()
-                                                            .getUserDirectory()
-                                                            .getFullPathName());
-    
+    addScannerRow ("User preset path", "presetDir", TRANS("Select your custom preset directory:"),
+                   File::getSpecialLocation (File::userHomeDirectory), String(),
+                   processor.getPresetHandler().getUserDirectory().getFullPathName(),
+                   true);
 }
 
 FileOptionsSubPanel::~FileOptionsSubPanel()
 {
 }
 
+void FileOptionsSubPanel::fileScanned (const String& scannerID, const File& fileThatWasScanned)
+{
+    if (scannerID == "pluginDir")
+    {
+        if (fileThatWasScanned.isDirectory())
+        {
+            processor.getWrapper().addCustomDirectory (fileThatWasScanned);
+        }
+    }
+    else if (scannerID == "presetDir")
+    {
+        if (fileThatWasScanned.isDirectory())
+        {
+            processor.getPresetHandler().setUserDirectory (fileThatWasScanned);
+            processor.getPresetHandler().storePresets();
+            
+            if (auto* sideBar = dynamic_cast<PlumeComponent*> (getParentComponent() // TabbedPanel
+                                                                 ->getParentComponent() // Options Panel
+                                                                 ->getParentComponent() // Editor
+                                                                 ->findChildWithID ("sideBar")))
+            {
+                sideBar->update();
+            }
+        }
+    } 
+}
+
+/*
 void FileOptionsSubPanel::labelTextChanged (Label* lbl)
 {
     // Preset Directory Label
@@ -75,3 +105,4 @@ void FileOptionsSubPanel::labelTextChanged (Label* lbl)
         }
     }
 }
+*/

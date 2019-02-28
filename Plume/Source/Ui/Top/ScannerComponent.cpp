@@ -48,8 +48,8 @@ void ScannerComponent::paint (Graphics& g)
 void ScannerComponent::resized()
 {
     auto area = getLocalBounds();
-    scanButton->setBounds (area.removeFromLeft (20));
-    cancelButton->setBounds (area.removeFromRight(100).reduced (PLUME::UI::MARGIN, 0));
+    scanButton->setBounds (area.removeFromLeft (getHeight()).reduced (getHeight()/6));
+    cancelButton->setBounds (area.removeFromRight (80).withTrimmedLeft (PLUME::UI::MARGIN));
     bar->setBounds (area.reduced (PLUME::UI::MARGIN, 0));
 }
 
@@ -162,8 +162,10 @@ void ScannerComponent::scanFinished()
     dirScanner.reset();
     processor.getWrapper().savePluginListToFile();
     
-    if (auto* header = dynamic_cast<PlumeComponent*> (getParentComponent()
-                                                        ->getParentComponent()
+    if (auto* header = dynamic_cast<PlumeComponent*> (getParentComponent() // FileSubPanel
+                                                        ->getParentComponent() // TabbedPanel
+                                                        ->getParentComponent() // OptionsPanel
+                                                        ->getParentComponent() // Editor
                                                         ->findChildWithID ("header")))
     {
         header->update();
