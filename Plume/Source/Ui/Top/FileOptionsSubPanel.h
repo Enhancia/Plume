@@ -14,42 +14,24 @@
 #include "Common/PlumeCommon.h"
 #include "Plugin/PluginProcessor.h"
 #include "Ui/Top/ScannerComponent.h"
-
-#if JUCE_WINDOWS
-#include <windows.h>
-#include <ShellAPI.h>
-#elif JUCE_MAC
-#include <stdlib.h>
-#endif
+#include "SubPanelComponent.h"
 
 //==============================================================================
 /*
 */
-class FileOptionsSubPanel    : public Component,
-                               private Button::Listener,
-                               private Label::Listener
+class FileOptionsSubPanel    : public SubPanelComponent
 {
 public:
     //==============================================================================
     FileOptionsSubPanel (PlumeProcessor& proc);
     ~FileOptionsSubPanel();
-
-    //==============================================================================
-    void paint (Graphics&) override;
-    void resized() override;
     
     //==============================================================================
-    void buttonClicked (Button* bttn) override;
     void labelTextChanged (Label* lbl) override;
 
 private:
     //==============================================================================
-    ScopedPointer<Label> presetDirLabel;
-    ScopedPointer<Label> pluginDirLabel;
-    
-    ScopedPointer<ShapeButton> scanButton;
     ScopedPointer<ScannerComponent> scanner;
-    ScopedPointer<TextButton> mailButton;
     
     //==============================================================================
     PlumeProcessor& processor;

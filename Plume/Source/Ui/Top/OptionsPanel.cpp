@@ -19,9 +19,8 @@ OptionsPanel::OptionsPanel (PlumeProcessor& proc)   : processor (proc)
 
     addAndMakeVisible (tabbedOptions = new TabbedPanelComponent (processor));
 
-    tabbedOptions->addTab (new GeneralOptionsSubPanel(), "General");
+    tabbedOptions->addTab (new GeneralOptionsSubPanel (processor), "General");
     tabbedOptions->addTab (new FileOptionsSubPanel (processor), "File");
-    tabbedOptions->addTab (new AppearanceOptionsSubPanel (), "Appearance");
 }
 
 OptionsPanel::~OptionsPanel()
@@ -71,7 +70,7 @@ void OptionsPanel::resized()
     
     optionsArea = getBounds().reduced (getWidth()/5, getHeight()/8);
 
-    tabbedOptions->setBounds (optionsArea.reduced (2*MARGIN));
+    tabbedOptions->setBounds (optionsArea.reduced (2*MARGIN, MARGIN));
 }
 
 //==============================================================================

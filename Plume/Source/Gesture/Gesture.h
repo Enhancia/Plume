@@ -111,6 +111,7 @@ public:
         setGestureValue (defaultValue);
         setMidiLow (defaultMidiRange.getStart(), false);
         setMidiHigh (defaultMidiRange.getEnd(), false);
+		setCc (defaultCc);
     }
     
     /**

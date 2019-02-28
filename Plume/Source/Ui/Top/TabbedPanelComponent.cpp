@@ -47,7 +47,7 @@ void TabbedPanelComponent::paint (Graphics& g)
             //g.setColour (currentTheme.getColour (PLUME::colour::topPanelMainText));
             //g.setFont (font::plumeFont.withHeight (13.0f));
             //g.drawText (tabs[i]->name, tabArea, Justification::centred, false);
-            tabsArea.removeFromTop (MARGIN/2);
+            tabsArea.removeFromTop (MARGIN);
         }
     }
 }
@@ -69,7 +69,7 @@ void TabbedPanelComponent::resized()
         for (auto* tab : tabs)
         {
             tab->button->setBounds (tabsArea.removeFromTop (tabHeight));
-            tabsArea.removeFromTop (MARGIN/2);
+            tabsArea.removeFromTop (MARGIN);
 
             tab->panel->setBounds (panelArea);
         }
@@ -82,7 +82,7 @@ void TabbedPanelComponent::addTab (Component* panel, String tabName)
     tabs.add (new Tab (panel, tabName));
     addAndMakeVisible (tabs.getLast()->button);
     addChildAndSetID (tabs.getLast()->panel, "panel" + String(tabs.size() - 1));
-    findChildWithID ("panel" + tabs.size() - 1)->setVisible (false);
+    findChildWithID ("panel" + String(tabs.size() - 1))->setVisible (false);
     tabs.getLast()->button->addListener (this);
 
     // Displays the first tab that is added
@@ -97,10 +97,10 @@ void TabbedPanelComponent::switchToTab (const int tabNumber)
     if (tabNumber < 0 || tabNumber >= tabs.size()) return;
 
 	if (tabNumber == selectedTab)
-		if (auto* pan = findChildWithID("panel" + selectedTab)) pan->setVisible(true);
+		if (auto* pan = findChildWithID("panel" + String(selectedTab))) pan->setVisible(true);
 
-    findChildWithID ("panel" + selectedTab)->setVisible (false);
-    findChildWithID ("panel" + tabNumber  )->setVisible (true);
+    findChildWithID ("panel" + String(selectedTab))->setVisible (false);
+    findChildWithID ("panel" + String(tabNumber)  )->setVisible (true);
     selectedTab = tabNumber;
 
     repaint();

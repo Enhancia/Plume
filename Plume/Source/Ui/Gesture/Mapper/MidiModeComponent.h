@@ -44,7 +44,7 @@ public:
     }
 
     //==============================================================================
-    void paint (Graphics& g) override
+    void paint (Graphics&) override
     {
     }
 

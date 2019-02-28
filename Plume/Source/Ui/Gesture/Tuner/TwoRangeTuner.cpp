@@ -325,31 +325,31 @@ void TwoRangeTuner::createLabels()
     rangeLabelMaxRight->addListener (this);
 }
     
-void TwoRangeTuner::setRangeLeftLow (float value)
+void TwoRangeTuner::setRangeLeftLow (float val)
 {
     rangeLeftLow.beginChangeGesture();
-    rangeLeftLow.setValueNotifyingHost (rangeLeftLow.convertTo0to1 (value));
+    rangeLeftLow.setValueNotifyingHost (rangeLeftLow.convertTo0to1 (val));
     rangeLeftLow.endChangeGesture();
 }
     
-void TwoRangeTuner::setRangeLeftHigh (float value)
+void TwoRangeTuner::setRangeLeftHigh (float val)
 {
     rangeLeftHigh.beginChangeGesture();
-    rangeLeftHigh.setValueNotifyingHost (rangeLeftHigh.convertTo0to1 (value));
+    rangeLeftHigh.setValueNotifyingHost (rangeLeftHigh.convertTo0to1 (val));
     rangeLeftHigh.endChangeGesture();
 }
     
-void TwoRangeTuner::setRangeRightLow (float value)
+void TwoRangeTuner::setRangeRightLow (float val)
 {
     rangeRightLow.beginChangeGesture();
-    rangeRightLow.setValueNotifyingHost (rangeRightLow.convertTo0to1 (value));
+    rangeRightLow.setValueNotifyingHost (rangeRightLow.convertTo0to1 (val));
     rangeRightLow.endChangeGesture();
 }
     
-void TwoRangeTuner::setRangeRightHigh (float value)
+void TwoRangeTuner::setRangeRightHigh (float val)
 {
     rangeRightHigh.beginChangeGesture();
-    rangeRightHigh.setValueNotifyingHost (rangeRightHigh.convertTo0to1 (value));
+    rangeRightHigh.setValueNotifyingHost (rangeRightHigh.convertTo0to1 (val));
     rangeRightHigh.endChangeGesture();
 }
     

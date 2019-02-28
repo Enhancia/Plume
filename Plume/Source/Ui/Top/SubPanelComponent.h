@@ -17,7 +17,9 @@
 //==============================================================================
 /*
 */
-class SubPanelComponent    : public Component
+class SubPanelComponent    : public Component,
+                             public Label::Listener,
+                             public Button::Listener
 {
 public:
     //==============================================================================
@@ -29,11 +31,19 @@ public:
     void resized() override;
     
     //==============================================================================
-    void addRow (String name, Component* rowCompToAdd);
-    
-protected:
+    virtual void buttonClicked (Button*) override {}
+    virtual void labelTextChanged (Label*) override {}
+
     //==============================================================================
-	class Separator : public Component
+    void addRow (String rowText, Component* rowCompToAdd, int height = 16);
+    void addSeparatorRow (String rowText);
+    void addToggleRow (String rowText, String buttonID);
+    void addButtonRow (String rowText, String buttonID, String buttonText);
+    void addLabelRow (String rowText, String labelID, String labelText);
+
+private:
+    //==============================================================================
+    class Separator : public Component
     {
     public:
         Separator() {}
@@ -41,37 +51,50 @@ protected:
 
         void paint(Graphics& g) override
         {
-            g.setColour(Colour(0xff000000));
+            g.setColour(Colour (0x50ffffff));
             //g.fillAll();
             g.drawHorizontalLine(this->getHeight() / 2, 0.0f, float (this->getWidth()));
         }
-		void resized() override { repaint();  }
+        void resized() override { repaint();  }
 
     private:
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Separator)
     };
 
-private:
     //==============================================================================
     class Row
     {
 	public:
-        Row (Component* compToUse, String rowName) : name (rowName)
+        enum rowType
+        {
+            separator =0,
+            toggle,
+            button,
+            label,
+            value,
+
+            custom
+        };
+
+        Row (Component* compToUse, String rowName, rowType t, int rowH = 16) : name (rowName), height (rowH)
         {
             comp = compToUse;
+            type = t;
         }
 
         ~Row () { comp = nullptr; }
 
+        bool isSeparator() { return type == separator; }
+
         ScopedPointer<Component> comp;
         const String name;
+        rowType type;
+        const int height;
     };
 
     //==============================================================================
     OwnedArray<Row> rows;
 
-    const int rowHeight = 16;
-    
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SubPanelComponent)
 };

@@ -237,7 +237,7 @@ private:
     {
     }
     
-    void drawCursors(Graphics& g)
+    void drawCursors(Graphics&)
     {
     }
     
