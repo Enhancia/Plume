@@ -63,10 +63,9 @@ private:
         void paint(Graphics& g) override
         {
             g.setColour(PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelSubText));
-            //g.fillAll();
             g.drawHorizontalLine(this->getHeight() / 2, 0.0f, float (this->getWidth()));
         }
-        void resized() override { repaint();  }
+        void resized() override { repaint(); }
 
     private:
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Separator)

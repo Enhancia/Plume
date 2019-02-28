@@ -126,6 +126,8 @@ void SubPanelComponent::addButtonRow (String rowText, String buttonID, String bu
 {
 	TextButton* bttn = new TextButton (buttonID);
 	bttn->setComponentID (buttonID);
+	bttn->setColour (TextButton::textColourOffId,
+		             PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText));
 	bttn->setButtonText (buttonText);
 
 	rows.add (new Row (bttn, rowText, Row::button));
@@ -186,6 +188,8 @@ SubPanelComponent::ScannerRowComponent::ScannerRowComponent  (const String& scan
 	chooser = new FileChooser (dialogBoxTitle, initialFileOrDirectory, filePatternsAllowed);
 	addAndMakeVisible (scanButton = new TextButton ("scanButton"));
 	scanButton->setButtonText ("Search");
+	scanButton->setColour (TextButton::textColourOffId,
+		                   PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText));
 	scanButton->addListener (this);
 }
 
