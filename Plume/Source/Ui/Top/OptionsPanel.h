@@ -21,7 +21,8 @@
 //==============================================================================
 /*
 */
-class OptionsPanel    : public Component
+class OptionsPanel    : public Component,
+                        private Button::Listener
 {
 public:
     //==============================================================================
@@ -33,13 +34,17 @@ public:
     void resized() override;
     
     //==============================================================================
+    void buttonClicked (Button* bttn) override;
     void mouseUp (const MouseEvent& event) override;
+    void mouseEnter (const MouseEvent& event) override;
+    void mouseExit (const MouseEvent& event) override;
     void visibilityChanged() override;
 
 private:
     //==============================================================================
     juce::Rectangle<int> optionsArea;
     ScopedPointer<TabbedPanelComponent> tabbedOptions;
+    ScopedPointer<ShapeButton> closeButton;
     PlumeProcessor& processor;
     
     //==============================================================================

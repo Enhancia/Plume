@@ -28,6 +28,7 @@ public:
     
     //==============================================================================
     void fileScanned (const String& scannerID, const File& fileThatWasScanned) override;
+    void buttonClicked (Button* bttn) override;
 
 private:
     //==============================================================================

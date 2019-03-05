@@ -44,9 +44,9 @@ void TabbedPanelComponent::paint (Graphics& g)
             g.setColour (i == selectedTab ? Colour (0x30ffffff) : Colour (0x30000000));
             g.fillRect (tabArea);
 
-            //g.setColour (currentTheme.getColour (PLUME::colour::topPanelMainText));
-            //g.setFont (font::plumeFont.withHeight (13.0f));
-            //g.drawText (tabs[i]->name, tabArea, Justification::centred, false);
+            g.setColour (currentTheme.getColour (PLUME::colour::topPanelMainText));
+            g.setFont (font::plumeFontBook.withHeight (14.0f));
+            g.drawText (tabs[i]->name, tabArea, Justification::centred, false);
             tabsArea.removeFromTop (MARGIN);
         }
     }

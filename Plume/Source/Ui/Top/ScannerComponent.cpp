@@ -12,32 +12,20 @@
 #include "ScannerComponent.h"
 
 //==============================================================================
-ScannerComponent::ScannerComponent (PlumeProcessor& proc)   : processor (proc)
+ScannerComponent::ScannerComponent (PlumeProcessor& proc, int buttonWidth)   : processor (proc),
+                                                                               buttonW (buttonWidth)
 {
     // Scan Button
-    addAndMakeVisible (scanButton = new ShapeButton ("Scan Button",
-                                                     PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFill),
-		                                             PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFill)
-		                                                                                .withAlpha (0.5f),
-		                                             PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFill)
-		                                                                                .withAlpha (0.7f)));
-		                                                                                
-	scanButton->setShape (PLUME::path::magnifyingGlassPath, false, true, false);
-	scanButton->addListener (this);
-	
-	addAndMakeVisible (cancelButton = new TextButton ("Cancel Button"));
-	cancelButton->setButtonText ("Cancel");
-	cancelButton->addListener (this);
+    addAndMakeVisible (scanButton = new TextButton ("Scan Button"));
+    scanButton->setButtonText ("Scan");
+    scanButton->addListener (this);
 	
 	addAndMakeVisible (bar = new PlumeProgressBar (scanProgress, pluginBeingScanned, "Scanning :"));
-
-	setComponentsVisible();
 }
 
 ScannerComponent::~ScannerComponent()
 {
 	scanButton = nullptr;
-	cancelButton = nullptr;
 	bar = nullptr;
 }
 
@@ -47,9 +35,11 @@ void ScannerComponent::paint (Graphics& g)
 
 void ScannerComponent::resized()
 {
+    if (getWidth() != 0 && (buttonW < 10 || buttonW > getWidth()*2/3)) buttonW = jmax (10, getWidth()/5);
+
     auto area = getLocalBounds();
-    scanButton->setBounds (area.removeFromLeft (getHeight()).reduced (getHeight()/6));
-    cancelButton->setBounds (area.removeFromRight (80).withTrimmedLeft (PLUME::UI::MARGIN));
+
+    scanButton->setBounds (area.removeFromLeft (buttonW));
     bar->setBounds (area.reduced (PLUME::UI::MARGIN, 0));
 }
 
@@ -57,13 +47,17 @@ void ScannerComponent::buttonClicked (Button* bttn)
 {
     if (bttn == scanButton)
     {
-        formatToScan = 0;
-		scanPlugins();
-    }
-    
-    else if (bttn == cancelButton)
-    {
-        cancelScan();
+        if (scanning)
+        {
+            cancelScan();
+        }
+
+        else
+        {
+            formatToScan = 0;
+            scanPlugins();
+        }
+        
     }
 }
 
@@ -95,7 +89,7 @@ void ScannerComponent::scanPlugins()
     processor.getWrapper().getList().clear();
     dirScanner = processor.getWrapper().getDirectoryScannerForFormat (formatToScan);
     scanning = true;
-    setComponentsVisible();
+    scanButton->setButtonText ("Cancel");
     
     threadPool.reset (new ThreadPool (numThreads));
     for (int i =0; i < numThreads; i++)
@@ -103,7 +97,6 @@ void ScannerComponent::scanPlugins()
 		threadPool->addJob (new ScanJob(*this), true);
     }
     
-    setComponentsVisible();
     startTimer (20);
 }
 
@@ -133,7 +126,7 @@ void ScannerComponent::cancelScan()
         pluginBeingScanned = "";
         bar->repaint();
         dirScanner.reset();
-        setComponentsVisible(); 
+        scanButton->setButtonText ("Scan"); 
         if (auto* header = dynamic_cast<PlumeComponent*> (getParentComponent()
                                                         ->getParentComponent()
                                                         ->findChildWithID ("header")))
@@ -156,7 +149,7 @@ void ScannerComponent::scanFinished()
     }
     
     // Else reverts to non scan mode and saves plugins to external list
-    setComponentsVisible();
+    scanButton->setButtonText ("Scan");
     bar->repaint();
     
     dirScanner.reset();
@@ -172,9 +165,4 @@ void ScannerComponent::scanFinished()
     }
         
     exitModalState (1);
-}
-
-void ScannerComponent::setComponentsVisible()
-{
-    cancelButton->setVisible (scanning);
 }

@@ -37,9 +37,9 @@ public:
     virtual void fileScanned (const String& scannerID, const File& fileThatWasScanned) {}
 
     //==============================================================================
-    void addRow (String rowText, Component* rowCompToAdd, int height = 16);
+    void addRow (String rowText, Component* rowCompToAdd, int height =PLUME::UI::SUBPANEL_ROW_HEIGHT);
     void addSeparatorRow (String rowText);
-    void addToggleRow (String rowText, String buttonID);
+    void addToggleRow (String rowText, String buttonID, bool initialState =false);
     void addButtonRow (String rowText, String buttonID, String buttonText);
     void addLabelRow (String rowText, String labelID, String labelText);
     void addScannerRow (String rowText, String scannerID,
@@ -87,9 +87,8 @@ private:
             custom
         };
 
-        Row (Component* compToUse, String rowName, rowType t, int rowH = 16) : name (rowName), 
-                                                                               height (rowH),
-                                                                               type (t)
+        Row (Component* compToUse, String rowName, rowType t, int rowH =PLUME::UI::SUBPANEL_ROW_HEIGHT)
+            : name (rowName), height (rowH), type (t)
         {
             comp = compToUse;
         }

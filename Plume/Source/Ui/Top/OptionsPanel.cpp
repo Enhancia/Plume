@@ -21,11 +21,29 @@ OptionsPanel::OptionsPanel (PlumeProcessor& proc)   : processor (proc)
 
     tabbedOptions->addTab (new GeneralOptionsSubPanel (processor), "General");
     tabbedOptions->addTab (new FileOptionsSubPanel (processor), "File");
+    
+    // Close button
+    addAndMakeVisible (closeButton = new ShapeButton ("Close Options Button",
+                                                       Colour(0x00000000),
+                                                       Colour(0x00000000),
+                                                       Colour(0x00000000)));
+
+    Path p;
+    p.startNewSubPath (0, 0);
+    p.lineTo (4*PLUME::UI::MARGIN, 4*PLUME::UI::MARGIN);
+    p.startNewSubPath (0, 4*PLUME::UI::MARGIN);
+    p.lineTo (4*PLUME::UI::MARGIN, 0);
+
+    closeButton->setShape (p, false, true, false);
+	  closeButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::topPanelMainText), 1.0f);
+    closeButton->addMouseListener (this, false);
+	  closeButton->addListener (this);
 }
 
 OptionsPanel::~OptionsPanel()
 {
     tabbedOptions = nullptr;
+    closeButton = nullptr;
 }
 
 //==============================================================================
@@ -69,17 +87,53 @@ void OptionsPanel::resized()
     using namespace PLUME::UI;
     
     optionsArea = getBounds().reduced (getWidth()/5, getHeight()/8);
-
+    
     tabbedOptions->setBounds (optionsArea.reduced (2*MARGIN, MARGIN));
+  #if JUCE_WINDOWS
+    closeButton->setBounds (juce::Rectangle<int> (4*MARGIN, 4*MARGIN).withRightX (optionsArea.getRight())
+                                                                     .withY (optionsArea.getY())
+                                                                     .reduced (MARGIN));
+  #elif JUCE_MAC
+    closeButton->setBounds (juce::Rectangle<int> (4*MARGIN, 4*MARGIN).withPosition (optionsArea.getTopLeft())
+                                                                     .reduced (MARGIN));
+  #endif
 }
 
 //==============================================================================
+void OptionsPanel::buttonClicked (Button* bttn)
+{
+    if (bttn == closeButton)
+    {
+        setVisible (false);
+    }
+}
+
 void OptionsPanel::mouseUp (const MouseEvent& event)
 {
+    /*
     if (!optionsArea.contains (event.getPosition()))
     {
         setVisible (false);
     }
+    */
+}
+
+
+void OptionsPanel::mouseEnter (const MouseEvent &event)
+{
+    if (event.eventComponent == closeButton)
+	{
+	    closeButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::topPanelMainText)
+                                                      .withAlpha (0.4f), 1.0f);
+	}
+}
+
+void OptionsPanel::mouseExit (const MouseEvent &event)
+{
+    if (event.eventComponent == closeButton)
+	{
+	    closeButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::topPanelMainText), 1.0f);
+	}
 }
 
 void OptionsPanel::visibilityChanged()

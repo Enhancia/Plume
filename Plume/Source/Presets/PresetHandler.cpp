@@ -78,6 +78,8 @@ String PresetHandler::getCurrentPresetName()
 
 void PresetHandler::storePresets()
 {
+    searchedPresets.clear();
+
     // Adds default presets
     defaultPresets.clear();
     DBG (defaultDir.getNumberOfChildFiles (File::findFiles + File::ignoreHiddenFiles));
@@ -114,6 +116,8 @@ void PresetHandler::storePresets()
         }
     }
     */
+
+    updateSearchedPresets();
 }
 
 int PresetHandler::getNumPresets()

@@ -26,7 +26,7 @@ void SubPanelComponent::paint (Graphics& g)
 {
     using namespace PLUME::UI;
 
-    auto textArea = getLocalBounds().removeFromLeft (getWidth()/4).reduced (MARGIN);
+    auto textArea = getLocalBounds().removeFromLeft (getWidth()/3).reduced (MARGIN);
 
     if (!rows.isEmpty())
     {
@@ -35,8 +35,8 @@ void SubPanelComponent::paint (Graphics& g)
 			g.setColour (row->isSeparator() ? currentTheme.getColour (PLUME::colour::topPanelSubText)
 											: currentTheme.getColour (PLUME::colour::topPanelMainText));
 
-    		g.setFont (row->isSeparator() ? PLUME::font::plumeFontBook.withHeight (14.0f)
-    			                          : PLUME::font::plumeFont.withHeight (13.0f));
+    		g.setFont (row->isSeparator() ? PLUME::font::plumeFontBook.withHeight (15.0f)
+    			                          : PLUME::font::plumeFont.withHeight (11.0f));
 
     		if (row->isSeparator() && row != rows.getFirst())
     		{
@@ -47,7 +47,7 @@ void SubPanelComponent::paint (Graphics& g)
                 		textArea.removeFromTop (row->height),
                 		//row->isSeparator() ? Justification::centredRight : Justification::centredLeft,
                 		Justification::centredLeft,
-                		false);
+                		true);
 
     		textArea.removeFromTop (MARGIN);
 		}
@@ -59,7 +59,7 @@ void SubPanelComponent::resized()
     using namespace PLUME::UI;
 
     auto area = getLocalBounds();
-    auto compArea = getLocalBounds().removeFromRight (getWidth()*3/4).reduced (MARGIN);
+    auto compArea = getLocalBounds().removeFromRight (getWidth()*2/3).reduced (MARGIN);
 
     if (!rows.isEmpty())
     {
@@ -81,7 +81,7 @@ void SubPanelComponent::resized()
         			break;
 
         		case Row::toggle:
-        			getChildComponent (i)->setBounds (compArea.removeFromTop (row.height).withWidth(row.height));
+        			getChildComponent (i)->setBounds (compArea.removeFromTop (row.height).withWidth(row.height*3/2));
         			break;
 
         		case Row::button:
@@ -112,10 +112,15 @@ void SubPanelComponent::addSeparatorRow (String rowText)
 	addAndMakeVisible (sep);
 }
 
-void SubPanelComponent::addToggleRow (String rowText, String buttonID)
+void SubPanelComponent::addToggleRow (String rowText, String buttonID, bool initialState)
 {
 	ToggleButton* tggle = new ToggleButton();
 	tggle->setComponentID (buttonID);
+	tggle->setToggleState (initialState, dontSendNotification);
+	tggle->setColour (ToggleButton::tickColourId,
+		              PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText));
+	tggle->setColour (ToggleButton::tickDisabledColourId,
+		              PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelSubText));
 
 	rows.add (new Row (tggle, rowText, Row::toggle));
 	addAndMakeVisible (tggle);

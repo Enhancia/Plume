@@ -45,7 +45,7 @@ private:
             panel = panelToUse;
 
             button = new TextButton (name);
-            button->setButtonText (name);
+            button->setButtonText ("");
             //button->setColour (TextButton::textColourOffId, PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText));
             //button->setColour (TextButton::textColourOnId, PLUME::UI::currentTheme.getColour(PLUME::colour::topPanelSubText));
             button->setColour (TextButton::buttonColourId, Colour (0x00000000));

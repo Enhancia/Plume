@@ -37,6 +37,7 @@ namespace PLUME
         const int HEADER_HEIGHT = 40;
         const int GESTURE_DETAIL_WIDTH = 300;
         const int OPTIONS_HEIGHT = 30;
+        const int SUBPANEL_ROW_HEIGHT = 16;
         
         // Display settings
         const int FRAMERATE = 60;

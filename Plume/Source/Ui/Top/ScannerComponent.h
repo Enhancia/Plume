@@ -23,7 +23,7 @@ class ScannerComponent    : public Component,
 {
 public:
     //==============================================================================
-    ScannerComponent (PlumeProcessor& proc);
+    ScannerComponent (PlumeProcessor& proc, int buttonWidth =-1);
     ~ScannerComponent();
 
     //==============================================================================
@@ -41,15 +41,16 @@ private:
     void scanFinished();
 	bool doNextScan();
     
-    void setComponentsVisible();
-    
     //==============================================================================
-    ScopedPointer<ShapeButton> scanButton;
+    ScopedPointer<TextButton> scanButton;
     ScopedPointer<TextButton> cancelButton;
     ScopedPointer<PlumeProgressBar> bar;
     
     PlumeProcessor& processor;
     
+    //==============================================================================
+    int buttonW;
+
     //==============================================================================
     bool scanning = false;
     int formatToScan = 0;

@@ -89,6 +89,11 @@ public:
     //==============================================================================
     void parameterValueChanged (int parameterIndex, float newValue) override;
     void parameterGestureChanged (int, bool) override {};
+
+    //==============================================================================
+    void setDefaultPathUsage (bool shouldUseDefaultPaths);
+    void setCustomPathUsage (bool shouldUseCustomPath);
+    void setAuUsage (bool shouldUseAudioUnits);
     
 private:
     //==============================================================================
@@ -100,6 +105,10 @@ private:
     bool hasWrappedInstance;
     bool hasOpenedEditor;
     bool useDefaultPaths = true;
+    bool useCustomPaths = true;
+  #if JUCE_MAC
+    bool useAudioUnits = true;
+  #endif
     float scanProgress = 0.0f;
     String pluginBeingScanned;
     

@@ -330,14 +330,12 @@ Array<File*> PluginWrapper::createFileList()
 {
     Array<File*> directories;
     
+    // Adds OS specific paths if they exist
+  #if JUCE_WINDOWS
+
     if (useDefaultPaths)
     {
-        // TEMP: adds plume directory (removed when custom directories are properly implemented)
-        //directories.add (new File (File::getSpecialLocation (File::currentApplicationFile).getParentDirectory()));
-        
-        // Adds OS specific paths if they exist
         File f;
-      #if JUCE_WINDOWS
         // C:\Program Files\VSTPlugins 
         f = File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("VSTPlugins/");
         
@@ -358,18 +356,17 @@ Array<File*> PluginWrapper::createFileList()
                                                                         .getChildFile ("Steinberg/")
                                                                         .getChildFile ("VST2/");
         if (f.exists()) directories.add (new File (f));
-        
-      #elif JUCE_MAC
+    }
+
+  #elif JUCE_MAC
+
+    if (useDefaultPaths)
+    {
+        File f;
         // Macintosh HD:/Library/Audio/Plug-Ins/Components/
         f = File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Audio/")
                                                                            .getChildFile ("Plug-Ins/")
                                                                            .getChildFile ("Components/");
-        if (f.exists()) directories.add (new File (f));
-        
-        // Macintosh HD:/Library/Audio/Plug-Ins/VST/                                                               
-        f = File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Audio/")
-                                                                           .getChildFile ("Plug-Ins/")
-                                                                           .getChildFile ("VST/");
         if (f.exists()) directories.add (new File (f));
         
         // ~/Library/Audio/Plug-Ins/Components/                                                               
@@ -377,17 +374,26 @@ Array<File*> PluginWrapper::createFileList()
                                                                            .getChildFile ("Plug-Ins/")
                                                                            .getChildFile ("Components/");
         if (f.exists()) directories.add (new File (f));
+    }
+
+    if (useAudioUnits)
+    {
+        // Macintosh HD:/Library/Audio/Plug-Ins/VST/                                                               
+        f = File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Audio/")
+                                                                           .getChildFile ("Plug-Ins/")
+                                                                           .getChildFile ("VST/");
+        if (f.exists()) directories.add (new File (f));
         
         // ~/Library/Audio/Plug-Ins/VST/                                                            
         f = File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Audio/")
                                                                            .getChildFile ("Plug-Ins/")
                                                                            .getChildFile ("VST/");
-        if (f.exists()) directories.add (new File (f));
-                                                                           
-      #endif
-    }
+        if (f.exists()) directories.add (new File (f));    
+    } 
+
+  #endif
     
-    if (customDirectories.getNumChildren() != 0)
+    if (useCustomPaths && customDirectories.getNumChildren() != 0)
     {
 		for (int i = 0; i < customDirectories.getNumChildren(); i++)
 		{
@@ -396,6 +402,23 @@ Array<File*> PluginWrapper::createFileList()
     }
 
 	return directories;
+}
+
+void PluginWrapper::setDefaultPathUsage (bool shouldUseDefaultPaths)
+{
+    useDefaultPaths = shouldUseDefaultPaths;
+}
+
+void PluginWrapper::setCustomPathUsage (bool shouldUseCustomPath)
+{
+    useCustomPaths = shouldUseCustomPath;
+}
+
+void PluginWrapper::setAuUsage (bool shouldUseAudioUnits)
+{
+  #if JUCE_MAC
+    useAudioUnits = shouldUseAudioUnits;
+  #endif 
 }
 
 void PluginWrapper::addCustomDirectory (File newDir)
@@ -468,7 +491,7 @@ void PluginWrapper::scanAllPluginsInDirectories (bool dontRescanIfAlreadyInList,
         
     for (int i=0; i<formatManager->getNumFormats(); i++)
     {
-        PluginDirectoryScanner dirScanner (*pluginList, *formatManager->getFormat (i), fsp, false, File(), true);
+        PluginDirectoryScanner dirScanner (*pluginList, *formatManager->getFormat (i), fsp, true, File(), true);
         scanProgress = 0.0f;
         
         // Rescans until scanNextFile returns false
