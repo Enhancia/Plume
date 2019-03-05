@@ -360,7 +360,7 @@ Array<File*> PluginWrapper::createFileList()
 
   #elif JUCE_MAC
 
-    if (useDefaultPaths)
+    if (useAudioUnits)
     {
         File f;
         // Macintosh HD:/Library/Audio/Plug-Ins/Components/
@@ -376,8 +376,9 @@ Array<File*> PluginWrapper::createFileList()
         if (f.exists()) directories.add (new File (f));
     }
 
-    if (useAudioUnits)
+    if (useDefaultPaths)
     {
+        File f;
         // Macintosh HD:/Library/Audio/Plug-Ins/VST/                                                               
         f = File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Audio/")
                                                                            .getChildFile ("Plug-Ins/")

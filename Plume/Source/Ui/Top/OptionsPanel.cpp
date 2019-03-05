@@ -30,9 +30,9 @@ OptionsPanel::OptionsPanel (PlumeProcessor& proc)   : processor (proc)
 
     Path p;
     p.startNewSubPath (0, 0);
-    p.lineTo (4*PLUME::UI::MARGIN, 4*PLUME::UI::MARGIN);
-    p.startNewSubPath (0, 4*PLUME::UI::MARGIN);
-    p.lineTo (4*PLUME::UI::MARGIN, 0);
+    p.lineTo (3*PLUME::UI::MARGIN, 3*PLUME::UI::MARGIN);
+    p.startNewSubPath (0, 3*PLUME::UI::MARGIN);
+    p.lineTo (3*PLUME::UI::MARGIN, 0);
 
     closeButton->setShape (p, false, true, false);
 	  closeButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::topPanelMainText), 1.0f);
@@ -90,12 +90,12 @@ void OptionsPanel::resized()
     
     tabbedOptions->setBounds (optionsArea.reduced (2*MARGIN, MARGIN));
   #if JUCE_WINDOWS
-    closeButton->setBounds (juce::Rectangle<int> (4*MARGIN, 4*MARGIN).withRightX (optionsArea.getRight())
+    closeButton->setBounds (juce::Rectangle<int> (3*MARGIN, 3*MARGIN).withRightX (optionsArea.getRight())
                                                                      .withY (optionsArea.getY())
-                                                                     .reduced (MARGIN));
+                                                                     .reduced (5));
   #elif JUCE_MAC
-    closeButton->setBounds (juce::Rectangle<int> (4*MARGIN, 4*MARGIN).withPosition (optionsArea.getTopLeft())
-                                                                     .reduced (MARGIN));
+    closeButton->setBounds (juce::Rectangle<int> (3*MARGIN, 3*MARGIN).withPosition (optionsArea.getTopLeft())
+                                                                     .reduced (5));
   #endif
 }
 

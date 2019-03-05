@@ -113,7 +113,7 @@ private:
                               const String &dialogBoxTitle, 
                               const File &initialFileOrDirectory=File(),
                               const String &filePatternsAllowed=String(),
-                              File& initialStoredFile =File(),
+                              const File& initialStoredFile =File(),
                               bool searchDirs =false);
         ~ScannerRowComponent();
 
