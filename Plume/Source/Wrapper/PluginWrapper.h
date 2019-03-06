@@ -70,7 +70,8 @@ public:
     KnownPluginList& getList();
     
     //==============================================================================
-    void createWrapperEditor (int x = 0, int y = 0);
+    void createWrapperEditor (const Component* componentWhichWindowToAttachTo);
+    AudioProcessorEditor* getWrappedEditor();
     void clearWrapperEditor();
     void wrapperEditorToFront (bool shouldAlsoGiveFocus);
     
@@ -107,6 +108,7 @@ private:
     ScopedPointer<WrapperProcessor> wrapperProcessor;
     ScopedPointer<AudioPluginInstance> wrappedInstance;
     ScopedPointer<WrapperEditorWindow> wrapperEditor;
+    ScopedPointer<AudioProcessorEditor> wrapEd;
     ScopedPointer<PlumeProgressBar> bar;
 
     //==============================================================================

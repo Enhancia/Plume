@@ -144,8 +144,11 @@ void HeaderComponent::mouseUp (const MouseEvent &event)
 	{
 		if (processor.getWrapper().isWrapping())
 		{
-			processor.getWrapper().createWrapperEditor();
-		}
+			if (auto* editor = getParentComponent())
+			{
+				processor.getWrapper().createWrapperEditor(editor);
+			}
+        }
 	}
 }
 
@@ -208,9 +211,25 @@ void HeaderComponent::handlePluginChoice (int chosenId)
         // resets the button colour if no choice was made
         pluginListButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 2.0f);
     }
-    else if (processor.getWrapper().wrapPlugin (chosenId))
+    else
     {
-        pluginNameLabel->setText (processor.getWrapper().getWrappedPluginInfoString(), dontSendNotification);
+        // Removes the window in case it's opened
+        if (auto* editor = getParentComponent())
+        {
+            if (auto* wrapEd = editor->findChildWithID ("wrapEd"))
+            {
+                editor->removeChildComponent (wrapEd);
+            }
+        }
+
+
+        if (processor.getWrapper().wrapPlugin (chosenId))
+        {
+            pluginNameLabel->setText (processor.getWrapper().getWrappedPluginInfoString(), dontSendNotification);
+
+            // Creates the wrapper editor object as a child of the editor
+            createPluginWindow();
+        }
     }
 }
 
@@ -219,4 +238,39 @@ void HeaderComponent::createPluginMenu (KnownPluginList::SortMethod sort)
 	pluginListMenu.clear();
 	pluginListMenu.addSectionHeader ("Plugins:");
     processor.getWrapper().addPluginsToMenu (pluginListMenu, sort);
+}
+
+
+void HeaderComponent::createPluginWindow()
+{
+    if (auto* editor = getParentComponent())
+    {
+        /*
+        if (auto* wrapEd = processor.getWrapper().getWrappedEditor())
+        {
+            wrapEd->setOpaque (true);
+            //editor->addChildAndSetID (wrapEd, "wrapEd");
+
+            wrapEd->addToDesktop (ComponentPeer::windowHasTitleBar + ComponentPeer::windowHasCloseButton,
+                                  editor->getPeer()->getNativeHandle());
+        }
+        */
+
+        processor.getWrapper().createWrapperEditor (editor);
+    }
+}
+
+void HeaderComponent::deletePluginWindow()
+{
+    if (processor.getWrapper().isWrapping())
+    {
+        if (auto* editor = getParentComponent())
+        {
+            if (editor->findChildWithID ("wrapEd") != nullptr)
+            {
+                editor->findChildWithID ("wrapEd")->setVisible (false);
+                editor->removeChildComponent (editor->findChildWithID ("wrapEd"));
+            }
+        }
+    }
 }

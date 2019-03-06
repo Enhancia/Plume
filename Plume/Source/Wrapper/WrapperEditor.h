@@ -20,22 +20,25 @@
  *
  *  \brief A desktop window containing the wrapped plugin's GUI.
  */
-class WrapperEditorWindow  : public DocumentWindow
+class WrapperEditorWindow  : public Component
 {
 public:
     //==============================================================================
-	WrapperEditorWindow (WrapperProcessor&, int x = 0, int y = 0);
+	WrapperEditorWindow (WrapperProcessor&, const Component* componentWindowToAttachTo =nullptr);
     ~WrapperEditorWindow();
 
     //==============================================================================
-    void closeButtonPressed() override ;
+    void paint (Graphics&) override;
+    void resized() override;
+    void childBoundsChanged(Component*) override;
+
+    //==============================================================================
+    void userTriedToCloseWindow() override;
     /**
      * \brief Called to indicate that this component has just acquired the keyboard focus.
      */
-    void focusGained (FocusChangeType cause) override;
+    //void focusGained (FocusChangeType cause) override;
     
-    //==============================================================================
-    AudioProcessorEditor* createProcessorEditor (AudioProcessor& processor);
     
     //==============================================================================
     WrapperProcessor& wrapperProcessor; /**< \brief Reference to the wrapper processor object linked to this editor */
@@ -43,6 +46,12 @@ public:
 private:
     //==============================================================================
     float getDesktopScaleFactor() const override     { return 1.0f; }
+
+    //==============================================================================
+    AudioProcessorEditor* createProcessorEditor (AudioProcessor& processor);
+
+    SafePointer<AudioProcessorEditor> wrappedUi;
+    ComponentBoundsConstrainer constrainer;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WrapperEditorWindow)
 };

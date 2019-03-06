@@ -176,6 +176,7 @@ void PluginWrapper::unwrapPlugin()
     
     hasWrappedInstance = false;
     
+	wrapEd.reset();
     owner.getGestureArray().clearAllParameters();
     wrapperProcessor.reset();
     wrappedInstance.reset();
@@ -231,7 +232,7 @@ bool PluginWrapper::isWrapping()
 }
 
 //==============================================================================
-void PluginWrapper::createWrapperEditor (int x, int y)
+void PluginWrapper::createWrapperEditor (const Component* componentWhichWindowToAttachTo)
 {
     TRACE_IN;
     
@@ -244,7 +245,7 @@ void PluginWrapper::createWrapperEditor (int x, int y)
     
     if (hasOpenedEditor == true)
     {
-        wrapperEditor->toFront (false);
+        //wrapperEditor->toFront (false);
         return;
     }
     
@@ -252,12 +253,26 @@ void PluginWrapper::createWrapperEditor (int x, int y)
         
     if (wrapperEditor == nullptr)
     {
-        wrapperEditor = new WrapperEditorWindow (*wrapperProcessor);
-		wrapperEditor->toFront (false);
+        wrapperEditor = new WrapperEditorWindow (*wrapperProcessor, componentWhichWindowToAttachTo);
+		//wrapperEditor->toFront (false);
         return;
     }
     
-    wrapperEditor.reset (new WrapperEditorWindow (*wrapperProcessor));
+    wrapperEditor.reset (new WrapperEditorWindow (*wrapperProcessor, componentWhichWindowToAttachTo));
+}
+
+AudioProcessorEditor* PluginWrapper::getWrappedEditor()
+{
+    if (hasWrappedInstance)
+    {
+        if (auto* ui = wrappedInstance->createEditorIfNeeded())
+        {
+            wrapEd.reset (ui);
+            return wrapEd;
+        }
+    }
+
+	return nullptr;
 }
 
 void PluginWrapper::clearWrapperEditor()

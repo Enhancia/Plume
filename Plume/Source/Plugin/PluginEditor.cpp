@@ -89,8 +89,9 @@ PlumeEditor::~PlumeEditor()
     resizableCorner = nullptr;
     optionsPanel = nullptr;
     newPresetPanel = nullptr;
-
     setLookAndFeel (nullptr);
+
+	//deleteAllChildren(); // Quick & dirty way to get rid of the wrapped editor object
 }
 
 //==============================================================================
@@ -114,6 +115,10 @@ void PlumeEditor::resized()
 	}
 
 	header->setBounds (area.removeFromTop (HEADER_HEIGHT));
+    //if (auto* wrapEd = findChildWithID ("wrapEd"))
+    //{
+        //wrapEd->setBounds(area);
+    //}
 	gesturePanel->setBounds(area.reduced (2*MARGIN, 2*MARGIN));
 	resizableCorner->setBounds (getWidth() - 20, getHeight() - 20, 20, 20);
 	optionsPanel->setBounds (0, 0, getWidth(), getHeight());
