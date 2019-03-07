@@ -230,8 +230,19 @@ void PlumeEditor::setInterfaceUpdates (bool shouldUpdate)
     }
 }
 
-void PlumeEditor::setWindowsToFront()
+void PlumeEditor::broughtToFront()
 {
-	//wrapperComp->windowToFront();
-    toFront (true);
+    if (processor.getWrapper().isWrapping())
+    {
+        if (const auto* wrapperWin = processor.getWrapper().getWrapperEditorWindow())
+        {
+          #if JUCE_WINDOWS
+            // Sets the editor window right behind
+            SetWindowPos(static_cast <HWND> (wrapperWin->getPeer()->getNativeHandle()),//HWND hWnd
+                         static_cast <HWND> (getPeer()->getNativeHandle()),            //HWND hWndInsertAfter
+                         0, 0, 0, 0,                                                   //X, Y, cx, cy (all ignored)
+                         SWP_NOACTIVATE + SWP_NOMOVE + SWP_NOSIZE);                    //UINT uFlags
+          #endif
+        }
+    }
 }

@@ -26,8 +26,8 @@ void PlumeProgressBar::paint (Graphics& g)
     bool smallBar = getHeight() < 2*BAR_H;
     int height = (!smallBar) ? BAR_H : jmax (getHeight(), BAR_H); // bar fills the component height if too small
     
-    auto compArea = smallBar ? Rectangle<int> (0, jmin (0, getHeight()/2 - height), getWidth(), height)
-                             : Rectangle<int> (0, getHeight()/2 - height, getWidth(), 2*height);
+    auto compArea = smallBar ? juce::Rectangle<int> (0, jmin (0, getHeight()/2 - height), getWidth(), height)
+                             : juce::Rectangle<int> (0, getHeight()/2 - height, getWidth(), 2*height);
     
     auto barArea = (!smallBar) ? compArea.removeFromTop (height)
                                : compArea;

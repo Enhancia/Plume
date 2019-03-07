@@ -245,7 +245,7 @@ void PluginWrapper::createWrapperEditor (const Component* componentWhichWindowTo
     
     if (hasOpenedEditor == true)
     {
-        //wrapperEditor->toFront (false);
+        wrapperEditor->toFront (true);
         return;
     }
     
@@ -254,22 +254,18 @@ void PluginWrapper::createWrapperEditor (const Component* componentWhichWindowTo
     if (wrapperEditor == nullptr)
     {
         wrapperEditor = new WrapperEditorWindow (*wrapperProcessor, componentWhichWindowToAttachTo);
-		//wrapperEditor->toFront (false);
+		wrapperEditor->toFront (true);
         return;
     }
     
     wrapperEditor.reset (new WrapperEditorWindow (*wrapperProcessor, componentWhichWindowToAttachTo));
 }
 
-AudioProcessorEditor* PluginWrapper::getWrappedEditor()
+const WrapperEditorWindow* PluginWrapper::getWrapperEditorWindow()
 {
     if (hasWrappedInstance)
     {
-        if (auto* ui = wrappedInstance->createEditorIfNeeded())
-        {
-            wrapEd.reset (ui);
-            return wrapEd;
-        }
+        return wrapperEditor;
     }
 
 	return nullptr;

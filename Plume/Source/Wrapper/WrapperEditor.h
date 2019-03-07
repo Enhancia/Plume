@@ -35,9 +35,9 @@ public:
     //==============================================================================
     void userTriedToCloseWindow() override;
     /**
-     * \brief Called to indicate that this component has just acquired the keyboard focus.
+     * \brief Called to indicate that this component's top level window was brought to front by the OS.
      */
-    //void focusGained (FocusChangeType cause) override;
+    void broughtToFront() override;
     
     
     //==============================================================================
@@ -51,7 +51,9 @@ private:
     AudioProcessorEditor* createProcessorEditor (AudioProcessor& processor);
 
     SafePointer<AudioProcessorEditor> wrappedUi;
-    ComponentBoundsConstrainer constrainer;
+    void* editorHandle;
+    Component& topLevelPlumeComponent;
+    //ComponentBoundsConstrainer constrainer;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WrapperEditorWindow)
 };

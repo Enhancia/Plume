@@ -71,7 +71,7 @@ public:
     
     //==============================================================================
     void createWrapperEditor (const Component* componentWhichWindowToAttachTo);
-    AudioProcessorEditor* getWrappedEditor();
+    const WrapperEditorWindow* getWrapperEditorWindow();
     void clearWrapperEditor();
     void wrapperEditorToFront (bool shouldAlsoGiveFocus);
     

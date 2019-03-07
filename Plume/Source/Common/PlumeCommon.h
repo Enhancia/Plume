@@ -10,6 +10,13 @@
 
 
 #pragma once
+
+#if JUCE_WINDOWS
+#include <windows.h>
+#elif JUCE_MAC
+#include <stdlib.h>
+#endif
+
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PlumeColours.h"
 #include "Ui/Common/PlumeComponent.h"

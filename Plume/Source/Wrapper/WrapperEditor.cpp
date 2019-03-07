@@ -12,7 +12,7 @@
 
 //==============================================================================
 WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc, const Component* componentWhichWindowToAttachTo)
-       : wrapperProcessor (wrapProc)
+       : wrapperProcessor (wrapProc), topLevelPlumeComponent (*componentWhichWindowToAttachTo->getTopLevelComponent())
 {
     TRACE_IN;
     setSize (400, 300);
@@ -25,9 +25,9 @@ WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc, const Comp
 
         // Creates the desktop window, attached to a component (Plume's editor)
         setOpaque (true);
-        void* handle = componentWhichWindowToAttachTo == nullptr ? nullptr :
+        editorHandle = (componentWhichWindowToAttachTo == nullptr) ? nullptr :
                                                          componentWhichWindowToAttachTo->getPeer()->getNativeHandle();
-        addToDesktop (ComponentPeer::windowHasTitleBar + ComponentPeer::windowHasCloseButton, handle);
+        addToDesktop (ComponentPeer::windowHasTitleBar + ComponentPeer::windowHasCloseButton, nullptr); //handle);
 
         // Prevents the window to get lost on the side of the screen
         // (since you can't access it with the task bar to close it....)
@@ -91,22 +91,21 @@ void WrapperEditorWindow::userTriedToCloseWindow()
     wrapperProcessor.getOwnerWrapper().clearWrapperEditor();
 }
 
-/*
-void WrapperEditorWindow::focusGained (FocusChangeType cause)
+void WrapperEditorWindow::broughtToFront()
 {
-    if (cause != Component::focusChangedDirectly)
-    {
-        toFront (false);
-        //wrapperProcessor.getOwnerWrapper().getOwner().sendActionMessage (PLUME::commands::toFront);
-    }
+  #if JUCE_WINDOWS
+    // Sets the editor window right behind
+    SetWindowPos(static_cast <HWND> (editorHandle),                 //HWND hWnd
+                 static_cast <HWND> (getPeer()->getNativeHandle()), //HWND hWndInsertAfter
+                 0, 0, 0, 0,                                        //X, Y, cx, cy (all ignored because of uFlags)
+                 SWP_NOACTIVATE + SWP_NOMOVE + SWP_NOSIZE);         //UINT uFlags
+  #endif
 }
-*/
 
 AudioProcessorEditor* WrapperEditorWindow::createProcessorEditor (AudioProcessor& processor)
 {
     if (auto* ui = processor.createEditorIfNeeded())
     {
-        //toFront (false);
         return ui;
     }
         

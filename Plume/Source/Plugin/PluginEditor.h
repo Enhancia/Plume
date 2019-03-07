@@ -71,6 +71,8 @@ public:
      */
     void resized() override;
     
+    void broughtToFront() override;
+
     //==============================================================================
     /**
      * \brief Callback to a change message sent by the processor.
@@ -95,8 +97,6 @@ public:
     void updateFullInterface();
     
     void setInterfaceUpdates (bool shouldUpdate);
-    
-    void setWindowsToFront();
     
 private:
     //==============================================================================
