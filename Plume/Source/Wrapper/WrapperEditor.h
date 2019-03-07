@@ -39,7 +39,8 @@ public:
      */
     void broughtToFront() override;
     
-    
+    //==============================================================================
+
     //==============================================================================
     WrapperProcessor& wrapperProcessor; /**< \brief Reference to the wrapper processor object linked to this editor */
     
@@ -49,6 +50,7 @@ private:
 
     //==============================================================================
     AudioProcessorEditor* createProcessorEditor (AudioProcessor& processor);
+    void* findHostHandle();
 
     SafePointer<AudioProcessorEditor> wrappedUi;
     void* editorHandle;

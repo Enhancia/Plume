@@ -72,6 +72,10 @@ public:
     void resized() override;
     
     void broughtToFront() override;
+    void focusGained(FocusChangeType cause) override;
+    void minimisationStateChanged (bool) override;
+    //void userTriedToCloseWindow() override;
+    //void visibilityChanged() override;
 
     //==============================================================================
     /**

@@ -27,7 +27,8 @@ WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc, const Comp
         setOpaque (true);
         editorHandle = (componentWhichWindowToAttachTo == nullptr) ? nullptr :
                                                          componentWhichWindowToAttachTo->getPeer()->getNativeHandle();
-        addToDesktop (ComponentPeer::windowHasTitleBar + ComponentPeer::windowHasCloseButton, nullptr); //handle);
+
+        addToDesktop (ComponentPeer::windowHasTitleBar + ComponentPeer::windowHasCloseButton, findHostHandle());
 
         // Prevents the window to get lost on the side of the screen
         // (since you can't access it with the task bar to close it....)
@@ -100,6 +101,37 @@ void WrapperEditorWindow::broughtToFront()
                  0, 0, 0, 0,                                        //X, Y, cx, cy (all ignored because of uFlags)
                  SWP_NOACTIVATE + SWP_NOMOVE + SWP_NOSIZE);         //UINT uFlags
   #endif
+}
+
+void* WrapperEditorWindow::findHostHandle()
+{
+    if (editorHandle == nullptr) return nullptr;
+
+  #if JUCE_WINDOWS
+    if (auto editorHwnd = static_cast<HWND> (editorHandle))
+    {
+        // If DAW has an owned window with children windows (ending with PLUME)
+        if (HWND hostWindow = GetWindow (GetAncestor (editorHwnd, GA_ROOT), GW_OWNER))
+        {
+            return static_cast<void*> (hostWindow);
+        }
+
+        // If DAW only has an owned window with PLUME
+        else if (HWND hostWindow = GetWindow (editorHwnd, GW_OWNER))
+        {
+            return static_cast<void*> (hostWindow);
+        }
+
+        // If DAW has an owned WS_POPUP with children windows (ending with PLUME)
+        // Or if DAW only has children windows that end with PLUME
+        else if (HWND hostWindow = GetAncestor (editorHwnd, GA_ROOTOWNER))
+        {
+            return static_cast<void*> (hostWindow);
+        }
+    }
+  #endif
+  
+    return nullptr;
 }
 
 AudioProcessorEditor* WrapperEditorWindow::createProcessorEditor (AudioProcessor& processor)

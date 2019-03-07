@@ -246,3 +246,30 @@ void PlumeEditor::broughtToFront()
         }
     }
 }
+/*
+void PlumeEditor::focusGained (FocusChangeType cause)
+{
+
+}
+
+
+void PlumeEditor::visibilityChanged()
+{
+
+}
+
+void PlumeEditor::userTriedToCloseWindow()
+{
+
+}
+*/
+void PlumeEditor::minimisationStateChanged (bool isNowMinimized)
+{
+    if (processor.getWrapper().isWrapping())
+    {
+        if (const auto* wrapperWin = processor.getWrapper().getWrapperEditorWindow())
+        {
+            wrapperWin->getPeer()->setMinimised (isNowMinimized);
+        }
+    }
+}
