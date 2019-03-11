@@ -11,10 +11,12 @@
 #pragma once
 
 #include "../../JuceLibraryCode/JuceHeader.h"
+
 #include "Common/PlumeCommon.h"
 
 #include "Gesture/GestureArray.h"
 #include "Wrapper/WrapperEditor.h"
+
 
 /**
  *  \class PluginWrapper PluginWrapper.h
@@ -71,7 +73,7 @@ public:
     
     //==============================================================================
     void createWrapperEditor (const Component* componentWhichWindowToAttachTo);
-    const WrapperEditorWindow* getWrapperEditorWindow();
+    WrapperEditorWindow* getWrapperEditorWindow();
     void clearWrapperEditor();
     void wrapperEditorToFront (bool shouldAlsoGiveFocus);
     

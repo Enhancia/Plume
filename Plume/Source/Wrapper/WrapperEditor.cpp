@@ -8,6 +8,13 @@
   ==============================================================================
 */
 
+#include "../../JuceLibraryCode/JuceHeader.h"
+
+#if (JUCE_WINDOWS || defined(__OBJC__))
+
+#if JUCE_MAC
+#define Component juce::Component
+#endif
 #include "Wrapper/PluginWrapper.h"
 
 //==============================================================================
@@ -25,11 +32,15 @@ WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc, const Comp
 
         // Creates the desktop window, attached to a component (Plume's editor)
         setOpaque (true);
+        
         editorHandle = (componentWhichWindowToAttachTo == nullptr) ? nullptr :
-                                                         componentWhichWindowToAttachTo->getPeer()->getNativeHandle();
-
-        addToDesktop (ComponentPeer::windowHasTitleBar + ComponentPeer::windowHasCloseButton, findHostHandle());
-
+                                        componentWhichWindowToAttachTo->getPeer()->getNativeHandle();
+        
+        addToDesktop (ComponentPeer::windowHasTitleBar + ComponentPeer::windowIsTemporary
+                                                       + ComponentPeer::windowHasCloseButton,
+                      findHostHandle());
+        
+      #if JUCE_WINDOWS
         // Prevents the window to get lost on the side of the screen
         // (since you can't access it with the task bar to close it....)
         getPeer()->setConstrainer(wrappedUi->getConstrainer());
@@ -38,6 +49,19 @@ WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc, const Comp
                                                                 getHeight(),   // bottom
                                                                 20             // right
                                                                 );
+      #elif JUCE_MAC
+        if (auto plumeView = (NSView*) (componentWhichWindowToAttachTo->getPeer()->getNativeHandle()))
+        {
+            auto plumeWin = [plumeView window];
+            auto wrappedWin = [(NSView*) (this->getPeer()->getNativeHandle()) window];
+            
+            // Causes the wrapped plugin to hide whenever plume hides
+            [wrappedWin setHidesOnDeactivate:YES];
+            // Allows the wrapped plugin to both get in front and behind plume
+            [wrappedWin setLevel: [plumeWin level]];
+        }
+      #endif
+        
         getPeer()->setTitle ("Plume | " + wrapperProcessor.getName());
 
         if (componentWhichWindowToAttachTo == nullptr)
@@ -66,15 +90,9 @@ WrapperEditorWindow::~WrapperEditorWindow()
     if (isOnDesktop()) removeFromDesktop();
 }
 
-void WrapperEditorWindow::paint (Graphics& g)
-{
-    //g.fillAll (Colours::black);
-}
+void WrapperEditorWindow::paint (Graphics& g) {}
 
-void WrapperEditorWindow::resized()
-{
-    //wrappedUi->setBounds (getBounds());
-}
+void WrapperEditorWindow::resized() {}
 
 void WrapperEditorWindow::childBoundsChanged (Component* child)
 {
@@ -100,6 +118,9 @@ void WrapperEditorWindow::broughtToFront()
                  static_cast <HWND> (getPeer()->getNativeHandle()), //HWND hWndInsertAfter
                  0, 0, 0, 0,                                        //X, Y, cx, cy (all ignored because of uFlags)
                  SWP_NOACTIVATE + SWP_NOMOVE + SWP_NOSIZE);         //UINT uFlags
+  #elif JUCE_MAC
+    // Sets the editor window right behind
+    topLevelPlumeComponent.toBehind (this);
   #endif
 }
 
@@ -140,7 +161,8 @@ AudioProcessorEditor* WrapperEditorWindow::createProcessorEditor (AudioProcessor
     {
         return ui;
     }
-        
+    
     jassertfalse;
     return nullptr;
 }
+#endif // WIN || OBJC

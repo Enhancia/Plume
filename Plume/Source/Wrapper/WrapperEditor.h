@@ -14,6 +14,7 @@
 #include "Common/PlumeCommon.h"
 #include "Wrapper/WrapperProcessor.h"
 
+
 //==============================================================================
 /**
  *  \class WrapperEditorWindow
@@ -55,7 +56,6 @@ private:
     SafePointer<AudioProcessorEditor> wrappedUi;
     void* editorHandle;
     Component& topLevelPlumeComponent;
-    //ComponentBoundsConstrainer constrainer;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WrapperEditorWindow)
 };

@@ -234,7 +234,7 @@ void PlumeEditor::broughtToFront()
 {
     if (processor.getWrapper().isWrapping())
     {
-        if (const auto* wrapperWin = processor.getWrapper().getWrapperEditorWindow())
+        if (auto* wrapperWin = processor.getWrapper().getWrapperEditorWindow())
         {
           #if JUCE_WINDOWS
             // Sets the editor window right behind
@@ -242,27 +242,30 @@ void PlumeEditor::broughtToFront()
                          static_cast <HWND> (getPeer()->getNativeHandle()),            //HWND hWndInsertAfter
                          0, 0, 0, 0,                                                   //X, Y, cx, cy (all ignored)
                          SWP_NOACTIVATE + SWP_NOMOVE + SWP_NOSIZE);                    //UINT uFlags
+          #elif JUCE_MAC
+            // Sets the editor window right behind
+            wrapperWin->getPeer()->toBehind (this->getPeer());
           #endif
         }
     }
 }
-/*
+
 void PlumeEditor::focusGained (FocusChangeType cause)
 {
-
+    
 }
-
 
 void PlumeEditor::visibilityChanged()
 {
-
+    
 }
+
 
 void PlumeEditor::userTriedToCloseWindow()
 {
-
+    
 }
-*/
+
 void PlumeEditor::minimisationStateChanged (bool isNowMinimized)
 {
     if (processor.getWrapper().isWrapping())

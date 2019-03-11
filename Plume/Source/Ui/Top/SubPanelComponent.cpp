@@ -178,7 +178,7 @@ SubPanelComponent::ScannerRowComponent::ScannerRowComponent  (const String& scan
 															  const String &dialogBoxTitle, 
                                 							  const File &initialFileOrDirectory,
                               								  const String &filePatternsAllowed,
-                              								  File& initialStoredFile,
+                              								  const File& initialStoredFile,
                               								  bool searchDirs)
 															  : searchDirectories (searchDirs)
 {

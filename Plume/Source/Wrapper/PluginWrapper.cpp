@@ -261,7 +261,7 @@ void PluginWrapper::createWrapperEditor (const Component* componentWhichWindowTo
     wrapperEditor.reset (new WrapperEditorWindow (*wrapperProcessor, componentWhichWindowToAttachTo));
 }
 
-const WrapperEditorWindow* PluginWrapper::getWrapperEditorWindow()
+WrapperEditorWindow* PluginWrapper::getWrapperEditorWindow()
 {
     if (hasWrappedInstance)
     {
