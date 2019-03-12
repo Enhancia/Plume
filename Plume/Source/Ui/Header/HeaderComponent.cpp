@@ -214,13 +214,7 @@ void HeaderComponent::handlePluginChoice (int chosenId)
     else
     {
         // Removes the window in case it's opened
-        if (auto* editor = getParentComponent())
-        {
-            if (auto* wrapEd = editor->findChildWithID ("wrapEd"))
-            {
-                editor->removeChildComponent (wrapEd);
-            }
-        }
+        processor.getWrapper().clearWrapperEditor();
 
 
         if (processor.getWrapper().wrapPlugin (chosenId))
@@ -245,32 +239,6 @@ void HeaderComponent::createPluginWindow()
 {
     if (auto* editor = getParentComponent())
     {
-        /*
-        if (auto* wrapEd = processor.getWrapper().getWrappedEditor())
-        {
-            wrapEd->setOpaque (true);
-            //editor->addChildAndSetID (wrapEd, "wrapEd");
-
-            wrapEd->addToDesktop (ComponentPeer::windowHasTitleBar + ComponentPeer::windowHasCloseButton,
-                                  editor->getPeer()->getNativeHandle());
-        }
-        */
-
         processor.getWrapper().createWrapperEditor (editor);
-    }
-}
-
-void HeaderComponent::deletePluginWindow()
-{
-    if (processor.getWrapper().isWrapping())
-    {
-        if (auto* editor = getParentComponent())
-        {
-            if (editor->findChildWithID ("wrapEd") != nullptr)
-            {
-                editor->findChildWithID ("wrapEd")->setVisible (false);
-                editor->removeChildComponent (editor->findChildWithID ("wrapEd"));
-            }
-        }
     }
 }

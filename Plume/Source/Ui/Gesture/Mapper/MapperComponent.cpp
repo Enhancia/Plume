@@ -143,7 +143,7 @@ void MapperComponent::buttonClicked (Button* bttn)
             gestureArray.mapModeOn = true;
             mapButton->setColour (TextButton::buttonColourId, PLUME::UI::currentTheme.getColour(PLUME::colour::detailPanelActiveMapping));
             
-            //wrapper.createWrapperEditor();
+            wrapper.createWrapperEditor (findParentComponentOfClass<AudioProcessorEditor> ());
         }
         
         // Cancels map mode for the gesture and colours it accordingly
