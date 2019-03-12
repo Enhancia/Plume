@@ -61,6 +61,8 @@
         <FILE id="yRXN8O" name="WrapperEditor.cpp" compile="1" resource="0"
               file="Source/Wrapper/WrapperEditor.cpp"/>
         <FILE id="j6GR6E" name="WrapperEditor.h" compile="0" resource="0" file="Source/Wrapper/WrapperEditor.h"/>
+        <FILE id="tBWXMJ" name="WrapperEditor.mm" compile="1" resource="0"
+              file="Source/Wrapper/WrapperEditor.mm"/>
         <FILE id="lLQshd" name="WrapperProcessor.cpp" compile="1" resource="0"
               file="Source/Wrapper/WrapperProcessor.cpp"/>
         <FILE id="QOI79a" name="WrapperProcessor.h" compile="0" resource="0"

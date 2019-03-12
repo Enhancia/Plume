@@ -8,54 +8,161 @@
   ==============================================================================
 */
 
+#include "../../JuceLibraryCode/JuceHeader.h"
+
+#if (JUCE_WINDOWS || defined(__OBJC__))
+
+#if JUCE_MAC
+#define Component juce::Component
+#endif
 #include "Wrapper/PluginWrapper.h"
 
 //==============================================================================
-WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc, int x, int y)
-       : DocumentWindow (wrapProc.getName(),
-                         LookAndFeel::getDefaultLookAndFeel().findColour (ResizableWindow::backgroundColourId),
-                         /*DocumentWindow::minimiseButton | */DocumentWindow::closeButton),
-         wrapperProcessor (wrapProc)
+WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc, const Component* componentWhichWindowToAttachTo)
+       : wrapperProcessor (wrapProc), topLevelPlumeComponent (*componentWhichWindowToAttachTo->getTopLevelComponent())
 {
     TRACE_IN;
     setSize (400, 300);
 
     if (auto* ui = createProcessorEditor (wrapperProcessor.getWrappedInstance()))
     {
-        setContentOwned (ui, true);
+        // Adds the interface and sets the component size in accordance
+        addAndMakeVisible (wrappedUi = ui);
+        childBoundsChanged (wrappedUi);
+
+        // Creates the desktop window, attached to a component (Plume's editor)
+        setOpaque (true);
+        
+        editorHandle = (componentWhichWindowToAttachTo == nullptr) ? nullptr :
+                                        componentWhichWindowToAttachTo->getPeer()->getNativeHandle();
+        
+        addToDesktop (ComponentPeer::windowHasTitleBar + ComponentPeer::windowIsTemporary
+                                                       + ComponentPeer::windowHasCloseButton,
+                      findHostHandle());
+        
+      #if JUCE_WINDOWS
+        // Prevents the window to get lost on the side of the screen
+        // (since you can't access it with the task bar to close it....)
+        getPeer()->setConstrainer(wrappedUi->getConstrainer());
+        getPeer()->getConstrainer()->setMinimumOnscreenAmounts (getHeight()*5, // top
+                                                                20,            // left
+                                                                getHeight(),   // bottom
+                                                                20             // right
+                                                                );
+      #elif JUCE_MAC
+        if (auto plumeView = (NSView*) (componentWhichWindowToAttachTo->getPeer()->getNativeHandle()))
+        {
+            auto plumeWin = [plumeView window];
+            auto wrappedWin = [(NSView*) (this->getPeer()->getNativeHandle()) window];
+            
+            // Causes the wrapped plugin to hide whenever plume hides
+            [wrappedWin setHidesOnDeactivate:YES];
+            // Allows the wrapped plugin to both get in front and behind plume
+            [wrappedWin setLevel: [plumeWin level]];
+        }
+      #endif
+        
+        getPeer()->setTitle ("Plume | " + wrapperProcessor.getName());
+
+        if (componentWhichWindowToAttachTo == nullptr)
+        {
+            setTopLeftPosition (0, 0);
+        }
+        else
+        {
+            setTopLeftPosition (componentWhichWindowToAttachTo->getScreenBounds().getTopLeft());
+        }
+
+        setVisible (true);
     }
-    
-    setVisible (true);
+
+    else 
+    {
+        wrapperProcessor.getOwnerWrapper().clearWrapperEditor();
+    }
 }
 
 WrapperEditorWindow::~WrapperEditorWindow()
 {
     TRACE_IN;
+
+    wrappedUi.deleteAndZero();
+    if (isOnDesktop()) removeFromDesktop();
 }
 
-void WrapperEditorWindow::closeButtonPressed()
+void WrapperEditorWindow::paint (Graphics& g) {}
+
+void WrapperEditorWindow::resized() {}
+
+void WrapperEditorWindow::childBoundsChanged (Component* child)
 {
-    clearContentComponent();
+    if (child == wrappedUi && child != nullptr
+                           && child->getWidth() > 0
+                           && child->getHeight() > 0)
+    {
+        setSize (child->getWidth(), child->getHeight());
+    }
+}
+
+void WrapperEditorWindow::userTriedToCloseWindow()
+{
+    wrappedUi.deleteAndZero();
     wrapperProcessor.getOwnerWrapper().clearWrapperEditor();
 }
 
-void WrapperEditorWindow::focusGained (FocusChangeType cause)
+void WrapperEditorWindow::broughtToFront()
 {
-    if (cause != Component::focusChangedDirectly)
+  #if JUCE_WINDOWS
+    // Sets the editor window right behind
+    SetWindowPos(static_cast <HWND> (editorHandle),                 //HWND hWnd
+                 static_cast <HWND> (getPeer()->getNativeHandle()), //HWND hWndInsertAfter
+                 0, 0, 0, 0,                                        //X, Y, cx, cy (all ignored because of uFlags)
+                 SWP_NOACTIVATE + SWP_NOMOVE + SWP_NOSIZE);         //UINT uFlags
+  #elif JUCE_MAC
+    // Sets the editor window right behind
+    topLevelPlumeComponent.toBehind (this);
+  #endif
+}
+
+void* WrapperEditorWindow::findHostHandle()
+{
+    if (editorHandle == nullptr) return nullptr;
+
+  #if JUCE_WINDOWS
+    if (auto editorHwnd = static_cast<HWND> (editorHandle))
     {
-        toFront (false);
-        //wrapperProcessor.getOwnerWrapper().getOwner().sendActionMessage (PLUME::commands::toFront);
+        // If DAW has an owned window with children windows (ending with PLUME)
+        if (HWND hostWindow = GetWindow (GetAncestor (editorHwnd, GA_ROOT), GW_OWNER))
+        {
+            return static_cast<void*> (hostWindow);
+        }
+
+        // If DAW only has an owned window with PLUME
+        else if (HWND hostWindow = GetWindow (editorHwnd, GW_OWNER))
+        {
+            return static_cast<void*> (hostWindow);
+        }
+
+        // If DAW has an owned WS_POPUP with children windows (ending with PLUME)
+        // Or if DAW only has children windows that end with PLUME
+        else if (HWND hostWindow = GetAncestor (editorHwnd, GA_ROOTOWNER))
+        {
+            return static_cast<void*> (hostWindow);
+        }
     }
+  #endif
+  
+    return nullptr;
 }
 
 AudioProcessorEditor* WrapperEditorWindow::createProcessorEditor (AudioProcessor& processor)
 {
     if (auto* ui = processor.createEditorIfNeeded())
     {
-        toFront (false);
         return ui;
     }
-        
+    
     jassertfalse;
     return nullptr;
 }
+#endif // WIN || OBJC

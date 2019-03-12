@@ -144,8 +144,11 @@ void HeaderComponent::mouseUp (const MouseEvent &event)
 	{
 		if (processor.getWrapper().isWrapping())
 		{
-			processor.getWrapper().createWrapperEditor();
-		}
+			if (auto* editor = getParentComponent())
+			{
+				processor.getWrapper().createWrapperEditor(editor);
+			}
+        }
 	}
 }
 
@@ -208,9 +211,19 @@ void HeaderComponent::handlePluginChoice (int chosenId)
         // resets the button colour if no choice was made
         pluginListButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 2.0f);
     }
-    else if (processor.getWrapper().wrapPlugin (chosenId))
+    else
     {
-        pluginNameLabel->setText (processor.getWrapper().getWrappedPluginInfoString(), dontSendNotification);
+        // Removes the window in case it's opened
+        processor.getWrapper().clearWrapperEditor();
+
+
+        if (processor.getWrapper().wrapPlugin (chosenId))
+        {
+            pluginNameLabel->setText (processor.getWrapper().getWrappedPluginInfoString(), dontSendNotification);
+
+            // Creates the wrapper editor object as a child of the editor
+            createPluginWindow();
+        }
     }
 }
 
@@ -219,4 +232,13 @@ void HeaderComponent::createPluginMenu (KnownPluginList::SortMethod sort)
 	pluginListMenu.clear();
 	pluginListMenu.addSectionHeader ("Plugins:");
     processor.getWrapper().addPluginsToMenu (pluginListMenu, sort);
+}
+
+
+void HeaderComponent::createPluginWindow()
+{
+    if (auto* editor = getParentComponent())
+    {
+        processor.getWrapper().createWrapperEditor (editor);
+    }
 }

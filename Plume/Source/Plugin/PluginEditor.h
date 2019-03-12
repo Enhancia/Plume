@@ -71,6 +71,12 @@ public:
      */
     void resized() override;
     
+    void broughtToFront() override;
+    void focusGained(FocusChangeType cause) override;
+    void minimisationStateChanged (bool) override;
+    //void userTriedToCloseWindow() override;
+    //void visibilityChanged() override;
+
     //==============================================================================
     /**
      * \brief Callback to a change message sent by the processor.
@@ -95,8 +101,6 @@ public:
     void updateFullInterface();
     
     void setInterfaceUpdates (bool shouldUpdate);
-    
-    void setWindowsToFront();
     
 private:
     //==============================================================================

@@ -11,10 +11,12 @@
 #pragma once
 
 #include "../../JuceLibraryCode/JuceHeader.h"
+
 #include "Common/PlumeCommon.h"
 
 #include "Gesture/GestureArray.h"
 #include "Wrapper/WrapperEditor.h"
+
 
 /**
  *  \class PluginWrapper PluginWrapper.h
@@ -70,7 +72,8 @@ public:
     KnownPluginList& getList();
     
     //==============================================================================
-    void createWrapperEditor (int x = 0, int y = 0);
+    void createWrapperEditor (const Component* componentWhichWindowToAttachTo);
+    WrapperEditorWindow* getWrapperEditorWindow();
     void clearWrapperEditor();
     void wrapperEditorToFront (bool shouldAlsoGiveFocus);
     
@@ -116,6 +119,7 @@ private:
     ScopedPointer<WrapperProcessor> wrapperProcessor;
     ScopedPointer<AudioPluginInstance> wrappedInstance;
     ScopedPointer<WrapperEditorWindow> wrapperEditor;
+    ScopedPointer<AudioProcessorEditor> wrapEd;
     ScopedPointer<PlumeProgressBar> bar;
 
     //==============================================================================

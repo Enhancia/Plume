@@ -67,10 +67,6 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     {
         comp->addMouseListener(this, true);
     }
-
-	// if a WrappedEditor currently exists, puts it in front (useful because hosts actually deletes the editor when not shown)
-	//wrapperComp->windowToFront();
-    
 	
 	PLUME::UI::ANIMATE_UI_FLAG = true;
 }
@@ -89,7 +85,6 @@ PlumeEditor::~PlumeEditor()
     resizableCorner = nullptr;
     optionsPanel = nullptr;
     newPresetPanel = nullptr;
-
     setLookAndFeel (nullptr);
 }
 
@@ -225,8 +220,38 @@ void PlumeEditor::setInterfaceUpdates (bool shouldUpdate)
     }
 }
 
-void PlumeEditor::setWindowsToFront()
+void PlumeEditor::broughtToFront()
 {
-	//wrapperComp->windowToFront();
-    toFront (true);
+    if (processor.getWrapper().isWrapping())
+    {
+        if (auto* wrapperWin = processor.getWrapper().getWrapperEditorWindow())
+        {
+          #if JUCE_WINDOWS
+            // Sets the editor window right behind
+            SetWindowPos(static_cast <HWND> (wrapperWin->getPeer()->getNativeHandle()),//HWND hWnd
+                         static_cast <HWND> (getPeer()->getNativeHandle()),            //HWND hWndInsertAfter
+                         0, 0, 0, 0,                                                   //X, Y, cx, cy (all ignored)
+                         SWP_NOACTIVATE + SWP_NOMOVE + SWP_NOSIZE);                    //UINT uFlags
+          #elif JUCE_MAC
+            // Sets the editor window right behind
+            wrapperWin->getPeer()->toBehind (this->getPeer());
+          #endif
+        }
+    }
+}
+
+void PlumeEditor::focusGained (FocusChangeType cause)
+{
+    
+}
+
+void PlumeEditor::minimisationStateChanged (bool isNowMinimized)
+{
+    if (processor.getWrapper().isWrapping())
+    {
+        if (const auto* wrapperWin = processor.getWrapper().getWrapperEditorWindow())
+        {
+            wrapperWin->getPeer()->setMinimised (isNowMinimized);
+        }
+    }
 }

@@ -44,6 +44,7 @@ public:
     
     //==============================================================================
     void createPluginMenu (KnownPluginList::SortMethod sort);
+    void createPluginWindow();
 
 private:
 	static void pluginMenuCallback (int result, HeaderComponent* header);
