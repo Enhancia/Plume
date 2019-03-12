@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" jucerVersion="5.4.3"
-              pluginFormats="buildAU,buildStandalone,buildVST" version="1.2.2"
+              pluginFormats="buildAU,buildStandalone,buildVST" version="1.2.3"
               companyName="Enhancia" buildVST="1" buildVST3="0" buildAU="1"
               buildAUv3="0" buildRTAS="0" buildAAX="0" enableIAA="0" pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
               pluginManufacturer="Enhancia" pluginName="Plume" pluginDesc="Enhancia's Plume. Wraps other plugins, provides customizable and mappable gestures to use with Neova."
@@ -61,6 +61,8 @@
         <FILE id="yRXN8O" name="WrapperEditor.cpp" compile="1" resource="0"
               file="Source/Wrapper/WrapperEditor.cpp"/>
         <FILE id="j6GR6E" name="WrapperEditor.h" compile="0" resource="0" file="Source/Wrapper/WrapperEditor.h"/>
+        <FILE id="tBWXMJ" name="WrapperEditor.mm" compile="1" resource="0"
+              file="Source/Wrapper/WrapperEditor.mm"/>
         <FILE id="lLQshd" name="WrapperProcessor.cpp" compile="1" resource="0"
               file="Source/Wrapper/WrapperProcessor.cpp"/>
         <FILE id="QOI79a" name="WrapperProcessor.h" compile="0" resource="0"
