@@ -81,12 +81,13 @@ void ScannerComponent::timerCallback()
     }
 }
 
-void ScannerComponent::scanPlugins()
+void ScannerComponent::scanPlugins (bool clearList)
 {
     if (!isCurrentlyModal()) enterModalState (false, nullptr, false);
     DBG ("Scan Start");
     
-    processor.getWrapper().getList().clear();
+    if (clearList) processor.getWrapper().getList().clear();
+
     dirScanner = processor.getWrapper().getDirectoryScannerForFormat (formatToScan);
     scanning = true;
     scanButton->setButtonText ("Cancel");
@@ -143,8 +144,8 @@ void ScannerComponent::scanFinished()
     formatToScan++;
     if (formatToScan < PluginWrapper::Formats::numFormats)
     {
-        // Scans next format (if there is one)
-        scanPlugins();
+        // Scans next format
+        scanPlugins (false);
         return;
     }
     

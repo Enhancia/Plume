@@ -69,11 +69,22 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     }
 	
 	PLUME::UI::ANIMATE_UI_FLAG = true;
+
+    if (processor.getWrapper().isWrapping())
+    {
+        processor.getWrapper().minimiseWrapperEditor (false);
+    }
 }
 
 PlumeEditor::~PlumeEditor()
 {
     TRACE_IN;
+
+	if (processor.getWrapper().isWrapping())
+	{
+		processor.getWrapper().minimiseWrapperEditor (true);
+	}
+
     PLUME::UI::ANIMATE_UI_FLAG = false;
 	for (Component* comp : getChildren())
 	{
@@ -240,18 +251,10 @@ void PlumeEditor::broughtToFront()
     }
 }
 
-void PlumeEditor::focusGained (FocusChangeType cause)
-{
-    
-}
-
 void PlumeEditor::minimisationStateChanged (bool isNowMinimized)
 {
     if (processor.getWrapper().isWrapping())
     {
-        if (const auto* wrapperWin = processor.getWrapper().getWrapperEditorWindow())
-        {
-            wrapperWin->getPeer()->setMinimised (isNowMinimized);
-        }
+        processor.getWrapper().minimiseWrapperEditor (isNowMinimized);
     }
 }

@@ -75,6 +75,7 @@ public:
     void createWrapperEditor (const Component* componentWhichWindowToAttachTo);
     WrapperEditorWindow* getWrapperEditorWindow();
     void clearWrapperEditor();
+    void minimiseWrapperEditor (bool shouldBeMinimised);
     void wrapperEditorToFront (bool shouldAlsoGiveFocus);
     
     //==============================================================================

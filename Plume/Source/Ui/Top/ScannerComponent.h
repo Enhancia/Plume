@@ -36,7 +36,7 @@ public:
 
 private:
     //==============================================================================
-    void scanPlugins();
+    void scanPlugins (bool clearList = true);
     void cancelScan();
     void scanFinished();
 	bool doNextScan();

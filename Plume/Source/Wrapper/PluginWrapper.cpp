@@ -283,10 +283,42 @@ void PluginWrapper::clearWrapperEditor()
     }
 }
 
+void PluginWrapper::minimiseWrapperEditor (bool shouldBeMinimised)
+{
+    if (hasWrappedInstance && hasOpenedEditor)
+    {
+      #if JUCE_WINDOWS
+        if (shouldBeMinimised)
+        {
+            wrapperEditor->getPeer()->setMinimised (true);
+        }
+        else
+        {
+            wrapperEditor->getPeer()->setMinimised (false);
+            wrapperEditorToFront (true);
+        }
+
+      #elif JUCE_MAC
+        
+        if (shouldBeMinimised)
+        {
+            wrapperEditor->getPeer()->setVisible (false);
+        }
+        else
+        {
+            wrapperEditor->getPeer()->setVisible (true);
+            wrapperEditor->toFront (true);
+        }
+      #endif
+    }
+}
+
 void PluginWrapper::wrapperEditorToFront (bool shouldAlsoGiveFocus)
 {
-    if (hasOpenedEditor)
+    if (hasWrappedInstance && hasOpenedEditor)
     {
+        if (wrapperEditor->getPeer()->isMinimised()) wrapperEditor->getPeer()->setMinimised (false);
+        if (!wrapperEditor->isVisible())             wrapperEditor->getPeer()->setVisible (true);
         wrapperEditor->toFront (shouldAlsoGiveFocus);
     }
 }

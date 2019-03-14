@@ -118,9 +118,6 @@ void WrapperEditorWindow::broughtToFront()
                  static_cast <HWND> (getPeer()->getNativeHandle()), //HWND hWndInsertAfter
                  0, 0, 0, 0,                                        //X, Y, cx, cy (all ignored because of uFlags)
                  SWP_NOACTIVATE + SWP_NOMOVE + SWP_NOSIZE);         //UINT uFlags
-  #elif JUCE_MAC
-    // Sets the editor window right behind
-    topLevelPlumeComponent.toBehind (this);
   #endif
 }
 
@@ -152,6 +149,7 @@ void* WrapperEditorWindow::findHostHandle()
     }
   #endif
   
+	// If Plume's window is not owned by / related to the DAW. This is the case on mac (and is really not likely on win).
     return nullptr;
 }
 
