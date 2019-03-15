@@ -90,7 +90,7 @@ WrapperEditorWindow::~WrapperEditorWindow()
     if (isOnDesktop()) removeFromDesktop();
 }
 
-void WrapperEditorWindow::paint (Graphics& g) {}
+void WrapperEditorWindow::paint (Graphics&) {}
 
 void WrapperEditorWindow::resized() {}
 

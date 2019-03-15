@@ -29,7 +29,7 @@ ScannerComponent::~ScannerComponent()
 	bar = nullptr;
 }
 
-void ScannerComponent::paint (Graphics& g)
+void ScannerComponent::paint (Graphics&)
 {
 }
 

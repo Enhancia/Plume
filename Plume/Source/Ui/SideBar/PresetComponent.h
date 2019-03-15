@@ -23,12 +23,11 @@
 */
 
 class PresetComponent    : public PlumeComponent,
-                           private Button::Listener,
                            private ComboBox::Listener
 {
 public:
     //==============================================================================
-    PresetComponent (PlumeProcessor& p, Component& newPrst);
+    PresetComponent (PlumeProcessor& p);
     ~PresetComponent();
     
     //==============================================================================
@@ -44,7 +43,6 @@ public:
     void focusLost (FocusChangeType cause) override;
     
     //==============================================================================
-    void buttonClicked (Button* bttn) override;
     void comboBoxChanged (ComboBox* cmbx) override;
     
     //==============================================================================
@@ -62,12 +60,8 @@ private:
     ScopedPointer<ComboBox> pluginSelectBox;
     ScopedPointer<PresetSearchBar> searchBar;
     
-    //ScopedPointer<TextButton> saveButton;
-    ScopedPointer<TextButton> newButton;
-    
     //==============================================================================
     PlumeProcessor& processor;
-    Component& newPresetPanel;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PresetComponent)
 };

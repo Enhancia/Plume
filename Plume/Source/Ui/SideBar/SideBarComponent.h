@@ -25,7 +25,7 @@ class SideBarComponent    : public PlumeComponent,
 {
 public:
     //==============================================================================
-    SideBarComponent (PlumeProcessor& proc, Component& optsPanel, Component& newPrst);
+    SideBarComponent (PlumeProcessor& proc, Component& optsPanel);
     ~SideBarComponent();
 
     //==============================================================================

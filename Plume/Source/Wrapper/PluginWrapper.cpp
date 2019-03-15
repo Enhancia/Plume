@@ -687,7 +687,7 @@ void PluginWrapper::addParametersToGestureFromXml (XmlElement& gesture, int gest
 }
 
 //==============================================================================
-void PluginWrapper::parameterValueChanged (int parameterIndex, float newValue)
+void PluginWrapper::parameterValueChanged (int parameterIndex, float)
 {
     if (gestArray.mapModeOn)
     {

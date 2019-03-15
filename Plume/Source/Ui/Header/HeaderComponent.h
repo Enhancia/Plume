@@ -22,7 +22,7 @@ class HeaderComponent    : public PlumeComponent,
 {
 public:
     //==============================================================================
-    HeaderComponent (PlumeProcessor& proc);
+    HeaderComponent (PlumeProcessor& proc, Component& newPrst);
     ~HeaderComponent();
 
     //==============================================================================
@@ -52,11 +52,11 @@ private:
 
     //==============================================================================
     PlumeProcessor& processor;
-    Path eyePath;
-    Path pianoPath;
+    Component& newPresetPanel;
     
     PopupMenu pluginListMenu;
     ScopedPointer<ShapeButton> pluginListButton;
+    ScopedPointer<ShapeButton> savePresetButton;
     ScopedPointer<Label> pluginNameLabel;
     ScopedPointer<Label> presetNameLabel;
     

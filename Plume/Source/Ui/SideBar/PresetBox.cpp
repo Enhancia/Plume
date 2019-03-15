@@ -46,9 +46,9 @@ void PresetBox::paint (Graphics& g)
     
     //Gradient for the box's inside
     auto gradIn = ColourGradient::vertical (Colour (0x30000000),
-                                            0, 
-                                            Colour (0x20000000),
-                                            getHeight());
+                                            0.0f, 
+                                            Colour (0x25000000),
+                                            float(getHeight()));
                                           
     gradIn.addColour (0.6, Colour (0x00000000));
     gradIn.addColour (0.8, Colour (0x25000000));
@@ -64,9 +64,9 @@ void PresetBox::paintOverChildren (Graphics& g)
     
         //Gradient for the box's outline
         auto gradOut = ColourGradient::horizontal (currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
-                                                   MARGIN, 
+                                                   float(MARGIN), 
                                                    currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
-                                                   getWidth() - MARGIN);
+                                                   float(getWidth() - MARGIN));
         gradOut.addColour (0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
 
         g.setGradientFill (gradOut);
@@ -107,7 +107,7 @@ void PresetBox::paintListBoxItem (int rowNumber, Graphics& g, int width, int hei
 }
 
 Component* PresetBox::refreshComponentForRow (int rowNumber,
-                                              bool isRowSelected,
+                                              bool,
                                               Component* existingComponentToUpdate)
 {
     // Creates a Label object only for the the presetIdToEdit row number
@@ -165,12 +165,12 @@ void PresetBox::backgroundClicked (const MouseEvent& event)
     }
 }
 
-void PresetBox::deleteKeyPressed (int lastRowSelected)
+void PresetBox::deleteKeyPressed (int)
 {
 }
 
 //==============================================================================
-void PresetBox::labelTextChanged (Label* lbl)
+void PresetBox::labelTextChanged (Label*)
 {
     String presetName = editLabel->getText();
     
@@ -192,7 +192,7 @@ void PresetBox::labelTextChanged (Label* lbl)
     updateContent();
 }
 
-void PresetBox::editorHidden (Label* lbl, TextEditor& ted)
+void PresetBox::editorHidden (Label*, TextEditor&)
 {
     // This callback is triggered when user finishes entering the text
     // It will trigger regardless of the text changing or not.
@@ -320,7 +320,7 @@ void PresetBox::setPreset (const int row)
 	    PLUME::UI::ANIMATE_UI_FLAG = false;
        //Time::waitForMillisecondCounter(Time::getMillisecondCounter() + 10);
 
-        processor.setStateInformation (presetData.getData(), presetData.getSize());
+        processor.setStateInformation (presetData.getData(), int (presetData.getSize()));
         presetXml->deleteAllChildElements(); // frees the memory
     }
     else // failed to get preset xml somehow

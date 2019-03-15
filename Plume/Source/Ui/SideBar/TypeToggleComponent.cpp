@@ -61,9 +61,9 @@ void TypeToggleComponent::paint (Graphics& g)
     
     // Fills the component's inside
     auto gradIn = ColourGradient::vertical (Colour (0x30000000),
-                                            0, 
+                                            0.0f, 
                                             Colour (0x20000000),
-                                            getHeight());
+                                            float(getHeight()));
                                           
     gradIn.addColour (0.2, Colour (0x15000000));
     g.setGradientFill (gradIn);
@@ -71,9 +71,9 @@ void TypeToggleComponent::paint (Graphics& g)
     
 	//Gradient for the box's outline
 	auto gradOut = ColourGradient::horizontal(currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
-		                                      MARGIN,
+		                                      float(MARGIN),
 		                                      currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
-		                                      getWidth() - PLUME::UI::MARGIN);
+		                                      float(getWidth() - PLUME::UI::MARGIN));
 	gradOut.addColour(0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
 	
 	{
@@ -96,7 +96,7 @@ void TypeToggleComponent::paint (Graphics& g)
             if (i != PlumePreset::numTypes)
             {
 				g.setGradientFill (gradOut);
-                g.drawVerticalLine (area.getX(), 1, getHeight()-1);
+                g.drawVerticalLine (area.getX(), 1.0f, float(getHeight())-1.0f);
             }
         }
     }
@@ -108,9 +108,9 @@ void TypeToggleComponent::paintOverChildren (Graphics& g)
 
     //Gradient for the box's outline
     auto gradOut = ColourGradient::horizontal (currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
-                                               MARGIN, 
+                                               float(MARGIN), 
                                                currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
-                                               getWidth() - MARGIN);
+                                               float(getWidth() - MARGIN));
     gradOut.addColour (0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
     g.setGradientFill (gradOut);
     

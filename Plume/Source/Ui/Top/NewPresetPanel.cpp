@@ -68,9 +68,9 @@ void NewPresetPanel::paint (Graphics& g)
     
     // panel outline
     auto gradOut = ColourGradient::horizontal (currentTheme.getColour(colour::sideBarSeparatorOut),
-                                               panelArea.getX(), 
+                                               float(panelArea.getX()), 
                                                currentTheme.getColour(colour::sideBarSeparatorOut),
-                                               panelArea.getRight());
+                                               float(panelArea.getRight()));
     gradOut.addColour (0.5, currentTheme.getColour(colour::sideBarSeparatorIn));
 
     g.setGradientFill (gradOut);

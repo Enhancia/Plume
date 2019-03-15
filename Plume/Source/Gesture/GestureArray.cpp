@@ -163,7 +163,7 @@ bool GestureArray::parameterIsMapped (int parameterId)
 }
 
 //==============================================================================
-void GestureArray::changeListenerCallback(ChangeBroadcaster* source)
+void GestureArray::changeListenerCallback(ChangeBroadcaster*)
 {
     updateAllValues();
 }

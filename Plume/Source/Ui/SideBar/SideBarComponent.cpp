@@ -12,7 +12,7 @@
 #include "SideBarComponent.h"
 
 //==============================================================================
-SideBarComponent::SideBarComponent (PlumeProcessor& proc, Component& optsPanel, Component& newPrst)
+SideBarComponent::SideBarComponent (PlumeProcessor& proc, Component& optsPanel)
         : processor (proc), optionsPanel (optsPanel)
 {
     setName ("Side Bar");
@@ -23,7 +23,8 @@ SideBarComponent::SideBarComponent (PlumeProcessor& proc, Component& optsPanel, 
                                                         PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFill),
 		                                                PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFillHighlighted),
 		                                                PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFillClicked)));
-    optionsButton->setShape (PLUME::path::gearPath, false, true, false);
+    optionsButton->setShape (PLUME::path::createOptionsPath(), false, true, false);
+    optionsButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFill), 1.5f);
 	optionsButton->addListener (this);
 
     // Info Panel
@@ -41,7 +42,7 @@ SideBarComponent::SideBarComponent (PlumeProcessor& proc, Component& optsPanel, 
     hideInfoButton->addListener (this);
 
     // Preset Component
-    addAndMakeVisible (presetComponent = new PresetComponent (processor, newPrst));
+    addAndMakeVisible (presetComponent = new PresetComponent (processor));
 }
 
 SideBarComponent::~SideBarComponent()
@@ -72,9 +73,9 @@ void SideBarComponent::paint (Graphics& g)
     
     //Gradient for horizontal lines
     auto grad = ColourGradient::horizontal (currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
-                                            MARGIN, 
+                                            float(MARGIN), 
                                             currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
-                                            getWidth() - MARGIN);
+                                            float(getWidth() - MARGIN));
     grad.addColour (0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
 
     
@@ -87,7 +88,7 @@ void SideBarComponent::paint (Graphics& g)
                 Justification::centredRight, true);
 
 	g.setGradientFill (grad);
-	g.drawHorizontalLine (area.getY(), MARGIN, getWidth() - MARGIN);
+	g.drawHorizontalLine (area.getY(), float(MARGIN), float(getWidth() - MARGIN));
     
 	area.removeFromTop (MARGIN/2); // Extra space
 
@@ -103,8 +104,8 @@ void SideBarComponent::paint (Graphics& g)
     
     if (hideInfoButton->getToggleState()) // Lines that represents hidden infoPanel
     {
-        g.drawHorizontalLine (getHeight() - 2*MARGIN, MARGIN, getWidth()/2 - MARGIN);
-        g.drawHorizontalLine (getHeight() - 2*MARGIN, getWidth()/2 + MARGIN, getWidth() - MARGIN);
+        g.drawHorizontalLine (getHeight() - 2*MARGIN, float(MARGIN), getWidth()/2.0f - float(MARGIN));
+        g.drawHorizontalLine (getHeight() - 2*MARGIN, getWidth()/2.0f + float(MARGIN), float(getWidth() - MARGIN));
     }
 
     // Version Text

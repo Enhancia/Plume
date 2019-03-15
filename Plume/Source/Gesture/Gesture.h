@@ -611,7 +611,7 @@ protected:
         a = 127.0f / (maxVal - minVal);
         b = -a * minVal;
   
-        norm = (a*val+b);
+        norm = int(a*val+b);
         if (norm < 0) norm = 0;
         if (norm > 127) norm = 127;
   

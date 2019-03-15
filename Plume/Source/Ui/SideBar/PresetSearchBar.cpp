@@ -66,13 +66,13 @@ void PresetSearchBar::paint (Graphics& g)
     
     //Gradient for the bar's outline
     auto gradOut = ColourGradient::horizontal (currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
-                                               MARGIN, 
+                                               float(MARGIN), 
                                                currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
-                                               getWidth() - MARGIN);
+                                               float(getWidth() - MARGIN));
     gradOut.addColour (0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
 
     g.setGradientFill (gradOut);
-    g.drawRoundedRectangle (0, 0, getWidth(), jmin (getHeight(), 30), 10.0f, 1.0f);
+    g.drawRoundedRectangle (0.0f, 0.0f, float(getWidth()), jmin (float(getHeight()), 30.0f), 10.0f, 1.0f);
 }
 
 void PresetSearchBar::resized()
@@ -85,7 +85,7 @@ void PresetSearchBar::resized()
 }
 
 
-void PresetSearchBar::buttonClicked (Button* bttn)
+void PresetSearchBar::buttonClicked (Button*)
 {
     if (searchLabel->getText() != "Search...")
     {
@@ -125,12 +125,12 @@ void PresetSearchBar::editorShown (Label* lbl, TextEditor& ed)
     ed.addListener (this);
 }
 
-void PresetSearchBar::editorHidden (Label* lbl, TextEditor& ed)
+void PresetSearchBar::editorHidden (Label*, TextEditor& ed)
 {
     ed.removeListener (this);
 }
 
-void PresetSearchBar::textEditorTextChanged (TextEditor& ed)
+void PresetSearchBar::textEditorTextChanged (TextEditor&)
 {
     processor.getPresetHandler().setNameSearchSetting (searchLabel->getText (true));
     

@@ -186,10 +186,15 @@ namespace PLUME
     {
 		extern const Path createGearPath();
 		extern const Path createPianoPath();
+        extern const Path createBurgerPath();
+        extern const Path createShortBurgerPath();
+        extern const Path createShortOptionsPath();
+        extern const Path createOptionsPath();
 		extern const Path createFolderPath();
 		extern const Path createMagnifyingGlassPath();
+        extern const Path createFloppyDiskPath();
         
-        static Path gearPath = createGearPath();
+        //static Path gearPath = createGearPath();
         static Path pianoPath = createPianoPath();
         static Path folderPath = createFolderPath();
         static Path magnifyingGlassPath = createMagnifyingGlassPath();

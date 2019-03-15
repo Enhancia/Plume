@@ -51,7 +51,7 @@ int MovingCursor::getPosition()
 	else if (valueConv > displayRange.getEnd())   return getWidth() - offset;
 
 	// New position, with formula: x = length * (val - start)/(end - start) + x0;
-	return (getWidth() - 2*offset) * (valueConv - displayRange.getStart()) / (displayRange.getEnd() - displayRange.getStart()) + offset;
+	return int ((getWidth() - 2*offset) * (valueConv - displayRange.getStart()) / (displayRange.getEnd() - displayRange.getStart()) + offset);
 }
 
 void MovingCursor::drawCursor (Graphics& g)
@@ -69,9 +69,9 @@ void MovingCursor::drawCursor (Graphics& g)
 	// draws the cursor
 	Path cursorPath;
 
-	cursorPath.startNewSubPath(xCursor - cursorSize, 0);
-	cursorPath.lineTo(xCursor, getHeight());
-	cursorPath.lineTo(xCursor + cursorSize, 0);
+	cursorPath.startNewSubPath(float (xCursor - cursorSize), 0.0f);
+	cursorPath.lineTo (float (xCursor), float(getHeight()));
+	cursorPath.lineTo (float (xCursor + cursorSize), 0.0f);
 
 	g.setColour(getLookAndFeel().findColour(Slider::backgroundColourId));
 	g.strokePath(cursorPath, { 2.0f, PathStrokeType::curved, PathStrokeType::rounded });

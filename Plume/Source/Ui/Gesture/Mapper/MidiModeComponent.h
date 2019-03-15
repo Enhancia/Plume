@@ -13,8 +13,13 @@
 #include "../../../../JuceLibraryCode/JuceHeader.h"
 #include "Common/PlumeCommon.h"
 
-#define W getWidth()
-#define H getHeight()
+#ifndef W 
+#define W Component::getWidth()
+#endif
+
+#ifndef H 
+#define H Component::getHeight()
+#endif
 
 //==============================================================================
 /*

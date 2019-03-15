@@ -64,8 +64,8 @@ public:
         {                              
 			g.setColour (PLUME::UI::currentTheme.getColour(PLUME::colour::basePanelGestureHighlightedBackground));
                 
-            g.fillRoundedRectangle (0, 0, tunerWidth, getHeight(), MARGIN/2);
-            g.fillRoundedRectangle (tunerWidth+2*MARGIN, 0, mapperWidth, getHeight(), MARGIN/2);
+            g.fillRoundedRectangle (0.0f, 0.0f, float(tunerWidth), float(getHeight()), float(MARGIN/2));
+            g.fillRoundedRectangle (float(tunerWidth+2*MARGIN), 0.0f, float(mapperWidth), float(getHeight()), float(MARGIN/2));
             
             // Visual link between tuner and mapper
             if (gesture.isMapped() || gesture.isMidiMapped()) g.fillRect (tunerWidth, getHeight()*9/20, 2*MARGIN, getHeight()/10);
@@ -137,8 +137,8 @@ public:
             g.setColour (PLUME::UI::currentTheme.getColour(PLUME::colour::basePanelGestureBackground));
             
             g.setOpacity (0.5f);
-            g.fillRoundedRectangle (0, 0, tunerWidth, getHeight(), MARGIN/2);
-            g.fillRoundedRectangle (tunerWidth+2*MARGIN, 0, mapperWidth, getHeight(), MARGIN/2);
+			g.fillRoundedRectangle(0.0f, 0.0f, float(tunerWidth), float(getHeight()), float(MARGIN / 2));
+			g.fillRoundedRectangle(float(tunerWidth + 2 * MARGIN), 0.0f, float(mapperWidth), float(getHeight()), float(MARGIN / 2));
             
             // Visual link between tuner and mapper
             if (gesture.isMapped() || gesture.isMidiMapped()) g.fillRect (tunerWidth, getHeight()*9/20, 2*MARGIN, getHeight()/10);
@@ -157,7 +157,7 @@ public:
     }
     
     //==============================================================================
-    void buttonClicked (Button* bttn) override
+    void buttonClicked (Button*) override
     {
 		// Sets all subcomponents active/inactive depending of the button state
 		
@@ -267,7 +267,7 @@ GesturePanel::~GesturePanel()
     gestureComponents.clear();
 }
 
-void GesturePanel::paint (Graphics& g)
+void GesturePanel::paint (Graphics&)
 {
 }
 
@@ -355,10 +355,10 @@ void GesturePanel::timerCallback()
     }
 }
 
-void GesturePanel::parameterChanged (const String& parameterID, float newValue)
+void GesturePanel::parameterChanged (const String& parameterID, float)
 {
-    // if the ID is "x_value" or "x_vibrato_intensity" doesn't update
-    // (only the MovingCursor object in the the GestureTuner Component is updated)
+    // if the ID is "x_value" or "x_vibrato_intensity": doesn't update
+    // (only the MovingCursor object in the the GestureTunerComponent is updated)
     if (parameterID.endsWith ("ue") || parameterID.endsWith ("y") || !PLUME::UI::ANIMATE_UI_FLAG) return;
         
     

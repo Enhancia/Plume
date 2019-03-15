@@ -34,8 +34,8 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	newPresetPanel->setBounds (getBounds());
 
     // Creates the main components
-    addAndMakeVisible (header = new HeaderComponent (processor));
-    addAndMakeVisible (sideBar = new SideBarComponent (processor, *optionsPanel, *newPresetPanel));
+    addAndMakeVisible (header = new HeaderComponent (processor, *newPresetPanel));
+    addAndMakeVisible (sideBar = new SideBarComponent (processor, *optionsPanel));
     sideBar->addInfoPanelAsMouseListener (this);
     
 	addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(),

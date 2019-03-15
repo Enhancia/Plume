@@ -24,7 +24,7 @@ InfoPanel::InfoPanel()
     textEditor->setPopupMenuEnabled (false);
     textEditor->applyColourToAllText (PLUME::UI::currentTheme.getColour (PLUME::colour::sideBarMainText), true);
     textEditor->setJustification (Justification::left);
-    textEditor->setFont (PLUME::font::plumeFontBook.withHeight (10.0f));
+    textEditor->setFont (PLUME::font::plumeFontBook.withHeight (12.0f));
     textEditor->setMouseCursor (MouseCursor (MouseCursor::NormalCursor));
     textEditor->setInterceptsMouseClicks (false, false);
 }
@@ -42,21 +42,21 @@ void InfoPanel::paint (Graphics& g)
 
     //Gradient for the box's outline
     auto gradOut = ColourGradient::horizontal (currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
-                                               MARGIN, 
+                                               float(MARGIN), 
                                                currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
-                                               getWidth() - MARGIN);
+                                               float(getWidth() - MARGIN));
     gradOut.addColour (0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
 
     g.setGradientFill (gradOut);
 
     
     Path p;
-    p.startNewSubPath (getWidth()/2 - MARGIN, 0);
-    p.lineTo (0, 0);
-    p.lineTo (0, getHeight());
-    p.lineTo (getWidth(), getHeight());
-    p.lineTo (getWidth(), 0);
-    p.lineTo (getWidth()/2 + MARGIN, 0);
+    p.startNewSubPath (getWidth()/2.0f - float(MARGIN), 0.0f);
+    p.lineTo (0.0f, 0.0f);
+    p.lineTo (0.0f, float(getHeight()));
+    p.lineTo (float(getWidth()), float(getHeight()));
+    p.lineTo (float(getWidth()), 0.0f);
+    p.lineTo (getWidth()/2.0f + float(MARGIN), 0.0f);
     g.strokePath (p, PathStrokeType (1.0f));
 
     g.setColour (currentTheme.getColour (PLUME::colour::sideBarMainText));
@@ -73,7 +73,7 @@ void InfoPanel::resized()
     textEditor->setBounds (getLocalBounds().reduced (PLUME::UI::MARGIN, 0));
 }
 
-void InfoPanel::actionListenerCallback (const String &message)
+void InfoPanel::actionListenerCallback (const String&)
 {
 }
 

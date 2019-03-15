@@ -14,8 +14,13 @@
 #include "Common/PlumeCommon.h"
 #include "Gesture/Gesture.h"
 
-#define W getWidth()
-#define H getHeight()
+#ifndef W 
+#define W Component::getWidth()
+#endif
+
+#ifndef H 
+#define H Component::getHeight()
+#endif
 
 //==============================================================================
 /*

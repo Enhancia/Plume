@@ -10,9 +10,13 @@
 
 #include "Ui/Gesture/Mapper/MapperComponent.h"
 
-#define W getWidth()
-#define H getHeight()
-#define MARGIN PLUME::UI::MARGIN
+#ifndef W 
+#define W Component::getWidth()
+#endif
+
+#ifndef H 
+#define H Component::getHeight()
+#endif
 
 //==============================================================================
 MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr, PluginWrapper& wrap)
@@ -79,6 +83,8 @@ MapperComponent::~MapperComponent()
 //==============================================================================
 void MapperComponent::paint (Graphics& g)
 {
+	using namespace PLUME::UI;
+
     // Interface colour depending on MIDI Mode state
     Colour c1, c2;
     
@@ -94,7 +100,7 @@ void MapperComponent::paint (Graphics& g)
     }
     
     g.setColour (c1);
-    g.fillRoundedRectangle (0, 0, W, H, MARGIN/2);
+    g.fillRoundedRectangle (0.0f, 0.0f, float(W), float(H), float(MARGIN)/2.0f);
     g.setColour (c2);
     g.fillRect (W*2/3, H/2, W - W*2/3, H/2);
     

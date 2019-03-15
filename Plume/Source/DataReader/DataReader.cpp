@@ -154,7 +154,7 @@ void DataReader::messageReceived (const MemoryBlock &message)
 }
 
 
-void DataReader::changeListenerCallback (ChangeBroadcaster * source)
+void DataReader::changeListenerCallback (ChangeBroadcaster*)
 {
     //only happens on MacOS
   #if JUCE_MAC

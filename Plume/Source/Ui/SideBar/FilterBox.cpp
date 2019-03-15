@@ -35,9 +35,9 @@ void FilterBox::paint (Graphics& g)
     
     //Gradient for the box's inside
     auto gradIn = ColourGradient::vertical (Colour (0x30000000),
-                                            0, 
+                                            0.0f, 
                                             Colour (0x25000000),
-                                            getHeight());
+                                            float(getHeight()));
                                           
     gradIn.addColour (0.6, Colour (0x00000000));
     gradIn.addColour (0.8, Colour (0x20000000));
@@ -54,9 +54,9 @@ void FilterBox::paintOverChildren (Graphics& g)
     
         //Gradient for the box's outline
         auto gradOut = ColourGradient::horizontal (currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
-                                                   MARGIN, 
+                                                   float(MARGIN), 
                                                    currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
-                                                   getWidth() - MARGIN);
+                                                   float(getWidth() - MARGIN));
         gradOut.addColour (0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
 
         g.setGradientFill (gradOut);

@@ -73,9 +73,9 @@ void OptionsPanel::paint (Graphics& g)
     
     // options panel outline
     auto gradOut = ColourGradient::horizontal (UI::currentTheme.getColour(colour::sideBarSeparatorOut),
-                                               optionsArea.getX(), 
+                                               float(optionsArea.getX()), 
                                                UI::currentTheme.getColour(colour::sideBarSeparatorOut),
-                                               optionsArea.getRight());
+                                               float(optionsArea.getRight()));
     gradOut.addColour (0.5, UI::currentTheme.getColour(colour::sideBarSeparatorIn));
 
     g.setGradientFill (gradOut);
@@ -110,12 +110,10 @@ void OptionsPanel::buttonClicked (Button* bttn)
 
 void OptionsPanel::mouseUp (const MouseEvent& event)
 {
-    /*
     if (!optionsArea.contains (event.getPosition()))
     {
         setVisible (false);
     }
-    */
 }
 
 

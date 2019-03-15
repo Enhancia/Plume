@@ -13,9 +13,6 @@
 #include "../../../../JuceLibraryCode/JuceHeader.h"
 #include "Ui/Gesture/Tuner/Tuner.h"
 
-#define W Component::getWidth()
-#define H Component::getHeight()
-
 class SymmetricalTuner:    public Tuner,
                            private Slider::Listener,
                            protected Label::Listener

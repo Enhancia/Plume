@@ -12,7 +12,8 @@
 #include "HeaderComponent.h"
 
 //==============================================================================
-HeaderComponent::HeaderComponent (PlumeProcessor& proc) : processor (proc)
+HeaderComponent::HeaderComponent (PlumeProcessor& proc, Component& newPrst)  : processor (proc),
+                                                                               newPresetPanel (newPrst)
 {
     setName ("Header");
     setComponentID ("header");
@@ -45,9 +46,19 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc) : processor (proc)
 		                                                   Colour(0x00000000),
 		                                                   Colour(0x00000000)));
 	pluginListButton->setShape (arrow, false, true, false);
-	pluginListButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText), 2.0f);
+	pluginListButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 2.0f);
 	pluginListButton->addMouseListener (this, false);
 	pluginListButton->addListener (this);
+
+    // Save Preset Button
+    addAndMakeVisible (savePresetButton = new ShapeButton ("Save Preset Button",
+                                                           Colour(PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText)),
+                                                           Colour(PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText))
+                                                                .withAlpha (0.5f),
+                                                           Colour(PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText))));
+    savePresetButton->setShape (PLUME::path::createFloppyDiskPath(), false, true, false);
+    savePresetButton->addMouseListener (this, false);
+    savePresetButton->addListener (this);
     
 	// Plugin List menu
     createPluginMenu (KnownPluginList::sortByManufacturer);
@@ -59,6 +70,7 @@ HeaderComponent::~HeaderComponent()
     pluginNameLabel = nullptr;
     presetNameLabel = nullptr;
     pluginListButton = nullptr;
+    savePresetButton = nullptr;
 }
 
 //==============================================================================
@@ -85,9 +97,9 @@ void HeaderComponent::paint (Graphics& g)
     
     //Gradient for horizontal lines
     auto grad = ColourGradient::vertical (currentTheme.getColour(PLUME::colour::headerSeparatorTop),
-                                          MARGIN, 
+                                          float(MARGIN), 
                                           currentTheme.getColour(PLUME::colour::headerSeparatorBottom),
-                                          getHeight() - MARGIN);
+                                          float(getHeight() - MARGIN));
     grad.addColour (0.8, currentTheme.getColour(PLUME::colour::headerSeparatorBottom));
     g.setGradientFill (grad);
     
@@ -95,28 +107,32 @@ void HeaderComponent::paint (Graphics& g)
     
     // Separator
     g.drawVerticalLine (area.getX(),
-                        MARGIN,
-                        getHeight() - MARGIN);
+                        float(MARGIN),
+                        float(getHeight() - MARGIN));
     
     // Preset folder drawing                   
-    Path p (PLUME::path::folderPath);
-	p.scaleToFit (area.getX() + 3*MARGIN/2, 0, getHeight()-2*MARGIN, getHeight(), true);
+    Path p = PLUME::path::createFolderPath();
+	p.scaleToFit (float(area.getX()) + 3*MARGIN/2.0f, 0.0f, float(getHeight()-2*MARGIN), float(getHeight()), true);
     g.fillPath (p);
     
     // Preset label Outline
-    g.drawRoundedRectangle (area.removeFromLeft (area.getWidth()/3).withLeft (2*HEADER_HEIGHT).reduced (MARGIN).toFloat(), 3, 1);
+    g.drawRoundedRectangle (area.removeFromLeft (area.getWidth()/3).withLeft (2*HEADER_HEIGHT + MARGIN)
+                                                                   .reduced (0, MARGIN).toFloat(), 3, 1);
     
+    // Save button
+    area.removeFromLeft (HEADER_HEIGHT); // Space before separator
+
     // Separator
-    area.removeFromLeft (MARGIN); // Space before separator
+    //area.removeFromLeft (MARGIN); // Space before separator
     g.drawVerticalLine (area.getX(),
-                        MARGIN,
-                        getHeight() - MARGIN);
+                        float(MARGIN),
+                        float(getHeight() - MARGIN));
                         
     area.removeFromRight (getHeight() - MARGIN); // space for the plugin list arrow
     
     // Plugin piano drawing
-	p = PLUME::path::pianoPath;
-	p.scaleToFit (area.getX() + MARGIN, 0, getHeight()-MARGIN, getHeight(), true);
+	p = PLUME::path::createPianoPath();
+	p.scaleToFit (float(area.getX() + MARGIN*3/2), 0.0f, float(getHeight()-MARGIN*3/2), float(getHeight()), true);
     g.fillPath (p);
     
     // Plugin label Outline
@@ -129,9 +145,11 @@ void HeaderComponent::resized()
     
     auto area = getLocalBounds().withLeft (getHeight());
                           
-    presetNameLabel->setBounds (area.removeFromLeft (area.getWidth()/3).withLeft (2*HEADER_HEIGHT).reduced (MARGIN));
+    presetNameLabel->setBounds (area.removeFromLeft (area.getWidth()/3).withLeft (2*HEADER_HEIGHT + MARGIN)
+                                                                       .reduced (0, MARGIN));
+    savePresetButton->setBounds (area.removeFromLeft (HEADER_HEIGHT).reduced (0, MARGIN*3/2));
                                                                                  
-    area.removeFromLeft (MARGIN); // Space before separator
+    //area.removeFromLeft (MARGIN); // Space before separator
     pluginListButton->setBounds (area.removeFromRight (getHeight() - MARGIN).reduced (MARGIN));
     
     pluginNameLabel->setBounds (area.withLeft (area.getX() + getHeight()).reduced (MARGIN));
@@ -193,6 +211,11 @@ void HeaderComponent::buttonClicked (Button* bttn)
                                                                                         PopupDirection::downwards)
                                                           .withTargetComponent (pluginListButton),
                                       ModalCallbackFunction::forComponent (pluginMenuCallback, this));
+    }
+
+    if (bttn == savePresetButton)
+    {
+        newPresetPanel.setVisible (true);
     }
 }
 

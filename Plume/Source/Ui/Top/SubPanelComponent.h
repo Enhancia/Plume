@@ -34,7 +34,7 @@ public:
     //==============================================================================
     virtual void buttonClicked (Button*) override {}
     virtual void labelTextChanged (Label*) override {}
-    virtual void fileScanned (const String& scannerID, const File& fileThatWasScanned) {}
+    virtual void fileScanned (const String&, const File&) {}
 
     //==============================================================================
     void addRow (String rowText, Component* rowCompToAdd, int height =PLUME::UI::SUBPANEL_ROW_HEIGHT);

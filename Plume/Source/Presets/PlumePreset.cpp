@@ -220,7 +220,7 @@ void PlumePreset::loadPresetFromFile (File& file)
 
 void PlumePreset::getPluginFromFile (File& file)
 {
-    ScopedPointer<XmlElement> xml = XmlDocument::parse (presetFile);
+    ScopedPointer<XmlElement> xml = XmlDocument::parse (file);
 	if (xml == nullptr) return;
 
 	XmlElement* wrap = xml->getChildByName ("WRAPPED_PLUGIN");

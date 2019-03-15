@@ -70,15 +70,14 @@ void PlumeLookAndFeel::setColours()
 	setColour (PopupMenu::highlightedTextColourId, Colour (0xff323232));
 }
 
-Font PlumeLookAndFeel::getLabelFont (Label& lbl)
+Font PlumeLookAndFeel::getLabelFont (Label&)
 {
     return PLUME::font::plumeFont;
 }
 
-Font PlumeLookAndFeel::getTextButtonFont (TextButton& bttn, int buttonHeight)
+Font PlumeLookAndFeel::getTextButtonFont (TextButton&, int buttonHeight)
 {
-    //return Font (PLUME::UI::font, float (buttonHeight*6)/10.0f, Font::plain);
-    return PLUME::font::plumeFont;
+    return PLUME::font::plumeFont.withHeight ((buttonHeight * 6.0f) / 10.0f);
 }
 
 void PlumeLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int width, int height,

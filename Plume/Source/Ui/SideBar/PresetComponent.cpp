@@ -10,8 +10,7 @@
 
 #include "Ui/SideBar/PresetComponent.h"
 
-PresetComponent::PresetComponent (PlumeProcessor& p, Component& newPrst)  : processor (p),
-                                                                            newPresetPanel (newPrst)
+PresetComponent::PresetComponent (PlumeProcessor& p)  : processor (p)
 {
     TRACE_IN;
     
@@ -50,15 +49,6 @@ PresetComponent::PresetComponent (PlumeProcessor& p, Component& newPrst)  : proc
     
     // Search Bar
     addAndMakeVisible (searchBar = new PresetSearchBar (processor));
-    
-    // newButton    
-    addAndMakeVisible (newButton = new TextButton ("newButton"));
-    newButton->setButtonText ("Save As...");
-    newButton->addListener (this);
-    newButton->setColour (TextButton::buttonColourId, Colour (0x00323232));
-    newButton->setColour (TextButton::textColourOnId, Colour (0xaaffffff));
-    
-    
 }
 
 PresetComponent::~PresetComponent()
@@ -66,18 +56,13 @@ PresetComponent::~PresetComponent()
     TRACE_IN;
     presetBox = nullptr;
     filterBox = nullptr;
-	newButton = nullptr;
 	typeToggle = nullptr;
 	pluginSelectBox = nullptr;
 	searchBar = nullptr;
 }
 
-void PresetComponent::paint (Graphics& g)
+void PresetComponent::paint (Graphics&)
 {
-    auto newButtonArea = getLocalBounds().removeFromBottom (PLUME::UI::PRESET_BUTTONS_HEIGHT);
-    
-    g.setColour (Colour (0x30000000));
-	g.fillRect (newButtonArea.reduced(1));
 }
 
 void PresetComponent::paintOverChildren (Graphics& g)
@@ -86,9 +71,9 @@ void PresetComponent::paintOverChildren (Graphics& g)
     
     //Gradient for the box's outline
     auto gradOut = ColourGradient::horizontal (currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
-                                               MARGIN, 
+                                               float(MARGIN), 
                                                currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
-                                               getWidth() - MARGIN);
+                                               float(getWidth() - MARGIN));
     gradOut.addColour (0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
     g.setGradientFill (gradOut);
     
@@ -102,9 +87,6 @@ void PresetComponent::paintOverChildren (Graphics& g)
     
     // ComboBox
 	g.drawRect (area.removeFromTop (PRESET_BUTTONS_HEIGHT + MARGIN).withTrimmedBottom (MARGIN));
-    
-	//New preset Button
-	g.drawRect (area.removeFromBottom (PRESET_BUTTONS_HEIGHT));
 }
 
 void PresetComponent::resized()
@@ -126,11 +108,7 @@ void PresetComponent::resized()
     pluginSelectBox->setBounds (area.removeFromTop (PRESET_BUTTONS_HEIGHT + MARGIN)
                                     .withTrimmedBottom (MARGIN)); // Plugin Filter comboBox
     
-    newButton->setBounds (area.removeFromBottom (PRESET_BUTTONS_HEIGHT + MARGIN)
-                              .withTrimmedTop (MARGIN)); // New Preset Button
-    
     presetBox->setBounds (area);
-    
 }
 
 //==============================================================================
@@ -155,22 +133,6 @@ void PresetComponent::focusLost (Component::FocusChangeType cause)
     if (cause == Component::focusChangedByMouseClick)
     {
         presetBox->deselectAllRows();
-    }
-}
-
-void PresetComponent::buttonClicked (Button* bttn)
-{
-    /*
-    if (bttn == saveButton)
-    {
-        savePreset();
-    }
-    */
-    
-    if (bttn == newButton)
-    {
-        newPresetPanel.setVisible (true);
-        //addNewPreset();
     }
 }
 

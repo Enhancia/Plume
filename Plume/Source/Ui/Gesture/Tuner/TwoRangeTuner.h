@@ -14,9 +14,6 @@
 #include "Ui/Gesture/Tuner/Tuner.h"
 #include "Ui/LookAndFeel/PlumeLookAndFeel.h"
 
-#define W Component::getWidth()
-#define H Component::getHeight()
-
 class TwoRangeTuner:    public Tuner,
                         private Slider::Listener,
                         private Label::Listener

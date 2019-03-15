@@ -37,7 +37,7 @@ Tuner::~Tuner()
 
 
 	//==============================================================================
-void Tuner::paint(Graphics& g)
+void Tuner::paint(Graphics&)
 {
 }
 
