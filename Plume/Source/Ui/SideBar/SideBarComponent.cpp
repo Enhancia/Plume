@@ -178,7 +178,7 @@ void SideBarComponent::mouseEnter (const MouseEvent &event)
     else if (event.eventComponent == optionsButton)
     {
         optionsButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::sideBarButtonFillHighlighted),
-                                    1.0f);
+                                    1.5f);
     }
 }
 
@@ -193,7 +193,7 @@ void SideBarComponent::mouseExit (const MouseEvent &event)
     else if (event.eventComponent == optionsButton)
     {
         optionsButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::sideBarButtonFill),
-                                    1.0f);
+                                    1.5f);
     }
 }
 
