@@ -14,9 +14,6 @@
 //==============================================================================
 OptionsPanel::OptionsPanel (PlumeProcessor& proc)   : processor (proc)
 {
-    // Area
-    optionsArea = getBounds().reduced (getWidth()/5, getHeight()/8);
-
     addAndMakeVisible (tabbedOptions = new TabbedPanelComponent (processor));
 
     tabbedOptions->addTab (new GeneralOptionsSubPanel (processor), "General");

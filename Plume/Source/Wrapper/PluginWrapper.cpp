@@ -458,7 +458,11 @@ void PluginWrapper::setCustomPathUsage (bool shouldUseCustomPath)
     useCustomPaths = shouldUseCustomPath;
 }
 
-void PluginWrapper::setAuUsage (bool shouldUseAudioUnits)
+void PluginWrapper::setAuUsage (bool                    
+                                #if JUCE_MAC
+                                    shouldUseAudioUnits
+                                #endif
+                                )
 {
   #if JUCE_MAC
     useAudioUnits = shouldUseAudioUnits;

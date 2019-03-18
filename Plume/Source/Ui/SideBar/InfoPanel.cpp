@@ -51,12 +51,12 @@ void InfoPanel::paint (Graphics& g)
 
     
     Path p;
-    p.startNewSubPath (getWidth()/2.0f - float(MARGIN), 0.0f);
+    p.startNewSubPath (getWidth()/2.0f - float(2*MARGIN), 0.0f);
     p.lineTo (0.0f, 0.0f);
     p.lineTo (0.0f, float(getHeight()));
     p.lineTo (float(getWidth()), float(getHeight()));
     p.lineTo (float(getWidth()), 0.0f);
-    p.lineTo (getWidth()/2.0f + float(MARGIN), 0.0f);
+    p.lineTo (getWidth()/2.0f + float(2*MARGIN), 0.0f);
     g.strokePath (p, PathStrokeType (1.0f));
 
     g.setColour (currentTheme.getColour (PLUME::colour::sideBarMainText));

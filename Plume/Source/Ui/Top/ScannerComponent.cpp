@@ -13,10 +13,11 @@
 
 //==============================================================================
 ScannerComponent::ScannerComponent (PlumeProcessor& proc, int buttonWidth)   : processor (proc),
-                                                                               buttonW (buttonWidth)
+                                                                               buttonW (buttonWidth),
+                                                                               scanButton (new TextButton ("Scan Button"))
 {
     // Scan Button
-    addAndMakeVisible (scanButton = new TextButton ("Scan Button"));
+    addAndMakeVisible (scanButton);
     scanButton->setButtonText ("Scan");
     scanButton->addListener (this);
 	

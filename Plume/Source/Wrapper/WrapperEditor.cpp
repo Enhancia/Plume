@@ -129,22 +129,22 @@ void* WrapperEditorWindow::findHostHandle()
     if (auto editorHwnd = static_cast<HWND> (editorHandle))
     {
         // If DAW has an owned window with children windows (ending with PLUME)
-        if (HWND hostWindow = GetWindow (GetAncestor (editorHwnd, GA_ROOT), GW_OWNER))
+        if (HWND rootOwnerHostWindow = GetWindow (GetAncestor (editorHwnd, GA_ROOT), GW_OWNER))
         {
-            return static_cast<void*> (hostWindow);
+            return static_cast<void*> (rootOwnerHostWindow);
         }
 
         // If DAW only has an owned window with PLUME
-        else if (HWND hostWindow = GetWindow (editorHwnd, GW_OWNER))
+        else if (HWND ownerHostWindow = GetWindow (editorHwnd, GW_OWNER))
         {
-            return static_cast<void*> (hostWindow);
+            return static_cast<void*> (ownerHostWindow);
         }
 
         // If DAW has an owned WS_POPUP with children windows (ending with PLUME)
         // Or if DAW only has children windows that end with PLUME
-        else if (HWND hostWindow = GetAncestor (editorHwnd, GA_ROOTOWNER))
+        else if (HWND rootParentHostWindow = GetAncestor (editorHwnd, GA_ROOTOWNER))
         {
-            return static_cast<void*> (hostWindow);
+            return static_cast<void*> (rootParentHostWindow);
         }
     }
   #endif

@@ -24,7 +24,7 @@ class PresetSearchBar    : public Component,
 {
 public:
     //==============================================================================
-    PresetSearchBar (PlumeProcessor& proc);
+    explicit PresetSearchBar (PlumeProcessor& proc);
     ~PresetSearchBar();
 
     //==============================================================================

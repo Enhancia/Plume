@@ -57,7 +57,6 @@ public:
 
         int tunerWidth = getWidth()*5/8 - MARGIN;
         int mapperWidth = getWidth()*3/8 - MARGIN;
-        int x, y, width, height;
         Colour fillColour;
         
         // Fills the area for the Tuner and Mapper
@@ -73,6 +72,8 @@ public:
         
         // Loads the gesture image
 		{
+            int x, y, width, height;
+            
             x = MARGIN;
             y = MARGIN;
             width = tunerWidth/8 - 2*MARGIN;

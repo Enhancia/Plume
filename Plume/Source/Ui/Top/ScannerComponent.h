@@ -64,7 +64,7 @@ private:
 
 	struct ScanJob : public ThreadPoolJob
 	{
-		ScanJob(ScannerComponent& s) : ThreadPoolJob("pluginscan"), scannerComp(s)
+		explicit ScanJob(ScannerComponent& s) : ThreadPoolJob("pluginscan"), scannerComp(s)
 		{
 		}
 

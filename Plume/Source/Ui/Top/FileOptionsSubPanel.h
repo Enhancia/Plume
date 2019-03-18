@@ -23,7 +23,7 @@ class FileOptionsSubPanel    : public SubPanelComponent
 {
 public:
     //==============================================================================
-    FileOptionsSubPanel (PlumeProcessor& proc);
+    explicit FileOptionsSubPanel (PlumeProcessor& proc);
     ~FileOptionsSubPanel();
     
     //==============================================================================

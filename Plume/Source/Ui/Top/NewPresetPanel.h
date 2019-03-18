@@ -23,7 +23,7 @@ class NewPresetPanel    : public Component,
 {
 public:
     //==============================================================================
-    NewPresetPanel (PlumeProcessor& proc);
+    explicit NewPresetPanel (PlumeProcessor& proc);
     ~NewPresetPanel();
 
     //==============================================================================

@@ -86,13 +86,13 @@ enum PlumeColourID
 class PlumeTheme
 {
 public:
-	enum ThemeId
-	{
-		plumeDefault = 0,
-		red
-	};
+    enum ThemeId
+    {
+	plumeDefault = 0,
+	red
+    };
     
-	template <typename... Items>
+    template <typename... Items>
     PlumeTheme (Items... colourNumbers)
     {
         jassert (sizeof... (colourNumbers) == numColours);

@@ -70,7 +70,7 @@ void PlumeLookAndFeel::setColours()
 	setColour (PopupMenu::highlightedTextColourId, Colour (0xff323232));
 }
 
-Font PlumeLookAndFeel::getLabelFont (Label&)
+Font PlumeLookAndFeel::getLabelFont (Label& lbl)
 {
     return PLUME::font::plumeFont;
 }
@@ -78,6 +78,11 @@ Font PlumeLookAndFeel::getLabelFont (Label&)
 Font PlumeLookAndFeel::getTextButtonFont (TextButton&, int buttonHeight)
 {
     return PLUME::font::plumeFont.withHeight ((buttonHeight * 6.0f) / 10.0f);
+}
+
+Font PlumeLookAndFeel::getComboBoxFont (ComboBox& cb)
+{
+	return PLUME::font::plumeFont.withHeight ((cb.getHeight() * 6.0f) / 10.0f);
 }
 
 void PlumeLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int width, int height,

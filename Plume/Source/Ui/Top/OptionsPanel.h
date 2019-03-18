@@ -26,7 +26,7 @@ class OptionsPanel    : public Component,
 {
 public:
     //==============================================================================
-    OptionsPanel (PlumeProcessor& proc);
+    explicit OptionsPanel (PlumeProcessor& proc);
     ~OptionsPanel();
 
     //==============================================================================

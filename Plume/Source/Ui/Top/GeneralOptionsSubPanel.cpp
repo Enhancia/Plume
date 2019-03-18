@@ -41,23 +41,24 @@ void GeneralOptionsSubPanel::buttonClicked (Button* bttn)
 								          .lastIndexOf("Plume Log"),
 								          fullLog.length() - 6000);
 			
-		  #if JUCE_WINDOWS					          
-			String mail_str ("mailto:damien.leboulaire@enhancia.co"
+		      #if JUCE_WINDOWS					          
+			      String mail_str ("mailto:damien.leboulaire@enhancia.co"
                              "?Subject=[Plume Report]"
-			                 "&cc=alex.levacher@enhancia.co"
-		                     "&body=" + fullLog.substring (startIndex));
-		    LPCSTR mail_lpc = mail_str.toUTF8();
+			                       "&cc=alex.levacher@enhancia.co"
+		                         "&body=" + fullLog.substring (startIndex));
+		        LPCSTR mail_lpc = mail_str.toUTF8();
 
             ShellExecute (NULL, "open", mail_lpc,
-		                  "", "", SW_SHOWNORMAL);
-		  #elif JUCE_MAC					          
-			String mail_str ("open mailto:damien.leboulaire@enhancia.co"
+		                      "", "", SW_SHOWNORMAL);
+
+		      #elif JUCE_MAC					          
+			      String mail_str ("open mailto:damien.leboulaire@enhancia.co"
                              "?Subject=\"[Plume Report]\""
-			                 "\\&cc=alex.levacher@enhancia.co"
-		                     "\\&body=\"" + fullLog.substring (startIndex) + "\"");
+			                       "\\&cc=alex.levacher@enhancia.co"
+		                         "\\&body=\"" + fullLog.substring (startIndex) + "\"");
 		    
-		    system (mail_str.toUTF8());
-		  #endif
+		        system (mail_str.toUTF8());
+		      #endif
         }
     }
 }

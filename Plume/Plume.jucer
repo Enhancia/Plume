@@ -187,16 +187,307 @@
     </GROUP>
     <GROUP id="{546D02F0-3AB6-3299-2C87-A268693EF763}" name="Resources">
       <GROUP id="{27E3E65B-7279-1B0D-BCF6-0DB2823FEC54}" name="Fonts">
-        <FILE id="u44Odk" name="Ahmet Altun - HalisGR-Bold.otf" compile="0"
-              resource="1" file="Resources/Fonts/Ahmet Altun - HalisGR-Bold.otf"/>
-        <FILE id="S2WGKv" name="Ahmet Altun - HalisGR-Book.otf" compile="0"
-              resource="1" file="Resources/Fonts/Ahmet Altun - HalisGR-Book.otf"/>
-        <FILE id="Oa6jYa" name="Ahmet Altun - HalisGR-Light.otf" compile="0"
-              resource="1" file="Resources/Fonts/Ahmet Altun - HalisGR-Light.otf"/>
-        <FILE id="cEZGQJ" name="Ahmet Altun - HalisGR-Medium.otf" compile="0"
-              resource="1" file="Resources/Fonts/Ahmet Altun - HalisGR-Medium.otf"/>
-        <FILE id="ZM3i46" name="Ahmet Altun - HalisGR-Regular.otf" compile="0"
-              resource="1" file="Resources/Fonts/Ahmet Altun - HalisGR-Regular.otf"/>
+        <GROUP id="{3CBEDA6E-8DAA-AA08-C57E-2151B2BCA145}" name="Fonts">
+          <GROUP id="{1D1D1A19-25D8-9249-76AA-674A6B55A08E}" name="Anodina">
+            <FILE id="WgMgfx" name="Anodina-Bold.otf" compile="0" resource="1"
+                  file="Resources/Fonts/Anodina/Anodina-Bold.otf"/>
+            <FILE id="VHOGpe" name="Anodina-ExtraBold.otf" compile="0" resource="1"
+                  file="Resources/Fonts/Anodina/Anodina-ExtraBold.otf"/>
+            <FILE id="jxQSke" name="Anodina-ExtraLight.otf" compile="0" resource="1"
+                  file="Resources/Fonts/Anodina/Anodina-ExtraLight.otf"/>
+            <FILE id="yopnZZ" name="Anodina-Light.otf" compile="0" resource="1"
+                  file="Resources/Fonts/Anodina/Anodina-Light.otf"/>
+            <FILE id="Z8XX1z" name="Anodina-Regular.otf" compile="0" resource="1"
+                  file="Resources/Fonts/Anodina/Anodina-Regular.otf"/>
+            <FILE id="kiaiMF" name="Thanks.pdf" compile="0" resource="0" file="Resources/Fonts/Anodina/Thanks.pdf"/>
+          </GROUP>
+          <GROUP id="{4D093EE7-F9F3-24B0-0EDD-DBAE1756A594}" name="avenir-next-lt-pro-cufonfonts">
+            <FILE id="Y6qEbo" name="AvenirNextLTPro-Bold.otf" compile="0" resource="1"
+                  file="Resources/Fonts/avenir-next-lt-pro-cufonfonts/AvenirNextLTPro-Bold.otf"/>
+            <FILE id="SbOoD9" name="AvenirNextLTPro-BoldCn.otf" compile="0" resource="1"
+                  file="Resources/Fonts/avenir-next-lt-pro-cufonfonts/AvenirNextLTPro-BoldCn.otf"/>
+            <FILE id="vvcytF" name="AvenirNextLTPro-BoldCnIt.otf" compile="0" resource="1"
+                  file="Resources/Fonts/avenir-next-lt-pro-cufonfonts/AvenirNextLTPro-BoldCnIt.otf"/>
+            <FILE id="CXP4u3" name="AvenirNextLTPro-Cn.otf" compile="0" resource="1"
+                  file="Resources/Fonts/avenir-next-lt-pro-cufonfonts/AvenirNextLTPro-Cn.otf"/>
+            <FILE id="KwxU4S" name="AvenirNextLTPro-CnIt.otf" compile="0" resource="1"
+                  file="Resources/Fonts/avenir-next-lt-pro-cufonfonts/AvenirNextLTPro-CnIt.otf"/>
+            <FILE id="ewKkJN" name="AvenirNextLTPro-Demi.otf" compile="0" resource="1"
+                  file="Resources/Fonts/avenir-next-lt-pro-cufonfonts/AvenirNextLTPro-Demi.otf"/>
+            <FILE id="x5N66v" name="AvenirNextLTPro-DemiCn.otf" compile="0" resource="1"
+                  file="Resources/Fonts/avenir-next-lt-pro-cufonfonts/AvenirNextLTPro-DemiCn.otf"/>
+            <FILE id="xStKeR" name="AvenirNextLTPro-DemiCnIt.otf" compile="0" resource="1"
+                  file="Resources/Fonts/avenir-next-lt-pro-cufonfonts/AvenirNextLTPro-DemiCnIt.otf"/>
+            <FILE id="aY6RlR" name="AvenirNextLTPro-DemiIt.otf" compile="0" resource="1"
+                  file="Resources/Fonts/avenir-next-lt-pro-cufonfonts/AvenirNextLTPro-DemiIt.otf"/>
+            <FILE id="T05PYc" name="AvenirNextLTPro-Heavy.otf" compile="0" resource="1"
+                  file="Resources/Fonts/avenir-next-lt-pro-cufonfonts/AvenirNextLTPro-Heavy.otf"/>
+            <FILE id="l0UYPM" name="AvenirNextLTPro-HeavyCn.otf" compile="0" resource="1"
+                  file="Resources/Fonts/avenir-next-lt-pro-cufonfonts/AvenirNextLTPro-HeavyCn.otf"/>
+            <FILE id="fB9bIs" name="AvenirNextLTPro-HeavyCnIt.otf" compile="0"
+                  resource="1" file="Resources/Fonts/avenir-next-lt-pro-cufonfonts/AvenirNextLTPro-HeavyCnIt.otf"/>
+            <FILE id="nEaFjQ" name="AvenirNextLTPro-HeavyIt.otf" compile="0" resource="1"
+                  file="Resources/Fonts/avenir-next-lt-pro-cufonfonts/AvenirNextLTPro-HeavyIt.otf"/>
+            <FILE id="UZVqwN" name="AvenirNextLTPro-It.otf" compile="0" resource="1"
+                  file="Resources/Fonts/avenir-next-lt-pro-cufonfonts/AvenirNextLTPro-It.otf"/>
+            <FILE id="tkbNVM" name="AvenirNextLTPro-MediumCn.otf" compile="0" resource="1"
+                  file="Resources/Fonts/avenir-next-lt-pro-cufonfonts/AvenirNextLTPro-MediumCn.otf"/>
+            <FILE id="PIa7JF" name="AvenirNextLTPro-MediumCnIt.otf" compile="0"
+                  resource="1" file="Resources/Fonts/avenir-next-lt-pro-cufonfonts/AvenirNextLTPro-MediumCnIt.otf"/>
+            <FILE id="qzFxRX" name="AvenirNextLTPro-MediumIt.otf" compile="0" resource="1"
+                  file="Resources/Fonts/avenir-next-lt-pro-cufonfonts/AvenirNextLTPro-MediumIt.otf"/>
+            <FILE id="Ed7maG" name="AvenirNextLTPro-Regular.otf" compile="0" resource="1"
+                  file="Resources/Fonts/avenir-next-lt-pro-cufonfonts/AvenirNextLTPro-Regular.otf"/>
+            <FILE id="c6rp7o" name="AvenirNextLTPro-UltLt.otf" compile="0" resource="1"
+                  file="Resources/Fonts/avenir-next-lt-pro-cufonfonts/AvenirNextLTPro-UltLt.otf"/>
+            <FILE id="Eb9UKn" name="AvenirNextLTPro-UltLtCn.otf" compile="0" resource="1"
+                  file="Resources/Fonts/avenir-next-lt-pro-cufonfonts/AvenirNextLTPro-UltLtCn.otf"/>
+            <FILE id="qqkxRQ" name="AvenirNextLTPro-UltLtCnIt.otf" compile="0"
+                  resource="1" file="Resources/Fonts/avenir-next-lt-pro-cufonfonts/AvenirNextLTPro-UltLtCnIt.otf"/>
+            <FILE id="NPYMzj" name="AvenirNextLTPro-UltLtIt.otf" compile="0" resource="1"
+                  file="Resources/Fonts/avenir-next-lt-pro-cufonfonts/AvenirNextLTPro-UltLtIt.otf"/>
+          </GROUP>
+          <GROUP id="{4C7103EC-D2ED-37D4-C469-E98718D86212}" name="Brandon Grotesque">
+            <FILE id="LSXHTc" name="38633.png" compile="0" resource="0" file="Resources/Fonts/Brandon Grotesque/38633.png"/>
+            <FILE id="BDZmTD" name="39745.jpeg" compile="0" resource="0" file="Resources/Fonts/Brandon Grotesque/39745.jpeg"/>
+            <FILE id="Gb8vkU" name="45019.png" compile="0" resource="0" file="Resources/Fonts/Brandon Grotesque/45019.png"/>
+            <FILE id="ZcdPnQ" name="58494.png" compile="0" resource="0" file="Resources/Fonts/Brandon Grotesque/58494.png"/>
+            <FILE id="JztWUp" name="Brandon_bld.otf" compile="0" resource="1" file="Resources/Fonts/Brandon Grotesque/Brandon_bld.otf"/>
+            <FILE id="RhGVYQ" name="Brandon_bld_it.otf" compile="0" resource="1"
+                  file="Resources/Fonts/Brandon Grotesque/Brandon_bld_it.otf"/>
+            <FILE id="EA2tFC" name="Brandon_blk.otf" compile="0" resource="1" file="Resources/Fonts/Brandon Grotesque/Brandon_blk.otf"/>
+            <FILE id="X5BFEB" name="Brandon_blk_it.otf" compile="0" resource="1"
+                  file="Resources/Fonts/Brandon Grotesque/Brandon_blk_it.otf"/>
+            <FILE id="CY9ocr" name="Brandon_light.otf" compile="0" resource="1"
+                  file="Resources/Fonts/Brandon Grotesque/Brandon_light.otf"/>
+            <FILE id="JHc2V9" name="Brandon_light_it.otf" compile="0" resource="1"
+                  file="Resources/Fonts/Brandon Grotesque/Brandon_light_it.otf"/>
+            <FILE id="Rv2sla" name="Brandon_med.otf" compile="0" resource="1" file="Resources/Fonts/Brandon Grotesque/Brandon_med.otf"/>
+            <FILE id="JgG0oB" name="Brandon_med_it.otf" compile="0" resource="1"
+                  file="Resources/Fonts/Brandon Grotesque/Brandon_med_it.otf"/>
+            <FILE id="GIRLpq" name="Brandon_reg.otf" compile="0" resource="1" file="Resources/Fonts/Brandon Grotesque/Brandon_reg.otf"/>
+            <FILE id="SCRHRa" name="Brandon_reg_it.otf" compile="0" resource="1"
+                  file="Resources/Fonts/Brandon Grotesque/Brandon_reg_it.otf"/>
+            <FILE id="Vkwheh" name="Brandon_thin.otf" compile="0" resource="1"
+                  file="Resources/Fonts/Brandon Grotesque/Brandon_thin.otf"/>
+            <FILE id="DSf7m2" name="Brandon_thin_it.otf" compile="0" resource="1"
+                  file="Resources/Fonts/Brandon Grotesque/Brandon_thin_it.otf"/>
+          </GROUP>
+          <GROUP id="{C0E1C9B2-A55C-E451-5918-1A4D0D3DB1F3}" name="coco-gothic">
+            <FILE id="aOsdN1" name="Coco Gothic Commercial information.pdf" compile="0"
+                  resource="0" file="Resources/Fonts/coco-gothic/Coco Gothic Commercial information.pdf"/>
+            <FILE id="wr6Le5" name="Coco Gothic Family (CC BY-NC)License.pdf" compile="0"
+                  resource="0" file="Resources/Fonts/coco-gothic/Coco Gothic Family (CC BY-NC)License.pdf"/>
+            <FILE id="NKcOrr" name="Coco Gothic_DaFont.png" compile="0" resource="0"
+                  file="Resources/Fonts/coco-gothic/Coco Gothic_DaFont.png"/>
+            <FILE id="v4gTqr" name="CocoGothic-Bold_trial.ttf" compile="0" resource="1"
+                  file="Resources/Fonts/coco-gothic/CocoGothic-Bold_trial.ttf"/>
+            <FILE id="pfVY5j" name="CocoGothic-BoldItalic_trial.ttf" compile="0"
+                  resource="1" file="Resources/Fonts/coco-gothic/CocoGothic-BoldItalic_trial.ttf"/>
+            <FILE id="ss2XxY" name="CocoGothic-Fat_trial.ttf" compile="0" resource="1"
+                  file="Resources/Fonts/coco-gothic/CocoGothic-Fat_trial.ttf"/>
+            <FILE id="myHyIk" name="CocoGothic-FatItalic_trial.ttf" compile="0"
+                  resource="1" file="Resources/Fonts/coco-gothic/CocoGothic-FatItalic_trial.ttf"/>
+            <FILE id="A2PX4V" name="CocoGothic-Heavy_trial.ttf" compile="0" resource="1"
+                  file="Resources/Fonts/coco-gothic/CocoGothic-Heavy_trial.ttf"/>
+            <FILE id="z8WU9F" name="CocoGothic-HeavyItalic_trial.ttf" compile="0"
+                  resource="1" file="Resources/Fonts/coco-gothic/CocoGothic-HeavyItalic_trial.ttf"/>
+            <FILE id="jpXsYt" name="CocoGothic-Italic_trial.ttf" compile="0" resource="1"
+                  file="Resources/Fonts/coco-gothic/CocoGothic-Italic_trial.ttf"/>
+            <FILE id="Vi4KKL" name="CocoGothic-Light_trial.ttf" compile="0" resource="1"
+                  file="Resources/Fonts/coco-gothic/CocoGothic-Light_trial.ttf"/>
+            <FILE id="Zz7T9G" name="CocoGothic-LightItalic_trial.ttf" compile="0"
+                  resource="1" file="Resources/Fonts/coco-gothic/CocoGothic-LightItalic_trial.ttf"/>
+            <FILE id="tuy2IN" name="CocoGothic-UltraLight_trial.ttf" compile="0"
+                  resource="1" file="Resources/Fonts/coco-gothic/CocoGothic-UltraLight_trial.ttf"/>
+            <FILE id="thYPmE" name="CocoGothic-UltraLightItalic_trial.ttf" compile="0"
+                  resource="1" file="Resources/Fonts/coco-gothic/CocoGothic-UltraLightItalic_trial.ttf"/>
+            <FILE id="bc4X8i" name="CocoGothic_trial.ttf" compile="0" resource="1"
+                  file="Resources/Fonts/coco-gothic/CocoGothic_trial.ttf"/>
+          </GROUP>
+          <GROUP id="{95A2C1E6-95B9-6C2B-0623-F0888E1E03EF}" name="GraphicEx.com-FF_Marselis">
+            <FILE id="Vff59B" name="120452.png" compile="0" resource="0" file="Resources/Fonts/GraphicEx.com-FF_Marselis/120452.png"/>
+            <FILE id="AxbDnc" name="120453.png" compile="0" resource="0" file="Resources/Fonts/GraphicEx.com-FF_Marselis/120453.png"/>
+            <FILE id="X6KwuY" name="120454.png" compile="0" resource="0" file="Resources/Fonts/GraphicEx.com-FF_Marselis/120454.png"/>
+            <FILE id="CUhF7Q" name="120455.png" compile="0" resource="0" file="Resources/Fonts/GraphicEx.com-FF_Marselis/120455.png"/>
+            <FILE id="FF2EQV" name="FF Marselis Pro Black Italic.otf" compile="0"
+                  resource="1" file="Resources/Fonts/GraphicEx.com-FF_Marselis/FF Marselis Pro Black Italic.otf"/>
+            <FILE id="GVgNm8" name="FF Marselis Pro Black.otf" compile="0" resource="1"
+                  file="Resources/Fonts/GraphicEx.com-FF_Marselis/FF Marselis Pro Black.otf"/>
+            <FILE id="AeQJDJ" name="FF Marselis Pro Bold Italic.otf" compile="0"
+                  resource="1" file="Resources/Fonts/GraphicEx.com-FF_Marselis/FF Marselis Pro Bold Italic.otf"/>
+            <FILE id="R0glum" name="FF Marselis Pro Bold.otf" compile="0" resource="1"
+                  file="Resources/Fonts/GraphicEx.com-FF_Marselis/FF Marselis Pro Bold.otf"/>
+            <FILE id="FBVhqx" name="FF Marselis Pro Italic.otf" compile="0" resource="1"
+                  file="Resources/Fonts/GraphicEx.com-FF_Marselis/FF Marselis Pro Italic.otf"/>
+            <FILE id="ztSUIR" name="FF Marselis Pro Light Italic.otf" compile="0"
+                  resource="1" file="Resources/Fonts/GraphicEx.com-FF_Marselis/FF Marselis Pro Light Italic.otf"/>
+            <FILE id="o3eAfT" name="FF Marselis Pro Light.otf" compile="0" resource="1"
+                  file="Resources/Fonts/GraphicEx.com-FF_Marselis/FF Marselis Pro Light.otf"/>
+            <FILE id="zNvEgG" name="FF Marselis Pro.otf" compile="0" resource="1"
+                  file="Resources/Fonts/GraphicEx.com-FF_Marselis/FF Marselis Pro.otf"/>
+            <FILE id="IuPiDK" name="Graphicex.com - Free Download Vector - PSD - Flyer Mockup.txt"
+                  compile="0" resource="0" file="Resources/Fonts/GraphicEx.com-FF_Marselis/Graphicex.com - Free Download Vector - PSD - Flyer Mockup.txt"/>
+            <FILE id="D5Ycmp" name="graphicex.com.URL" compile="0" resource="0"
+                  file="Resources/Fonts/GraphicEx.com-FF_Marselis/graphicex.com.URL"/>
+          </GROUP>
+          <GROUP id="{DBB08BE0-CC27-D9EE-B08F-754CFE8C4EDA}" name="HalisGR">
+            <FILE id="Dh7jMR" name="Ahmet Altun - HalisGR-Bold.otf" compile="0"
+                  resource="1" file="Resources/Fonts/HalisGR/Ahmet Altun - HalisGR-Bold.otf"/>
+            <FILE id="IAHQze" name="Ahmet Altun - HalisGR-Book.otf" compile="0"
+                  resource="1" file="Resources/Fonts/HalisGR/Ahmet Altun - HalisGR-Book.otf"/>
+            <FILE id="eumggr" name="Ahmet Altun - HalisGR-Light.otf" compile="0"
+                  resource="1" file="Resources/Fonts/HalisGR/Ahmet Altun - HalisGR-Light.otf"/>
+            <FILE id="x8Nw1y" name="Ahmet Altun - HalisGR-Medium.otf" compile="0"
+                  resource="1" file="Resources/Fonts/HalisGR/Ahmet Altun - HalisGR-Medium.otf"/>
+            <FILE id="DLgAOM" name="Ahmet Altun - HalisGR-Regular.otf" compile="0"
+                  resource="1" file="Resources/Fonts/HalisGR/Ahmet Altun - HalisGR-Regular.otf"/>
+          </GROUP>
+          <GROUP id="{E07D5F84-BA4B-11FE-C3B3-4ADEDA5E9300}" name="Lack">
+            <FILE id="xGtWER" name="Lack-Italic.otf" compile="0" resource="1" file="Resources/Fonts/Lack/Lack-Italic.otf"/>
+            <FILE id="T5ydRq" name="Lack-Line-Italic.otf" compile="0" resource="1"
+                  file="Resources/Fonts/Lack/Lack-Line-Italic.otf"/>
+            <FILE id="zFQpZC" name="Lack-Line-Regular.otf" compile="0" resource="1"
+                  file="Resources/Fonts/Lack/Lack-Line-Regular.otf"/>
+            <FILE id="axmi2p" name="Lack-Regular.otf" compile="0" resource="1"
+                  file="Resources/Fonts/Lack/Lack-Regular.otf"/>
+          </GROUP>
+          <GROUP id="{06656991-1E20-B833-28AA-1C0EBC550C40}" name="Pangram-FullFamily-FreeForPersonalUse">
+            <FILE id="MLBqwY" name="Pangram-Black.otf" compile="0" resource="1"
+                  file="Resources/Fonts/Pangram-FullFamily-FreeForPersonalUse/Pangram-Black.otf"/>
+            <FILE id="kZkdAy" name="Pangram-ExtraLight.otf" compile="0" resource="1"
+                  file="Resources/Fonts/Pangram-FullFamily-FreeForPersonalUse/Pangram-ExtraLight.otf"/>
+            <FILE id="lWkhJk" name="Pangram-Regular.otf" compile="0" resource="1"
+                  file="Resources/Fonts/Pangram-FullFamily-FreeForPersonalUse/Pangram-Regular.otf"/>
+            <FILE id="Q38hMU" name="Personal-license-agreement" compile="0" resource="0"
+                  file="Resources/Fonts/Pangram-FullFamily-FreeForPersonalUse/Personal-license-agreement"/>
+          </GROUP>
+          <GROUP id="{3559CD9F-3CDC-D17D-6300-1B3F15DB2760}" name="roboto">
+            <FILE id="IBTld5" name="NOTICE.txt" compile="0" resource="0" file="Resources/Fonts/roboto/NOTICE.txt"/>
+            <FILE id="i51CEH" name="Roboto-Black.ttf" compile="0" resource="1"
+                  file="Resources/Fonts/roboto/Roboto-Black.ttf"/>
+            <FILE id="eeMf6y" name="Roboto-BlackItalic.ttf" compile="0" resource="1"
+                  file="Resources/Fonts/roboto/Roboto-BlackItalic.ttf"/>
+            <FILE id="mBBMTv" name="Roboto-Bold.ttf" compile="0" resource="1" file="Resources/Fonts/roboto/Roboto-Bold.ttf"/>
+            <FILE id="EPEpVq" name="Roboto-BoldCondensed.ttf" compile="0" resource="1"
+                  file="Resources/Fonts/roboto/Roboto-BoldCondensed.ttf"/>
+            <FILE id="Yz8FVD" name="Roboto-BoldCondensedItalic.ttf" compile="0"
+                  resource="1" file="Resources/Fonts/roboto/Roboto-BoldCondensedItalic.ttf"/>
+            <FILE id="tTsFUm" name="Roboto-BoldItalic.ttf" compile="0" resource="1"
+                  file="Resources/Fonts/roboto/Roboto-BoldItalic.ttf"/>
+            <FILE id="XnzBfj" name="Roboto-Condensed.ttf" compile="0" resource="1"
+                  file="Resources/Fonts/roboto/Roboto-Condensed.ttf"/>
+            <FILE id="W8KbzJ" name="Roboto-CondensedItalic.ttf" compile="0" resource="1"
+                  file="Resources/Fonts/roboto/Roboto-CondensedItalic.ttf"/>
+            <FILE id="SlenqQ" name="Roboto-Italic.ttf" compile="0" resource="1"
+                  file="Resources/Fonts/roboto/Roboto-Italic.ttf"/>
+            <FILE id="fTdf1h" name="Roboto-Light.ttf" compile="0" resource="1"
+                  file="Resources/Fonts/roboto/Roboto-Light.ttf"/>
+            <FILE id="WOSPjv" name="Roboto-LightItalic.ttf" compile="0" resource="1"
+                  file="Resources/Fonts/roboto/Roboto-LightItalic.ttf"/>
+            <FILE id="dmpwur" name="Roboto-Medium.ttf" compile="0" resource="1"
+                  file="Resources/Fonts/roboto/Roboto-Medium.ttf"/>
+            <FILE id="gHAode" name="Roboto-MediumItalic.ttf" compile="0" resource="1"
+                  file="Resources/Fonts/roboto/Roboto-MediumItalic.ttf"/>
+            <FILE id="aHfhY3" name="Roboto-Regular.ttf" compile="0" resource="1"
+                  file="Resources/Fonts/roboto/Roboto-Regular.ttf"/>
+            <FILE id="fbXNiO" name="Roboto-Thin.ttf" compile="0" resource="1" file="Resources/Fonts/roboto/Roboto-Thin.ttf"/>
+            <FILE id="nzQlcl" name="Roboto-ThinItalic.ttf" compile="0" resource="1"
+                  file="Resources/Fonts/roboto/Roboto-ThinItalic.ttf"/>
+            <FILE id="lpL2uH" name="Roboto_Specimen_Book.pdf" compile="0" resource="0"
+                  file="Resources/Fonts/roboto/Roboto_Specimen_Book.pdf"/>
+          </GROUP>
+          <GROUP id="{4077C2DB-C6B4-6B20-5C84-91BCF34A6949}" name="TT Norms">
+            <FILE id="VeIyY3" name="236489.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236489.jpg"/>
+            <FILE id="i2rSGE" name="236490.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236490.jpg"/>
+            <FILE id="xI4SJo" name="236491.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236491.jpg"/>
+            <FILE id="dzKHn6" name="236492.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236492.jpg"/>
+            <FILE id="bIlDvM" name="236493.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236493.jpg"/>
+            <FILE id="N77oH5" name="236494.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236494.jpg"/>
+            <FILE id="HcEUUl" name="236495.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236495.jpg"/>
+            <FILE id="QiE54f" name="236496.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236496.jpg"/>
+            <FILE id="EDWHzv" name="236497.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236497.jpg"/>
+            <FILE id="vp2ezz" name="236498.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236498.jpg"/>
+            <FILE id="RVXURi" name="236499.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236499.jpg"/>
+            <FILE id="Anzu1G" name="236500.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236500.jpg"/>
+            <FILE id="DcCbhS" name="236501.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236501.jpg"/>
+            <FILE id="U0UCT5" name="236502.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236502.jpg"/>
+            <FILE id="WrTmCK" name="236503.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236503.jpg"/>
+            <FILE id="t1xhSg" name="236504.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236504.jpg"/>
+            <FILE id="rxZPOS" name="236505.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236505.jpg"/>
+            <FILE id="bTglA0" name="236506.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236506.jpg"/>
+            <FILE id="c4MNws" name="236507.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236507.jpg"/>
+            <FILE id="vAFxgm" name="236508.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236508.jpg"/>
+            <FILE id="fMz5Hh" name="236509.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236509.jpg"/>
+            <FILE id="cd9X7V" name="236510.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236510.jpg"/>
+            <FILE id="tAeguz" name="236511.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236511.jpg"/>
+            <FILE id="dUB7ky" name="236512.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236512.jpg"/>
+            <FILE id="EQ3sQY" name="236513.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236513.jpg"/>
+            <FILE id="StMysM" name="236514.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236514.jpg"/>
+            <FILE id="oich2I" name="236515.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236515.jpg"/>
+            <FILE id="DOxsCz" name="236516.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236516.jpg"/>
+            <FILE id="esXgTj" name="236517.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236517.jpg"/>
+            <FILE id="IKgh8R" name="236674.jpg" compile="0" resource="0" file="Resources/Fonts/TT Norms/236674.jpg"/>
+            <FILE id="mYxyjX" name="TTNorms-Black.otf" compile="0" resource="1"
+                  file="Resources/Fonts/TT Norms/TTNorms-Black.otf"/>
+            <FILE id="OrC7qq" name="TTNorms-BlackItalic.otf" compile="0" resource="1"
+                  file="Resources/Fonts/TT Norms/TTNorms-BlackItalic.otf"/>
+            <FILE id="uNFnxs" name="TTNorms-Bold.otf" compile="0" resource="1"
+                  file="Resources/Fonts/TT Norms/TTNorms-Bold.otf"/>
+            <FILE id="PZxtFg" name="TTNorms-BoldItalic.otf" compile="0" resource="1"
+                  file="Resources/Fonts/TT Norms/TTNorms-BoldItalic.otf"/>
+            <FILE id="Fw5XAg" name="TTNorms-ExtraBold.otf" compile="0" resource="1"
+                  file="Resources/Fonts/TT Norms/TTNorms-ExtraBold.otf"/>
+            <FILE id="lxJO4r" name="TTNorms-ExtraBoldItalic.otf" compile="0" resource="1"
+                  file="Resources/Fonts/TT Norms/TTNorms-ExtraBoldItalic.otf"/>
+            <FILE id="Qk8Xqg" name="TTNorms-ExtraLight.otf" compile="0" resource="1"
+                  file="Resources/Fonts/TT Norms/TTNorms-ExtraLight.otf"/>
+            <FILE id="Qvebsy" name="TTNorms-ExtraLightItalic.otf" compile="0" resource="1"
+                  file="Resources/Fonts/TT Norms/TTNorms-ExtraLightItalic.otf"/>
+            <FILE id="VtbHrh" name="TTNorms-Heavy.otf" compile="0" resource="1"
+                  file="Resources/Fonts/TT Norms/TTNorms-Heavy.otf"/>
+            <FILE id="tsrFBY" name="TTNorms-HeavyItalic.otf" compile="0" resource="1"
+                  file="Resources/Fonts/TT Norms/TTNorms-HeavyItalic.otf"/>
+            <FILE id="HzbBUH" name="TTNorms-Italic.otf" compile="0" resource="1"
+                  file="Resources/Fonts/TT Norms/TTNorms-Italic.otf"/>
+            <FILE id="pHI3rJ" name="TTNorms-Light.otf" compile="0" resource="1"
+                  file="Resources/Fonts/TT Norms/TTNorms-Light.otf"/>
+            <FILE id="Ugqtc3" name="TTNorms-LightItalic.otf" compile="0" resource="1"
+                  file="Resources/Fonts/TT Norms/TTNorms-LightItalic.otf"/>
+            <FILE id="JAzINg" name="TTNorms-Medium.otf" compile="0" resource="1"
+                  file="Resources/Fonts/TT Norms/TTNorms-Medium.otf"/>
+            <FILE id="weSfNt" name="TTNorms-MediumItalic.otf" compile="0" resource="1"
+                  file="Resources/Fonts/TT Norms/TTNorms-MediumItalic.otf"/>
+            <FILE id="UCggw0" name="TTNorms-Regular.otf" compile="0" resource="1"
+                  file="Resources/Fonts/TT Norms/TTNorms-Regular.otf"/>
+            <FILE id="fpdrmD" name="TTNorms-Thin.otf" compile="0" resource="1"
+                  file="Resources/Fonts/TT Norms/TTNorms-Thin.otf"/>
+            <FILE id="XuIpeT" name="TTNorms-ThinItalic.otf" compile="0" resource="1"
+                  file="Resources/Fonts/TT Norms/TTNorms-ThinItalic.otf"/>
+          </GROUP>
+          <GROUP id="{0C254EC5-C793-5209-DFC2-E3D7C4FD7987}" name="ValioOmnes">
+            <FILE id="eiH13I" name="demo.html" compile="0" resource="0" file="Resources/Fonts/ValioOmnes/demo.html"/>
+            <FILE id="j9G9Jz" name="stylesheet.css" compile="0" resource="0" file="Resources/Fonts/ValioOmnes/stylesheet.css"/>
+            <FILE id="ZfjrBB" name="ValioOmnes-Medium.eot" compile="0" resource="1"
+                  file="Resources/Fonts/ValioOmnes/ValioOmnes-Medium.eot"/>
+            <FILE id="H6hiKH" name="ValioOmnes-Medium.ttf" compile="0" resource="1"
+                  file="Resources/Fonts/ValioOmnes/ValioOmnes-Medium.ttf"/>
+            <FILE id="Zc9I7t" name="ValioOmnes-Medium.woff" compile="0" resource="1"
+                  file="Resources/Fonts/ValioOmnes/ValioOmnes-Medium.woff"/>
+            <FILE id="xgwnCa" name="ValioOmnes-Regular.eot" compile="0" resource="1"
+                  file="Resources/Fonts/ValioOmnes/ValioOmnes-Regular.eot"/>
+            <FILE id="hki7fg" name="ValioOmnes-Regular.ttf" compile="0" resource="1"
+                  file="Resources/Fonts/ValioOmnes/ValioOmnes-Regular.ttf"/>
+            <FILE id="xheq6z" name="ValioOmnes-Regular.woff" compile="0" resource="1"
+                  file="Resources/Fonts/ValioOmnes/ValioOmnes-Regular.woff"/>
+            <FILE id="KLymor" name="ValioOmnes-Semibold.eot" compile="0" resource="1"
+                  file="Resources/Fonts/ValioOmnes/ValioOmnes-Semibold.eot"/>
+            <FILE id="AdiFu8" name="ValioOmnes-Semibold.ttf" compile="0" resource="1"
+                  file="Resources/Fonts/ValioOmnes/ValioOmnes-Semibold.ttf"/>
+            <FILE id="xiSTB9" name="ValioOmnes-Semibold.woff" compile="0" resource="1"
+                  file="Resources/Fonts/ValioOmnes/ValioOmnes-Semibold.woff"/>
+          </GROUP>
+        </GROUP>
       </GROUP>
       <GROUP id="{C68567B8-DFE3-8FC9-B013-03678584A057}" name="Images">
         <GROUP id="{3FD5E2A0-1ED1-28E0-6BB9-5FF273A9EF0B}" name="Backgrounds"/>

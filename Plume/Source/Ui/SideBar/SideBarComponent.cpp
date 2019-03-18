@@ -104,8 +104,8 @@ void SideBarComponent::paint (Graphics& g)
     
     if (hideInfoButton->getToggleState()) // Lines that represents hidden infoPanel
     {
-        g.drawHorizontalLine (getHeight() - 2*MARGIN, float(MARGIN), getWidth()/2.0f - float(MARGIN));
-        g.drawHorizontalLine (getHeight() - 2*MARGIN, getWidth()/2.0f + float(MARGIN), float(getWidth() - MARGIN));
+        g.drawHorizontalLine (getHeight() - 2*MARGIN, float(MARGIN), getWidth()/2.0f - float(2*MARGIN));
+        g.drawHorizontalLine (getHeight() - 2*MARGIN, getWidth()/2.0f + float(2*MARGIN), float(getWidth() - MARGIN));
     }
 
     // Version Text
@@ -141,7 +141,7 @@ void SideBarComponent::resized()
                                                               .withTrimmedTop (MARGIN));
     }
 
-    hideInfoButton->setBounds (getWidth()/2 - MARGIN, infoPanel->getY() - MARGIN/2, 2*MARGIN, MARGIN);
+    hideInfoButton->setBounds (getWidth()/2 - 2*MARGIN, infoPanel->getY() - MARGIN/2, 4*MARGIN, MARGIN);
     presetComponent->setBounds (area.reduced (2*MARGIN, MARGIN));
     //area.removeFromTop (area.getHeight()/2);
 }

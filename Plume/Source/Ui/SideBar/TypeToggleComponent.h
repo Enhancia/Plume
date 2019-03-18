@@ -22,7 +22,7 @@ class TypeToggleComponent    : public Component,
 {
 public:
     //==============================================================================
-    TypeToggleComponent (PlumeProcessor& p);
+    explicit TypeToggleComponent (PlumeProcessor& p);
     ~TypeToggleComponent();
 
     //==============================================================================

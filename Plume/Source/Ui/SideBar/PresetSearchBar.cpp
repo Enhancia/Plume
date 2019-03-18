@@ -12,13 +12,14 @@
 #include "PresetSearchBar.h"
 
 //==============================================================================
-PresetSearchBar::PresetSearchBar (PlumeProcessor& proc) : processor (proc)
+PresetSearchBar::PresetSearchBar (PlumeProcessor& proc) : processor (proc), searchLabel (new Label ("searchLabel", "Search..."))
 {
-    addAndMakeVisible (searchLabel = new Label ("searchLabel", "Search..."));
+    addAndMakeVisible (searchLabel);
     searchLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
     searchLabel->setColour (Label::textColourId, UI::currentTheme.getColour (colour::presetsBoxStandartText)
                                                                  .withAlpha (0.6f));
-    searchLabel->setFont (PLUME::font::plumeFont.withHeight (10.0f));
+    searchLabel->setFont (PLUME::font::plumeFont.withHeight (9.0f));
+    searchLabel->setColour (Label::outlineWhenEditingColourId, Colour (0x00000000));
     searchLabel->setEditable (true, false, false);
     searchLabel->setMouseCursor (MouseCursor (MouseCursor::IBeamCursor));
     searchLabel->addListener (this);

@@ -28,8 +28,8 @@ void TabbedPanelComponent::paint (Graphics& g)
     using namespace PLUME::UI;
 
     auto area = getLocalBounds();
+    area.removeFromRight (getWidth()*4/5).reduced (2*MARGIN, 2*MARGIN); // Panel Area
 
-    auto panelArea = area.removeFromRight (getWidth()*4/5).reduced (2*MARGIN, 2*MARGIN);
     auto tabsArea = area.reduced (0, 2*MARGIN).withTrimmedLeft (MARGIN);
 
     if (!tabs.isEmpty())

@@ -30,7 +30,7 @@
 class GeneralOptionsSubPanel    : public SubPanelComponent
 {
 public:
-    GeneralOptionsSubPanel (PlumeProcessor& proc);
+    explicit GeneralOptionsSubPanel (PlumeProcessor& proc);
     ~GeneralOptionsSubPanel();
 
     void buttonClicked (Button* bttn) override;

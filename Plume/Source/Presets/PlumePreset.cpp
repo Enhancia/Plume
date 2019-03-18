@@ -14,11 +14,8 @@
 //==============================================================================
 PlumePreset::PlumePreset (String presetName, File pathToPreset, PresetType pType,
                           FilterType category, String auth, String ver, String plug)
+                            : name (presetName), author (auth), version (ver), plugin (plug)
 {
-    name = presetName;
-    author = auth;
-    version = ver;
-    plugin = plug;
     presetType = (int) pType;
     filterType = (int) category;
     
@@ -32,11 +29,10 @@ PlumePreset::PlumePreset (String presetName, File pathToPreset, PresetType pType
 }
 
 PlumePreset::PlumePreset (File pathToPreset, PresetType pType)
+                            : name (""), plugin (""),
+                                         author ((pType == defaultPreset) ? "Enhancia" : ""),
+                                         version ("1.0")
 {
-    name = "";
-    plugin = "";
-    author = (pType == defaultPreset) ? "Enhancia" : "";
-    version = "1.0";
     presetType = (int) pType;
     filterType = custom;
      
@@ -65,12 +61,8 @@ PlumePreset::PlumePreset (File pathToPreset, PresetType pType)
     }
 }
 
-PlumePreset::PlumePreset()
+PlumePreset::PlumePreset() : name (""), author (""), plugin (""), version ("1.0")
 {
-    name = "";
-    author = "";
-    plugin = "";
-    version = "1.0";
     presetType = (int) PresetType::userPreset;
     filterType = (int) FilterType::custom;
 }
@@ -79,12 +71,9 @@ PlumePreset::~PlumePreset()
 {
 }
 
-PlumePreset::PlumePreset (const PlumePreset& other)
+PlumePreset::PlumePreset (const PlumePreset& other) : name (""), author (""), plugin (""), version ("1.0")
+
 {
-	name = "";
-	author = "";
-    plugin = "";
-	version = "1.0";
 	presetType = (int)PresetType::userPreset;
 	filterType = (int)FilterType::custom;
 

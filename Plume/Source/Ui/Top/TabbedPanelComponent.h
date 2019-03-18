@@ -22,7 +22,7 @@ class TabbedPanelComponent    : public Component,
 {
 public:
     //==============================================================================
-    TabbedPanelComponent (PlumeProcessor& proc);
+    explicit TabbedPanelComponent (PlumeProcessor& proc);
     ~TabbedPanelComponent();
 
     //==============================================================================
@@ -40,10 +40,8 @@ private:
     //==============================================================================
     struct Tab
     {
-        Tab (Component* panelToUse, String tabName)	: name (tabName)
+        Tab (Component* panelToUse, String tabName)	: name (tabName), panel (panelToUse)
         {
-            panel = panelToUse;
-
             button = new TextButton (name);
             button->setButtonText ("");
             //button->setColour (TextButton::textColourOffId, PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText));

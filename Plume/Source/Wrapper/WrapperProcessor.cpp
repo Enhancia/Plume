@@ -16,7 +16,7 @@
 class WrapperProcessor::WrappedParameter :  public AudioProcessorParameter
 {
 public:
-    WrappedParameter(AudioProcessorParameter& wrap)
+    explicit WrappedParameter(AudioProcessorParameter& wrap)
         : wrappedParam(wrap)
     {}
     

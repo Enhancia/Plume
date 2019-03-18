@@ -20,7 +20,7 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc, Component& newPrst)  : p
     
     // Plugin Name
     addAndMakeVisible (pluginNameLabel = new Label ("Plugin Name Label", processor.getWrapper().getWrappedPluginInfoString()));
-    pluginNameLabel->setFont (PLUME::font::plumeFont.withHeight (15.00f));
+    pluginNameLabel->setFont (PLUME::font::plumeFont.withHeight (20.00f));
     pluginNameLabel->setJustificationType (Justification::centred);
     pluginNameLabel->setEditable (false, false, false);
     pluginNameLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
@@ -52,11 +52,14 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc, Component& newPrst)  : p
 
     // Save Preset Button
     addAndMakeVisible (savePresetButton = new ShapeButton ("Save Preset Button",
-                                                           Colour(PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText)),
-                                                           Colour(PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText))
-                                                                .withAlpha (0.5f),
-                                                           Colour(PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText))));
-    savePresetButton->setShape (PLUME::path::createFloppyDiskPath(), false, true, false);
+                                                           Colour(0x00000000),
+                                                           Colour(0x00000000),
+                                                           Colour(0x00000000)));
+                                                           //Colour(PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText)),
+                                                           //Colour(PLUME::UI::currentTheme.getColour(PLUME::colour::headerHighlightedText)),
+                                                           //Colour(PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText))));
+    savePresetButton->setShape (PLUME::path::createFlatSavePath(), false, true, false);
+    savePresetButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 2.0f);
     savePresetButton->addMouseListener (this, false);
     savePresetButton->addListener (this);
     
@@ -150,9 +153,9 @@ void HeaderComponent::resized()
     savePresetButton->setBounds (area.removeFromLeft (HEADER_HEIGHT).reduced (0, MARGIN*3/2));
                                                                                  
     //area.removeFromLeft (MARGIN); // Space before separator
-    pluginListButton->setBounds (area.removeFromRight (getHeight() - MARGIN).reduced (MARGIN));
+    pluginListButton->setBounds (area.removeFromRight (getHeight()).reduced (MARGIN*3/2, MARGIN));
     
-    pluginNameLabel->setBounds (area.withLeft (area.getX() + getHeight()).reduced (MARGIN));
+    pluginNameLabel->setBounds (area.withLeft (area.getX() + getHeight() + MARGIN).reduced (0, MARGIN));
 }
 
 //==============================================================================
@@ -183,6 +186,11 @@ void HeaderComponent::mouseEnter (const MouseEvent &event)
 	{
         pluginListButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerHighlightedText), 2.0f);
 	}
+
+    if (event.eventComponent == savePresetButton)
+    {
+        savePresetButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerHighlightedText), 2.0f);
+    }
 }
 
 void HeaderComponent::mouseExit (const MouseEvent &event)
@@ -197,10 +205,20 @@ void HeaderComponent::mouseExit (const MouseEvent &event)
 	{
         pluginListButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 2.0f);
 	}
+
+    if (event.eventComponent == savePresetButton)
+    {
+        savePresetButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 2.0f);
+    }
 }
 
 void HeaderComponent::buttonClicked (Button* bttn) 
 {
+    if (auto* shapeBttn = dynamic_cast<ShapeButton*> (bttn))
+    {
+        shapeBttn->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 2.0f);
+    }
+
     if (bttn == pluginListButton)
     {
         pluginListMenu.showMenuAsync (PopupMenu::Options().withParentComponent (getParentComponent())

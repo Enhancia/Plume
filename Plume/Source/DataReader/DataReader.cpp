@@ -95,7 +95,11 @@ bool DataReader::connectToExistingPipe()
 	return connectToPipe ("mynamedpipe", -1);
 }
 
-bool DataReader::connectToExistingPipe(int nbPipe)
+bool DataReader::connectToExistingPipe(int
+                                        #if JUCE_MAC
+                                            nbPipe
+                                        #endif
+                                       )
 {
     //only happens on MacOS
   #if JUCE_MAC

@@ -37,6 +37,7 @@ public:
     //==============================================================================
     Font getLabelFont (Label& lbl) override;
     Font getTextButtonFont (TextButton& bttn, int buttonHeight) override;
+    Font getComboBoxFont (ComboBox& cb) override;
     
     //void drawPopupMenuBackground (Graphics&, int width, int height) override;
 	/*

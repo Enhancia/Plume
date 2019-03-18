@@ -88,9 +88,8 @@ private:
         };
 
         Row (Component* compToUse, String rowName, rowType t, int rowH =PLUME::UI::SUBPANEL_ROW_HEIGHT)
-            : name (rowName), height (rowH), type (t)
+            : name (rowName), height (rowH), type (t), comp (compToUse)
         {
-            comp = compToUse;
         }
 
         ~Row () { comp = nullptr; }
