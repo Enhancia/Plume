@@ -25,6 +25,7 @@ SideBarComponent::SideBarComponent (PlumeProcessor& proc, Component& optsPanel)
 		                                                PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFillClicked)));
     optionsButton->setShape (PLUME::path::createOptionsPath(), false, true, false);
     optionsButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFill), 1.5f);
+    optionsButton->addMouseListener (this, false);
 	optionsButton->addListener (this);
 
     // Info Panel
@@ -173,6 +174,12 @@ void SideBarComponent::mouseEnter (const MouseEvent &event)
         hideInfoButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::sideBarSeparatorOut),
                                     1.0f);
     }
+
+    else if (event.eventComponent == optionsButton)
+    {
+        optionsButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::sideBarButtonFillHighlighted),
+                                    1.0f);
+    }
 }
 
 void SideBarComponent::mouseExit (const MouseEvent &event)
@@ -180,6 +187,12 @@ void SideBarComponent::mouseExit (const MouseEvent &event)
     if (event.eventComponent == hideInfoButton)
     {
         hideInfoButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::sideBarSeparatorIn),
+                                    1.0f);
+    }
+
+    else if (event.eventComponent == optionsButton)
+    {
+        optionsButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::sideBarButtonFill),
                                     1.0f);
     }
 }

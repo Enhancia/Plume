@@ -44,9 +44,9 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	bool sideBarHidden = false;
 
 	addAndMakeVisible (sideBarButton = new ShapeButton ("Side Bar Button",
-                                                        PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText),
-		                                                PLUME::UI::currentTheme.getColour(PLUME::colour::headerHighlightedText),
-		                                                PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText)));
+                                                        Colour (0x00000000),
+                                                        Colour (0x00000000),
+                                                        Colour (0x00000000)));
                                                         
 	sideBarButton->setToggleState (sideBarHidden, dontSendNotification); // side bar visible at first
     sideBarButton->setClickingTogglesState (true);
@@ -111,9 +111,10 @@ void PlumeEditor::resized()
     using namespace PLUME::UI;
     auto area = getLocalBounds();
     
-    auto sideBarArea = juce::Rectangle<int> (sideBarButton->getToggleState() ? 0 : SIDEBAR_WIDTH, 0,
-	                                   HEADER_HEIGHT, HEADER_HEIGHT);
-	sideBarButton->setBounds (sideBarArea.reduced ((3*MARGIN)/2));
+    auto sideBarButtonArea = juce::Rectangle<int> (sideBarButton->getToggleState() ? 0 : SIDEBAR_WIDTH, 0,
+	                                               HEADER_HEIGHT - 2*MARGIN, HEADER_HEIGHT);
+	sideBarButton->setBounds (sideBarButtonArea.reduced (MARGIN, MARGIN*3/2));
+
 	if (!sideBarButton->getToggleState())
 	{
 		sideBar->setBounds(area.removeFromLeft(SIDEBAR_WIDTH));
@@ -175,17 +176,32 @@ void PlumeEditor::createSideBarButtonPath()
         p.startNewSubPath (0,0);
         p.lineTo (HEADER_HEIGHT - 2*MARGIN, HEADER_HEIGHT/2 - MARGIN);
         p.lineTo (0, HEADER_HEIGHT - 2*MARGIN);
-        p.closeSubPath();
     }
     else
     {
         p.startNewSubPath (HEADER_HEIGHT - 2*MARGIN, 0);
         p.lineTo (0, HEADER_HEIGHT/2 - MARGIN);
         p.lineTo (HEADER_HEIGHT - 2*MARGIN, HEADER_HEIGHT - 2*MARGIN);
-        p.closeSubPath();
     }
     
+    sideBarButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 2.0f);
     sideBarButton->setShape (p, false, false, false);
+}
+
+void PlumeEditor::mouseEnter (const MouseEvent &event)
+{
+    if (event.eventComponent == sideBarButton)
+    {
+        sideBarButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerHighlightedText), 2.0f);
+    }
+}
+
+void PlumeEditor::mouseExit (const MouseEvent &event)
+{
+    if (event.eventComponent == sideBarButton)
+    {
+        sideBarButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 2.0f);
+    }
 }
 
 //==============================================================================

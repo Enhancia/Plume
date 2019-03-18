@@ -71,6 +71,11 @@ public:
      */
     void resized() override;
 
+    //==============================================================================
+    void mouseEnter (const MouseEvent &event) override;
+    void mouseExit (const MouseEvent &event) override;
+    
+    //==============================================================================
     void broughtToFront() override;
     void minimisationStateChanged (bool) override;
 

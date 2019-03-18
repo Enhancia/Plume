@@ -106,56 +106,71 @@ void HeaderComponent::paint (Graphics& g)
     grad.addColour (0.8, currentTheme.getColour(PLUME::colour::headerSeparatorBottom));
     g.setGradientFill (grad);
     
-    auto area = getLocalBounds().withLeft (getHeight()); 
+    auto area = getLocalBounds().withLeft (getHeight() - 2*MARGIN);
     
     // Separator
     g.drawVerticalLine (area.getX(),
                         float(MARGIN),
                         float(getHeight() - MARGIN));
+
+    // Preset area
+    {
+        auto presetArea = area.removeFromLeft (area.getWidth()/3 + 2*MARGIN);
+
+        // Preset folder drawing                   
+        Path p = PLUME::path::createFolderPath();
+	    p.scaleToFit (float(presetArea.getX()) + MARGIN, 0.0f, float(getHeight()-2*MARGIN), float(getHeight()), true);
+        g.fillPath (p);
+        presetArea.removeFromLeft (HEADER_HEIGHT);
     
-    // Preset folder drawing                   
-    Path p = PLUME::path::createFolderPath();
-	p.scaleToFit (float(area.getX()) + 3*MARGIN/2.0f, 0.0f, float(getHeight()-2*MARGIN), float(getHeight()), true);
-    g.fillPath (p);
-    
-    // Preset label Outline
-    g.drawRoundedRectangle (area.removeFromLeft (area.getWidth()/3).withLeft (2*HEADER_HEIGHT + MARGIN)
-                                                                   .reduced (0, MARGIN).toFloat(), 3, 1);
-    
-    // Save button
-    area.removeFromLeft (HEADER_HEIGHT); // Space before separator
+        // Save button
+        presetArea.removeFromRight (HEADER_HEIGHT);
+
+        // Preset label Outline
+        g.drawRoundedRectangle (presetArea.reduced (0, MARGIN).toFloat(), 3, 1);
+    }
 
     // Separator
-    //area.removeFromLeft (MARGIN); // Space before separator
     g.drawVerticalLine (area.getX(),
                         float(MARGIN),
                         float(getHeight() - MARGIN));
-                        
-    area.removeFromRight (getHeight() - MARGIN); // space for the plugin list arrow
     
-    // Plugin piano drawing
-	p = PLUME::path::createPianoPath();
-	p.scaleToFit (float(area.getX() + MARGIN*3/2), 0.0f, float(getHeight()-MARGIN*3/2), float(getHeight()), true);
-    g.fillPath (p);
+    // Plugin Area
+    {
+        area.removeFromRight (getHeight()); // space for the plugin list arrow
     
-    // Plugin label Outline
-    g.drawRoundedRectangle (area.withLeft (area.getX() + getHeight()).reduced (MARGIN).toFloat(), 3, 1);           
+        // Plugin piano drawing
+	    Path p = PLUME::path::createPianoPath();
+	    p.scaleToFit (float(area.getX() + MARGIN), 0.0f, float(getHeight()-2*MARGIN), float(getHeight()), true);
+        g.fillPath (p);
+    
+        // Plugin label Outline
+        g.drawRoundedRectangle (area.withLeft (area.getX() + getHeight()).reduced (0, MARGIN).toFloat(), 3, 1);
+    }           
 }
 
 void HeaderComponent::resized()
 {
     using namespace PLUME::UI;
     
-    auto area = getLocalBounds().withLeft (getHeight());
-                          
-    presetNameLabel->setBounds (area.removeFromLeft (area.getWidth()/3).withLeft (2*HEADER_HEIGHT + MARGIN)
-                                                                       .reduced (0, MARGIN));
-    savePresetButton->setBounds (area.removeFromLeft (HEADER_HEIGHT).reduced (0, MARGIN*3/2));
-                                                                                 
-    //area.removeFromLeft (MARGIN); // Space before separator
-    pluginListButton->setBounds (area.removeFromRight (getHeight()).reduced (MARGIN*3/2, MARGIN));
+    auto area = getLocalBounds().withLeft (getHeight() - 2*MARGIN);
+
+    // Preset Area
+    {
+        auto presetArea = area.removeFromLeft (area.getWidth()/3 + 2*MARGIN);
+        
+        savePresetButton->setBounds (presetArea.removeFromRight (HEADER_HEIGHT).reduced (0, MARGIN*3/2));
+        presetNameLabel->setBounds (presetArea.withTrimmedLeft (HEADER_HEIGHT)
+                                              .reduced (0, MARGIN));
+    }
+
+    // Plugin Area
+    {
+        //area.removeFromLeft (MARGIN); // Space before separator
+        pluginListButton->setBounds (area.removeFromRight (getHeight()).reduced (MARGIN*3/2, MARGIN));
     
-    pluginNameLabel->setBounds (area.withLeft (area.getX() + getHeight() + MARGIN).reduced (0, MARGIN));
+        pluginNameLabel->setBounds (area.withTrimmedLeft (HEADER_HEIGHT).reduced (0, MARGIN));
+    }
 }
 
 //==============================================================================
