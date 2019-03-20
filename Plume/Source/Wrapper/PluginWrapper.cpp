@@ -413,9 +413,9 @@ Array<File*> PluginWrapper::createFileList()
         if (f.exists()) directories.add (new File (f));
         
         // ~/Library/Audio/Plug-Ins/Components/                                                               
-        f = File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Audio/")
-                                                                           .getChildFile ("Plug-Ins/")
-                                                                           .getChildFile ("Components/");
+        f = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Audio/")
+                                                                         .getChildFile ("Plug-Ins/")
+                                                                         .getChildFile ("Components/");
         if (f.exists()) directories.add (new File (f));
     }
 
@@ -429,9 +429,9 @@ Array<File*> PluginWrapper::createFileList()
         if (f.exists()) directories.add (new File (f));
         
         // ~/Library/Audio/Plug-Ins/VST/                                                            
-        f = File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Audio/")
-                                                                           .getChildFile ("Plug-Ins/")
-                                                                           .getChildFile ("VST/");
+        f = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Audio/")
+                                                                         .getChildFile ("Plug-Ins/")
+                                                                         .getChildFile ("VST/");
         if (f.exists()) directories.add (new File (f));    
     } 
 

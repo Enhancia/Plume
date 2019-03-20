@@ -102,8 +102,105 @@ void ScannerComponent::scanPlugins (bool clearList)
     startTimer (20);
 }
 
+bool ScannerComponent::shouldScanNextFile()
+{
+    DBG ("Next File : " << dirScanner->getNextPluginFileThatWillBeScanned() << "\n\n");
+	String nextPlugin = dirScanner->getNextPluginFileThatWillBeScanned();
+
+    // Checks if plugin is PLUME.
+    {
+        String name;
+
+        if (File::isAbsolutePath (nextPlugin)) name = File (nextPlugin).getFileNameWithoutExtension();
+        else                                   name = nextPlugin;
+
+        if (name == "Plume") return false;
+    }
+
+  #if JUCE_MAC
+    // AudioUnit specific case.
+    // Gets absolute path from the plugin's name.
+    if (formatToScan == int (PluginWrapper::AU))
+    {
+        const File localAUDir = File::getSpecialLocation (File::commonApplicationDataDirectory)
+                                        .getChildFile ("Audio/")
+                                        .getChildFile ("Plug-Ins/")
+                                        .getChildFile ("Components/");
+
+        const File userAUDir = File::getSpecialLocation (File::userApplicationDataDirectory)
+                                        .getChildFile ("Audio/")
+                                        .getChildFile ("Plug-Ins/")
+                                        .getChildFile ("Components/");
+
+        if (localAUDir.getChildFile (nextPlugin).existsAsFile())
+        {
+            nextPlugin = localAUDir.getChildFile (nextPlugin).getFullPathName();
+        }
+
+        else if (userAUDir.getChildFile (nextPlugin).existsAsFile())
+        {
+            nextPlugin = userAUDir.getChildFile (nextPlugin).getFullPathName();
+        }
+        
+    }
+  #endif
+
+    // Gets description and run checks
+    if (File::isAbsolutePath (nextPlugin))
+    {
+        OwnedArray<PluginDescription> descArray;
+
+		processor.getWrapper().getPluginFormat (nextPlugin)->findAllTypesForFile (descArray, nextPlugin);
+
+        if (!descArray.isEmpty())
+        {
+			if (PluginDescription* nextDesc = descArray.getFirst())
+			{
+                // Checks if instrument
+				if (!descArray.getFirst()->isInstrument)
+				{
+					return false;
+				}
+
+                // Checks if description was already scanned
+                if (isDescriptionAlreadyInList (*nextDesc))
+                {
+                    return false;
+                }
+			}
+        }
+    }
+
+    return true;
+}
+
+bool ScannerComponent::isDescriptionAlreadyInList (const PluginDescription& descriptionToCheck)
+{
+    for (int i=0; i<processor.getWrapper().getList().getNumTypes(); i++)
+    {
+        const PluginDescription& desc = *processor.getWrapper().getList().getType (i);
+
+        if (descriptionToCheck.uid == desc.uid)
+        {
+            if (descriptionToCheck.pluginFormatName == desc.pluginFormatName &&
+                descriptionToCheck.name == desc.name)
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 bool ScannerComponent::doNextScan()
 {
+    if (!shouldScanNextFile())
+    {
+        dirScanner->skipNextFile();
+        return true;
+    }
+
     if (dirScanner->scanNextFile (true, pluginBeingScanned))
     {
 		scanProgress = (dirScanner->getProgress() + float (formatToScan))/PluginWrapper::Formats::numFormats;

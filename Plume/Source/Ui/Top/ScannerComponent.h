@@ -39,7 +39,9 @@ private:
     void scanPlugins (bool clearList = true);
     void cancelScan();
     void scanFinished();
+    bool shouldScanNextFile();
 	bool doNextScan();
+    bool isDescriptionAlreadyInList (const PluginDescription& descriptionToCheck);
     
     //==============================================================================
     ScopedPointer<TextButton> scanButton;
