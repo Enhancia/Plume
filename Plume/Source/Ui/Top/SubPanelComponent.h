@@ -123,6 +123,8 @@ private:
         const File getFile();
 
     private:
+        String reducePathName (String pathToReduce, int numFoldersLeft, int numFoldersRight);
+
         ScopedPointer<FileChooser> chooser;
         ScopedPointer<TextButton> scanButton;
         File lastFile;

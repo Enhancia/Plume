@@ -14,19 +14,8 @@
 using namespace PLUME::UI;
 
 PlumeLookAndFeel::PlumeLookAndFeel()
-{
-	// Sets the default colour scheme ( Default colors except
-	// 3rd value that sets the comboBox's menu background): ========
-	/*
-	setColourScheme ({ 0xffee00ff, 0xfffffd00, 0xff323232,
-                       0xff8e989b, 0xffe5e5e5, 0xff42a2c8,
-                       0xffe5e5e5, 0xff323232, 0xffe5e5e5 });
-	*/
-                           
-	// Sets the several components colours: ========================
+{                   
 	setColours();
-	
-	
 }
 
 PlumeLookAndFeel::~PlumeLookAndFeel()
@@ -69,12 +58,12 @@ void PlumeLookAndFeel::setColours()
 	setColour (PopupMenu::highlightedBackgroundColourId, Colour (0xaae5e5e5));
 	setColour (PopupMenu::highlightedTextColourId, Colour (0xff323232));
 }
-
+/*
 Font PlumeLookAndFeel::getLabelFont (Label& lbl)
 {
     return PLUME::font::plumeFont;
 }
-
+*/
 Font PlumeLookAndFeel::getTextButtonFont (TextButton&, int buttonHeight)
 {
     return PLUME::font::plumeFont.withHeight ((buttonHeight * 6.0f) / 10.0f);
@@ -82,7 +71,7 @@ Font PlumeLookAndFeel::getTextButtonFont (TextButton&, int buttonHeight)
 
 Font PlumeLookAndFeel::getComboBoxFont (ComboBox& cb)
 {
-	return PLUME::font::plumeFont.withHeight ((cb.getHeight() * 6.0f) / 10.0f);
+	return PLUME::font::plumeFont.withHeight (jmax (11.0f, jmin (14.0f, (cb.getHeight() * 6.0f) / 10.0f)));
 }
 
 void PlumeLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int width, int height,

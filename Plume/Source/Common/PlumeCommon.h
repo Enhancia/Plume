@@ -87,6 +87,10 @@ namespace PLUME
         extern const Font plumeFontBold;
         extern const Font plumeFontBook;
         extern const Font plumeFontLight;
+
+        // Font heights
+        const float SIDEBAR_LABEL_FONT_H = 12.0f;
+        const float HEADER_LABEL_FONT_H = 14.0f;
     }
     
     namespace treeId

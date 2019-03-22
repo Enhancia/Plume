@@ -212,7 +212,7 @@ void SubPanelComponent::ScannerRowComponent::paint (Graphics& g)
 	g.setColour (currentTheme.getColour (PLUME::colour::topPanelSubText));
 	g.setFont (PLUME::font::plumeFont.withHeight (11.0f));
 
-	g.drawFittedText (lastFile.getFullPathName(),
+	g.drawFittedText (reducePathName (lastFile.getFullPathName(), 3, 2),
 		              getLocalBounds().removeFromRight (getWidth() - 4*getHeight())
 							          .reduced (MARGIN, 0),
 		              Justification::centredLeft,
@@ -252,4 +252,55 @@ void SubPanelComponent::ScannerRowComponent::buttonClicked (Button* bttn)
 const File SubPanelComponent::ScannerRowComponent::getFile()
 {
 	return lastFile;
+}
+
+String SubPanelComponent::ScannerRowComponent::reducePathName (String pathToReduce,
+															   int numFoldersLeft,
+															   int numFoldersRight)
+{
+	String tempString = pathToReduce;
+	int indexLeft = 0;
+	int indexRight = pathToReduce.length();
+
+	// Gets left index for trimming
+	for (int i=0; i<numFoldersLeft; i++)
+	{
+		int indexLeftSubstring = tempString.indexOfChar ('/');
+		if (indexLeftSubstring == -1) indexLeftSubstring = tempString.indexOfChar ('\\');
+
+		if (indexLeftSubstring == -1)
+		{
+			if (i == 0) return pathToReduce;
+
+			break;
+		}
+		else
+		{
+			indexLeft += indexLeftSubstring + 1;
+			tempString = pathToReduce.substring (indexLeft);
+		}
+	}
+
+	tempString = pathToReduce;
+
+	// Gets right index for trimming
+	for (int i=0; i<numFoldersRight; i++)
+	{
+		int indexRightSubstring = tempString.lastIndexOfChar ('/');
+		if (indexRightSubstring == -1) indexRightSubstring = tempString.lastIndexOfChar ('\\');
+
+		if (indexRightSubstring == -1)
+		{
+			break;
+		}
+		else
+		{
+			indexRight -= tempString.length() - indexRightSubstring;
+			tempString = pathToReduce.substring (0, indexRight);
+		}
+	}
+
+	if (indexLeft >= indexRight) return pathToReduce;
+
+	return (pathToReduce.replaceSection (indexLeft, indexRight - indexLeft, "..."));
 }

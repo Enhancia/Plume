@@ -41,12 +41,17 @@ void TabbedPanelComponent::paint (Graphics& g)
         {
             auto tabArea = tabsArea.removeFromTop (tabHeight);
 
-            g.setColour (i == selectedTab ? Colour (0x30ffffff) : Colour (0x30000000));
-            g.fillRect (tabArea);
+            if (i == selectedTab)
+            {
+                g.setColour (currentTheme.getColour (PLUME::colour::topPanelSubText));
+                g.fillRect (tabArea.withWidth (3));
+            }
 
-            g.setColour (currentTheme.getColour (PLUME::colour::topPanelMainText));
-            g.setFont (font::plumeFontBook.withHeight (14.0f));
-            g.drawText (tabs[i]->name, tabArea, Justification::centred, false);
+            g.setColour (i == selectedTab ? currentTheme.getColour (PLUME::colour::topPanelMainText)
+                                          : currentTheme.getColour (PLUME::colour::topPanelSubText));
+            g.setFont (font::plumeFontBook.withHeight (16.0f));
+            g.drawText (tabs[i]->name, tabArea.withTrimmedLeft (PLUME::UI::MARGIN + 5),
+                        Justification::centredLeft, false);
             tabsArea.removeFromTop (MARGIN);
         }
     }

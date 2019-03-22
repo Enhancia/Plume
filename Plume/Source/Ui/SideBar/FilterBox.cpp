@@ -85,7 +85,9 @@ void FilterBox::paintListBoxItem (int rowNumber, Graphics& g, int width, int hei
     g.setColour (rowIsSelected ? UI::currentTheme.getColour (colour::presetsBoxHighlightedText)
                                : UI::currentTheme.getColour (colour::presetsBoxStandartText));
                                
-    g.setFont (PLUME::font::plumeFont.withHeight (float (height)*2/3));
+    g.setFont (PLUME::font::plumeFont.withHeight (jmin (PLUME::font::SIDEBAR_LABEL_FONT_H, 
+                                                        float (height*5)/6)));
+
     String text = rowNumber == 0 ? "All" : PlumePreset::getFilterTypeString (rowNumber - 1);
 
     g.drawText (text, PLUME::UI::MARGIN, 0, width, height,

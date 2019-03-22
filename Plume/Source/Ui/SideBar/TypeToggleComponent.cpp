@@ -17,24 +17,30 @@ TypeToggleComponent::TypeToggleComponent (PlumeProcessor& p) : processor (p)
     
     for (int i=-1; i<PlumePreset::numTypes; i++)
     {
-        toggles.add (new TextButton ("toggle"+String(i)));
+        String text;
+
+        //toggles.add (new TextButton ("toggle"+String(i)));
         
         switch (i)
         {
-            case PlumePreset::defaultPreset:     toggles.getLast()->setButtonText ("Factory");   break;
-            case PlumePreset::userPreset:        toggles.getLast()->setButtonText ("User");      break;
-            case PlumePreset::communityPreset:   toggles.getLast()->setButtonText ("Community"); break;
-            default:                             toggles.getLast()->setButtonText ("All");
+            //case PlumePreset::defaultPreset:     toggles.getLast()->setButtonText ("Factory");   break;
+            //case PlumePreset::userPreset:        toggles.getLast()->setButtonText ("User");      break;
+            //case PlumePreset::communityPreset:   toggles.getLast()->setButtonText ("Community"); break;
+            //default:                             toggles.getLast()->setButtonText ("All");
+
+            case PlumePreset::defaultPreset:     text = "Factory";   break;
+            case PlumePreset::userPreset:        text = "User";      break;
+            case PlumePreset::communityPreset:   text = "Community"; break;
+            default:                             text = "All";
         }
         
+        toggles.add (new Toggle (i, text, PLUME::UI::currentTheme.getColour (colour::presetsBoxHighlightedBackground),
+                                          PLUME::UI::currentTheme.getColour (colour::presetsBoxHighlightedText),
+                                          PLUME::UI::currentTheme.getColour (colour::presetsBoxBackground),
+                                          PLUME::UI::currentTheme.getColour (colour::presetsBoxStandartText)));
+
         addChildAndSetID (toggles.getLast(), String(i));
-        toggles.getLast()->addListener (this);
-        toggles.getLast()->setColour (TextButton::buttonColourId, Colour (0x00000000));
-        toggles.getLast()->setColour (TextButton::buttonOnColourId, Colour (0x00000000));
-        toggles.getLast()->setColour (TextButton::textColourOffId,
-                                      PLUME::UI::currentTheme.getColour (colour::presetsBoxStandartText));
-        toggles.getLast()->setColour (TextButton::textColourOnId,
-                                      PLUME::UI::currentTheme.getColour (colour::presetsBoxHighlightedText));
+        toggles.getLast()->addMouseListener (this, false);
     }
     
     toggleButton (-1);
@@ -46,7 +52,7 @@ TypeToggleComponent::~TypeToggleComponent()
     
     for (int i=0; i<=PlumePreset::numTypes; i++)
     {
-        toggles[i]->removeListener (this);
+        toggles[i]->removeMouseListener (this);
     }
     
     toggles.clear();
@@ -55,9 +61,6 @@ TypeToggleComponent::~TypeToggleComponent()
 void TypeToggleComponent::paint (Graphics& g)
 {
     using namespace PLUME::UI;
-    
-    auto area = getLocalBounds();
-    int buttonW = getWidth()/PlumePreset::numTypes;
     
     // Fills the component's inside
     auto gradIn = ColourGradient::vertical (Colour (0x30000000),
@@ -68,38 +71,6 @@ void TypeToggleComponent::paint (Graphics& g)
     gradIn.addColour (0.2, Colour (0x15000000));
     g.setGradientFill (gradIn);
     g.fillRect (1, 1, getWidth()-2, getHeight()-2);
-    
-	//Gradient for the box's outline
-	auto gradOut = ColourGradient::horizontal(currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
-		                                      float(MARGIN),
-		                                      currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
-		                                      float(getWidth() - PLUME::UI::MARGIN));
-	gradOut.addColour(0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
-	
-	{
-        ScopedLock tglock (togglesLock);
-    
-        for (int i=0; i<=PlumePreset::numTypes; i++)
-        {
-            // Toggled Button button fill
-            if (toggles[i]->getToggleState())
-            {
-				g.setColour (Colour (currentTheme.getColour (colour::presetsBoxHighlightedBackground)));
-                g.fillRect (area.removeFromLeft (buttonW).withTrimmedLeft (1).reduced (0, 1));
-            }
-            else
-            {
-                area.removeFromLeft (buttonW);
-            }
-            
-            // Separators
-            if (i != PlumePreset::numTypes)
-            {
-				g.setGradientFill (gradOut);
-                g.drawVerticalLine (area.getX(), 1.0f, float(getHeight())-1.0f);
-            }
-        }
-    }
 }
 
 void TypeToggleComponent::paintOverChildren (Graphics& g)
@@ -113,8 +84,26 @@ void TypeToggleComponent::paintOverChildren (Graphics& g)
                                                float(getWidth() - MARGIN));
     gradOut.addColour (0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
     g.setGradientFill (gradOut);
+
+    // Outline
+    g.drawRect (getLocalBounds());
+
+    // Separators
+    {
+        ScopedLock tglock (togglesLock);
     
-	g.drawRect (getLocalBounds());
+        auto area = getLocalBounds();
+        int buttonW = getWidth()/PlumePreset::numTypes;
+
+        for (int i=0; i<=PlumePreset::numTypes; i++)
+        {
+            if (i != PlumePreset::numTypes)
+            {
+                area.removeFromLeft (buttonW);
+                g.drawVerticalLine (area.getX(), 1.0f, float(getHeight())-1.0f);
+            }
+        }
+    }
 }
 
 void TypeToggleComponent::resized()
@@ -127,7 +116,7 @@ void TypeToggleComponent::resized()
     
         for (int i=0; i<=PlumePreset::numTypes; i++)
         {
-            toggles[i]->setBounds (area.removeFromLeft (buttonW));
+            toggles[i]->setBounds (area.removeFromLeft (buttonW).reduced (0, 1).withTrimmedLeft (1));
         }
     }
 }
@@ -137,6 +126,14 @@ void TypeToggleComponent::buttonClicked (Button* bttn)
     toggleButton (bttn->getComponentID().getIntValue());
 }
 
+void TypeToggleComponent::mouseUp (const MouseEvent &event)
+{
+    if (auto* tggle = dynamic_cast<Toggle*> (event.eventComponent))
+    {
+        toggleButton (tggle->id);
+    }
+}
+
 void TypeToggleComponent::toggleButton (int buttonId)
 {
     {
@@ -144,9 +141,11 @@ void TypeToggleComponent::toggleButton (int buttonId)
     
         for (int i=0; i<=PlumePreset::numTypes; i++)
         {
-            if      (i == buttonId + 1)            toggles[i]->setToggleState (true, dontSendNotification);
-            else if (toggles[i]->getToggleState()) toggles[i]->setToggleState (false, dontSendNotification);
+            if      (i == buttonId + 1)            toggles[i]->setToggleState (true);
+            else if (toggles[i]->getToggleState()) toggles[i]->setToggleState (false);
         }
+
+        repaint();
     }
     
     processor.getPresetHandler().setTypeSearchSetting (buttonId);
@@ -160,4 +159,66 @@ void TypeToggleComponent::toggleButton (int buttonId)
             presetBox->repaint();
 		}
 	}
+}
+
+TypeToggleComponent::Toggle::Toggle (const int num, String txt,
+                                     Colour onBG, Colour onTxt,
+                                     Colour offBG, Colour offTxt)
+    : id (num), text (txt),
+      backgroundOnColour (onBG), textOnColour (onTxt),
+      backgroundOffColour (offBG), textOffColour (offTxt)
+{
+}
+
+TypeToggleComponent::Toggle::~Toggle()
+{
+}
+        
+void TypeToggleComponent::Toggle::paint (Graphics& g)
+{
+    g.fillAll (state ? backgroundOnColour : backgroundOffColour);
+
+    g.setColour (state ? textOnColour : textOffColour);
+    g.setFont (PLUME::font::plumeFont.withHeight (PLUME::font::SIDEBAR_LABEL_FONT_H));
+    g.drawText (text, getLocalBounds(), Justification::centred);
+
+    // Highlight for mouse over
+    if (!state && highlighted)
+    {    
+        g.fillAll (backgroundOnColour.withAlpha (0.1f));
+    }
+}
+
+void TypeToggleComponent::Toggle::resized()
+{
+}
+
+void TypeToggleComponent::Toggle::mouseEnter (const MouseEvent &event)
+{
+    if (!state && !highlighted)
+    {
+        highlighted = true;
+        repaint();
+    }
+}
+
+void TypeToggleComponent::Toggle::mouseExit (const MouseEvent &event)
+{
+    if (!state && highlighted)
+    {
+        highlighted = false;
+        repaint();
+    }
+}
+
+void TypeToggleComponent::Toggle::setToggleState (bool newState)
+{
+    state = newState;
+    highlighted = false;
+    repaint();
+}
+
+bool TypeToggleComponent::Toggle::getToggleState()
+{
+    return state;
 }

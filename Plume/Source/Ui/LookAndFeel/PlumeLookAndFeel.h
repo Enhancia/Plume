@@ -35,7 +35,7 @@ public:
     void drawPointer (Graphics&, float x, float y, float diameter,
                       const Colour&, const Colour&, int direction) noexcept;
     //==============================================================================
-    Font getLabelFont (Label& lbl) override;
+    //Font getLabelFont (Label& lbl) override;
     Font getTextButtonFont (TextButton& bttn, int buttonHeight) override;
     Font getComboBoxFont (ComboBox& cb) override;
     

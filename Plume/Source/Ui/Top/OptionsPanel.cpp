@@ -89,10 +89,10 @@ void OptionsPanel::resized()
   #if JUCE_WINDOWS
     closeButton->setBounds (juce::Rectangle<int> (3*MARGIN, 3*MARGIN).withRightX (optionsArea.getRight())
                                                                      .withY (optionsArea.getY())
-                                                                     .reduced (5));
+                                                                     .reduced (6));
   #elif JUCE_MAC
     closeButton->setBounds (juce::Rectangle<int> (3*MARGIN, 3*MARGIN).withPosition (optionsArea.getTopLeft())
-                                                                     .reduced (5));
+                                                                     .reduced (6));
   #endif
 }
 

@@ -32,14 +32,39 @@ public:
     
     //==============================================================================
     void buttonClicked (Button* bttn) override;
+    void mouseUp (const MouseEvent &event) override;
 
 private:
     //==============================================================================
     void toggleButton (int buttonId);
+
+	class Toggle : public Component
+	{
+	public:
+		Toggle(const int num, String text, Colour onBG, Colour onTxt, Colour offBG, Colour offTxt);
+		~Toggle();
+
+		void paint(Graphics& g) override;
+		void resized() override;
+		void mouseEnter(const MouseEvent &event) override;
+		void mouseExit(const MouseEvent &event) override;
+		void setToggleState (bool newState);
+		bool getToggleState();
+
+        const int id;
+	private:
+		const String text;
+		const Colour backgroundOnColour, textOnColour, backgroundOffColour, textOffColour;
+
+		bool state = false;
+		bool highlighted = false;
+
+		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Toggle)
+	};
     
     //==============================================================================
     PlumeProcessor& processor;
-    OwnedArray<TextButton> toggles;
+    OwnedArray<Toggle> toggles;
     CriticalSection togglesLock;
     
     //==============================================================================
