@@ -1,8 +1,8 @@
 /*
   ==============================================================================
 
-    NewPresetPanel.h
-    Created: 12 Feb 2019 4:08:14pm
+    NewGesturePanel.h
+    Created: 28 Mar 2019 11:10:16am
     Author:  Alex
 
   ==============================================================================
@@ -10,27 +10,34 @@
 
 #pragma once
 
-#include "../../../JuceLibraryCode/JuceHeader.h"
+#include "../../../../JuceLibraryCode/JuceHeader.h"
 #include "Common/PlumeCommon.h"
 #include "Plugin/PluginProcessor.h"
 
 //==============================================================================
 /*
 */
-class NewPresetPanel    : public Component,
-                          private Label::Listener,
-                          private Button::Listener
+class NewGesturePanel    : public PlumeComponent,
+                           private Label::Listener,
+                           private Button::Listener
 {
 public:
     //==============================================================================
-    explicit NewPresetPanel (PlumeProcessor& proc);
-    ~NewPresetPanel();
+    explicit NewGesturePanel (PlumeProcessor& proc);
+    ~NewGesturePanel();
 
     //==============================================================================
+    // Component Methods
     void paint (Graphics&) override;
     void resized() override;
     
     //==============================================================================
+    // PlumeComponent Methods
+    const String getInfoString();
+    void update();
+    
+    //==============================================================================
+    // Callbacks
     void visibilityChanged() override;
     void buttonClicked (Button* bttn) override;
     void labelTextChanged (Label* lbl) override;
@@ -38,24 +45,10 @@ public:
 
 private:
     //==============================================================================
-    void update();
-    void createLabels();
-    void createBox();
-    void createUserPreset();
-    
-    //==============================================================================
     juce::Rectangle<int> panelArea;
-    
-    ScopedPointer<Label> nameLabel;
-    ScopedPointer<Label> authorLabel;
-    ScopedPointer<Label> verLabel;
-    ScopedPointer<Label> pluginLabel;
-    ScopedPointer<ComboBox> typeBox;
-    ScopedPointer<TextButton> cancelButton;
-    ScopedPointer<TextButton> saveButton;
     
     PlumeProcessor& processor;
     
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NewPresetPanel)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NewGesturePanel)
 };

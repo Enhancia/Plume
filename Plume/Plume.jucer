@@ -87,37 +87,45 @@
           <FILE id="QhDpZl" name="MovingCursor.h" compile="0" resource="0" file="Source/Ui/Common/MovingCursor.h"/>
         </GROUP>
         <GROUP id="{B4604567-1941-DD36-C775-AB9FE7EF3408}" name="Top">
-          <GROUP id="{B03353CF-5CB6-41A4-05AE-137A69E9D361}" name="Options">
-            <GROUP id="{952393B8-A5FA-1485-594F-CA3D4037A8B6}" name="SubPanels">
-              <FILE id="PCbKtE" name="SubPanelComponent.cpp" compile="1" resource="0"
-                    file="Source/Ui/Top/SubPanelComponent.cpp"/>
-              <FILE id="WNF4Mg" name="SubPanelComponent.h" compile="0" resource="0"
-                    file="Source/Ui/Top/SubPanelComponent.h"/>
-              <FILE id="IUeALq" name="FileOptionsSubPanel.cpp" compile="1" resource="0"
-                    file="Source/Ui/Top/FileOptionsSubPanel.cpp"/>
-              <FILE id="abfpns" name="FileOptionsSubPanel.h" compile="0" resource="0"
-                    file="Source/Ui/Top/FileOptionsSubPanel.h"/>
-              <FILE id="hGTelb" name="GeneralOptionsSubPanel.cpp" compile="1" resource="0"
-                    file="Source/Ui/Top/GeneralOptionsSubPanel.cpp"/>
-              <FILE id="JZY8BU" name="GeneralOptionsSubPanel.h" compile="0" resource="0"
-                    file="Source/Ui/Top/GeneralOptionsSubPanel.h"/>
-            </GROUP>
-            <FILE id="Gn44ST" name="OptionsPanel.cpp" compile="1" resource="0"
-                  file="Source/Ui/Top/OptionsPanel.cpp"/>
-            <FILE id="y9sRww" name="OptionsPanel.h" compile="0" resource="0" file="Source/Ui/Top/OptionsPanel.h"/>
-            <FILE id="szq63m" name="ScannerComponent.cpp" compile="1" resource="0"
-                  file="Source/Ui/Top/ScannerComponent.cpp"/>
-            <FILE id="qcCMzi" name="ScannerComponent.h" compile="0" resource="0"
-                  file="Source/Ui/Top/ScannerComponent.h"/>
-            <FILE id="gayD6d" name="TabbedPanelComponent.cpp" compile="1" resource="0"
-                  file="Source/Ui/Top/TabbedPanelComponent.cpp"/>
-            <FILE id="Tritv3" name="TabbedPanelComponent.h" compile="0" resource="0"
-                  file="Source/Ui/Top/TabbedPanelComponent.h"/>
+          <GROUP id="{3B670344-8B9E-60BC-E91B-56E589C27872}" name="NewGesture">
+            <FILE id="ip2Hp8" name="NewGesturePanel.cpp" compile="1" resource="0"
+                  file="Source/Ui/Top/NewGesture/NewGesturePanel.cpp"/>
+            <FILE id="dC7xeE" name="NewGesturePanel.h" compile="0" resource="0"
+                  file="Source/Ui/Top/NewGesture/NewGesturePanel.h"/>
           </GROUP>
-          <FILE id="zVz8oR" name="NewPresetPanel.cpp" compile="1" resource="0"
-                file="Source/Ui/Top/NewPresetPanel.cpp"/>
-          <FILE id="HulRFa" name="NewPresetPanel.h" compile="0" resource="0"
-                file="Source/Ui/Top/NewPresetPanel.h"/>
+          <GROUP id="{08D684D7-62B2-F45E-A81F-31AF1CF91736}" name="NewPreset">
+            <FILE id="EGjZhQ" name="NewPresetPanel.cpp" compile="1" resource="0"
+                  file="Source/Ui/Top/NewPreset/NewPresetPanel.cpp"/>
+            <FILE id="uOYCti" name="NewPresetPanel.h" compile="0" resource="0"
+                  file="Source/Ui/Top/NewPreset/NewPresetPanel.h"/>
+          </GROUP>
+          <GROUP id="{FABD1A98-14A0-C209-A3D9-7A2FA878BDDD}" name="Options">
+            <GROUP id="{91FA2D8E-9BD0-9DAC-429F-3F89736CDC5A}" name="SubPanels">
+              <FILE id="HJpsek" name="FileOptionsSubPanel.cpp" compile="1" resource="0"
+                    file="Source/Ui/Top/Options/SubPanels/FileOptionsSubPanel.cpp"/>
+              <FILE id="Fa4HPE" name="FileOptionsSubPanel.h" compile="0" resource="0"
+                    file="Source/Ui/Top/Options/SubPanels/FileOptionsSubPanel.h"/>
+              <FILE id="HlZu8z" name="GeneralOptionsSubPanel.cpp" compile="1" resource="0"
+                    file="Source/Ui/Top/Options/SubPanels/GeneralOptionsSubPanel.cpp"/>
+              <FILE id="PGS8sw" name="GeneralOptionsSubPanel.h" compile="0" resource="0"
+                    file="Source/Ui/Top/Options/SubPanels/GeneralOptionsSubPanel.h"/>
+              <FILE id="VE6GSt" name="SubPanelComponent.cpp" compile="1" resource="0"
+                    file="Source/Ui/Top/Options/SubPanels/SubPanelComponent.cpp"/>
+              <FILE id="AjlIkJ" name="SubPanelComponent.h" compile="0" resource="0"
+                    file="Source/Ui/Top/Options/SubPanels/SubPanelComponent.h"/>
+            </GROUP>
+            <FILE id="BLC4C2" name="OptionsPanel.cpp" compile="1" resource="0"
+                  file="Source/Ui/Top/Options/OptionsPanel.cpp"/>
+            <FILE id="XScjx7" name="OptionsPanel.h" compile="0" resource="0" file="Source/Ui/Top/Options/OptionsPanel.h"/>
+            <FILE id="NnFS37" name="ScannerComponent.cpp" compile="1" resource="0"
+                  file="Source/Ui/Top/Options/ScannerComponent.cpp"/>
+            <FILE id="ylLF43" name="ScannerComponent.h" compile="0" resource="0"
+                  file="Source/Ui/Top/Options/ScannerComponent.h"/>
+            <FILE id="t5wHM6" name="TabbedPanelComponent.cpp" compile="1" resource="0"
+                  file="Source/Ui/Top/Options/TabbedPanelComponent.cpp"/>
+            <FILE id="sneCDv" name="TabbedPanelComponent.h" compile="0" resource="0"
+                  file="Source/Ui/Top/Options/TabbedPanelComponent.h"/>
+          </GROUP>
         </GROUP>
         <GROUP id="{ACEA364D-47F4-BE67-B3B0-D0FEC5CE7BA7}" name="Header">
           <FILE id="hBml6T" name="HeaderComponent.cpp" compile="1" resource="0"

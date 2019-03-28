@@ -14,13 +14,12 @@
 #include "Common/PlumeCommon.h"
 
 #include "Ui/SideBar/SideBarComponent.h"
-#include "Ui/SideBar/WrapperComponent.h"
 #include "Ui/SideBar/PresetComponent.h"
 #include "Ui/Header/HeaderComponent.h"
 #include "Ui/Gesture/GesturePanel.h"
 #include "Ui/LookAndFeel/PlumeLookAndFeel.h"
-#include "Ui/Top/OptionsPanel.h"
-#include "Ui/Top/NewPresetPanel.h"
+#include "Ui/Top/Options/OptionsPanel.h"
+#include "Ui/Top/NewPreset/NewPresetPanel.h"
 
 //#define TRACE_IN  Logger::writeToLog ("[FNC] Entering function: " + __FUNCTION__);
 //#define TRACE_OUT Logger::writeToLog ("[FNC] Entering function: " + __FUNCTION__);
