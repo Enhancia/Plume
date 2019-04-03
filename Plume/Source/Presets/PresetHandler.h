@@ -30,12 +30,9 @@ public:
 
     struct PresetSearchSettings
     {
-        PresetSearchSettings (int type = -1, int filter = -1, String pluginName = String(), String name = String())
+		PresetSearchSettings(int type = -1, int filter = -1, String pluginName = String(), String name = String())
+			: presetType (type), filterType (filter), plugin (pluginName), nameSearch (name)
         {
-            presetType = type;
-            filterType = filter;
-            plugin     = pluginName;
-            nameSearch = name;
         }
         
 	    PresetSearchSettings& operator= (const PresetSearchSettings& other) noexcept

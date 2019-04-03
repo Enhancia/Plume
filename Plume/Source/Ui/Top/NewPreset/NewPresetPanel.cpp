@@ -107,7 +107,8 @@ void NewPresetPanel::paint (Graphics& g)
 void NewPresetPanel::resized()
 {
 	using namespace PLUME::UI;
-    int h = OPTIONS_HEIGHT < (getHeight() - 16*MARGIN)/6 ? OPTIONS_HEIGHT : (getHeight() - 16*MARGIN)/7;
+    int h = (OPTIONS_HEIGHT < (getHeight() - 16*MARGIN)/6) ? OPTIONS_HEIGHT
+                                                           : (getHeight() - 16*MARGIN)/7;
     
     // Panel Area
     panelArea = getBounds().reduced (getWidth()/3, 0)
@@ -135,8 +136,9 @@ void NewPresetPanel::visibilityChanged()
     {
         update();
 
-        // Makes the name ready to be edited
-        if (getParentComponent() != nullptr) nameLabel->showEditor();
+        // Makes the name ready to be edited!
+        if (getParentComponent() != nullptr)
+            nameLabel->showEditor();
     }
 }
 
@@ -251,39 +253,36 @@ void NewPresetPanel::update()
 void NewPresetPanel::createLabels()
 {
     addAndMakeVisible (nameLabel = new Label ("name", "Preset Name..."));
-    nameLabel->setColour (Label::backgroundColourId, Colour (0x30000000));
-    nameLabel->setColour (Label::textColourId, UI::currentTheme.getColour (colour::topPanelMainText)
-                                                               .withAlpha (0.6f));
-    nameLabel->setFont (PLUME::font::plumeFont.withHeight (14.0f));
-    nameLabel->setEditable (true, false, false);
-    nameLabel->setMouseCursor (MouseCursor (MouseCursor::IBeamCursor));
-    nameLabel->addListener (this);
+    setLabelProperties (*nameLabel);
     
     addAndMakeVisible (authorLabel = new Label ("author", "Author Name..."));
-    authorLabel->setColour (Label::backgroundColourId, Colour (0x30000000));
-    authorLabel->setColour (Label::textColourId, UI::currentTheme.getColour (colour::topPanelMainText)
-                                                                 .withAlpha (0.6f));
-    authorLabel->setFont (PLUME::font::plumeFont.withHeight (14.0f));
-    authorLabel->setEditable (true, false, false);
-    authorLabel->setMouseCursor (MouseCursor (MouseCursor::IBeamCursor));
-    authorLabel->addListener (this);
+    setLabelProperties (*authorLabel);
     
     addAndMakeVisible (verLabel = new Label ("version", "1.0"));
-    verLabel->setColour (Label::backgroundColourId, Colour (0x30000000));
-    verLabel->setColour (Label::textColourId, UI::currentTheme.getColour (colour::topPanelMainText)
-                                                              .withAlpha (0.6f));
-    verLabel->setFont (PLUME::font::plumeFont.withHeight (14.0f));
-    verLabel->setEditable (true, false, false);
-    verLabel->setMouseCursor (MouseCursor (MouseCursor::IBeamCursor));
-    verLabel->addListener (this);
+    setLabelProperties (*verLabel);
     
     addAndMakeVisible (pluginLabel = new Label ("plugin", "None"));
-    pluginLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
-    pluginLabel->setColour (Label::textColourId, UI::currentTheme.getColour (colour::topPanelMainText)
-                                                                 .withAlpha (0.6f));
-    pluginLabel->setFont (PLUME::font::plumeFont.withHeight (14.0f));
-    pluginLabel->setEditable (false, false, false);
-    pluginLabel->addListener (this);
+    setLabelProperties (*pluginLabel, false);
+}
+
+void NewPresetPanel::setLabelProperties (Label& labelToSet, bool editable)
+{
+    labelToSet.setColour (Label::textColourId, PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText)
+                                                                      .withAlpha (0.6f));
+    labelToSet.setFont (PLUME::font::plumeFont.withHeight (14.0f));
+    labelToSet.addListener (this);
+
+    if (editable)
+    {
+        labelToSet.setColour (Label::backgroundColourId, Colour (0x30000000));
+        labelToSet.setEditable (true, false, false);
+        labelToSet.setMouseCursor (MouseCursor (MouseCursor::IBeamCursor));
+    }
+    else
+    {
+        labelToSet.setColour (Label::backgroundColourId, Colour (0x00000000));
+        labelToSet.setEditable (false, false, false);
+    }
 }
 
 void NewPresetPanel::createBox()

@@ -12,7 +12,6 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Common/PlumeCommon.h"
-#define MAX_PARAMETER 4
 
 using namespace PLUME;
 /**
@@ -39,7 +38,8 @@ public:
         tilt,
         wave,
         roll,
-        numGestures
+
+        numGestureTypes
     };
     
     /**
@@ -326,7 +326,7 @@ public:
 		if (isActive()) value.setValueNotifyingHost (range.convertTo0to1 (newVal));
 	}
     
-    float getGestureValue()
+    float getGestureValue() const
     {
 		return range.convertFrom0to1 (value.getValue());
     }
@@ -400,7 +400,7 @@ public:
      *
      *  \returns The cc value used by the gesture.
      */
-    int getCc()
+    int getCc() const
     {
         return int (cc.convertFrom0to1 (cc.getValue()));
     }
@@ -408,7 +408,7 @@ public:
     /**
      *  \brief Getter for the "mapped" boolean value.
      */
-    bool isMapped()
+    bool isMapped() const
     {
         return mapped;
     }
@@ -416,7 +416,7 @@ public:
     /**
      *  \brief Getter for the "midiMap" boolean value.
      */
-    bool isMidiMapped()
+    bool isMidiMapped() const
     {
         return (midiMap.getValue() < 0.5f ? false : true);
     }
@@ -454,7 +454,7 @@ public:
     /**
      *  \brief Getter for the "active" boolean value.
      */
-    bool isActive()
+    bool isActive() const
     {
         return (on.getValue() < 0.5f ? false : true);
     }
@@ -462,35 +462,64 @@ public:
     /**
      *  \brief Returns a string corresponding to the gesture's type.
      */
-    String getTypeString()
+    String getTypeString (bool capitalized = false) const
     {
         switch (type)
         {
             case Gesture::vibrato:
-                return "vibrato";
+                return capitalized ? "Vibrato" : "vibrato";
                 break;
                 
             case Gesture::pitchBend:
-                return "pitchBend";
+                return capitalized ? "Pitch Bend" : "pitchBend";
                 break;
                 
             case Gesture::tilt:
-                return "tilt";
+                return capitalized ? "Tilt" : "tilt";
                 break;
                 
             case Gesture::wave:
-                return "wave";
+                return capitalized ? "Wave" : "wave";
                 break;
                 
             case Gesture::roll:
-                return "roll";
+                return capitalized ? "Roll" : "roll";
                 break;
             
             default:
                 return "unknown";
         }
     }
-    
+
+    static String getTypeString (int gestureType, bool capitalized = false)
+    {
+        switch (gestureType)
+        {
+            case (int) Gesture::vibrato:
+                return capitalized ? "Vibrato" : "vibrato";
+                break;
+                
+            case (int) Gesture::pitchBend:
+                return capitalized ? "Pitch Bend" : "pitchBend";
+                break;
+                
+            case (int) Gesture::tilt:
+                return capitalized ? "Tilt" : "tilt";
+                break;
+                
+            case (int) Gesture::wave:
+                return capitalized ? "Wave" : "wave";
+                break;
+                
+            case (int) Gesture::roll:
+                return capitalized ? "Roll" : "roll";
+                break;
+            
+            default:
+                return "unknown";
+        }
+    }
+
     /**
      *  \brief Method to know if the gesture currently creates a pitchWheel midi message.
      *
@@ -517,7 +546,7 @@ public:
         TRACE_IN;
         ScopedLock paramlock (parameterArrayLock);
         
-        if (parameterArray.size() < MAX_PARAMETER)
+        if (parameterArray.size() < PLUME::MAX_PARAMETER)
         {
             parameterArray.add ( new MappedParameter (param, r, rev));
             mapped = true;

@@ -28,7 +28,8 @@
 
 namespace PLUME
 {
-    const int NUM_GEST = 3;
+    const int NUM_GEST = 8;
+    const int MAX_PARAMETER = 4;
     
     namespace UI
     {

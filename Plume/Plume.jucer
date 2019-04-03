@@ -165,6 +165,10 @@
           <FILE id="tb4LAs" name="GesturePanel.cpp" compile="1" resource="0"
                 file="Source/Ui/Gesture/GesturePanel.cpp"/>
           <FILE id="ZGz1SG" name="GesturePanel.h" compile="0" resource="0" file="Source/Ui/Gesture/GesturePanel.h"/>
+          <FILE id="tIRjc2" name="GestureSettingsComponent.cpp" compile="1" resource="0"
+                file="Source/Ui/Gesture/GestureSettingsComponent.cpp"/>
+          <FILE id="iz3dGi" name="GestureSettingsComponent.h" compile="0" resource="0"
+                file="Source/Ui/Gesture/GestureSettingsComponent.h"/>
           <GROUP id="{6AF40B7D-7CAB-7E83-301F-B50F2A1EF68A}" name="Mapper">
             <FILE id="EvACj5" name="MapperComponent.cpp" compile="1" resource="0"
                   file="Source/Ui/Gesture/Mapper/MapperComponent.cpp"/>
@@ -211,7 +215,10 @@
         </GROUP>
       </GROUP>
       <GROUP id="{C68567B8-DFE3-8FC9-B013-03678584A057}" name="Images">
-        <GROUP id="{3FD5E2A0-1ED1-28E0-6BB9-5FF273A9EF0B}" name="Backgrounds"/>
+        <GROUP id="{3FD5E2A0-1ED1-28E0-6BB9-5FF273A9EF0B}" name="Backgrounds">
+          <FILE id="t9o8b8" name="homePageEnhancia.jpg" compile="0" resource="1"
+                file="Resources/Images/Backgrounds/homePageEnhancia.jpg"/>
+        </GROUP>
         <GROUP id="{20DFADED-00CA-0C8D-0252-C1692DB76059}" name="Gestures">
           <FILE id="imHDAT" name="Close.png" compile="0" resource="1" file="Resources/Images/Gestures/Close.png"/>
           <FILE id="CXrCc0" name="OnOff.png" compile="0" resource="1" file="Resources/Images/Gestures/OnOff.png"/>

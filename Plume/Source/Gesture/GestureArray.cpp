@@ -27,10 +27,10 @@ GestureArray::~GestureArray()
 //==============================================================================
 void GestureArray::initializeGestures()
 {
-    addGesture ("Vibrato", Gesture::vibrato, 0);
-    addGesture ("PitchBend", Gesture::pitchBend, 1);
-    addGesture ("Tilt", Gesture::tilt, 2);
-    //addGesture ("Roll", Gesture::roll, 3);
+    addGesture ("Vibrato_Default", Gesture::vibrato, 0);
+    addGesture ("PitchBend_Default", Gesture::pitchBend, 1);
+    addGesture ("Autilt", Gesture::tilt, 3);
+    addGesture ("Rick", Gesture::roll, 4);
 }
 //==============================================================================
 void GestureArray::process (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
@@ -129,15 +129,27 @@ Gesture* GestureArray::getGestureByName (const String nameToSearch)
 
 Gesture* GestureArray::getGestureById (const int idToSearch)
 {
-    ScopedLock gestlock (gestureArrayLock);
     
-    if (idToSearch >= gestures.size() || idToSearch < 0)
+    if (idToSearch >= PLUME::NUM_GEST || idToSearch < 0)
     {
-        DBG ("Gesture n°" << idToSearch << " doesn't exist. Number of gestures: " << gestures.size());
+        DBG ("Gesture n°" << idToSearch << " cannot exist. \nNumber of gestures: " << gestures.size());
         return nullptr;
     }
-    
-    return gestures[idToSearch];
+
+    {
+        ScopedLock gestlock (gestureArrayLock);
+
+        for (auto* gesture : gestures)
+        {
+            if (gesture->id == idToSearch)
+            {
+                return gesture;
+            }
+        }
+    }
+
+    DBG ("Gesture n°" << idToSearch << " doesn't exist");
+    return nullptr;
 }
 
 OwnedArray<Gesture>& GestureArray::getArray()

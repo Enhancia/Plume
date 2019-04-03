@@ -20,9 +20,8 @@
 #include "Ui/LookAndFeel/PlumeLookAndFeel.h"
 #include "Ui/Top/Options/OptionsPanel.h"
 #include "Ui/Top/NewPreset/NewPresetPanel.h"
+#include "Ui/Top/NewGesture/NewGesturePanel.h"
 
-//#define TRACE_IN  Logger::writeToLog ("[FNC] Entering function: " + __FUNCTION__);
-//#define TRACE_OUT Logger::writeToLog ("[FNC] Entering function: " + __FUNCTION__);
 //==============================================================================
 /**
 */
@@ -114,6 +113,7 @@ private:
     ScopedPointer<ShapeButton> sideBarButton; /**< \brief Button that hides or shows the sidebar */
     ScopedPointer<OptionsPanel> optionsPanel;
     ScopedPointer<NewPresetPanel> newPresetPanel;
+    ScopedPointer<NewGesturePanel> newGesturePanel;
     
     
     //==============================================================================

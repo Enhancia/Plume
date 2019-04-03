@@ -31,9 +31,9 @@ OptionsPanel::OptionsPanel (PlumeProcessor& proc)   : processor (proc)
     p.lineTo (3*PLUME::UI::MARGIN, 0);
 
     closeButton->setShape (p, false, true, false);
-	  closeButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::topPanelMainText), 1.0f);
+	closeButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::topPanelMainText), 1.0f);
     closeButton->addMouseListener (this, false);
-	  closeButton->addListener (this);
+	closeButton->addListener (this);
 }
 
 OptionsPanel::~OptionsPanel()

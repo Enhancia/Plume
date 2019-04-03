@@ -33,13 +33,20 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	newPresetPanel->setAlwaysOnTop (true);
 	newPresetPanel->setBounds (getBounds());
 
+    addAndMakeVisible (newGesturePanel = new NewGesturePanel (processor));
+    newGesturePanel->hidePanel();
+    newGesturePanel->setAlwaysOnTop (true);
+
     // Creates the main components
     addAndMakeVisible (header = new HeaderComponent (processor, *newPresetPanel));
     addAndMakeVisible (sideBar = new SideBarComponent (processor, *optionsPanel));
     sideBar->addInfoPanelAsMouseListener (this);
     
+    
 	addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
-	                                                    processor.getParameterTree(), PLUME::UI::FRAMERATE));
+	                                                    processor.getParameterTree(), *newGesturePanel,
+                                                        PLUME::UI::FRAMERATE));
+                                                        
 	// SideBarButton
 	bool sideBarHidden = false;
 
@@ -103,13 +110,16 @@ PlumeEditor::~PlumeEditor()
 void PlumeEditor::paint (Graphics& g)
 {
     // Background
-    g.fillAll (PLUME::UI::currentTheme.getColour (PLUME::colour::basePanelBackground));
+    g.fillAll (Colour (0xff101717));
 }
 
 void PlumeEditor::resized()
 {
     using namespace PLUME::UI;
     auto area = getLocalBounds();
+    
+    optionsPanel->setBounds (area);
+    newPresetPanel->setBounds (area);
     
     auto sideBarButtonArea = juce::Rectangle<int> (sideBarButton->getToggleState() ? 0 : SIDEBAR_WIDTH, 0,
 	                                               HEADER_HEIGHT - 2*MARGIN, HEADER_HEIGHT);
@@ -121,10 +131,11 @@ void PlumeEditor::resized()
 	}
 
 	header->setBounds (area.removeFromTop (HEADER_HEIGHT));
-	gesturePanel->setBounds(area.reduced (2*MARGIN, 2*MARGIN));
+
+    newGesturePanel->setBounds (area);
+	gesturePanel->setBounds (area);
+
 	resizableCorner->setBounds (getWidth() - 20, getHeight() - 20, 20, 20);
-	optionsPanel->setBounds (0, 0, getWidth(), getHeight());
-	newPresetPanel->setBounds (0, 0, getWidth(), getHeight());
 
 	repaint();
 }
@@ -218,7 +229,8 @@ void PlumeEditor::updateFullInterface()
     gesturePanel.reset();
 
     addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
-	                                                    processor.getParameterTree(), PLUME::UI::FRAMERATE));
+	                                                    processor.getParameterTree(), *newGesturePanel,
+                                                        PLUME::UI::FRAMERATE));
 	gesturePanel->setBounds(gpbounds);
 	gesturePanel->addMouseListener (this, true);
 	header->update();
