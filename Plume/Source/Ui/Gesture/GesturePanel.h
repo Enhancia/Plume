@@ -49,15 +49,18 @@ public:
     void timerCallback() override;
     void buttonClicked (Button*) override;
     //void parameterChanged (const String &parameterID, float newValue) override;
+
     void mouseUp (const MouseEvent &event) override;
+    bool keyPressed (const KeyPress &key) override;
 
     //==============================================================================
     //void removeListenerForAllParameters();
 
     //==============================================================================
     void initialiseGestureSlots();
-    void removeGestureComponent (int gestureId);
+    void removeGestureAndGestureComponent (int gestureId);
     void addGestureComponent (Gesture& gest);
+    bool hasSelectedGesture();
 
 private:
     class GestureComponent : public PlumeComponent

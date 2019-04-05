@@ -34,7 +34,7 @@ public:
 
 private:
     //==============================================================================
-    String displayText = "Rien lol";
+    bool alerted = false;
     ScopedPointer<TextEditor> textEditor;
     
     //==============================================================================

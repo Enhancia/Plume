@@ -110,7 +110,7 @@ void GestureArray::updateAllValues()
 }
 
 //==============================================================================
-Gesture* GestureArray::getGestureByName (const String nameToSearch)
+Gesture* GestureArray::getGesture (const String nameToSearch)
 {
     ScopedLock gestlock (gestureArrayLock);
     
@@ -127,7 +127,7 @@ Gesture* GestureArray::getGestureByName (const String nameToSearch)
     return nullptr;
 }
 
-Gesture* GestureArray::getGestureById (const int idToSearch)
+Gesture* GestureArray::getGesture (const int idToSearch)
 {
     
     if (idToSearch >= PLUME::NUM_GEST || idToSearch < 0)
@@ -208,6 +208,30 @@ void GestureArray::addGesture (String gestureName, int gestureType, int gestureI
     
     gestures.getLast()->setActive(true);
     
+    checkPitchMerging();
+}
+
+void GestureArray::removeGesture (const int gestureId)
+{
+    if (auto* gestureToRemove = getGesture (gestureId))
+    {
+        ScopedLock gestlock (gestureArrayLock);
+
+        gestures.removeObject (gestureToRemove, true);
+    }
+
+    checkPitchMerging();
+}
+
+void GestureArray::removeGesture (const String gestureName)
+{
+    if (auto* gestureToRemove = getGesture (gestureName))
+    {
+        ScopedLock gestlock (gestureArrayLock);
+
+        gestures.removeObject (gestureToRemove, true);
+    }
+
     checkPitchMerging();
 }
 
@@ -378,35 +402,45 @@ void GestureArray::addGestureFromXml (XmlElement& gesture)
     switch (gesture.getIntAttribute ("type", -1))
     {
         case Gesture::vibrato:
-            gestures.add (new Vibrato (gesture.getTagName(), gesture.getIntAttribute ("id", 0), parameters,
-														     float(gesture.getDoubleAttribute ("gain", 400.0)),
-														     float(gesture.getDoubleAttribute ("thresh", 40.0))));
+            gestures.add (new Vibrato (gesture.getTagName().compare ("gesture") == 0 ? gesture.getStringAttribute ("name", "Vibrato")
+                                                                                     : gesture.getTagName(),
+                                       gesture.getIntAttribute ("id", 0), parameters,
+									   float(gesture.getDoubleAttribute ("gain", 400.0)),
+									   float(gesture.getDoubleAttribute ("thresh", 40.0))));
             break;
         
         case Gesture::pitchBend:
-            gestures.add (new PitchBend (gesture.getTagName(), gesture.getIntAttribute("id", 1), parameters,
-				                                               float(gesture.getDoubleAttribute ("startLeft", -50.0)),
-                                                               float(gesture.getDoubleAttribute ("endLeft", -20.0)),
-                                                               float(gesture.getDoubleAttribute ("startRight", 30.0)),
-                                                               float(gesture.getDoubleAttribute ("endRight", 60.0))));
+            gestures.add (new PitchBend (gesture.getTagName().compare("gesture") == 0 ? gesture.getStringAttribute("name", "PitchBend")
+                                                                                      : gesture.getTagName(),
+                                         gesture.getIntAttribute("id", 1), parameters,
+				                         float(gesture.getDoubleAttribute ("startLeft", -50.0)),
+                                         float(gesture.getDoubleAttribute ("endLeft", -20.0)),
+                                         float(gesture.getDoubleAttribute ("startRight", 30.0)),
+                                         float(gesture.getDoubleAttribute ("endRight", 60.0))));
             break;
             
         case Gesture::tilt:
-            gestures.add (new Tilt (gesture.getTagName(), gesture.getIntAttribute("id", 2), parameters,
-				                                          float(gesture.getDoubleAttribute ("start", 0.0)),
-                                                          float(gesture.getDoubleAttribute ("end", 50.0))));
+            gestures.add (new Tilt (gesture.getTagName().compare("gesture") == 0 ? gesture.getStringAttribute("name", "Tilt")
+                                                                                 : gesture.getTagName(),
+                                    gesture.getIntAttribute("id", 2), parameters,
+				                    float(gesture.getDoubleAttribute ("start", 0.0)),
+                                    float(gesture.getDoubleAttribute ("end", 50.0))));
             break;
         /*    
         case Gesture::wave:
-            gestures.add (new Wave (gesture.getTagName(), gesture.getIntAttribute("id", 0), parameters,
-				                                          float(gesture.getDoubleAttribute ("start", 0.0)),
-                                                          float(gesture.getDoubleAttribute ("end", 50.0))));
+            gestures.add (new Wave (gesture.getTagName().compare ("gesture") == 0 ? gesture.getStringAttribute ("name", "Wave")
+                                                                                  : gesture.getTagName(),
+                                    gesture.getIntAttribute("id", 0), parameters,
+				                    float(gesture.getDoubleAttribute ("start", 0.0)),
+                                    float(gesture.getDoubleAttribute ("end", 50.0))));
             break;
         */
         case Gesture::roll:
-            gestures.add (new Roll (gesture.getTagName(), gesture.getIntAttribute("id", 3), parameters,
-				                                          float(gesture.getDoubleAttribute ("start", -30.0)),
-                                                          float(gesture.getDoubleAttribute ("end", 30.0))));
+            gestures.add (new Roll (gesture.getTagName().compare("gesture") == 0 ? gesture.getStringAttribute("name", "Roll")
+                                                                                 : gesture.getTagName(),
+                                    gesture.getIntAttribute("id", 3), parameters,
+				                    float(gesture.getDoubleAttribute ("start", -30.0)),
+                                    float(gesture.getDoubleAttribute ("end", 30.0))));
             break;
         
         default:
@@ -431,9 +465,10 @@ void GestureArray::createGestureXml (XmlElement& gesturesData)
     
     for (auto* g : gestures)
     {
-        auto gestXml = new XmlElement (g->name);
+        auto gestXml = new XmlElement ("gesture");
         
         // General attributes
+        gestXml->setAttribute ("name", g->name);
         gestXml->setAttribute ("type", g->type);
 		gestXml->setAttribute ("id", g->id);
         gestXml->setAttribute ("on", g->isActive());

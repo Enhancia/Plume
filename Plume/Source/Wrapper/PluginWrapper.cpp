@@ -677,6 +677,8 @@ void PluginWrapper::fillInPluginDescription (PluginDescription& pd)
 
 void PluginWrapper::addParametersToGestureFromXml (XmlElement& gesture, int gestureNum)
 {
+    TRACE_IN;
+    
     if (hasWrappedInstance)
     {
         forEachXmlChildElement (gesture, paramXml)

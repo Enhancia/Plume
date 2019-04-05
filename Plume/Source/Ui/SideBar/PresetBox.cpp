@@ -319,7 +319,7 @@ void PresetBox::setPreset (const int row)
         AudioProcessor::copyXmlToBinary (*presetXml, presetData);
             
         // Calls the plugin's setStateInformation method to load the preset
-	    PLUME::UI::ANIMATE_UI_FLAG = false;
+	    stopGesturePanelTimer();
        //Time::waitForMillisecondCounter(Time::getMillisecondCounter() + 10);
 
         processor.setStateInformation (presetData.getData(), int (presetData.getSize()));
@@ -346,6 +346,17 @@ void PresetBox::createUserPreset (const String& presetName)
 void PresetBox::renamePreset (const String& newName)
 {
     processor.getPresetHandler().renamePreset (newName, presetIdToEdit);
+}
+
+void PresetBox::stopGesturePanelTimer()
+{
+    if (auto* gesturePanel = dynamic_cast<Timer*> ( getParentComponent() // presetComp
+                                                   ->getParentComponent() // sideBarComp
+                                                   ->getParentComponent() // editor
+                                                   ->findChildWithID("gesturePanel")))
+    {
+        gesturePanel->stopTimer();
+    }
 }
 
 void PresetBox::updateHeader()

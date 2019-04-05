@@ -39,6 +39,7 @@ public:
     //==============================================================================
     // Callbacks
     void visibilityChanged() override;
+    void mouseEnter (const MouseEvent &event) override;
     void mouseUp (const MouseEvent &event) override;
     void buttonClicked (Button* bttn) override;
     void labelTextChanged (Label* lbl) override;
@@ -46,8 +47,9 @@ public:
 
     //==============================================================================
     void showPanelForGestureID (const int gestureID);
-    void hidePanel();
+    void hidePanel (const bool resetSelectedSlot = false);
     void updateGesturePanel();
+    const int getLastSelectedSlot();
 
 private:
     class GestureTypeSelector : public PlumeComponent
@@ -82,13 +84,14 @@ private:
 
     //==============================================================================
     // Overriden to prevent public use!
-    // Use showPanelForGestureID (int) or hidePanel() instead.
+    // Use showPanelForGestureID (int) or hidePanel (bool) instead.
     void setVisible (bool) override; 
 
     //==============================================================================
     void createAndAddButtons();
     void createGestureSelectorButtons();
     void resizeGestureSelectorButtons (juce::Rectangle<int> buttonsArea);
+    void createAndAddTextEditor();
 
     //==============================================================================
     juce::Rectangle<int> panelArea {0, 0, getWidth(), getHeight()};
@@ -102,6 +105,7 @@ private:
     ScopedPointer<TextButton> addGestureButton;
     ScopedPointer<ShapeButton> closeButton;
     ScopedPointer<Label> gestureNameLabel;
+    ScopedPointer<TextEditor> descriptionTextEditor;
     OwnedArray<GestureTypeSelector> gestureSelectors;
 
     //==============================================================================

@@ -91,7 +91,7 @@ public:
      *
      * \returns Total number of presets, regardless of them being default or user presets.
      */
-    int getNumPresets ();
+    int getNumPresets();
     
     /**
      * \brief Getter for the number of presets that match the search.

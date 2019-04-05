@@ -464,31 +464,7 @@ public:
      */
     String getTypeString (bool capitalized = false) const
     {
-        switch (type)
-        {
-            case Gesture::vibrato:
-                return capitalized ? "Vibrato" : "vibrato";
-                break;
-                
-            case Gesture::pitchBend:
-                return capitalized ? "Pitch Bend" : "pitchBend";
-                break;
-                
-            case Gesture::tilt:
-                return capitalized ? "Tilt" : "tilt";
-                break;
-                
-            case Gesture::wave:
-                return capitalized ? "Wave" : "wave";
-                break;
-                
-            case Gesture::roll:
-                return capitalized ? "Roll" : "roll";
-                break;
-            
-            default:
-                return "unknown";
-        }
+        return Gesture::getTypeString (type, capitalized);
     }
 
     static String getTypeString (int gestureType, bool capitalized = false)
@@ -520,6 +496,56 @@ public:
         }
     }
 
+    /**
+       \brief  Returns a string corresponding to the gesture's type.
+
+               Call this method to return the gesture instance's type description.
+               This can be used by the interface to get a description while manipulating
+               a Gesture pointer or reference.
+     */
+    String getGestureDescriptionString() const
+    {
+        return Gesture::getGestureDescriptionString (type);
+    }
+
+    /**
+       \brief  Returns a string corresponding to a specified gesture type.
+
+               Call this method to return a specific gesture type description.
+               This can be used by the interface to describe a gesture while
+               not manipulating gestures (ie the gesture type selection on the 
+               newGesturePanel)
+     */
+    static String getGestureDescriptionString (int gestureType)
+    {
+        switch (gestureType)
+        {
+            case (int) Gesture::vibrato:
+                return "Quickly move your finger sideways on a back and forth motion "
+                       "to create a sine-shaped modulation.\n";
+                break;
+                
+            case (int) Gesture::pitchBend:
+                return "Lean your hand to either side to change the pitch of your note "
+                       "or modulate an effect.\n";
+                break;
+                
+            case (int) Gesture::tilt:
+                return "Tilt your hand upwards or downwards to modulate your sound.\n";
+                break;
+                
+            case (int) Gesture::wave:
+                return "TBD.\n";
+                break;
+                
+            case (int) Gesture::roll:
+                return "Rotate your hand on the forearm axis to modulate your sound.\n";
+                break;
+            
+            default:
+                return "-";
+        }
+    }
     /**
      *  \brief Method to know if the gesture currently creates a pitchWheel midi message.
      *
@@ -794,4 +820,5 @@ protected:
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Gesture)
+    //JUCE_DECLARE_WEAK_REFERENCEABLE (Gesture)
 };

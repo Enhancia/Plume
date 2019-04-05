@@ -14,8 +14,9 @@
 
 //==============================================================================
 GestureSettingsComponent::GestureSettingsComponent (Gesture& gest, GestureArray& gestArray, PluginWrapper& wrap)
-                            : gesture (gest), gestureArray (gestArray), wrapper (wrap)
+                            : gesture (gest), gestureArray (gestArray), wrapper (wrap), gestureId (gest.id)
 {
+    TRACE_IN;
     createTuner();
     addAndMakeVisible( gestMapper = new MapperComponent(gesture, gestureArray, wrapper));
 }
@@ -23,6 +24,8 @@ GestureSettingsComponent::GestureSettingsComponent (Gesture& gest, GestureArray&
 GestureSettingsComponent::~GestureSettingsComponent()
 {
     TRACE_IN;
+    gestureArray.cancelMapMode();
+    disabled = true;
     gestMapper = nullptr;
     gestTuner = nullptr;
 }
@@ -36,6 +39,8 @@ const String GestureSettingsComponent::getInfoString()
 
 void GestureSettingsComponent::update()
 {
+    if (disabled) return;
+
     gestTuner->updateComponents();
     gestMapper->updateComponents();
 }
@@ -105,13 +110,21 @@ Tuner& GestureSettingsComponent::getTuner()
 
 void GestureSettingsComponent::updateDisplay()
 {
-    if (gesture.isActive()) gestTuner->updateDisplay();
-    if (gesture.isMapped()) gestMapper->updateDisplay();
+    if (!disabled) disableIfGestureWasDeleted();
+
+    if (!disabled)
+    {
+        if (gesture.isActive()) gestTuner->updateDisplay();
+        if (gesture.isMapped()) gestMapper->updateDisplay();
+    }
 }
 
-void GestureSettingsComponent::updateComponents()
+void GestureSettingsComponent::disableIfGestureWasDeleted()
 {
-    //Buttons etc..
+    if (gestureArray.getGesture (gestureId) == nullptr)
+    {
+        disabled = true;
+    }
 }
 
 void GestureSettingsComponent::createTuner()

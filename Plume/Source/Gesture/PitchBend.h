@@ -37,7 +37,7 @@ public:
     
     //==============================================================================
     void updateValue (const Array<float> rawData) override;
-    
+
     //==============================================================================
     bool getSend(); /**< \brief Getter for the send boolean value */
     

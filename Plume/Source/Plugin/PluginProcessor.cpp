@@ -392,7 +392,7 @@ void PlumeProcessor::loadGestureXml(const XmlElement& gestureData)
 
 			if (gesture->getBoolAttribute ("mapped") == true)
 			{
-				gestureArray->getGestureById(i)->clearAllParameters();
+				//gestureArray->getGesture (i)->clearAllParameters();
 				wrapper->addParametersToGestureFromXml(*gesture, i);
 			}
 

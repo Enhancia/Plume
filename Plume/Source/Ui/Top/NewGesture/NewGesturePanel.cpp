@@ -23,6 +23,7 @@ NewGesturePanel::NewGesturePanel (PlumeProcessor& proc) : processor (proc)
 
 	createAndAddButtons();
 	createGestureSelectorButtons();
+	createAndAddTextEditor();
 }
 
 NewGesturePanel::~NewGesturePanel()
@@ -30,6 +31,7 @@ NewGesturePanel::~NewGesturePanel()
 	gestureNameLabel = nullptr;
 	closeButton = nullptr;
 	addGestureButton = nullptr;
+	descriptionTextEditor = nullptr;
 }
 
 //==============================================================================
@@ -97,10 +99,12 @@ void NewGesturePanel::resized()
     resizeGestureSelectorButtons (area.removeFromTop (panelArea.getHeight()/3)
     								  .reduced (MARGIN));
 
-    area.removeFromTop (panelArea.getHeight()*2/9); // Gesture Description area
+    descriptionTextEditor->setBounds (area.removeFromTop (panelArea.getHeight()*2/9)
+    									  .reduced (2*MARGIN, MARGIN));
 
  	gestureNameLabel->setBounds (area.removeFromTop (panelArea.getHeight()*2/9)
- 									 .withSizeKeepingCentre (area.getWidth(), OPTIONS_HEIGHT)
+ 									 .withSizeKeepingCentre (area.getWidth(),
+ 									 					     jmin (panelArea.getHeight()*2/9 - 2*MARGIN, OPTIONS_HEIGHT))
  									 .reduced (4*MARGIN, 0)
  									 .withTrimmedLeft (panelArea.getWidth()/4));
 
@@ -125,6 +129,24 @@ void NewGesturePanel::update()
 void NewGesturePanel::visibilityChanged()
 {
 }
+
+void NewGesturePanel::mouseEnter (const MouseEvent &event)
+{
+	if (auto* gestureSelector = dynamic_cast<GestureTypeSelector*> (event.eventComponent))
+	{
+		descriptionTextEditor->setText ("", false);
+
+		// Gesture Type
+		descriptionTextEditor->setFont (PLUME::font::plumeFontBold.withHeight (15.0f));
+		descriptionTextEditor->insertTextAtCaret (Gesture::getTypeString (gestureSelector->gestureType, true)
+												  	  + " :   ");
+		// Gesture Description
+		descriptionTextEditor->setFont (PLUME::font::plumeFontBook.withHeight (14.0f));
+		descriptionTextEditor->insertTextAtCaret (Gesture::getGestureDescriptionString (gestureSelector->gestureType));
+	
+		descriptionTextEditor->setCaretPosition (0);
+	}
+}
 void NewGesturePanel::mouseUp (const MouseEvent &event)
 {
 	if (auto* gestureSelector = dynamic_cast<GestureTypeSelector*> (event.eventComponent))
@@ -136,19 +158,19 @@ void NewGesturePanel::buttonClicked (Button* bttn)
 {
 	if (bttn == closeButton)
 	{
-		setVisible (false);
+		hidePanel (true);
 	}
 
 	else if (bttn == addGestureButton)
 	{
-		if (selectedGestureType != -1 && gestureNameLabel->getText() != "New Gesture...")
+		if (selectedGestureType != -1 && gestureNameLabel->getText() != "Gesture Name...")
 		{
 			// creates gesture and closes panel
 			processor.getGestureArray().addGesture (gestureNameLabel->getText(),
 													selectedGestureType,
 													selectedGestureSlot);
 			updateGesturePanel();
-			hidePanel ();
+			hidePanel (false);
 		}
 	}
 }
@@ -189,7 +211,7 @@ void NewGesturePanel::showPanelForGestureID (const int gestureID)
 		jassertfalse;
 		return;
 	}
-	else if (processor.getGestureArray().getGestureById (gestureID) != nullptr)
+	else if (processor.getGestureArray().getGesture (gestureID) != nullptr)
 	{
 		// Plume tries to create a gesture for an id that already has a gesture!!
 		jassertfalse;
@@ -202,10 +224,11 @@ void NewGesturePanel::showPanelForGestureID (const int gestureID)
     setVisible (true);
 }
 
-void NewGesturePanel::hidePanel()
+void NewGesturePanel::hidePanel (const bool resetSelectedSlot)
 {
-    selectedGestureType = -1;
-    selectedGestureSlot = -1;
+    if (resetSelectedSlot) selectedGestureSlot = -1;
+
+    unselectGestureType();
     setVisible (false);
 }
 
@@ -215,6 +238,11 @@ void NewGesturePanel::updateGesturePanel()
 	{
 		gesturePanel->update();
 	}
+}
+
+const int NewGesturePanel::getLastSelectedSlot()
+{
+	return selectedGestureSlot;
 }
 
 void NewGesturePanel::setVisible (bool shouldBeVisible)
@@ -237,6 +265,8 @@ void NewGesturePanel::selectGestureTypeExclusive (GestureTypeSelector* gestureTy
 }
 void NewGesturePanel::unselectGestureType()
 {
+	if (selectedGestureType == -1) return;
+	
 	gestureSelectors[selectedGestureType]->setSelected (false);
 	selectedGestureType = -1;
 }
@@ -291,6 +321,21 @@ void NewGesturePanel::resizeGestureSelectorButtons (juce::Rectangle<int> buttons
 	}
 }
 
+void NewGesturePanel::createAndAddTextEditor()
+{
+	addAndMakeVisible (descriptionTextEditor = new TextEditor ("Gesture Description Text Editor"));
+    descriptionTextEditor->setMultiLine (true, true);
+    descriptionTextEditor->setReturnKeyStartsNewLine (true);
+    descriptionTextEditor->setReadOnly (true);
+    descriptionTextEditor->setScrollbarsShown (true);
+    descriptionTextEditor->setPopupMenuEnabled (false);
+    descriptionTextEditor->applyColourToAllText (PLUME::UI::currentTheme.getColour (PLUME::colour::sideBarMainText), true);
+    descriptionTextEditor->setJustification (Justification::centred);
+    descriptionTextEditor->setFont (PLUME::font::plumeFontBook.withHeight (13.0f));
+    descriptionTextEditor->setMouseCursor (MouseCursor (MouseCursor::NormalCursor));
+    descriptionTextEditor->setInterceptsMouseClicks (false, false);
+}
+
 //==============================================================================
 // GestureTypeSelector
 
@@ -303,7 +348,7 @@ NewGesturePanel::GestureTypeSelector::~GestureTypeSelector()
 
 const String NewGesturePanel::GestureTypeSelector::getInfoString()
 {
-	return "Add a " + Gesture::getTypeString (gestureType, true);
+	return String();
 }
 void NewGesturePanel::GestureTypeSelector::update()
 {

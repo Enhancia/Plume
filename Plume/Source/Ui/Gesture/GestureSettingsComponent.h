@@ -51,14 +51,20 @@ public:
 private:
     //==============================================================================
     void createTuner();
+	void disableIfGestureWasDeleted();
     
     //==============================================================================
+    bool disabled = false;
+
+    //==============================================================================
     Gesture& gesture;
+    const int gestureId;
     GestureArray& gestureArray;
     PluginWrapper& wrapper;
     
     ScopedPointer<Tuner> gestTuner;
     ScopedPointer<MapperComponent> gestMapper;
+    ScopedPointer<TextButton> midiParameterToggle;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GestureSettingsComponent)

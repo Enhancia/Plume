@@ -66,6 +66,7 @@ private:
     void createUserPreset (const String& presetName);
     void renamePreset (const String& newName);
 
+    void stopGesturePanelTimer();
     void updateHeader();
     
     //==============================================================================

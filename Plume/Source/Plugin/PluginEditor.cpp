@@ -23,19 +23,17 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	setBroughtToFrontOnMouseClick (true);
 
 	// Creates the Top Panels
+    addAndMakeVisible (newGesturePanel = new NewGesturePanel (processor));
+    newGesturePanel->hidePanel();
+    newGesturePanel->setAlwaysOnTop (true);
+
 	addAndMakeVisible (optionsPanel = new OptionsPanel (processor));
 	optionsPanel->setVisible (false);
 	optionsPanel->setAlwaysOnTop (true);
-	optionsPanel->setBounds (getBounds());
 	
 	addAndMakeVisible (newPresetPanel = new NewPresetPanel (processor));
 	newPresetPanel->setVisible (false);
 	newPresetPanel->setAlwaysOnTop (true);
-	newPresetPanel->setBounds (getBounds());
-
-    addAndMakeVisible (newGesturePanel = new NewGesturePanel (processor));
-    newGesturePanel->hidePanel();
-    newGesturePanel->setAlwaysOnTop (true);
 
     // Creates the main components
     addAndMakeVisible (header = new HeaderComponent (processor, *newPresetPanel));
@@ -225,14 +223,15 @@ PlumeProcessor& PlumeEditor::getProcessor()
 void PlumeEditor::updateFullInterface()
 {
     TRACE_IN;
+    removeChildComponent (gesturePanel);
     auto gpbounds = gesturePanel->getBounds();
-    gesturePanel.reset();
 
-    addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
-	                                                    processor.getParameterTree(), *newGesturePanel,
-                                                        PLUME::UI::FRAMERATE));
+    gesturePanel.reset (new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
+                                          processor.getParameterTree(), *newGesturePanel,
+                                          PLUME::UI::FRAMERATE));
+    addAndMakeVisible (gesturePanel, 0);
 	gesturePanel->setBounds(gpbounds);
-	gesturePanel->addMouseListener (this, true);
+    
 	header->update();
 	sideBar->update();
 	
