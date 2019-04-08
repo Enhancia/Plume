@@ -125,6 +125,8 @@ public:
     void paint (Graphics& g) override
     {
         SymmetricalTuner::paint(g); // SuperClass method call
+        g.setColour (Colour (0xff303030));
+        g.setFont (PLUME::font::plumeFont);
         
         // Writes the "threshold" text
         int x = W*3/4,

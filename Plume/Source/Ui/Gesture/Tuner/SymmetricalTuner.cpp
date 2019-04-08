@@ -38,10 +38,9 @@ void SymmetricalTuner::paint (Graphics& g)
             height = H/4;
                 
         String text (TRANS("Range"));
-        Colour fillColour = Colour (0xffffffff);
 
-        g.setColour (fillColour);
-        g.setFont (Font (PLUME::UI::font, 12.0f, Font::plain).withTypefaceStyle ("Regular"));
+        g.setColour (Colour (0xff303030));
+        g.setFont (Font (PLUME::UI::font, 12.0f, Font::plain));
         g.drawText (text, x, y, width, height,
                     Justification::centred, true);
     }
