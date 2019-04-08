@@ -24,8 +24,8 @@
 */
 class GesturePanel    : public PlumeComponent,
                         public Timer,
-                        private Button::Listener
-                        //private AudioProcessorValueTreeState::Listener
+                        private Button::Listener,
+                        private AudioProcessorValueTreeState::Listener
 {
 public:
     //==============================================================================
@@ -48,13 +48,15 @@ public:
     // Callbacks
     void timerCallback() override;
     void buttonClicked (Button*) override;
-    //void parameterChanged (const String &parameterID, float newValue) override;
+    void parameterChanged (const String &parameterID, float newValue) override;
 
     void mouseUp (const MouseEvent &event) override;
     bool keyPressed (const KeyPress &key) override;
 
     //==============================================================================
-    //void removeListenerForAllParameters();
+    void removeListenerForAllParameters();
+    void addParameterListenerForGestureId (const int id);
+    void removeParameterListenerForGestureId (const int id);
 
     //==============================================================================
     void initialiseGestureSlots();
@@ -88,7 +90,7 @@ private:
 
     private:
         Gesture& gesture;
-        String gestureDescription = "This is the description my dude.";
+        String gestureDescription = "";
         bool on = gesture.isActive(), selected = false, highlighted = false, solo = false;
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GestureComponent)

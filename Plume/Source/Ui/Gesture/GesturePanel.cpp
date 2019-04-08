@@ -39,7 +39,7 @@ GesturePanel::~GesturePanel()
     stopTimer();
     unselectCurrentGesture();
     newGesturePanel.hidePanel (true);
-    //removeListenerForAllParameters();
+    removeListenerForAllParameters();
 }
 
 //==============================================================================
@@ -134,7 +134,10 @@ void GesturePanel::mouseUp (const MouseEvent &event)
     {
         if (auto* gestureComponent = dynamic_cast<GestureComponent*> (event.eventComponent))
         {
-            switchGestureSelectionState (*gestureComponent);
+            if (!gestureComponent->isSelected())
+            {
+                selectGestureExclusive (*gestureComponent);
+            }
         }
 
         if (auto* emptySlot = dynamic_cast<EmptyGestureSlotComponent*> (event.eventComponent))
@@ -147,7 +150,8 @@ void GesturePanel::mouseUp (const MouseEvent &event)
 bool GesturePanel::keyPressed (const KeyPress &key)
 {
     if (hasSelectedGesture() && key.isValid()
-                             && key.getKeyCode() == KeyPress::deleteKey)
+                             && (key.getKeyCode() == KeyPress::deleteKey ||
+                                 key.getKeyCode() == KeyPress::backspaceKey))
     {
         removeGestureAndGestureComponent (selectedGesture);
     }
@@ -162,6 +166,7 @@ void GesturePanel::initialiseGestureSlots()
         if (Gesture* gestureToCreateComponentFor = gestureArray.getGesture (i))
         {
             gestureSlots.add (new GestureComponent (*gestureToCreateComponentFor));
+            addParameterListenerForGestureId (i);
         }
         else
         {
@@ -180,6 +185,7 @@ void GesturePanel::updateSlotIfNeeded (int slotToCheck)
     {
         if (gestureArray.getGesture (slotToCheck) == nullptr)
         {
+            removeParameterListenerForGestureId (slotToCheck);
             gestureSlots.set (slotToCheck, new EmptyGestureSlotComponent (slotToCheck), true);
             addAndMakeVisible (gestureSlots[slotToCheck]);
             gestureSlots[slotToCheck]->addMouseListener (this, false);
@@ -192,6 +198,8 @@ void GesturePanel::updateSlotIfNeeded (int slotToCheck)
     {
         if (auto* gestureThatWasCreated = gestureArray.getGesture (slotToCheck))
         {
+            addParameterListenerForGestureId (slotToCheck);
+
             gestureSlots.set (slotToCheck, new GestureComponent (*gestureThatWasCreated), true);
             addAndMakeVisible (gestureSlots[slotToCheck]);
             gestureSlots[slotToCheck]->addMouseListener (this, false);
@@ -237,6 +245,8 @@ void GesturePanel::removeGestureAndGestureComponent (int gestureId)
         unselectCurrentGesture();
         gestureSettings.reset (nullptr);
     }
+
+    removeParameterListenerForGestureId (gestureId);
     gestureArray.removeGesture (gestureId);
     updateSlotIfNeeded (gestureId);
 
@@ -299,8 +309,10 @@ void GesturePanel::unselectCurrentGesture()
         }
 
         gestureComponentToUnselect->setSelected (false);
+
         if (auto* gestureToUnselect = gestureArray.getGesture (selectedGesture))
             gestureToUnselect->removeAllChangeListeners();
+
         selectedGesture = -1;
         setSettingsVisible (false);
         gestureSettings.reset (nullptr);
@@ -352,8 +364,7 @@ void GesturePanel::createAndAddCloseButton()
 {
     addAndMakeVisible (closeButton = new ShapeButton ("Close Settings Button", Colour(0x00000000),
                                                                                Colour(0x00000000),
-                                                                               Colour(0x00000000)
-                                                      ),
+                                                                               Colour(0x00000000)),
                       -1);
 
     Path p;
@@ -368,40 +379,56 @@ void GesturePanel::createAndAddCloseButton()
     closeButton->addListener (this);
 }
 
-/*
 void GesturePanel::removeListenerForAllParameters()
 {
     for (auto* gesture : gestureArray.getArray())
     {
-        for (int i = 0; i<PLUME::param::numParams; i++)
-        {
-            parameters.removeParameterListener (String (gesture->id) + PLUME::param::paramIds[i], this);
-        }
+		removeParameterListenerForGestureId (gesture->id);
     }
-    
+}
+
+void GesturePanel::addParameterListenerForGestureId (const int id)
+{
+    for (int i = 0; i<PLUME::param::numParams; i++)
+    {
+        parameters.addParameterListener (String (id) + PLUME::param::paramIds[i], this);
+    }
+}
+
+void GesturePanel::removeParameterListenerForGestureId (const int id)
+{
+    for (int i = 0; i<PLUME::param::numParams; i++)
+    {
+        parameters.removeParameterListener (String (id) + PLUME::param::paramIds[i], this);
+    }
 }
 
 void GesturePanel::parameterChanged (const String& parameterID, float)
 {
-    
     // if the ID is "x_value" or "x_vibrato_intensity": doesn't update
     // (only the MovingCursor object in the the GestureTunerComponent is updated)
     if (parameterID.endsWith ("ue") || parameterID.endsWith ("y") || !PLUME::UI::ANIMATE_UI_FLAG) return;
-        
     
-    int numGesture = parameterID.substring(0,1).getIntValue();
+    const int gestureId = parameterID.substring(0,1).getIntValue();
     
-    for (auto* gComp : gestureComponents)
+    if (auto* gestureComponentToUpdate = dynamic_cast<GestureComponent*> (gestureSlots[gestureId]))
     {
-        if (gComp->getGestureId() == numGesture)
+        if (gestureComponentToUpdate->id == gestureId)
         {
-            gComp->updateComponents();
+			const MessageManagerLock mmLock;
+
+			gestureComponentToUpdate->update();
+
+            if (gestureSettings != nullptr)
+            {
+                if (gestureSettings->getGestureId() == gestureId)
+                {
+                    gestureSettings->update();
+                }
+            }
         }
     }
 }
-*/
-
-
 
 //==============================================================================
 // Gesture Grid 
@@ -415,8 +442,10 @@ GesturePanel::GestureComponent::~GestureComponent()
 
 const String GesturePanel::GestureComponent::getInfoString()
 {
-    return gesture.name + "\n" + gesture.getTypeString (true) + "\n\n" +
-           gestureDescription;
+    return gesture.name + " | " + gesture.getTypeString (true) + "\n\n" +
+           "State : " + (gesture.isActive() ? "Enabled" : "Disabled") +
+           " | Mode : " + (gesture.isMapped() ? "Parameters\n" : "MIDI\n")
+           + "\nDescription : " + gestureDescription;
 }
 void GesturePanel::GestureComponent::update()
 {
@@ -496,8 +525,7 @@ GesturePanel::EmptyGestureSlotComponent::~EmptyGestureSlotComponent()
 
 const String GesturePanel::EmptyGestureSlotComponent::getInfoString()
 {
-    return "Gesture Slot:\n\n"
-           "- Click on the \"+\" button to create a new gesture in this slot.";
+    return String();
 }
 void GesturePanel::EmptyGestureSlotComponent::update()
 {

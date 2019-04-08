@@ -426,7 +426,8 @@ void GestureArray::addGestureFromXml (XmlElement& gesture)
 				                    float(gesture.getDoubleAttribute ("start", 0.0)),
                                     float(gesture.getDoubleAttribute ("end", 50.0))));
             break;
-        /*    
+
+        /* TODO WAVE
         case Gesture::wave:
             gestures.add (new Wave (gesture.getTagName().compare ("gesture") == 0 ? gesture.getStringAttribute ("name", "Wave")
                                                                                   : gesture.getTagName(),
@@ -503,7 +504,7 @@ void GestureArray::createGestureXml (XmlElement& gesturesData)
             gestXml->setAttribute ("start", double (t.rangeLow.convertFrom0to1 (t.rangeLow.getValue())));
             gestXml->setAttribute ("end", double (t.rangeHigh.convertFrom0to1 (t.rangeHigh.getValue())));
         }
-        /*
+        /* TODO WAVE
         else if (g->type == Gesture::wave)
         {
             Wave& w = dynamic_cast<Wave&> (*g);

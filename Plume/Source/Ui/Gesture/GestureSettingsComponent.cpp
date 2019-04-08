@@ -98,7 +98,7 @@ void GestureSettingsComponent::buttonClicked (Button*)
     
 
 //==============================================================================
-int GestureSettingsComponent::getGestureId()
+const int GestureSettingsComponent::getGestureId()
 {
     return gesture.id;
 }

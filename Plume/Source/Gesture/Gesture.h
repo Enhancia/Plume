@@ -608,7 +608,15 @@ public:
         parameterArray.clear();
         sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
     }
-    
+
+    /**
+     *  \brief Getter for the number of mapped parameters.
+     */
+    int getNumParameters() const
+    {
+        return parameterArray.size();
+    }
+
     /**
      *  \brief Gets a reference to the parameter array.
      */

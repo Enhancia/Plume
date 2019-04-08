@@ -43,7 +43,7 @@ public:
     void buttonClicked (Button*) override;
     
     //==============================================================================
-    int getGestureId();
+    const int getGestureId();
     Tuner& getTuner();
     void updateDisplay();
     void updateComponents();

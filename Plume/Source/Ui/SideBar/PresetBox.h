@@ -13,6 +13,7 @@
 #include "../../../JuceLibraryCode/JuceHeader.h"
 #include "Common/PlumeCommon.h"
 #include "Plugin/PluginProcessor.h"
+#include "Ui/Gesture/GesturePanel.h"
 
 class PresetBox    : public ListBox,
                      public ListBoxModel,
@@ -66,7 +67,7 @@ private:
     void createUserPreset (const String& presetName);
     void renamePreset (const String& newName);
 
-    void stopGesturePanelTimer();
+    void prepareGesturePanelToPresetChange();
     void updateHeader();
     
     //==============================================================================

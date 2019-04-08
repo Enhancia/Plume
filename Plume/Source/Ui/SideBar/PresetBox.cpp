@@ -319,7 +319,7 @@ void PresetBox::setPreset (const int row)
         AudioProcessor::copyXmlToBinary (*presetXml, presetData);
             
         // Calls the plugin's setStateInformation method to load the preset
-	    stopGesturePanelTimer();
+	    prepareGesturePanelToPresetChange();
        //Time::waitForMillisecondCounter(Time::getMillisecondCounter() + 10);
 
         processor.setStateInformation (presetData.getData(), int (presetData.getSize()));
@@ -348,14 +348,15 @@ void PresetBox::renamePreset (const String& newName)
     processor.getPresetHandler().renamePreset (newName, presetIdToEdit);
 }
 
-void PresetBox::stopGesturePanelTimer()
+void PresetBox::prepareGesturePanelToPresetChange()
 {
-    if (auto* gesturePanel = dynamic_cast<Timer*> ( getParentComponent() // presetComp
-                                                   ->getParentComponent() // sideBarComp
-                                                   ->getParentComponent() // editor
-                                                   ->findChildWithID("gesturePanel")))
+    if (GesturePanel* gesturePanel = dynamic_cast<GesturePanel*> ( getParentComponent() // presetComp
+                                                         ->getParentComponent() // sideBarComp
+                                                         ->getParentComponent() // editor
+                                                         ->findChildWithID("gesturePanel")))
     {
-        gesturePanel->stopTimer();
+		gesturePanel->stopTimer();
+        gesturePanel->removeListenerForAllParameters();
     }
 }
 
