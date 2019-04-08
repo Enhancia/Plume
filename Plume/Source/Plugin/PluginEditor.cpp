@@ -60,6 +60,8 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     
     // Adds itself as a change listener for plume's processor
     processor.addActionListener (this);
+    if (auto* infoPanel = dynamic_cast<InfoPanel*> (sideBar->findChildWithID ("infoPanel")))
+        PlumeComponent::listenToAllChildrenPlumeComponents (this, infoPanel, false);
 
 	// Base size and resize settings
 	setResizable (true, false);

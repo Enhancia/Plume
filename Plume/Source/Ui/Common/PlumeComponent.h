@@ -102,6 +102,11 @@ public:
                                                     ActionListener* listener,
                                                     bool searchPlumeComponentChildrenOnly = true)
     {
+        // This method call is pointless if the listener doesn't exist...
+        jassert (listener != nullptr);
+
+        if (topComponent == nullptr || listener == nullptr) return;
+
         for (Component* child : topComponent->getChildren())
         {
             // Child is PlumeComponent
@@ -109,13 +114,13 @@ public:
             {
                 // Listens and search this component's children
                 plumeComp->addActionListener (listener);
-                return (listenToAllChildrenPlumeComponents (plumeComp, listener, searchPlumeComponentChildrenOnly));
+                listenToAllChildrenPlumeComponents (plumeComp, listener, searchPlumeComponentChildrenOnly);
             }
             
             // child is Component and we are searching Components' children
             if (!searchPlumeComponentChildrenOnly) 
             {
-                return (listenToAllChildrenPlumeComponents (child, listener, searchPlumeComponentChildrenOnly));
+                listenToAllChildrenPlumeComponents (child, listener, searchPlumeComponentChildrenOnly);
             }
         }
     }
