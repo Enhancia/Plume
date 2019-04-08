@@ -445,7 +445,7 @@ const String GesturePanel::GestureComponent::getInfoString()
     return gesture.name + " | " + gesture.getTypeString (true) + "\n\n" +
            "State : " + (gesture.isActive() ? "Enabled" : "Disabled") +
            " | Mode : " + (gesture.isMapped() ? "Parameters\n" : "MIDI\n")
-           + "\nDescription : " + gestureDescription;
+           + "\n" + gestureDescription;
 }
 void GesturePanel::GestureComponent::update()
 {

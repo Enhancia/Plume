@@ -69,6 +69,7 @@ private:
 
         bool isSelected();
         void setSelected (bool shouldBeSelected);
+        void setHighlighted (bool shouldBeHighlighted);
 
         const int gestureType; // from Gesture::GestureType
 

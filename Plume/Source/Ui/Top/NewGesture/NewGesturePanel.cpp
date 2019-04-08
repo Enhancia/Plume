@@ -172,6 +172,14 @@ void NewGesturePanel::buttonClicked (Button* bttn)
 			updateGesturePanel();
 			hidePanel (false);
 		}
+		else
+		{
+			if (selectedGestureType == -1)
+				sendActionMessage ("Please select a gesture type.");
+
+			if (selectedGestureType != -1 && gestureNameLabel->getText() == "Gesture Name...")
+				sendActionMessage ("Please enter a gesture name.");
+		}
 	}
 }
 
@@ -261,6 +269,19 @@ void NewGesturePanel::selectGestureTypeExclusive (GestureTypeSelector* gestureTy
 	}
 
 	gestureTypeToSelect->setSelected (true);
+
+	if (gestureNameLabel->getText() == "Gesture Name..." ||
+		gestureNameLabel->getText() == Gesture::getTypeString (selectedGestureType, true))
+	{
+		gestureNameLabel->setText (Gesture::getTypeString (gestureTypeToSelect->gestureType, true),
+								   sendNotification);
+
+		if (selectedGestureType != -1)
+			gestureSelectors[selectedGestureType]->setHighlighted (false);
+		
+		gestureNameLabel->showEditor();
+	}
+
 	selectedGestureType = gestureTypeToSelect->gestureType;
 }
 void NewGesturePanel::unselectGestureType()
@@ -379,12 +400,12 @@ void NewGesturePanel::GestureTypeSelector::resized()
 
 void NewGesturePanel::GestureTypeSelector::mouseEnter (const MouseEvent &event)
 {
-	highlighted = true;
+	setHighlighted (true);
 	repaint();
 }
 void NewGesturePanel::GestureTypeSelector::mouseExit (const MouseEvent &event)
 {
-	highlighted = false;
+	setHighlighted (false);
 	repaint();
 }
 
@@ -397,6 +418,15 @@ void NewGesturePanel::GestureTypeSelector::setSelected (bool shouldBeSelected)
 	if (shouldBeSelected != selected)
 	{
 		selected = shouldBeSelected;
+		repaint();
+	}
+}
+
+void NewGesturePanel::GestureTypeSelector::setHighlighted (bool shouldBeHighlighted)
+{
+	if (shouldBeHighlighted != highlighted)
+	{
+		highlighted = shouldBeHighlighted;
 		repaint();
 	}
 }

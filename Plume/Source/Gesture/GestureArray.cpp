@@ -27,10 +27,10 @@ GestureArray::~GestureArray()
 //==============================================================================
 void GestureArray::initializeGestures()
 {
-    addGesture ("Vibrato_Default", Gesture::vibrato, 0);
-    addGesture ("PitchBend_Default", Gesture::pitchBend, 1);
-    addGesture ("Autilt", Gesture::tilt, 3);
-    addGesture ("Rick", Gesture::roll, 4);
+    addGesture ("Vibrato", Gesture::vibrato, 0);
+    addGesture ("Pitch Bend", Gesture::pitchBend, 1);
+    addGesture ("Tilt", Gesture::tilt, 2);
+    //addGesture ("Roll", Gesture::roll, 3);
 }
 //==============================================================================
 void GestureArray::process (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
