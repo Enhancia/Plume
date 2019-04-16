@@ -43,13 +43,13 @@ void GestureArray::process (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 {
     ScopedLock gestlock (gestureArrayLock);
-        
+    
     if (shouldMergePitch)
     {
         // Adds non-pitch midi
         for (auto* g : gestures)
         {
-            if (g->affectsPitch() == false && ( g->isMapped() == false || (g->isMidiMapped() == true && g->midiType != Gesture::pitch)))
+            if (g->isMidiMapped() == true && g->affectsPitch() == false)
             {
                 g->addGestureMidi (midiMessages, plumeBuffer);
             }
@@ -64,7 +64,7 @@ void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages, MidiBuffer&
         // Adds all midi
         for (auto* g : gestures)
         {
-            if (g->isMapped() == false || g->isMidiMapped() == true)
+            if (g->isMidiMapped() == true)
             {
                 g->addGestureMidi (midiMessages, plumeBuffer);
             }
@@ -117,7 +117,7 @@ Gesture* GestureArray::getGesture (const String nameToSearch)
     // Browses every gesture to compare their name with nameToSearch
     for (auto* g : gestures)
     {
-        if (g->name.compare(nameToSearch) == 0)
+        if (g->getName().compare(nameToSearch) == 0)
         {
             return g;
         }
@@ -469,7 +469,7 @@ void GestureArray::createGestureXml (XmlElement& gesturesData)
         auto gestXml = new XmlElement ("gesture");
         
         // General attributes
-        gestXml->setAttribute ("name", g->name);
+        gestXml->setAttribute ("name", g->getName());
         gestXml->setAttribute ("type", g->type);
 		gestXml->setAttribute ("id", g->id);
         gestXml->setAttribute ("on", g->isActive());

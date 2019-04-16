@@ -11,7 +11,7 @@
 #include "Gesture/GestureArray.h"
 #include "Ui/Gesture/GesturePanel.h"
 #include "Ui/Gesture/Tuner/GesturesTuner.h"
-#include "Ui/Gesture/Mapper/MapperComponent.h"
+#include "Ui/Gesture/SettingsTabs/MapperComponent.h"
 //#include "GestureGridComponent.h"
 #include "GestureSettingsComponent.h"
 
@@ -67,7 +67,6 @@ void GesturePanel::paint (Graphics& g)
 {
     using namespace PLUME::UI;
     // Background
-    g.fillAll (Colour (0xff101717));
     
     /*
     if (hasSelectedGesture())
@@ -83,6 +82,8 @@ void GesturePanel::paint (Graphics& g)
     g.drawImage (backgroundImage, getLocalBounds().toFloat(), RectanglePlacement::xLeft +
                                                               RectanglePlacement::yTop  +
                                                               RectanglePlacement::doNotResize);
+    //g.setColour (Colour (0x30000000));
+    //g.fillRect (getLocalBounds());
                                                               
 }
 
@@ -442,9 +443,9 @@ GesturePanel::GestureComponent::~GestureComponent()
 
 const String GesturePanel::GestureComponent::getInfoString()
 {
-    return gesture.name + " | " + gesture.getTypeString (true) + "\n\n" +
+    return gesture.getName() + " | " + gesture.getTypeString (true) + "\n\n" +
            "State : " + (gesture.isActive() ? "Enabled" : "Disabled") +
-           " | Mode : " + (gesture.isMapped() ? "Parameters\n" : "MIDI\n")
+           " | Mode : " + (gesture.isMidiMapped() ? "MIDI\n" : "Parameters\n")
            + "\n" + gestureDescription;
 }
 void GesturePanel::GestureComponent::update()
@@ -464,17 +465,33 @@ void GesturePanel::GestureComponent::paint (Graphics& g)
 
     g.fillRoundedRectangle (getLocalBounds().toFloat(), 3.0f);
 
-    auto nameAndTypeArea = getLocalBounds().withHeight(30)
-                                           .withTrimmedLeft (PLUME::UI::MARGIN);
+    auto nameAndTypeArea = getLocalBounds().withHeight(30);
 
     g.setColour (Colours::black.withAlpha (0.6f));
-    g.setFont (PLUME::font::plumeFontLight.withHeight (15.0f));
-    g.drawText (gesture.getTypeString (true), nameAndTypeArea.removeFromLeft(nameAndTypeArea.getWidth()/3),
+    g.setFont (PLUME::font::plumeFontLight.withHeight (13.0f));
+    g.drawText (gesture.getTypeString (true), nameAndTypeArea.removeFromLeft (getWidth()/4)
+                                                             .withTrimmedLeft (PLUME::UI::MARGIN),
                 Justification::centredLeft, true);
 
     g.setColour (Colours::black.withAlpha (0.8f));
     g.setFont (PLUME::font::plumeFontBold.withHeight (15.0f));
-    g.drawText (gesture.name, nameAndTypeArea, Justification::centredLeft, true);
+    g.drawText (gesture.getName(), nameAndTypeArea.removeFromLeft(getWidth()/2),
+                Justification::centred, true);
+
+    auto stateArea = nameAndTypeArea.withHeight (getHeight())
+                                    .withTrimmedRight (PLUME::UI::MARGIN);
+
+    g.setFont (PLUME::font::plumeFontLight.withHeight (13.0f));
+    g.setColour (Colours::black.withAlpha (0.6f));
+
+    g.drawText (gesture.isActive() ? "On" : "Muted",
+                stateArea.removeFromTop (stateArea.getHeight()/2),
+                Justification::centredRight, true);
+    
+    g.drawText (gesture.isMidiMapped() ? "MIDI" : "Param",
+                stateArea,
+                Justification::centredRight, true);
+    
 }
 void GesturePanel::GestureComponent::resized()
 {

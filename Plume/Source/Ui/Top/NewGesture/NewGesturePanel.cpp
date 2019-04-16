@@ -60,11 +60,11 @@ void NewGesturePanel::paint (Graphics& g)
     g.fillRect (panelArea);
     
     // panel outline
-    auto gradOut = ColourGradient::horizontal (currentTheme.getColour(colour::sideBarSeparatorOut),
+    auto gradOut = ColourGradient::horizontal (currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
                                                float(panelArea.getX()), 
-                                               currentTheme.getColour(colour::sideBarSeparatorOut),
+                                               currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
                                                float(panelArea.getRight()));
-    gradOut.addColour (0.5, currentTheme.getColour(colour::sideBarSeparatorIn));
+    gradOut.addColour (0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
 
     g.setGradientFill (gradOut);
     g.drawRect (panelArea);
@@ -190,12 +190,12 @@ void NewGesturePanel::labelTextChanged (Label* lbl)
         if (lbl->getText().isEmpty())
         {
             lbl->setText ("Gesture Name...", dontSendNotification);
-            lbl->setColour (Label::textColourId, UI::currentTheme.getColour (colour::topPanelMainText)
-                                                                 .withAlpha (0.6f));
+            lbl->setColour (Label::textColourId, PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText)
+                                                                        .withAlpha (0.6f));
         }
         else
         {
-            lbl->setColour (Label::textColourId, UI::currentTheme.getColour (colour::topPanelMainText));
+            lbl->setColour (Label::textColourId, PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText));
         }
     }
 }
@@ -213,7 +213,7 @@ void NewGesturePanel::editorShown (Label* lbl, TextEditor& ed)
 //==============================================================================
 void NewGesturePanel::showPanelForGestureID (const int gestureID)
 {
-	if (gestureID < 0 || gestureID >= NUM_GEST)
+	if (gestureID < 0 || gestureID >= PLUME::NUM_GEST)
 	{
 		// Plume tries to create a gesture for an id that can't exist
 		jassertfalse;

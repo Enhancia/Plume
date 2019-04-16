@@ -42,7 +42,7 @@ void Tilt::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 	int midiVal = getMidiValue();
 	if (midiVal == lastMidi) return; // Does nothing if the midi value did not change
 
-    if (isMidiMapped())
+    if (!useDefaultMidi)
     {
         addMidiModeSignalToBuffer (midiMessages, plumeBuffer, midiVal, 0, 127, 1);
     }

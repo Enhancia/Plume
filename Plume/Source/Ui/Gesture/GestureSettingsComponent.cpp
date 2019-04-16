@@ -9,7 +9,7 @@
 */
 
 #include "Ui/Gesture/Tuner/GesturesTuner.h"
-#include "Ui/Gesture/Mapper/MapperComponent.h"
+#include "Ui/Gesture/SettingsTabs/MapperComponent.h"
 #include "GestureSettingsComponent.h"
 
 //==============================================================================
@@ -18,7 +18,8 @@ GestureSettingsComponent::GestureSettingsComponent (Gesture& gest, GestureArray&
 {
     TRACE_IN;
     createTuner();
-    addAndMakeVisible( gestMapper = new MapperComponent(gesture, gestureArray, wrapper));
+    createToggles();
+    createTabbedSettings();
 }
 
 GestureSettingsComponent::~GestureSettingsComponent()
@@ -26,8 +27,9 @@ GestureSettingsComponent::~GestureSettingsComponent()
     TRACE_IN;
     gestureArray.cancelMapMode();
     disabled = true;
-    gestMapper = nullptr;
     gestTuner = nullptr;
+    midiParameterToggle = nullptr;
+    tabbedSettings = nullptr;
 }
 
 //==============================================================================
@@ -42,13 +44,29 @@ void GestureSettingsComponent::update()
     if (disabled) return;
 
     gestTuner->updateComponents();
-    gestMapper->updateComponents();
+
+    if (auto* midi = dynamic_cast<MidiModeComponent*> (tabbedSettings->getComponentFromTab (0)))
+    {
+        midi->updateComponents();
+    }
+    if (auto* mapper = dynamic_cast<MapperComponent*> (tabbedSettings->getComponentFromTab (1)))
+    {
+        mapper->updateComponents();
+    }
 }
 
 //==============================================================================
 void GestureSettingsComponent::paint (Graphics& g)
 {
     using namespace PLUME::UI;
+
+    //Gradient for horizontal lines
+    auto grad = ColourGradient::horizontal (Colour (0x15323232),
+                                            float(MARGIN), 
+                                            Colour (0x15323232),
+                                            float(getWidth() - MARGIN));
+    grad.addColour (0.5, Colour (0x50323232));
+    
     auto area = getLocalBounds().reduced (2*MARGIN).withLeft (0);
 
     g.setColour (Colours::white);
@@ -59,7 +77,7 @@ void GestureSettingsComponent::paint (Graphics& g)
     // Gesture Name text
     g.setColour (Colour(0xff323232));                    
     g.setFont (PLUME::font::plumeFontBold.withHeight (15.0f));
-    g.drawText (gesture.name,
+    g.drawText (gesture.getName(),
                 area.removeFromTop (20),
                 Justification::centredLeft, false);
 
@@ -68,6 +86,26 @@ void GestureSettingsComponent::paint (Graphics& g)
     g.drawText (gesture.getTypeString (true),
                 area.removeFromTop (20),
                 Justification::centredLeft, false);
+
+    g.setGradientFill (grad);
+    g.drawHorizontalLine (area.removeFromTop (80).getY(),
+                          float(area.getX() + 4*MARGIN), float(area.getWidth() - 4*MARGIN));
+    g.drawHorizontalLine (area.getY(),
+                          float(area.getX() + 4*MARGIN), float(area.getWidth() - 4*MARGIN));
+
+    // Toggle on/off Text
+    g.setColour (Colour(0xff323232));  
+    g.setFont (PLUME::font::plumeFont.withHeight (13.0f));
+    g.drawText ("Toggle On/Off : ",
+                area.removeFromTop (30).withWidth (area.getWidth()/2).reduced (2*MARGIN, 0),
+                Justification::centredRight, false);
+
+    // Control Type Text
+    g.setColour (Colour(0xff323232));  
+    g.setFont (PLUME::font::plumeFont.withHeight (13.0f));
+    g.drawText ("Control Type : ",
+                area.removeFromTop (30).withWidth (area.getWidth()/2).reduced (2*MARGIN, 0),
+                Justification::centredRight, false);
 }
 
 void GestureSettingsComponent::resized()
@@ -76,9 +114,18 @@ void GestureSettingsComponent::resized()
 
     auto area = getLocalBounds().reduced (3*MARGIN).withLeft (MARGIN).withTrimmedTop (40);
 
-    gestTuner->setBounds (area.removeFromTop (area.getHeight()/2).reduced (MARGIN));
+    gestTuner->setBounds (area.removeFromTop (80).reduced (MARGIN));
 
-    gestMapper->setBounds (area.reduced (MARGIN));
+    onOffToggle->setBounds (area.removeFromTop (30).withLeft (area.getWidth()/2)
+                                                   .withWidth (120)
+                                                   .reduced (MARGIN));
+
+    midiParameterToggle->setBounds (area.removeFromTop (30).withLeft (area.getWidth()/2)
+                                                           .withWidth (120)
+                                                           .reduced (MARGIN));
+
+    tabbedSettings->setBounds (area.reduced (MARGIN));
+
     repaint();
 }
 
@@ -115,7 +162,11 @@ void GestureSettingsComponent::updateDisplay()
     if (!disabled)
     {
         if (gesture.isActive()) gestTuner->updateDisplay();
-        if (gesture.isMapped()) gestMapper->updateDisplay();
+        
+        if (auto* mapper = dynamic_cast<MapperComponent*> (tabbedSettings->getComponentFromTab (1)))
+        {
+            mapper->updateDisplay();
+        }
     }
 }
 
@@ -162,4 +213,38 @@ void GestureSettingsComponent::createTuner()
     {
         DBG ("Unknown Gesture type. No tuner was created.");
     }
+}
+
+void GestureSettingsComponent::createToggles()
+{
+    addAndMakeVisible (midiParameterToggle = new DualTextToggle ("MIDI", "Param"));
+    midiParameterToggle->setStyle (DualTextToggle::twoStatesVisible);
+    midiParameterToggle->setToggleState (!gesture.isMidiMapped());
+    midiParameterToggle->onStateChange = [this] ()
+    { 
+        gesture.setMidiMapped (!midiParameterToggle->getToggleState());
+        getParentComponent()->repaint();
+    };
+    
+    addAndMakeVisible (onOffToggle = new DualTextToggle ("Off", "On", Colour (0xffe0e0e0), Colour (0xffa0f0a0)));
+    onOffToggle->setStyle (DualTextToggle::twoStatesVisible);
+    onOffToggle->setToggleState (gesture.isActive());
+    onOffToggle->onStateChange = [this] ()
+    { 
+        gesture.setActive (onOffToggle->getToggleState());
+        getParentComponent()->repaint();
+    };
+}
+
+void GestureSettingsComponent::createTabbedSettings()
+{
+    addAndMakeVisible (tabbedSettings = new TabbedPanelComponent());
+    tabbedSettings->setStyle (TabbedPanelComponent::tabsHorizontal);
+    tabbedSettings->setColour (TabbedPanelComponent::tabSelectedText, Colour (0xff000000));
+    tabbedSettings->setColour (TabbedPanelComponent::tabUnselectedText, Colour (0x30000000));
+    tabbedSettings->setColour (TabbedPanelComponent::tabSelectedHighlight, Colour (0x30000000));
+    
+    tabbedSettings->addTab (new MidiModeComponent(gesture), "MIDI Output");
+    tabbedSettings->addTab (new MapperComponent(gesture, gestureArray, wrapper), "Parameters");
+    tabbedSettings->addTab (new Component ("Gesture Settings"), "Settings");
 }

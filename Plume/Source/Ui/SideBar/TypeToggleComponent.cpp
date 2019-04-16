@@ -34,10 +34,10 @@ TypeToggleComponent::TypeToggleComponent (PlumeProcessor& p) : processor (p)
             default:                             text = "All";
         }
         
-        toggles.add (new Toggle (i, text, PLUME::UI::currentTheme.getColour (colour::presetsBoxHighlightedBackground),
-                                          PLUME::UI::currentTheme.getColour (colour::presetsBoxHighlightedText),
-                                          PLUME::UI::currentTheme.getColour (colour::presetsBoxBackground),
-                                          PLUME::UI::currentTheme.getColour (colour::presetsBoxStandartText)));
+        toggles.add (new Toggle (i, text, PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxHighlightedBackground),
+                                          PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxHighlightedText),
+                                          PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxBackground),
+                                          PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxStandartText)));
 
         addChildAndSetID (toggles.getLast(), String(i));
         toggles.getLast()->addMouseListener (this, false);

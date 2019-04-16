@@ -14,8 +14,9 @@
 #include "Common/PlumeCommon.h"
 #include "Gesture/GestureArray.h"
 #include "Wrapper/PluginWrapper.h"
+#include "Ui/Common/TabbedPanelComponent.h"
 #include "Ui/Gesture/Tuner/GesturesTuner.h"
-#include "Ui/Gesture/Mapper/MapperComponent.h"
+#include "Ui/Gesture/SettingsTabs/MapperComponent.h"
 
 //==============================================================================
 /*
@@ -51,6 +52,8 @@ public:
 private:
     //==============================================================================
     void createTuner();
+    void createToggles();
+    void createTabbedSettings();
 	void disableIfGestureWasDeleted();
     
     //==============================================================================
@@ -64,7 +67,9 @@ private:
     
     ScopedPointer<Tuner> gestTuner;
     ScopedPointer<MapperComponent> gestMapper;
-    ScopedPointer<TextButton> midiParameterToggle;
+    ScopedPointer<DualTextToggle> midiParameterToggle;
+    ScopedPointer<DualTextToggle> onOffToggle;
+    ScopedPointer<TabbedPanelComponent> tabbedSettings;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GestureSettingsComponent)

@@ -40,10 +40,10 @@ void Vibrato::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
     
 	if (vibVal == lastMidi) return; // Does nothing if the midi value did not change
 
-    if (send == true || isMidiMapped())
+    if (send == true)
     {
         // Creates the control change message
-        if (isMidiMapped())
+        if (!useDefaultMidi)
         {
             addMidiModeSignalToBuffer (midiMessages, plumeBuffer, vibVal, 0, 127, 1);
         }
@@ -68,7 +68,7 @@ int Vibrato::getMidiValue()
         vibLast = true;
         send = true;
         
-        if (isMidiMapped()) return Gesture::normalizeMidi (-(500.0f - gainVal), (500.01f - gainVal), getGestureValue());
+        if (!useDefaultMidi) return Gesture::normalizeMidi (-(500.0f - gainVal), (500.01f - gainVal), getGestureValue());
         else                return Gesture::map (getGestureValue(), -(500.0f - gainVal), (500.01f - gainVal), 0, 16383);
     }
     
@@ -78,13 +78,13 @@ int Vibrato::getMidiValue()
         vibLast = false;
         send = true;
         
-        if (isMidiMapped()) return 64;
+        if (!useDefaultMidi) return 64;
         else                return 8192;
     }
     
     // No vibrato
     send = false;
-    if (isMidiMapped()) return 64;
+    if (!useDefaultMidi) return 64;
     else                return 8192;
 }
 

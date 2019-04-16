@@ -10,9 +10,8 @@
 
 #pragma once
 
-#include "../../../../JuceLibraryCode/JuceHeader.h"
+#include "../../../JuceLibraryCode/JuceHeader.h"
 #include "Common/PlumeCommon.h"
-#include "Plugin/PluginProcessor.h"
 
 //==============================================================================
 /*
@@ -21,13 +20,37 @@ class TabbedPanelComponent    : public Component,
                                 private Button::Listener
 {
 public:
+	enum TabbedPanelColourId
+	{
+		tabUnselectedText = 0,
+		tabSelectedText,
+		tabUnselectedBackground,
+		tabSelectedBackground,
+		tabSelectedHighlight,
+
+        numColours
+	};
+
+    enum TabbedPanelStyle
+    {
+        tabsVertical =0,
+        tabsHorizontal
+    };
+
     //==============================================================================
-    explicit TabbedPanelComponent (PlumeProcessor& proc);
+    TabbedPanelComponent();
     ~TabbedPanelComponent();
 
     //==============================================================================
     void addTab (Component* panel, String tabName);
     void switchToTab (const int tabNumber);
+    Component* getComponentFromTab (const int tabNumber);
+    Component* getComponentFromTab (const String tabName);
+    Component* getComponentFromSelectedTab();
+
+    //==============================================================================
+    void setColour (TabbedPanelColourId id, Colour colourToSet);
+    void setStyle (TabbedPanelStyle newStyle);
 
     //==============================================================================
     void paint (Graphics&) override;
@@ -61,8 +84,9 @@ private:
     };
 
     //==============================================================================
-    PlumeProcessor& processor;
     OwnedArray<Tab> tabs;
+    OwnedArray<Colour> colours;
+    TabbedPanelStyle style = tabsVertical;
     int selectedTab = 0;
 
     //==============================================================================

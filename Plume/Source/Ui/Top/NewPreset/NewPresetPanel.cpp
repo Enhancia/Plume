@@ -67,11 +67,11 @@ void NewPresetPanel::paint (Graphics& g)
     g.fillRect (panelArea);
     
     // panel outline
-    auto gradOut = ColourGradient::horizontal (currentTheme.getColour(colour::sideBarSeparatorOut),
+    auto gradOut = ColourGradient::horizontal (currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
                                                float(panelArea.getX()), 
-                                               currentTheme.getColour(colour::sideBarSeparatorOut),
+                                               currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
                                                float(panelArea.getRight()));
-    gradOut.addColour (0.5, currentTheme.getColour(colour::sideBarSeparatorIn));
+    gradOut.addColour (0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
 
     g.setGradientFill (gradOut);
     g.drawRect (panelArea);
@@ -80,7 +80,7 @@ void NewPresetPanel::paint (Graphics& g)
                                               .reduced (MARGIN, 0);
     
     // Text
-    g.setColour (currentTheme.getColour (colour::topPanelMainText));
+    g.setColour (currentTheme.getColour (PLUME::colour::topPanelMainText));
     g.setFont (PLUME::font::plumeFontBook.withHeight (13.0f));
     
     g.drawText ("Name :", 
@@ -164,6 +164,7 @@ void NewPresetPanel::buttonClicked (Button* bttn)
 
 void NewPresetPanel::labelTextChanged (Label* lbl)
 {
+	using namespace PLUME;
     if (lbl == nameLabel)
     {
         if (lbl->getText().isEmpty())
@@ -232,6 +233,8 @@ void NewPresetPanel::editorShown (Label* lbl, TextEditor& ed)
 
 void NewPresetPanel::update()
 {
+	using namespace PLUME;
+
     //PresetHandler::PresetSearchSettings settings = processor.getPresetHandler().getCurrentSettings();
     
     nameLabel->setText ("Preset Name...", dontSendNotification);

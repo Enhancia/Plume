@@ -39,6 +39,7 @@
         <FILE id="DA42aZ" name="StatutPipe.h" compile="0" resource="0" file="Source/DataReader/StatutPipe.h"/>
       </GROUP>
       <GROUP id="{D6346BB4-85D0-4DE6-B98D-2B6F2B878441}" name="Gesture">
+        <FILE id="BGrET6" name="Gesture.cpp" compile="1" resource="0" file="Source/Gesture/Gesture.cpp"/>
         <FILE id="BbeSU2" name="Gesture.h" compile="0" resource="0" file="Source/Gesture/Gesture.h"/>
         <FILE id="RWSIt8" name="GestureArray.cpp" compile="1" resource="0"
               file="Source/Gesture/GestureArray.cpp"/>
@@ -76,8 +77,16 @@
                 file="Source/Ui/LookAndFeel/PlumeLookAndFeel.h"/>
         </GROUP>
         <GROUP id="{4CA36361-EB23-BED0-3C51-3F19F9BE9F00}" name="Common">
+          <FILE id="lhj2tX" name="TabbedPanelComponent.cpp" compile="1" resource="0"
+                file="Source/Ui/Common/TabbedPanelComponent.cpp"/>
+          <FILE id="cwIDnw" name="TabbedPanelComponent.h" compile="0" resource="0"
+                file="Source/Ui/Common/TabbedPanelComponent.h"/>
           <FILE id="G8QEm8" name="PlumeComponent.h" compile="0" resource="0"
                 file="Source/Ui/Common/PlumeComponent.h"/>
+          <FILE id="k8QEEz" name="DualTextToggle.cpp" compile="1" resource="0"
+                file="Source/Ui/Common/DualTextToggle.cpp"/>
+          <FILE id="I8j3HU" name="DualTextToggle.h" compile="0" resource="0"
+                file="Source/Ui/Common/DualTextToggle.h"/>
           <FILE id="QUY8ep" name="PlumeProgressBar.cpp" compile="1" resource="0"
                 file="Source/Ui/Common/PlumeProgressBar.cpp"/>
           <FILE id="KjXDjo" name="PlumeProgressBar.h" compile="0" resource="0"
@@ -121,10 +130,6 @@
                   file="Source/Ui/Top/Options/ScannerComponent.cpp"/>
             <FILE id="ylLF43" name="ScannerComponent.h" compile="0" resource="0"
                   file="Source/Ui/Top/Options/ScannerComponent.h"/>
-            <FILE id="t5wHM6" name="TabbedPanelComponent.cpp" compile="1" resource="0"
-                  file="Source/Ui/Top/Options/TabbedPanelComponent.cpp"/>
-            <FILE id="sneCDv" name="TabbedPanelComponent.h" compile="0" resource="0"
-                  file="Source/Ui/Top/Options/TabbedPanelComponent.h"/>
           </GROUP>
         </GROUP>
         <GROUP id="{ACEA364D-47F4-BE67-B3B0-D0FEC5CE7BA7}" name="Header">
@@ -169,15 +174,19 @@
                 file="Source/Ui/Gesture/GestureSettingsComponent.cpp"/>
           <FILE id="iz3dGi" name="GestureSettingsComponent.h" compile="0" resource="0"
                 file="Source/Ui/Gesture/GestureSettingsComponent.h"/>
-          <GROUP id="{6AF40B7D-7CAB-7E83-301F-B50F2A1EF68A}" name="Mapper">
-            <FILE id="EvACj5" name="MapperComponent.cpp" compile="1" resource="0"
-                  file="Source/Ui/Gesture/Mapper/MapperComponent.cpp"/>
-            <FILE id="zvBlwR" name="MapperComponent.h" compile="0" resource="0"
-                  file="Source/Ui/Gesture/Mapper/MapperComponent.h"/>
-            <FILE id="Y4L9JA" name="MappedParameterComponent.h" compile="0" resource="0"
-                  file="Source/Ui/Gesture/Mapper/MappedParameterComponent.h"/>
-            <FILE id="hWqFyJ" name="MidiModeComponent.h" compile="0" resource="0"
-                  file="Source/Ui/Gesture/Mapper/MidiModeComponent.h"/>
+          <GROUP id="{94FA1FB9-480C-C968-3466-0795EE8D84A4}" name="SettingsTabs">
+            <FILE id="s6pncz" name="GestureSettingsPanel.cpp" compile="1" resource="0"
+                  file="Source/Ui/Gesture/SettingsTabs/GestureSettingsPanel.cpp"/>
+            <FILE id="ZWROfq" name="GestureSettingsPanel.h" compile="0" resource="0"
+                  file="Source/Ui/Gesture/SettingsTabs/GestureSettingsPanel.h"/>
+            <FILE id="YNQxRp" name="MappedParameterComponent.h" compile="0" resource="0"
+                  file="Source/Ui/Gesture/SettingsTabs/MappedParameterComponent.h"/>
+            <FILE id="LcBscD" name="MapperComponent.cpp" compile="1" resource="0"
+                  file="Source/Ui/Gesture/SettingsTabs/MapperComponent.cpp"/>
+            <FILE id="NrssXB" name="MapperComponent.h" compile="0" resource="0"
+                  file="Source/Ui/Gesture/SettingsTabs/MapperComponent.h"/>
+            <FILE id="n4LhnU" name="MidiModeComponent.h" compile="0" resource="0"
+                  file="Source/Ui/Gesture/SettingsTabs/MidiModeComponent.h"/>
           </GROUP>
           <GROUP id="{027C4BCF-8809-483D-C6DA-16DDB0E6F69A}" name="Tuner">
             <FILE id="B0V3Qw" name="Tuner.cpp" compile="1" resource="0" file="Source/Ui/Gesture/Tuner/Tuner.cpp"/>
@@ -216,7 +225,13 @@
       </GROUP>
       <GROUP id="{C68567B8-DFE3-8FC9-B013-03678584A057}" name="Images">
         <GROUP id="{3FD5E2A0-1ED1-28E0-6BB9-5FF273A9EF0B}" name="Backgrounds">
-          <FILE id="t9o8b8" name="homePageEnhancia.jpg" compile="0" resource="1"
+          <FILE id="esWm6n" name="gesturesBackground.jpg" compile="0" resource="1"
+                file="Resources/Images/Backgrounds/gesturesBackground.jpg"/>
+          <FILE id="nuFIiw" name="gesturesBackground1.jpeg" compile="0" resource="1"
+                file="Resources/Images/Backgrounds/gesturesBackground1.jpeg"/>
+          <FILE id="ViiXLg" name="gesturesBackground2.jpeg" compile="0" resource="1"
+                file="Resources/Images/Backgrounds/gesturesBackground2.jpeg"/>
+          <FILE id="i6J5N0" name="homePageEnhancia.jpg" compile="0" resource="1"
                 file="Resources/Images/Backgrounds/homePageEnhancia.jpg"/>
         </GROUP>
         <GROUP id="{20DFADED-00CA-0C8D-0252-C1692DB76059}" name="Gestures">

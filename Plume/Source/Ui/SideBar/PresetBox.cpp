@@ -24,13 +24,13 @@ PresetBox::PresetBox (const String& componentName, PlumeProcessor& p)  : ListBox
     // Sub components
     editLabel = new Label ("editLabel", "NewPreset");
     editLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
-    editLabel->setColour (Label::textColourId, UI::currentTheme.getColour (colour::presetsBoxStandartText));
+    editLabel->setColour (Label::textColourId, PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxStandartText));
     editLabel->setFont (PLUME::font::plumeFont.withHeight (float (getRowHeight())/2));
     editLabel->setInterceptsMouseClicks (false, false);
     editLabel->addListener (this);
     
     auto& scrollBar = getVerticalScrollBar();
-    scrollBar.setColour (ScrollBar::thumbColourId, UI::currentTheme.getColour (colour::presetsBoxScrollBar));
+    scrollBar.setColour (ScrollBar::thumbColourId, PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxScrollBar));
 }
 
 PresetBox::~PresetBox()
@@ -135,8 +135,8 @@ void PresetBox::listBoxItemClicked (int row, const MouseEvent& event)
 		bool isUser = processor.getPresetHandler().isUserPreset (row);
 
         rightClickMenu.addItem (1, "Rename", isUser);
-        rightClickMenu.addItem (2, "Delete", isUser);
-        rightClickMenu.addItem (3, "Show In Explorer", isUser);
+        rightClickMenu.addItem (2, "Show In Explorer", isUser);
+        rightClickMenu.addItem (3, "Delete", isUser);
         
         handleMenuResult (row,
                           rightClickMenu.showMenu (PopupMenu::Options().withParentComponent (  getParentComponent()
@@ -299,12 +299,13 @@ void PresetBox::handleMenuResult (const int row, const int menuResult)
             }
             break;
             
-        case 2: // Delete preset
-            deletePreset (row);
+        case 2: // Show in explorer
+            processor.getPresetHandler().showPresetInExplorer (row);
             break;
+
+        case 3: // Delete preset
+            deletePreset (row);
             
-        case 3: // Show in explorer
-			processor.getPresetHandler().showPresetInExplorer (row);
     }
     
     repaint();

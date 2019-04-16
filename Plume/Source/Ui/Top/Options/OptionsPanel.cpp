@@ -13,7 +13,7 @@
 //==============================================================================
 OptionsPanel::OptionsPanel (PlumeProcessor& proc)   : processor (proc)
 {
-    addAndMakeVisible (tabbedOptions = new TabbedPanelComponent (processor));
+    addAndMakeVisible (tabbedOptions = new TabbedPanelComponent());
 
     tabbedOptions->addTab (new GeneralOptionsSubPanel (processor), "General");
     tabbedOptions->addTab (new FileOptionsSubPanel (processor), "File");

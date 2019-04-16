@@ -15,8 +15,8 @@
 
 #include "Wrapper/PluginWrapper.h"
 #include "Gesture/Gesture.h"
-#include "Ui/Gesture/Mapper/MappedParameterComponent.h"
-#include "Ui/Gesture/Mapper/MidiModeComponent.h"
+#include "Ui/Gesture/SettingsTabs/MappedParameterComponent.h"
+#include "Ui/Gesture/SettingsTabs/MidiModeComponent.h"
 #include "Ui/LookAndFeel/PlumeLookAndFeel.h"
 
 //==============================================================================
@@ -46,10 +46,7 @@ public:
     void updateComponents();
     void initializeParamCompArray();
     void addAndMakeArrayVisible();
-    void resizeArray();
-    
-    //==============================================================================
-    void setAlphas();
+    void resizeArray (juce::Rectangle<int> bounds, const int numColumns, const int numRows);
     
     //==============================================================================
     void changeListenerCallback(ChangeBroadcaster* source) override;
@@ -70,13 +67,13 @@ private:
     //==============================================================================
     ScopedPointer<TextButton> mapButton;
     ScopedPointer<TextButton> clearMapButton;
-    ScopedPointer<ImageButton> midiMapButton;
     
     //==============================================================================
     bool allowDisplayUpdate = true;
+    const int NUM_ROWS = 2, NUM_COLUMNS = 3;
     
     //==============================================================================
-    ScopedPointer<MidiModeComponent> midiModeComp;
+    //ScopedPointer<MidiModeComponent> midiModeComp;
     OwnedArray<MappedParameterComponent> paramCompArray;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MapperComponent)

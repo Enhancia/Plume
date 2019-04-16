@@ -21,6 +21,7 @@
 #include "PlumeColours.h"
 #include "Ui/Common/PlumeComponent.h"
 #include "Ui/Common/PlumeProgressBar.h"
+#include "Ui/Common/DualTextToggle.h"
 
 // Preprocessor expressions
 #define TRACE_IN  Logger::writeToLog ("[+] Entering: " + String(__FUNCTION__) + "\n")
@@ -29,7 +30,7 @@
 namespace PLUME
 {
     const int NUM_GEST = 8;
-    const int MAX_PARAMETER = 4;
+    const int MAX_PARAMETER = 6;
     
     namespace UI
     {
