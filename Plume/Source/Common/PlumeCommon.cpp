@@ -194,6 +194,49 @@ namespace PLUME
         const Font plumeFontLight = getPlumeFont (light);
         
     }
+  
+	
+  #if JUCE_WINDOWS
+    LRESULT CALLBACK messageHook(int nCode, WPARAM wParam, LPARAM lParam)
+    {
+		if (nCode == HC_ACTION)
+		{
+			if (auto* cwpStructPtr = reinterpret_cast<CWPSTRUCT*> (lParam))
+			{
+				uint64 message = cwpStructPtr->message;
+				char name[30];
+				GetWindowTextA (cwpStructPtr->hwnd, name, 30);
+
+				if (message == uint64 (877))
+				{
+					DBG ("Ableton mysterious message...");
+				}
+
+				if (message != uint64 (13) && message != uint64 (20) && message != uint64 (32) && message != uint64 (132))
+					DBG ("Window : " << name << " | Message : " << String (message)
+						             << " (0x" << String::toHexString (message) << ")");
+
+				if (message == uint64 (71) || message == uint64 (70))
+				{
+					if (auto* windowPosPtr = reinterpret_cast<WINDOWPOS*> (cwpStructPtr->lParam))
+					{
+						DBG(     "     x: " << windowPosPtr->x
+							<< "\n     y: " << windowPosPtr->y
+							<< "\n    cx: " << windowPosPtr->cx
+							<< "\n    cy: " << windowPosPtr->cy
+						    << "\n flags: 0x" << String::toHexString(windowPosPtr->flags));
+					}
+				}
+			}
+		}
+		else
+		{
+			DBG("Unprocessable window event! Tread : " + (wParam == 0 ? String("Other") : String("Current")));
+		}
+
+        return CallNextHookEx (NULL, nCode, wParam, lParam);
+    }
+  #endif
     
     namespace path
     {

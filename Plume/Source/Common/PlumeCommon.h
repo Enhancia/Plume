@@ -11,13 +11,14 @@
 
 #pragma once
 
+#include "../JuceLibraryCode/JuceHeader.h"
+
 #if JUCE_WINDOWS
 #include <windows.h>
 #elif JUCE_MAC
 #include <stdlib.h>
 #endif
 
-#include "../JuceLibraryCode/JuceHeader.h"
 #include "PlumeColours.h"
 #include "Ui/Common/PlumeComponent.h"
 #include "Ui/Common/PlumeProgressBar.h"
@@ -206,4 +207,11 @@ namespace PLUME
         //static Path folderPath = createFolderPath();
         //static Path magnifyingGlassPath = createMagnifyingGlassPath();
     }
+
+    #if JUCE_WINDOWS
+    //HOOKPROC messageHook;
+
+	extern LRESULT CALLBACK messageHook(int nCode, WPARAM wParam, LPARAM lParam);
+        
+	#endif
 }

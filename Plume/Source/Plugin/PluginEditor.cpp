@@ -81,6 +81,16 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     {
         processor.getWrapper().minimiseWrapperEditor (false);
     }
+
+  #if JUCE_WINDOWS
+    if (auto messageManagerPtr = MessageManager::getInstanceWithoutCreating())
+    {
+    	plumeWindowHook = SetWindowsHookExA(WH_CALLWNDPROC, PLUME::messageHook,
+                                            NULL, (DWORD) messageManagerPtr->getCurrentMessageThread());
+
+    	jassert (plumeWindowHook != NULL);
+    }
+  #endif
 }
 
 PlumeEditor::~PlumeEditor()
@@ -104,6 +114,10 @@ PlumeEditor::~PlumeEditor()
     optionsPanel = nullptr;
     newPresetPanel = nullptr;
     setLookAndFeel (nullptr);
+
+#if JUCE_WINDOWS
+	plumeWindowHook = NULL;
+#endif
 }
 
 //==============================================================================

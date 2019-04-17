@@ -125,7 +125,6 @@ private:
     void updateSlotIfNeeded (int slotToCheck);
 
     void setSettingsVisible (bool shouldBeVisible);
-
     void createAndAddCloseButton();
     
     //==============================================================================

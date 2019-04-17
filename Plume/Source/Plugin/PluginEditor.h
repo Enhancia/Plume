@@ -118,6 +118,11 @@ private:
     
     //==============================================================================
     void createSideBarButtonPath(); //TODO mettre dans common avec les autres chemins
+
+    //==============================================================================
+  #if JUCE_WINDOWS
+    HHOOK plumeWindowHook;
+  #endif
     
     //==============================================================================
     PLUME::UI::PlumeLookAndFeel plumeLookAndFeel;
