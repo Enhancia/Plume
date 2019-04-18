@@ -194,10 +194,9 @@ namespace PLUME
         const Font plumeFontLight = getPlumeFont (light);
         
     }
-  
 	
   #if JUCE_WINDOWS
-    LRESULT CALLBACK messageHook(int nCode, WPARAM wParam, LPARAM lParam)
+    LRESULT CALLBACK messageHook (int nCode, WPARAM wParam, LPARAM lParam)
     {
 		if (nCode == HC_ACTION)
 		{
@@ -213,25 +212,29 @@ namespace PLUME
 				}
 
 				if (message != uint64 (13) && message != uint64 (20) && message != uint64 (32) && message != uint64 (132))
-					DBG ("Window : " << name << " | Message : " << String (message)
+					DBG ("Window : " << name << " (Address: 0x" << String::toHexString((uint32) cwpStructPtr->hwnd) << ")"
+                                     << "\n    Message : " << String (message)
 						             << " (0x" << String::toHexString (message) << ")");
 
 				if (message == uint64 (71) || message == uint64 (70))
 				{
 					if (auto* windowPosPtr = reinterpret_cast<WINDOWPOS*> (cwpStructPtr->lParam))
 					{
-						DBG(     "     x: " << windowPosPtr->x
-							<< "\n     y: " << windowPosPtr->y
-							<< "\n    cx: " << windowPosPtr->cx
-							<< "\n    cy: " << windowPosPtr->cy
-						    << "\n flags: 0x" << String::toHexString(windowPosPtr->flags));
+						DBG (     "     x: " << windowPosPtr->x
+							 << "\n     y: " << windowPosPtr->y
+							 << "\n    cx: " << windowPosPtr->cx
+							 << "\n    cy: " << windowPosPtr->cy
+						     << "\n flags: 0x" << String::toHexString (windowPosPtr->flags));
 					}
 				}
+
+                return 1;
 			}
 		}
 		else
 		{
-			DBG("Unprocessable window event! Tread : " + (wParam == 0 ? String("Other") : String("Current")));
+			DBG ("Unprocessable window event! Tread : " + (wParam == 0 ? String("Other")
+                                                                       : String("Current")));
 		}
 
         return CallNextHookEx (NULL, nCode, wParam, lParam);

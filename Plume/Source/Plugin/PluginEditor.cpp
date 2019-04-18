@@ -89,6 +89,8 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
                                             NULL, (DWORD) messageManagerPtr->getCurrentMessageThread());
 
     	jassert (plumeWindowHook != NULL);
+
+        //DBG ("Native handle address : " << String::toHexString((uint32) getPeer()->getNativeHandle()));
     }
   #endif
 }
@@ -116,7 +118,7 @@ PlumeEditor::~PlumeEditor()
     setLookAndFeel (nullptr);
 
 #if JUCE_WINDOWS
-	plumeWindowHook = NULL;
+	jassert (UnhookWindowsHookEx (plumeWindowHook) != 0);
 #endif
 }
 
