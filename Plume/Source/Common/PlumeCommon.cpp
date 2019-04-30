@@ -206,29 +206,58 @@ namespace PLUME
 				char name[30];
 				GetWindowTextA (cwpStructPtr->hwnd, name, 30);
 
-				if (message == uint64 (877))
+				if (!IsWindow(PLUME::globalPointers.getPlumeHWND()))
 				{
-					DBG ("Ableton mysterious message...");
+					DBG("No HWND..");
+					return 0;
 				}
 
-				if (message != uint64 (13) && message != uint64 (20) && message != uint64 (32) && message != uint64 (132))
-					DBG ("Window : " << name << " (Address: 0x" << String::toHexString((uint32) cwpStructPtr->hwnd) << ")"
-                                     << "\n    Message : " << String (message)
-						             << " (0x" << String::toHexString (message) << ")");
+                //jassert (testHWND != NULL);
 
-				if (message == uint64 (71) || message == uint64 (70))
-				{
-					if (auto* windowPosPtr = reinterpret_cast<WINDOWPOS*> (cwpStructPtr->lParam))
-					{
-						DBG (     "     x: " << windowPosPtr->x
-							 << "\n     y: " << windowPosPtr->y
-							 << "\n    cx: " << windowPosPtr->cx
-							 << "\n    cy: " << windowPosPtr->cy
-						     << "\n flags: 0x" << String::toHexString (windowPosPtr->flags));
-					}
-				}
+                if (cwpStructPtr->hwnd == PLUME::globalPointers.getPlumeHWND())
+                {
+    				if (message == uint64 (877))
+    				{
+    					DBG ("Ableton mysterious message...");
+    				}
+					/*
+    				if (message != uint64 (13) && message != uint64 (20) && message != uint64 (32) && message != uint64 (132))
+    					DBG ("Window : " << name << " (Address: 0x" << String::toHexString((uint32) cwpStructPtr->hwnd) << ")"
+                                         << "\n    Message : " << String (message)
+    						             << " (0x" << String::toHexString (message) << ")");*/
 
-                return 1;
+    				if (message == uint64 (71))
+    				{
+    					if (auto* windowPosPtr = reinterpret_cast<WINDOWPOS*> (cwpStructPtr->lParam))
+    					{
+    						DBG ("flags: 0x" << String::toHexString (windowPosPtr->flags));
+
+                            if ((windowPosPtr->flags >> 7 & 1) == 1) // Flag SWP_HIDEWINDOW (bit 7) is active
+                            {
+                                DBG ("Hide " << name);
+                                using namespace PLUME;
+
+                                if (globalPointers.getWrappedEditorPeerPointer() != nullptr)
+                                {
+                                    globalPointers.getWrappedEditorPeerPointer()->setMinimised (true);
+                                }
+                            }
+
+                            else if ((windowPosPtr->flags >> 6 & 1) == 1) // Flag SWP_SHOWWINDOW (bit 6) is active
+                            {
+                                DBG ("Show " << name);
+                                using namespace PLUME;
+
+                                if (globalPointers.getWrappedEditorPeerPointer() != nullptr)
+                                {
+                                    globalPointers.getWrappedEditorPeerPointer()->setMinimised (false);
+                                }
+                            }
+    					}
+    				}
+                }
+
+				return 0;
 			}
 		}
 		else
@@ -239,8 +268,66 @@ namespace PLUME
 
         return CallNextHookEx (NULL, nCode, wParam, lParam);
     }
+
+	GlobalPointers globalPointers;
+
+    HWND const GlobalPointers::getPlumeHWND()
+    {
+        return plumeHWND;
+    }
+    void GlobalPointers::setPlumeHWND (HWND newHWND)
+    {
+        /* Hitting this assertion means that the global pointer was not reset to nullptr before
+           giving it a new address. Careful, this could mean there is a memory leak somewhere...
+        */
+        jassert (plumeHWND == NULL);
+
+        plumeHWND = newHWND;
+    
+      #if JUCE_DEBUG
+        DBG ("Modifying HWND Global PTR!");
+      #endif
+    }
+    void GlobalPointers::resetPlumeHWND()
+    {
+        plumeHWND = NULL;
+    }
   #endif
     
+    ComponentPeer* const GlobalPointers::getWrappedEditorPeerPointer()
+    {
+        return wrappedEditorPeerPtr;
+    }
+
+    void GlobalPointers::setWrappedEditorPeerPointer (ComponentPeer* newPeerPtr)
+    {
+        if (ComponentPeer::isValidPeer(newPeerPtr))
+        {
+            /* Hitting this assertion means that the global pointer was not reset to nullptr before
+               giving it a new address. Careful, this could mean there is a memory leak somewhere...
+            */
+            jassert (wrappedEditorPeerPtr == nullptr);
+
+            wrappedEditorPeerPtr = newPeerPtr;
+        
+          #if JUCE_DEBUG
+            DBG ("Modifying Component Peer Global PTR!");
+          #endif
+        }
+    }
+
+    void GlobalPointers::resetWrappedEditorPeerPointer()
+    {
+        if (wrappedEditorPeerPtr != nullptr)
+        {
+            wrappedEditorPeerPtr = nullptr;
+        
+          #if JUCE_DEBUG
+            DBG ("Modifying Component Peer Global PTR!");
+          #endif
+        }
+    }
+
     namespace path
     {
         const Path createGearPath()

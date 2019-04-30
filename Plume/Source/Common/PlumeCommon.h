@@ -208,10 +208,38 @@ namespace PLUME
         //static Path magnifyingGlassPath = createMagnifyingGlassPath();
     }
 
-    #if JUCE_WINDOWS
-    //HOOKPROC messageHook;
+  #if JUCE_WINDOWS
+	extern LRESULT CALLBACK messageHook (int nCode, WPARAM wParam, LPARAM lParam);
+  #endif
 
-	extern LRESULT CALLBACK messageHook(int nCode, WPARAM wParam, LPARAM lParam);
-        
-	#endif
+    struct GlobalPointers
+    {
+    public:
+        ComponentPeer* const getWrappedEditorPeerPointer();
+        void setWrappedEditorPeerPointer (ComponentPeer* newPeerPtr);
+        void resetWrappedEditorPeerPointer();
+
+      #if JUCE_WINDOWS
+        HWND const getPlumeHWND();
+        void setPlumeHWND (HWND newHWND);
+        void resetPlumeHWND();
+      #endif
+
+    private:
+        /** \brief Global pointer (*Gasp...*) that keeps the adress of the WrappedEditor's ComponentPeer.
+            
+                   Use sparingly, mainly used to force the window to behave correctly on specific DAW/use case.
+                   For instance, to force the WrapperEditor to minimize when switching tracks in Ableton Live.
+        */
+        ComponentPeer* wrappedEditorPeerPtr = nullptr;
+      #if JUCE_WINDOWS
+        HWND plumeHWND = NULL;
+      #endif
+    };
+    
+    extern GlobalPointers globalPointers;
+
+  #if JUCE_WINDOWS
+    static HWND testHWND = NULL;
+  #endif
 }

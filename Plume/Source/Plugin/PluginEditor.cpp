@@ -118,6 +118,7 @@ PlumeEditor::~PlumeEditor()
     setLookAndFeel (nullptr);
 
 #if JUCE_WINDOWS
+    PLUME::globalPointers.resetPlumeHWND();
 	jassert (UnhookWindowsHookEx (plumeWindowHook) != 0);
 #endif
 }
@@ -254,6 +255,7 @@ void PlumeEditor::updateFullInterface()
 	sideBar->update();
 	
 	PLUME::UI::ANIMATE_UI_FLAG = true;
+	toFront (true);
 }
 
 void PlumeEditor::setInterfaceUpdates (bool shouldUpdate)
@@ -278,6 +280,17 @@ void PlumeEditor::setInterfaceUpdates (bool shouldUpdate)
 
 void PlumeEditor::broughtToFront()
 {
+    if (plumeHWNDIsSet == false)
+    {
+        PLUME::globalPointers.setPlumeHWND (GetAncestor (static_cast <HWND> (getPeer()->getNativeHandle()),
+                                                         GA_ROOT));
+      #if JUCE_WINDOWS
+        PLUME::testHWND = GetAncestor (static_cast <HWND> (getPeer()->getNativeHandle()), GA_ROOT);
+      #endif
+
+		plumeHWNDIsSet = true;
+    }
+
     if (processor.getWrapper().isWrapping())
     {
         if (auto* wrapperWin = processor.getWrapper().getWrapperEditorWindow())
