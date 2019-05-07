@@ -215,14 +215,25 @@ namespace PLUME
     struct GlobalPointers
     {
     public:
-        ComponentPeer* const getWrappedEditorPeerPointer();
-        void setWrappedEditorPeerPointer (ComponentPeer* newPeerPtr);
-        void resetWrappedEditorPeerPointer();
+        //ComponentPeer* const getWrappedEditorPeer (int index);
+        const int findComponentPeerIndex (ComponentPeer* componentPeerToCheck);
+        void addWrappedEditorPeer (ComponentPeer* newPeerPtr);
+        void resetWrappedEditorPeer (ComponentPeer* peerToReset);
+        //void removeWrappedEditorPeer (int index);
 
       #if JUCE_WINDOWS
-        HWND const getPlumeHWND();
-        void setPlumeHWND (HWND newHWND);
-        void resetPlumeHWND();
+        bool isPlumeHWND (HWND HWNDToCheck);
+        const int findPlumeHWNDindex (HWND HWNDToCheck);
+        void addPlumeHWND (HWND newHWND);
+        void removePlumeHWND (HWND HWNDToRemove);
+
+        void clearPlumeAndWrappedWindows();
+        void setActiveHWND (HWND HWNDToSetActive);
+        HWND getActiveHWND();
+
+        ComponentPeer* const getWrappedEditorPeer (HWND correspondingHWND);
+        void setWrappedEditorPeer (HWND correspondingHWND, ComponentPeer* newPeerPtr);
+        void resetWrappedEditorPeer (HWND correspondingHWND);
       #endif
 
     private:
@@ -231,15 +242,15 @@ namespace PLUME
                    Use sparingly, mainly used to force the window to behave correctly on specific DAW/use case.
                    For instance, to force the WrapperEditor to minimize when switching tracks in Ableton Live.
         */
-        ComponentPeer* wrappedEditorPeerPtr = nullptr;
+        Array<ComponentPeer*> wrappedEditorPeerArray;
+
       #if JUCE_WINDOWS
-        HWND plumeHWND = NULL;
+        Array<HWND> plumeWindowArray;
+        CriticalSection hwndArrayLock;
+
+        HWND activePlumeWindow = NULL;
       #endif
     };
     
     extern GlobalPointers globalPointers;
-
-  #if JUCE_WINDOWS
-    static HWND testHWND = NULL;
-  #endif
 }

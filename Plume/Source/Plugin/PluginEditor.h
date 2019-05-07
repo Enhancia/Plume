@@ -38,7 +38,8 @@ class PresetComponent;
  */
 class PlumeEditor  : public AudioProcessorEditor,
                      public ActionListener,
-                     public Button::Listener
+                     public Button::Listener,
+                     public ComponentMovementWatcher
 {
 public:
     /**

@@ -13,7 +13,7 @@
 
 //==============================================================================
 PlumeEditor::PlumeEditor (PlumeProcessor& p)
-    : AudioProcessorEditor (&p), processor (p)
+    : AudioProcessorEditor (&p), processor (p), ComponentMovementWatcher (this)
 {
     TRACE_IN;
 	setComponentID ("plumeEditor");
@@ -89,10 +89,12 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
                                             NULL, (DWORD) messageManagerPtr->getCurrentMessageThread());
 
     	jassert (plumeWindowHook != NULL);
-
+        
         //DBG ("Native handle address : " << String::toHexString((uint32) getPeer()->getNativeHandle()));
     }
   #endif
+
+    
 }
 
 PlumeEditor::~PlumeEditor()
@@ -118,7 +120,7 @@ PlumeEditor::~PlumeEditor()
     setLookAndFeel (nullptr);
 
 #if JUCE_WINDOWS
-    PLUME::globalPointers.resetPlumeHWND();
+    PLUME::globalPointers.removePlumeHWND (static_cast<HWND> (getPeer()->getNativeHandle()));
 	jassert (UnhookWindowsHookEx (plumeWindowHook) != 0);
 #endif
 }
@@ -282,10 +284,9 @@ void PlumeEditor::broughtToFront()
 {
     if (plumeHWNDIsSet == false)
     {
-        PLUME::globalPointers.setPlumeHWND (GetAncestor (static_cast <HWND> (getPeer()->getNativeHandle()),
-                                                         GA_ROOT));
       #if JUCE_WINDOWS
-        PLUME::testHWND = GetAncestor (static_cast <HWND> (getPeer()->getNativeHandle()), GA_ROOT);
+        PLUME::globalPointers.addPlumeHWND (GetAncestor (static_cast <HWND> (getPeer()->getNativeHandle()),
+                                                         GA_ROOT));
       #endif
 
 		plumeHWNDIsSet = true;

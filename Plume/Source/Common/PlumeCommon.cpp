@@ -194,6 +194,8 @@ namespace PLUME
         const Font plumeFontLight = getPlumeFont (light);
         
     }
+
+	GlobalPointers globalPointers;
 	
   #if JUCE_WINDOWS
     LRESULT CALLBACK messageHook (int nCode, WPARAM wParam, LPARAM lParam)
@@ -206,15 +208,7 @@ namespace PLUME
 				char name[30];
 				GetWindowTextA (cwpStructPtr->hwnd, name, 30);
 
-				if (!IsWindow(PLUME::globalPointers.getPlumeHWND()))
-				{
-					DBG("No HWND..");
-					return 0;
-				}
-
-                //jassert (testHWND != NULL);
-
-                if (cwpStructPtr->hwnd == PLUME::globalPointers.getPlumeHWND())
+                if (PLUME::globalPointers.isPlumeHWND (cwpStructPtr->hwnd))
                 {
     				if (message == uint64 (877))
     				{
@@ -237,9 +231,9 @@ namespace PLUME
                                 DBG ("Hide " << name);
                                 using namespace PLUME;
 
-                                if (globalPointers.getWrappedEditorPeerPointer() != nullptr)
+                                if (ComponentPeer* peer = globalPointers.getWrappedEditorPeer (cwpStructPtr->hwnd))
                                 {
-                                    globalPointers.getWrappedEditorPeerPointer()->setMinimised (true);
+                                    peer->setMinimised (true);
                                 }
                             }
 
@@ -248,9 +242,9 @@ namespace PLUME
                                 DBG ("Show " << name);
                                 using namespace PLUME;
 
-                                if (globalPointers.getWrappedEditorPeerPointer() != nullptr)
+                                if (ComponentPeer* peer = globalPointers.getWrappedEditorPeer(cwpStructPtr->hwnd))
                                 {
-                                    globalPointers.getWrappedEditorPeerPointer()->setMinimised (false);
+                                    peer->setMinimised (false);
                                 }
                             }
     					}
@@ -268,65 +262,172 @@ namespace PLUME
 
         return CallNextHookEx (NULL, nCode, wParam, lParam);
     }
-
-	GlobalPointers globalPointers;
-
-    HWND const GlobalPointers::getPlumeHWND()
+    
+    bool GlobalPointers::isPlumeHWND (HWND HWNDToCheck)
     {
-        return plumeHWND;
+        ScopedLock hwndlock (hwndArrayLock);
+
+        for (auto* handle : plumeWindowArray)
+        {
+            if (handle == HWNDToCheck) return true;
+        }
+
+        return false;
     }
-    void GlobalPointers::setPlumeHWND (HWND newHWND)
-    {
-        /* Hitting this assertion means that the global pointer was not reset to nullptr before
-           giving it a new address. Careful, this could mean there is a memory leak somewhere...
-        */
-        jassert (plumeHWND == NULL);
 
-        plumeHWND = newHWND;
+    const int GlobalPointers::findPlumeHWNDindex (HWND HWNDToCheck)
+    {
+        ScopedLock hwndlock (hwndArrayLock);
+
+        for (int i = 0; i<plumeWindowArray.size(); i++)
+        {
+            if (plumeWindowArray[i] == HWNDToCheck) return i;
+        }
+
+        return -1;
+    }
+
+    void GlobalPointers::addPlumeHWND (HWND newHWND)
+    {
+        ScopedLock hwndlock (hwndArrayLock);
+
+        plumeWindowArray.add (newHWND);
+        wrappedEditorPeerArray.add (nullptr);
+
+		setActiveHWND (newHWND);
     
       #if JUCE_DEBUG
-        DBG ("Modifying HWND Global PTR!");
+        DBG ("Adding HWND Global PTR!");
       #endif
     }
-    void GlobalPointers::resetPlumeHWND()
+
+    void GlobalPointers::removePlumeHWND (HWND HWNDToRemove)
     {
-        plumeHWND = NULL;
-    }
-  #endif
-    
-    ComponentPeer* const GlobalPointers::getWrappedEditorPeerPointer()
-    {
-        return wrappedEditorPeerPtr;
+        jassert (HWNDToRemove != NULL);
+        jassert (plumeWindowArray.size() == wrappedEditorPeerArray.size());
+
+        ScopedLock hwndlock (hwndArrayLock);
+
+        int index = findPlumeHWNDindex (HWNDToRemove);
+
+        if (index >= 0 && index < plumeWindowArray.size())
+        {
+            plumeWindowArray.remove (index);
+            wrappedEditorPeerArray.remove (index);
+
+			if (activePlumeWindow == HWNDToRemove)
+			{
+				activePlumeWindow == NULL;
+			}
+        }
     }
 
-    void GlobalPointers::setWrappedEditorPeerPointer (ComponentPeer* newPeerPtr)
+    void GlobalPointers::clearPlumeAndWrappedWindows()
+    {
+        ScopedLock hwndlock (hwndArrayLock);
+
+        plumeWindowArray.clear();
+        wrappedEditorPeerArray.clear();
+    }
+
+    void GlobalPointers::setActiveHWND (HWND HWNDToSetActive)
+    {
+        jassert (HWNDToSetActive != NULL);
+
+        if (isPlumeHWND (HWNDToSetActive))
+        {
+            activePlumeWindow = HWNDToSetActive;
+        }
+    }
+
+    HWND GlobalPointers::getActiveHWND()
+    {
+        jassert (activePlumeWindow != NULL);
+
+       return activePlumeWindow;
+    }
+
+    ComponentPeer* const GlobalPointers::getWrappedEditorPeer (HWND correspondingHWND)
+    {
+        jassert (correspondingHWND != NULL);
+        jassert (plumeWindowArray.size() == wrappedEditorPeerArray.size());
+
+        ScopedLock hwndlock (hwndArrayLock);
+
+        int index = findPlumeHWNDindex (correspondingHWND);
+
+        if (index >= 0 && index < plumeWindowArray.size())
+        {
+            return wrappedEditorPeerArray[index];
+        }
+    }
+
+    void GlobalPointers::setWrappedEditorPeer (HWND correspondingHWND, ComponentPeer* newPeerPtr)
+    {
+        jassert (correspondingHWND != NULL);
+        jassert (plumeWindowArray.size() == wrappedEditorPeerArray.size());
+
+        ScopedLock hwndlock (hwndArrayLock);
+
+        int index = findPlumeHWNDindex (correspondingHWND);
+
+        if (index >= 0 && index < wrappedEditorPeerArray.size())
+        {
+            jassert (wrappedEditorPeerArray[index] == nullptr);
+            wrappedEditorPeerArray.set (index, newPeerPtr);
+        }
+    }
+
+    void GlobalPointers::resetWrappedEditorPeer (HWND correspondingHWND)
+    {
+        jassert (correspondingHWND != NULL);
+        jassert (plumeWindowArray.size() == wrappedEditorPeerArray.size());
+
+        ScopedLock hwndlock (hwndArrayLock);
+
+        int index = findPlumeHWNDindex (correspondingHWND);
+
+        if (index >= 0 && index < plumeWindowArray.size())
+        {
+            jassert (wrappedEditorPeerArray[index] != nullptr);
+            wrappedEditorPeerArray.set (index, nullptr);
+        }
+
+          #if JUCE_DEBUG
+            DBG ("Modifying Component Peer Global PTR!");
+          #endif
+    }
+    
+  #endif
+    
+
+    void GlobalPointers::addWrappedEditorPeer (ComponentPeer* newPeerPtr)
     {
         if (ComponentPeer::isValidPeer(newPeerPtr))
         {
-            /* Hitting this assertion means that the global pointer was not reset to nullptr before
-               giving it a new address. Careful, this could mean there is a memory leak somewhere...
-            */
-            jassert (wrappedEditorPeerPtr == nullptr);
-
-            wrappedEditorPeerPtr = newPeerPtr;
+            wrappedEditorPeerArray.add (newPeerPtr);
         
           #if JUCE_DEBUG
-            DBG ("Modifying Component Peer Global PTR!");
+            DBG ("Adding Component Peer Global PTR!");
           #endif
         }
     }
 
-    void GlobalPointers::resetWrappedEditorPeerPointer()
+    const int GlobalPointers::findComponentPeerIndex (ComponentPeer* componentPeerToCheck)
     {
-        if (wrappedEditorPeerPtr != nullptr)
+        return wrappedEditorPeerArray.indexOf (componentPeerToCheck);
+    }
+
+    void GlobalPointers::resetWrappedEditorPeer (ComponentPeer* peerToReset)
+    {
+        int index = findComponentPeerIndex (peerToReset);
+
+        if (index != -1)
         {
-            wrappedEditorPeerPtr = nullptr;
-        
-          #if JUCE_DEBUG
-            DBG ("Modifying Component Peer Global PTR!");
-          #endif
+            wrappedEditorPeerArray.set (index, nullptr);
         }
     }
+
 
     namespace path
     {

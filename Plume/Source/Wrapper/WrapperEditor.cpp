@@ -73,7 +73,7 @@ WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc, const Comp
             setTopLeftPosition (componentWhichWindowToAttachTo->getScreenBounds().getTopLeft());
         }
 
-        PLUME::globalPointers.setWrappedEditorPeerPointer (getPeer());
+        PLUME::globalPointers.setWrappedEditorPeer (PLUME::globalPointers.getActiveHWND(), getPeer());
         setVisible (true);
     }
 
@@ -86,7 +86,7 @@ WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc, const Comp
 WrapperEditorWindow::~WrapperEditorWindow()
 {
     TRACE_IN;
-	PLUME::globalPointers.resetWrappedEditorPeerPointer();
+	PLUME::globalPointers.resetWrappedEditorPeer (this->getPeer());
 
     wrappedUi.deleteAndZero();
     if (isOnDesktop()) removeFromDesktop();
