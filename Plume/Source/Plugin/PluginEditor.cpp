@@ -77,11 +77,6 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	
 	PLUME::UI::ANIMATE_UI_FLAG = true;
 
-    if (processor.getWrapper().isWrapping())
-    {
-        processor.getWrapper().minimiseWrapperEditor (false);
-    }
-
   #if JUCE_WINDOWS
     if (auto messageManagerPtr = MessageManager::getInstanceWithoutCreating())
     {
@@ -103,7 +98,7 @@ PlumeEditor::~PlumeEditor()
 
 	if (processor.getWrapper().isWrapping())
 	{
-		processor.getWrapper().minimiseWrapperEditor (true);
+		processor.getWrapper().clearWrapperEditor();
 	}
 
     PLUME::UI::ANIMATE_UI_FLAG = false;
@@ -120,7 +115,7 @@ PlumeEditor::~PlumeEditor()
     setLookAndFeel (nullptr);
 
 #if JUCE_WINDOWS
-    PLUME::globalPointers.removePlumeHWND (static_cast<HWND> (getPeer()->getNativeHandle()));
+    //PLUME::globalPointers.removePlumeHWND (static_cast<HWND> (getPeer()->getNativeHandle()));
 	jassert (UnhookWindowsHookEx (plumeWindowHook) != 0);
 #endif
 }
@@ -157,6 +152,38 @@ void PlumeEditor::resized()
 	resizableCorner->setBounds (getWidth() - 20, getHeight() - 20, 20, 20);
 
 	repaint();
+}
+
+//==============================================================================
+void PlumeEditor::componentPeerChanged()
+{
+    jassert (getPeer() != nullptr);
+
+    if (getPeer() != nullptr) // Peer was just created!
+    {
+		if (!plumeHWNDIsSet)
+        {
+          #if JUCE_WINDOWS
+            instanceHWND = GetAncestor (static_cast <HWND> (getPeer()->getNativeHandle()), GA_ROOT);
+
+            PLUME::globalPointers.addPlumeHWND (instanceHWND);
+
+            plumeHWNDIsSet = true;
+          #endif
+
+            if (processor.getWrapper().isWrapping())
+            {
+                processor.getWrapper().createWrapperEditor (this);
+            }
+        }
+    }
+
+    else // Peer was deleted
+    {
+        //TODO: Deletes HWND (OR PEER) from global pointer list
+
+        PLUME::globalPointers.removePlumeHWND (instanceHWND);
+    }
 }
 
 //==============================================================================
@@ -282,15 +309,10 @@ void PlumeEditor::setInterfaceUpdates (bool shouldUpdate)
 
 void PlumeEditor::broughtToFront()
 {
-    if (plumeHWNDIsSet == false)
-    {
-      #if JUCE_WINDOWS
-        PLUME::globalPointers.addPlumeHWND (GetAncestor (static_cast <HWND> (getPeer()->getNativeHandle()),
-                                                         GA_ROOT));
-      #endif
-
-		plumeHWNDIsSet = true;
-    }
+  #if JUCE_WINDOWS
+	if (instanceHWND != NULL)
+		PLUME::globalPointers.setActiveHWND(instanceHWND);
+  #endif
 
     if (processor.getWrapper().isWrapping())
     {

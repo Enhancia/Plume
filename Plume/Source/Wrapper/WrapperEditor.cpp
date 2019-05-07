@@ -49,6 +49,9 @@ WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc, const Comp
                                                                 getHeight(),   // bottom
                                                                 20             // right
                                                                 );
+
+        PLUME::globalPointers.setWrappedEditorPeer (PLUME::globalPointers.getActiveHWND(), getPeer());
+
       #elif JUCE_MAC
         if (auto plumeView = (NSView*) (componentWhichWindowToAttachTo->getPeer()->getNativeHandle()))
         {
@@ -73,7 +76,6 @@ WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc, const Comp
             setTopLeftPosition (componentWhichWindowToAttachTo->getScreenBounds().getTopLeft());
         }
 
-        PLUME::globalPointers.setWrappedEditorPeer (PLUME::globalPointers.getActiveHWND(), getPeer());
         setVisible (true);
     }
 

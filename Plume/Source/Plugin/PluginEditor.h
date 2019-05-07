@@ -79,6 +79,11 @@ public:
     void minimisationStateChanged (bool) override;
 
     //==============================================================================
+    void componentMovedOrResized (bool wasMoved, bool wasResized) override {}
+    void componentPeerChanged() override;
+    void componentVisibilityChanged() override {}
+
+    //==============================================================================
     /**
      * \brief Callback to a change message sent by the processor.
      *
@@ -125,6 +130,7 @@ private:
     HHOOK plumeWindowHook;
 
     bool plumeHWNDIsSet = false;
+    HWND instanceHWND = NULL;
   #endif
     
     //==============================================================================

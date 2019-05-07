@@ -315,7 +315,7 @@ namespace PLUME
             plumeWindowArray.remove (index);
             wrappedEditorPeerArray.remove (index);
 
-			if (activePlumeWindow == HWNDToRemove)
+			if (activePlumeWindow == HWNDToRemove || plumeWindowArray.size() == 0)
 			{
 				activePlumeWindow == NULL;
 			}
