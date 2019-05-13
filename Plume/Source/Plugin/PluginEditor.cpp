@@ -84,8 +84,6 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
                                             NULL, (DWORD) messageManagerPtr->getCurrentMessageThread());
 
     	jassert (plumeWindowHook != NULL);
-        
-        //DBG ("Native handle address : " << String::toHexString((uint32) getPeer()->getNativeHandle()));
     }
   #endif
 
@@ -164,11 +162,7 @@ void PlumeEditor::componentPeerChanged()
 		if (!plumeHWNDIsSet)
         {
           #if JUCE_WINDOWS
-            instanceHWND = GetAncestor (static_cast <HWND> (getPeer()->getNativeHandle()), GA_ROOT);
-
-            PLUME::globalPointers.addPlumeHWND (instanceHWND);
-
-            plumeHWNDIsSet = true;
+            registerEditorHWND();
           #endif
 
             if (processor.getWrapper().isWrapping())
@@ -180,8 +174,6 @@ void PlumeEditor::componentPeerChanged()
 
     else // Peer was deleted
     {
-        //TODO: Deletes HWND (OR PEER) from global pointer list
-
         PLUME::globalPointers.removePlumeHWND (instanceHWND);
     }
 }
@@ -339,3 +331,15 @@ void PlumeEditor::minimisationStateChanged (bool isNowMinimized)
         processor.getWrapper().minimiseWrapperEditor (isNowMinimized);
     }
 }
+
+#if JUCE_WINDOWS
+void PlumeEditor::registerEditorHWND()
+{
+    if (plumeHWNDIsSet) return;
+    
+    instanceHWND = GetAncestor (static_cast <HWND> (getPeer()->getNativeHandle()), GA_ROOT);
+    PLUME::globalPointers.addPlumeHWND (instanceHWND);
+
+    plumeHWNDIsSet = true;
+}
+#endif

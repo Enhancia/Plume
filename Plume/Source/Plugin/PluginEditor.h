@@ -128,6 +128,7 @@ private:
     //==============================================================================
   #if JUCE_WINDOWS
     HHOOK plumeWindowHook;
+    void registerEditorHWND();
 
     bool plumeHWNDIsSet = false;
     HWND instanceHWND = NULL;

@@ -88,7 +88,9 @@ WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc, const Comp
 WrapperEditorWindow::~WrapperEditorWindow()
 {
     TRACE_IN;
+  #if JUCE_WINDOWS
 	PLUME::globalPointers.resetWrappedEditorPeer (this->getPeer());
+  #endif
 
     wrappedUi.deleteAndZero();
     if (isOnDesktop()) removeFromDesktop();
