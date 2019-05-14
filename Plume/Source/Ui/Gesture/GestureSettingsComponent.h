@@ -53,7 +53,8 @@ private:
     //==============================================================================
     void createTuner();
     void createToggles();
-    void createTabbedSettings();
+    void createPanels();
+    void showAppropriatePanel();
 	void disableIfGestureWasDeleted();
     
     //==============================================================================
@@ -69,7 +70,8 @@ private:
     ScopedPointer<MapperComponent> gestMapper;
     ScopedPointer<DualTextToggle> midiParameterToggle;
     ScopedPointer<DualTextToggle> onOffToggle;
-    ScopedPointer<TabbedPanelComponent> tabbedSettings;
+    ScopedPointer<MidiModeComponent> midiPanel;
+    ScopedPointer<MapperComponent> mappedParametersPanel;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GestureSettingsComponent)

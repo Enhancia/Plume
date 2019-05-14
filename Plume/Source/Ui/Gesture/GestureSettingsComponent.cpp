@@ -19,7 +19,7 @@ GestureSettingsComponent::GestureSettingsComponent (Gesture& gest, GestureArray&
     TRACE_IN;
     createTuner();
     createToggles();
-    createTabbedSettings();
+    createPanels();
 }
 
 GestureSettingsComponent::~GestureSettingsComponent()
@@ -29,7 +29,6 @@ GestureSettingsComponent::~GestureSettingsComponent()
     disabled = true;
     gestTuner = nullptr;
     midiParameterToggle = nullptr;
-    tabbedSettings = nullptr;
 }
 
 //==============================================================================
@@ -44,15 +43,8 @@ void GestureSettingsComponent::update()
     if (disabled) return;
 
     gestTuner->updateComponents();
-
-    if (auto* midi = dynamic_cast<MidiModeComponent*> (tabbedSettings->getComponentFromTab (0)))
-    {
-        midi->updateComponents();
-    }
-    if (auto* mapper = dynamic_cast<MapperComponent*> (tabbedSettings->getComponentFromTab (1)))
-    {
-        mapper->updateComponents();
-    }
+    midiPanel->updateComponents();
+    mappedParametersPanel->updateComponents();
 }
 
 //==============================================================================
@@ -124,7 +116,8 @@ void GestureSettingsComponent::resized()
                                                            .withWidth (120)
                                                            .reduced (MARGIN));
 
-    tabbedSettings->setBounds (area.reduced (MARGIN));
+    midiPanel->setBounds (area.reduced (MARGIN));
+    mappedParametersPanel->setBounds (area.reduced (MARGIN));
 
     repaint();
 }
@@ -163,10 +156,7 @@ void GestureSettingsComponent::updateDisplay()
     {
         if (gesture.isActive()) gestTuner->updateDisplay();
         
-        if (auto* mapper = dynamic_cast<MapperComponent*> (tabbedSettings->getComponentFromTab (1)))
-        {
-            mapper->updateDisplay();
-        }
+        mappedParametersPanel->updateDisplay();
     }
 }
 
@@ -223,6 +213,7 @@ void GestureSettingsComponent::createToggles()
     midiParameterToggle->onStateChange = [this] ()
     { 
         gesture.setMidiMapped (!midiParameterToggle->getToggleState());
+        showAppropriatePanel();
         getParentComponent()->repaint();
     };
     
@@ -236,15 +227,16 @@ void GestureSettingsComponent::createToggles()
     };
 }
 
-void GestureSettingsComponent::createTabbedSettings()
+void GestureSettingsComponent::createPanels()
 {
-    addAndMakeVisible (tabbedSettings = new TabbedPanelComponent());
-    tabbedSettings->setStyle (TabbedPanelComponent::tabsHorizontal);
-    tabbedSettings->setColour (TabbedPanelComponent::tabSelectedText, Colour (0xff000000));
-    tabbedSettings->setColour (TabbedPanelComponent::tabUnselectedText, Colour (0x30000000));
-    tabbedSettings->setColour (TabbedPanelComponent::tabSelectedHighlight, Colour (0x30000000));
-    
-    tabbedSettings->addTab (new MidiModeComponent(gesture), "MIDI Output");
-    tabbedSettings->addTab (new MapperComponent(gesture, gestureArray, wrapper), "Parameters");
-    tabbedSettings->addTab (new Component ("Gesture Settings"), "Settings");
+    addAndMakeVisible (midiPanel = new MidiModeComponent(gesture));
+    addAndMakeVisible (mappedParametersPanel = new MapperComponent(gesture, gestureArray, wrapper));
+
+    gesture.isMidiMapped() ? mappedParametersPanel->setVisible (false) : midiPanel->setVisible (false);
+}
+
+void GestureSettingsComponent::showAppropriatePanel()
+{
+    midiPanel->setVisible (gesture.isMidiMapped());
+    mappedParametersPanel->setVisible (!gesture.isMidiMapped());
 }
