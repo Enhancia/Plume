@@ -13,7 +13,7 @@
 
 //==============================================================================
 PlumeEditor::PlumeEditor (PlumeProcessor& p)
-    : AudioProcessorEditor (&p), processor (p)
+    : AudioProcessorEditor (&p), processor (p), ComponentMovementWatcher (this)
 {
     TRACE_IN;
 	setComponentID ("plumeEditor");
@@ -77,10 +77,17 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	
 	PLUME::UI::ANIMATE_UI_FLAG = true;
 
-    if (processor.getWrapper().isWrapping())
+  #if JUCE_WINDOWS
+    if (auto messageManagerPtr = MessageManager::getInstanceWithoutCreating())
     {
-        processor.getWrapper().minimiseWrapperEditor (false);
+    	plumeWindowHook = SetWindowsHookExA(WH_CALLWNDPROC, PLUME::messageHook,
+                                            NULL, (DWORD) messageManagerPtr->getCurrentMessageThread());
+
+    	jassert (plumeWindowHook != NULL);
     }
+  #endif
+
+    
 }
 
 PlumeEditor::~PlumeEditor()
@@ -89,7 +96,7 @@ PlumeEditor::~PlumeEditor()
 
 	if (processor.getWrapper().isWrapping())
 	{
-		processor.getWrapper().minimiseWrapperEditor (true);
+		processor.getWrapper().clearWrapperEditor();
 	}
 
     PLUME::UI::ANIMATE_UI_FLAG = false;
@@ -104,6 +111,11 @@ PlumeEditor::~PlumeEditor()
     optionsPanel = nullptr;
     newPresetPanel = nullptr;
     setLookAndFeel (nullptr);
+
+#if JUCE_WINDOWS
+    //PLUME::globalPointers.removePlumeHWND (static_cast<HWND> (getPeer()->getNativeHandle()));
+	jassert (UnhookWindowsHookEx (plumeWindowHook) != 0);
+#endif
 }
 
 //==============================================================================
@@ -138,6 +150,32 @@ void PlumeEditor::resized()
 	resizableCorner->setBounds (getWidth() - 20, getHeight() - 20, 20, 20);
 
 	repaint();
+}
+
+//==============================================================================
+void PlumeEditor::componentPeerChanged()
+{
+    jassert (getPeer() != nullptr);
+
+    if (getPeer() != nullptr) // Peer was just created!
+    {
+		if (!plumeHWNDIsSet)
+        {
+          #if JUCE_WINDOWS
+            registerEditorHWND();
+          #endif
+
+            if (processor.getWrapper().isWrapping())
+            {
+                processor.getWrapper().createWrapperEditor (this);
+            }
+        }
+    }
+
+    else // Peer was deleted
+    {
+        PLUME::globalPointers.removePlumeHWND (instanceHWND);
+    }
 }
 
 //==============================================================================
@@ -238,6 +276,7 @@ void PlumeEditor::updateFullInterface()
 	sideBar->update();
 	
 	PLUME::UI::ANIMATE_UI_FLAG = true;
+	toFront (true);
 }
 
 void PlumeEditor::setInterfaceUpdates (bool shouldUpdate)
@@ -262,6 +301,11 @@ void PlumeEditor::setInterfaceUpdates (bool shouldUpdate)
 
 void PlumeEditor::broughtToFront()
 {
+  #if JUCE_WINDOWS
+	if (instanceHWND != NULL)
+		PLUME::globalPointers.setActiveHWND(instanceHWND);
+  #endif
+
     if (processor.getWrapper().isWrapping())
     {
         if (auto* wrapperWin = processor.getWrapper().getWrapperEditorWindow())
@@ -287,3 +331,15 @@ void PlumeEditor::minimisationStateChanged (bool isNowMinimized)
         processor.getWrapper().minimiseWrapperEditor (isNowMinimized);
     }
 }
+
+#if JUCE_WINDOWS
+void PlumeEditor::registerEditorHWND()
+{
+    if (plumeHWNDIsSet) return;
+    
+    instanceHWND = GetAncestor (static_cast <HWND> (getPeer()->getNativeHandle()), GA_ROOT);
+    PLUME::globalPointers.addPlumeHWND (instanceHWND);
+
+    plumeHWNDIsSet = true;
+}
+#endif

@@ -38,7 +38,8 @@ class PresetComponent;
  */
 class PlumeEditor  : public AudioProcessorEditor,
                      public ActionListener,
-                     public Button::Listener
+                     public Button::Listener,
+                     public ComponentMovementWatcher
 {
 public:
     /**
@@ -76,6 +77,11 @@ public:
     //==============================================================================
     void broughtToFront() override;
     void minimisationStateChanged (bool) override;
+
+    //==============================================================================
+    void componentMovedOrResized (bool wasMoved, bool wasResized) override {}
+    void componentPeerChanged() override;
+    void componentVisibilityChanged() override {}
 
     //==============================================================================
     /**
@@ -118,6 +124,15 @@ private:
     
     //==============================================================================
     void createSideBarButtonPath(); //TODO mettre dans common avec les autres chemins
+
+    //==============================================================================
+  #if JUCE_WINDOWS
+    HHOOK plumeWindowHook;
+    void registerEditorHWND();
+
+    bool plumeHWNDIsSet = false;
+    HWND instanceHWND = NULL;
+  #endif
     
     //==============================================================================
     PLUME::UI::PlumeLookAndFeel plumeLookAndFeel;

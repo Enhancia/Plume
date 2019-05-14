@@ -11,13 +11,14 @@
 
 #pragma once
 
+#include "../JuceLibraryCode/JuceHeader.h"
+
 #if JUCE_WINDOWS
 #include <windows.h>
 #elif JUCE_MAC
 #include <stdlib.h>
 #endif
 
-#include "../JuceLibraryCode/JuceHeader.h"
 #include "PlumeColours.h"
 #include "Ui/Common/PlumeComponent.h"
 #include "Ui/Common/PlumeProgressBar.h"
@@ -206,4 +207,50 @@ namespace PLUME
         //static Path folderPath = createFolderPath();
         //static Path magnifyingGlassPath = createMagnifyingGlassPath();
     }
+
+  #if JUCE_WINDOWS
+	extern LRESULT CALLBACK messageHook (int nCode, WPARAM wParam, LPARAM lParam);
+  #endif
+
+    struct GlobalPointers
+    {
+    public:
+        //ComponentPeer* const getWrappedEditorPeer (int index);
+        const int findComponentPeerIndex (ComponentPeer* componentPeerToCheck);
+        void addWrappedEditorPeer (ComponentPeer* newPeerPtr);
+        void resetWrappedEditorPeer (ComponentPeer* peerToReset);
+        //void removeWrappedEditorPeer (int index);
+
+      #if JUCE_WINDOWS
+        bool isPlumeHWND (HWND HWNDToCheck);
+        const int findPlumeHWNDindex (HWND HWNDToCheck);
+        void addPlumeHWND (HWND newHWND);
+        void removePlumeHWND (HWND HWNDToRemove);
+
+        void clearPlumeAndWrappedWindows();
+        void setActiveHWND (HWND HWNDToSetActive);
+        HWND getActiveHWND();
+
+        ComponentPeer* const getWrappedEditorPeer (HWND correspondingHWND);
+        void setWrappedEditorPeer (HWND correspondingHWND, ComponentPeer* newPeerPtr);
+        void resetWrappedEditorPeer (HWND correspondingHWND);
+      #endif
+
+    private:
+        /** \brief Global pointer (*Gasp...*) that keeps the adress of the WrappedEditor's ComponentPeer.
+            
+                   Use sparingly, mainly used to force the window to behave correctly on specific DAW/use case.
+                   For instance, to force the WrapperEditor to minimize when switching tracks in Ableton Live.
+        */
+        Array<ComponentPeer*> wrappedEditorPeerArray;
+
+      #if JUCE_WINDOWS
+        Array<HWND> plumeWindowArray;
+        CriticalSection hwndArrayLock;
+
+        HWND activePlumeWindow = NULL;
+      #endif
+    };
+    
+    extern GlobalPointers globalPointers;
 }
