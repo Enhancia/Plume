@@ -131,6 +131,9 @@ private:
     void unselectCurrentGesture ();
     void updateSlotIfNeeded (int slotToCheck);
 
+    void createMenuForGestureId (int id);
+    void handleMenuResult (int gestureId, const int menuResult);
+
     void setSettingsVisible (bool shouldBeVisible);
     void createAndAddCloseButton();
     

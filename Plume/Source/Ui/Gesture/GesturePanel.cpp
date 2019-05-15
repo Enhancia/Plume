@@ -148,17 +148,28 @@ void GesturePanel::mouseUp (const MouseEvent &event)
 {
     if (event.eventComponent != this)
     {
-        if (auto* gestureComponent = dynamic_cast<GestureComponent*> (event.eventComponent))
+        if (event.mods.isLeftButtonDown())
         {
-            if (!gestureComponent->isSelected())
+            if (auto* gestureComponent = dynamic_cast<GestureComponent*> (event.eventComponent))
             {
-                selectGestureExclusive (*gestureComponent);
+                if (!gestureComponent->isSelected())
+                {
+                    selectGestureExclusive (*gestureComponent);
+                }
+            }
+
+            if (auto* emptySlot = dynamic_cast<EmptyGestureSlotComponent*> (event.eventComponent))
+            {
+                newGesturePanel.showPanelForGestureID (emptySlot->id);
             }
         }
 
-        if (auto* emptySlot = dynamic_cast<EmptyGestureSlotComponent*> (event.eventComponent))
+        if (event.mods.isPopupMenu())
         {
-            newGesturePanel.showPanelForGestureID (emptySlot->id);
+            if (auto* gestureComponent = dynamic_cast<GestureComponent*> (event.eventComponent))
+            {
+                createMenuForGestureId (gestureComponent->id);
+            }
         }
     }
 }
@@ -365,6 +376,42 @@ void GesturePanel::unselectCurrentGesture()
        selected Gesture.
     */
     jassertfalse;
+}
+
+void GesturePanel::createMenuForGestureId (int id)
+{
+    PopupMenu gestureMenu;
+
+    gestureMenu.addItem (1, "Rename", true);
+    gestureMenu.addItem (2, "Duplicate", false);
+    gestureMenu.addItem (3, "Delete", true);
+    
+    handleMenuResult (id,
+                      gestureMenu.showMenu (PopupMenu::Options().withParentComponent (getParentComponent())
+                                                                .withMaximumNumColumns (3)
+                                                                .withPreferredPopupDirection (PopupMenu::Options::PopupDirection::downwards)
+                                                                .withStandardItemHeight (20)));
+}
+
+void GesturePanel::handleMenuResult (int gestureId, const int menuResult)
+{
+    switch (menuResult)
+    {
+        case 0: // No choice
+            break;
+            
+        case 1: // Rename gesture
+            renameGestureInSlot (gestureId);
+            break;
+            
+        case 2: // Duplicate
+            // TODO
+            break;
+
+        case 3: // Delete gesture
+            removeGestureAndGestureComponent (gestureId);
+            update();
+    }
 }
 
 void GesturePanel::setSettingsVisible (bool shouldBeVisible)
