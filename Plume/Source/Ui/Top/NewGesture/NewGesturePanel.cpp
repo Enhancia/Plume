@@ -12,25 +12,14 @@
 
 NewGesturePanel::NewGesturePanel (PlumeProcessor& proc) : processor (proc)
 {
-	addAndMakeVisible (gestureNameLabel = new Label ("gestureNameLabel", "Gesture Name..."));
-    gestureNameLabel->setColour (Label::backgroundColourId, Colour (0x30000000));
-    gestureNameLabel->setColour (Label::textColourId, PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText)
-                                                                      .withAlpha (0.6f));
-    gestureNameLabel->setFont (PLUME::font::plumeFont.withHeight (14.0f));
-    gestureNameLabel->setEditable (true, false, false);
-    gestureNameLabel->setMouseCursor (MouseCursor (MouseCursor::IBeamCursor));
-    gestureNameLabel->addListener (this);
-
-	createAndAddButtons();
+	createCloseButton();
 	createGestureSelectorButtons();
 	createAndAddTextEditor();
 }
 
 NewGesturePanel::~NewGesturePanel()
 {
-	gestureNameLabel = nullptr;
 	closeButton = nullptr;
-	addGestureButton = nullptr;
 	descriptionTextEditor = nullptr;
 }
 
@@ -68,19 +57,6 @@ void NewGesturePanel::paint (Graphics& g)
 
     g.setGradientFill (gradOut);
     g.drawRect (panelArea);
-
-    auto area = panelArea.reduced (2*MARGIN);
-
-    area.removeFromTop (panelArea.getHeight()/3); // GestureSelectors area
-    area.removeFromTop (panelArea.getHeight()*2/9); // Gesture Description area
-
-    g.setColour (currentTheme.getColour (PLUME::colour::topPanelMainText));
-    g.setFont (PLUME::font::plumeFont.withHeight (14.0f));
-    g.drawText ("Name:", area.removeFromTop (panelArea.getHeight()*2/9)
-    						 .reduced (4*MARGIN, 0)
-    						 .withWidth (panelArea.getWidth()/4),
-    				    Justification::centredLeft,
-    				    false);
 }
 
 void NewGesturePanel::resized()
@@ -88,7 +64,7 @@ void NewGesturePanel::resized()
 	using namespace PLUME::UI;
 
     // Panel Area
-    panelArea = getLocalBounds().reduced (getWidth()/6, getHeight()/6);
+    panelArea = getLocalBounds().reduced (getWidth()/6, getHeight()/4);
 
     closeButton->setBounds (juce::Rectangle<int> (15, 15).withX (panelArea.getRight() - MARGIN - 15)
                                                          .withY (panelArea.getY() + MARGIN)
@@ -96,20 +72,13 @@ void NewGesturePanel::resized()
 
 	auto area = panelArea.reduced (2*MARGIN);
 
-    resizeGestureSelectorButtons (area.removeFromTop (panelArea.getHeight()/3)
-    								  .reduced (MARGIN));
+    resizeGestureSelectorButtons (area.removeFromTop (area.getHeight()/2)
+    								  .reduced (MARGIN, 2*MARGIN));
 
-    descriptionTextEditor->setBounds (area.removeFromTop (panelArea.getHeight()*2/9)
-    									  .reduced (2*MARGIN, MARGIN));
-
- 	gestureNameLabel->setBounds (area.removeFromTop (panelArea.getHeight()*2/9)
- 									 .withSizeKeepingCentre (area.getWidth(),
- 									 					     jmin (panelArea.getHeight()*2/9 - 2*MARGIN, OPTIONS_HEIGHT))
- 									 .reduced (4*MARGIN, 0)
- 									 .withTrimmedLeft (panelArea.getWidth()/4));
-
-    addGestureButton->setBounds (area.removeFromTop (panelArea.getHeight()*2/9)
- 									 .withSizeKeepingCentre (panelArea.getWidth()/3, OPTIONS_HEIGHT));
+    descriptionTextEditor->setBounds (area.reduced (2*MARGIN, MARGIN));
+    if (area.getHeight() > 80)
+    	descriptionTextEditor->setBounds (area.withSizeKeepingCentre (area.reduced (2*MARGIN, MARGIN).getWidth(),
+    																  80));
 }
 
 //==============================================================================
@@ -121,7 +90,6 @@ const String NewGesturePanel::getInfoString()
 }
 void NewGesturePanel::update()
 {
-	gestureNameLabel->setText ("Gesture Name...", sendNotification);
 }
 
 //==============================================================================
@@ -139,10 +107,10 @@ void NewGesturePanel::mouseEnter (const MouseEvent &event)
 		// Gesture Type
 		descriptionTextEditor->setFont (PLUME::font::plumeFontBold.withHeight (15.0f));
 		descriptionTextEditor->insertTextAtCaret (Gesture::getTypeString (gestureSelector->gestureType, true)
-												  	  + " :   ");
+												  	  + " :\n");
 		// Gesture Description
 		descriptionTextEditor->setFont (PLUME::font::plumeFontBook.withHeight (14.0f));
-		descriptionTextEditor->insertTextAtCaret (Gesture::getGestureDescriptionString (gestureSelector->gestureType));
+		descriptionTextEditor->insertTextAtCaret (Gesture::getGestureTypeDescription (gestureSelector->gestureType));
 	
 		descriptionTextEditor->setCaretPosition (0);
 	}
@@ -151,7 +119,9 @@ void NewGesturePanel::mouseUp (const MouseEvent &event)
 {
 	if (auto* gestureSelector = dynamic_cast<GestureTypeSelector*> (event.eventComponent))
 	{
-		selectGestureTypeExclusive (gestureSelector);
+		selectGestureType (gestureSelector);
+		createNewGesture();
+		gestureSelector->setHighlighted (false);
 	}
 }
 void NewGesturePanel::buttonClicked (Button* bttn)
@@ -160,54 +130,19 @@ void NewGesturePanel::buttonClicked (Button* bttn)
 	{
 		hidePanel (true);
 	}
+}
 
-	else if (bttn == addGestureButton)
-	{
-		if (selectedGestureType != -1 && gestureNameLabel->getText() != "Gesture Name...")
-		{
-			// creates gesture and closes panel
-			processor.getGestureArray().addGesture (gestureNameLabel->getText(),
-													selectedGestureType,
-													selectedGestureSlot);
-			updateGesturePanel();
-			hidePanel (false);
-		}
-		else
-		{
-			if (selectedGestureType == -1)
-				sendActionMessage ("Please select a gesture type.");
-
-			if (selectedGestureType != -1 && gestureNameLabel->getText() == "Gesture Name...")
-				sendActionMessage ("Please enter a gesture name.");
-		}
-	}
+void NewGesturePanel::createNewGesture()
+{
+	processor.getGestureArray().addGesture (Gesture::getTypeString(selectedGestureType), selectedGestureType, selectedGestureSlot);
+	updateGesturePanel();
 }
 
 void NewGesturePanel::labelTextChanged (Label* lbl)
 {
-	if (lbl == gestureNameLabel)
-    {
-        if (lbl->getText().isEmpty())
-        {
-            lbl->setText ("Gesture Name...", dontSendNotification);
-            lbl->setColour (Label::textColourId, PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText)
-                                                                        .withAlpha (0.6f));
-        }
-        else
-        {
-            lbl->setColour (Label::textColourId, PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText));
-        }
-    }
 }
 void NewGesturePanel::editorShown (Label* lbl, TextEditor& ed)
 {
-	if (lbl == gestureNameLabel && lbl->getText() == "Gesture Name...")
-    {
-        lbl->setColour (Label::outlineColourId, Colour (0x000000));
-        
-        // The user doesn't have to manually remove "Gesture Name :"
-        ed.setText ("", false);
-    }
 }
 
 //==============================================================================
@@ -258,42 +193,17 @@ void NewGesturePanel::setVisible (bool shouldBeVisible)
 	Component::setVisible (shouldBeVisible);
 }
 
-void NewGesturePanel::selectGestureTypeExclusive (GestureTypeSelector* gestureTypeToSelect)
+void NewGesturePanel::selectGestureType (const GestureTypeSelector* gestureTypeToSelect)
 {
-	if (gestureTypeToSelect->isSelected()) return;
-
-	for (auto* typeSelector : gestureSelectors)
-	{
-		if (typeSelector->isSelected())
-			typeSelector->setSelected (false);
-	}
-
-	gestureTypeToSelect->setSelected (true);
-
-	if (gestureNameLabel->getText() == "Gesture Name..." ||
-		gestureNameLabel->getText() == Gesture::getTypeString (selectedGestureType, true))
-	{
-		gestureNameLabel->setText (Gesture::getTypeString (gestureTypeToSelect->gestureType, true),
-								   sendNotification);
-
-		if (selectedGestureType != -1)
-			gestureSelectors[selectedGestureType]->setHighlighted (false);
-		
-		gestureNameLabel->showEditor();
-	}
-
 	selectedGestureType = gestureTypeToSelect->gestureType;
 }
 void NewGesturePanel::unselectGestureType()
 {
-	if (selectedGestureType == -1) return;
-	
-	gestureSelectors[selectedGestureType]->setSelected (false);
 	selectedGestureType = -1;
 }
 
 //==============================================================================
-void NewGesturePanel::createAndAddButtons()
+void NewGesturePanel::createCloseButton()
 {
     addAndMakeVisible (closeButton = new ShapeButton ("Close Settings Button", Colour(0x00000000),
                                                                                Colour(0x00000000),
@@ -309,10 +219,6 @@ void NewGesturePanel::createAndAddButtons()
     closeButton->setOutline (Colour (0xffffffff), 1.0f);
     closeButton->addMouseListener (this, false);
     closeButton->addListener (this);
-
-    addAndMakeVisible (addGestureButton = new TextButton ("addGestureButton"));
-    addGestureButton->setButtonText ("Add Gesture");
-    addGestureButton->addListener (this);
 }
 
 void NewGesturePanel::createGestureSelectorButtons()
@@ -380,12 +286,10 @@ void NewGesturePanel::GestureTypeSelector::paint (Graphics& g)
 	g.setColour (PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText));
 	g.drawRoundedRectangle (getLocalBounds().reduced (2).toFloat(), 2.0f, 1.0f);
 
-	if (highlighted || selected)
+	if (highlighted)
 	{
-		g.setColour (selected ? PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText)
-											           .withAlpha (0.3f)
-							  : PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText)
-											           .withAlpha (0.1f));
+		g.setColour (PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText)
+											.withAlpha (0.1f));
 
 		g.fillRoundedRectangle (getLocalBounds().reduced (2).toFloat(), 2.0f);
 	}
@@ -407,19 +311,6 @@ void NewGesturePanel::GestureTypeSelector::mouseExit (const MouseEvent &event)
 {
 	setHighlighted (false);
 	repaint();
-}
-
-bool NewGesturePanel::GestureTypeSelector::isSelected()
-{
-	return selected;
-}
-void NewGesturePanel::GestureTypeSelector::setSelected (bool shouldBeSelected)
-{
-	if (shouldBeSelected != selected)
-	{
-		selected = shouldBeSelected;
-		repaint();
-	}
 }
 
 void NewGesturePanel::GestureTypeSelector::setHighlighted (bool shouldBeHighlighted)

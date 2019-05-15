@@ -63,9 +63,11 @@ public:
     void removeGestureAndGestureComponent (int gestureId);
     void addGestureComponent (Gesture& gest);
     bool hasSelectedGesture();
+    void renameGestureInSlot (int slotNumber);
 
 private:
-    class GestureComponent : public PlumeComponent
+    class GestureComponent : public PlumeComponent,
+                             private Label::Listener
     {
     public:
         GestureComponent (Gesture& gest);
@@ -76,7 +78,8 @@ private:
 
         void paint (Graphics&) override;
         void resized() override;
-
+        void editorShown (Label* lbl, TextEditor& ted) override;
+        void labelTextChanged (Label* lbl) override;
         void mouseEnter (const MouseEvent &event) override;
         void mouseExit (const MouseEvent &event) override;
 
@@ -85,12 +88,16 @@ private:
         void setSelected (bool);
         void setHighlighted (bool);
         void setSolo (bool);
+        void startNameEntry();
 
         const int id;
 
     private:
+        void createLabel();
         Gesture& gesture;
         String gestureDescription = "";
+        ScopedPointer<Label> gestureNameLabel;
+        
         bool on = gesture.isActive(), selected = false, highlighted = false, solo = false;
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GestureComponent)

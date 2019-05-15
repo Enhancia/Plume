@@ -290,12 +290,12 @@ String Gesture::getTypeString (int gestureType, bool capitalized)
     }
 }
 
-String Gesture::getGestureDescriptionString() const
+String Gesture::getGestureTypeDescription() const
 {
-    return Gesture::getGestureDescriptionString (type);
+    return Gesture::getGestureTypeDescription (type);
 }
 
-String Gesture::getGestureDescriptionString (int gestureType)
+String Gesture::getGestureTypeDescription (int gestureType)
 {
     switch (gestureType)
     {

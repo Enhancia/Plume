@@ -46,6 +46,7 @@ public:
     void editorShown (Label* lbl, TextEditor& ed) override;
 
     //==============================================================================
+    void createNewGesture();
     void showPanelForGestureID (const int gestureID);
     void hidePanel (const bool resetSelectedSlot = false);
     void updateGesturePanel();
@@ -67,20 +68,17 @@ private:
         void mouseEnter (const MouseEvent &event) override;
         void mouseExit (const MouseEvent &event) override;
 
-        bool isSelected();
-        void setSelected (bool shouldBeSelected);
         void setHighlighted (bool shouldBeHighlighted);
 
         const int gestureType; // from Gesture::GestureType
 
     private:
-        bool selected = false;
         bool highlighted = false;
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GestureTypeSelector)
     };
 
-    void selectGestureTypeExclusive (GestureTypeSelector* gestureTypeToSelect);
+    void selectGestureType (const GestureTypeSelector* gestureTypeToSelect);
     void unselectGestureType();
 
     //==============================================================================
@@ -89,10 +87,10 @@ private:
     void setVisible (bool) override; 
 
     //==============================================================================
-    void createAndAddButtons();
+    void createCloseButton();
+    void createAndAddTextEditor();
     void createGestureSelectorButtons();
     void resizeGestureSelectorButtons (juce::Rectangle<int> buttonsArea);
-    void createAndAddTextEditor();
 
     //==============================================================================
     juce::Rectangle<int> panelArea {0, 0, getWidth(), getHeight()};
@@ -103,9 +101,7 @@ private:
     PlumeProcessor& processor;
     
     //==============================================================================
-    ScopedPointer<TextButton> addGestureButton;
     ScopedPointer<ShapeButton> closeButton;
-    ScopedPointer<Label> gestureNameLabel;
     ScopedPointer<TextEditor> descriptionTextEditor;
     OwnedArray<GestureTypeSelector> gestureSelectors;
 

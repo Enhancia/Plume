@@ -52,11 +52,26 @@ const String GesturePanel::getInfoString()
 
 void GesturePanel::update()
 {
+    if (newGesturePanel.isVisible())
+    {
+        int lastSlot = newGesturePanel.getLastSelectedSlot();
+
+        updateSlotIfNeeded (lastSlot);
+        newGesturePanel.hidePanel();
+
+        renameGestureInSlot (lastSlot);
+    }
+
     stopTimer();
 
     for (int i=0; i<PLUME::NUM_GEST; i++)
     {
         updateSlotIfNeeded (i);
+    }
+
+    if (selectedGesture != -1)
+    {
+        gestureSettings->update();
     }
 
     startTimerHz (freq);
@@ -150,11 +165,20 @@ void GesturePanel::mouseUp (const MouseEvent &event)
 
 bool GesturePanel::keyPressed (const KeyPress &key)
 {
-    if (hasSelectedGesture() && key.isValid()
-                             && (key.getKeyCode() == KeyPress::deleteKey ||
-                                 key.getKeyCode() == KeyPress::backspaceKey))
+    if (hasSelectedGesture() && key.isValid())
     {
-        removeGestureAndGestureComponent (selectedGesture);
+        if (key.getKeyCode() == KeyPress::deleteKey || key.getKeyCode() == KeyPress::backspaceKey)
+        {
+            removeGestureAndGestureComponent (selectedGesture);
+        }
+
+        else if (key.getTextCharacter() == 'r')
+        {
+			if (key.getModifiers().isAltDown())
+			{
+				renameGestureInSlot (selectedGesture);
+			}
+        }
     }
 
 	return false;
@@ -234,6 +258,20 @@ void GesturePanel::addGestureComponent (Gesture& gest)
         }
     }
     */
+}
+
+void GesturePanel::renameGestureInSlot (int slotNumber)
+{
+    if (auto* gestureComponent = dynamic_cast<GestureComponent*> (gestureSlots[slotNumber]))
+    {
+        gestureComponent->startNameEntry();
+    }
+    else
+    {
+        /* Tried to rename a gesture, but the selected dlot was empty...
+        */
+        jassertfalse;
+    }
 }
 
 void GesturePanel::removeGestureAndGestureComponent (int gestureId)
@@ -436,9 +474,12 @@ void GesturePanel::parameterChanged (const String& parameterID, float)
 
 GesturePanel::GestureComponent::GestureComponent (Gesture& gest) : gesture (gest), id (gest.id)
 {
+    createLabel();
 }
 GesturePanel::GestureComponent::~GestureComponent()
 {
+    gestureNameLabel->removeListener (this);
+    gestureNameLabel = nullptr;
 }
 
 const String GesturePanel::GestureComponent::getInfoString()
@@ -450,6 +491,7 @@ const String GesturePanel::GestureComponent::getInfoString()
 }
 void GesturePanel::GestureComponent::update()
 {
+    gestureNameLabel->setText (gesture.getName(), dontSendNotification);
 }
 
 void GesturePanel::GestureComponent::paint (Graphics& g)
@@ -473,10 +515,7 @@ void GesturePanel::GestureComponent::paint (Graphics& g)
                                                              .withTrimmedLeft (PLUME::UI::MARGIN),
                 Justification::centredLeft, true);
 
-    g.setColour (Colours::black.withAlpha (0.8f));
-    g.setFont (PLUME::font::plumeFontBold.withHeight (15.0f));
-    g.drawText (gesture.getName(), nameAndTypeArea.removeFromLeft(getWidth()/2),
-                Justification::centred, true);
+    nameAndTypeArea.removeFromLeft(getWidth()/2); // gesture Name Label
 
     auto stateArea = nameAndTypeArea.withHeight (getHeight())
                                     .withTrimmedRight (PLUME::UI::MARGIN);
@@ -495,6 +534,22 @@ void GesturePanel::GestureComponent::paint (Graphics& g)
 }
 void GesturePanel::GestureComponent::resized()
 {
+    gestureNameLabel->setBounds (getLocalBounds().withHeight (30)
+                                                .withTrimmedLeft (getWidth()/4)
+                                                .withWidth (getWidth()/2));
+}
+void GesturePanel::GestureComponent::editorShown (Label* lbl, TextEditor& ted)
+{
+    ted.setColour (TextEditor::highlightColourId, Colour (0xff101010));
+    ted.setColour (TextEditor::textColourId, Colour (0xff959595));
+    ted.setJustification (Justification::centred);
+}
+
+void GesturePanel::GestureComponent::labelTextChanged (Label* lbl)
+{
+    gesture.setName (gestureNameLabel->getText());
+    
+    dynamic_cast<GesturePanel*> (getParentComponent())->update();
 }
 
 void GesturePanel::GestureComponent::mouseEnter (const MouseEvent &event)
@@ -528,6 +583,22 @@ void GesturePanel::GestureComponent::setSolo (bool shouldBeSolo)
 {
     solo = shouldBeSolo;
     repaint();
+}
+void GesturePanel::GestureComponent::startNameEntry()
+{
+    gestureNameLabel->showEditor();
+}
+
+void GesturePanel::GestureComponent::createLabel()
+{
+    addAndMakeVisible (gestureNameLabel = new Label ("gestureNameLabel", gesture.getName()));
+    gestureNameLabel->setEditable (false, false, false);
+    gestureNameLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
+    gestureNameLabel->setColour (Label::textColourId, Colour (0xff000000));
+    gestureNameLabel->setFont (PLUME::font::plumeFontBold.withHeight (15.0f));
+    gestureNameLabel->setJustificationType (Justification::centred);
+    gestureNameLabel->setInterceptsMouseClicks (false, false);
+    gestureNameLabel->addListener (this);
 }
 
 //==============================================================================

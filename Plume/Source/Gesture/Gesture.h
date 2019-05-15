@@ -309,7 +309,7 @@ public:
                This can be used by the interface to get a description while manipulating
                a Gesture pointer or reference.
      */
-    String getGestureDescriptionString() const;
+    String getGestureTypeDescription() const;
 
     /**
        \brief  Returns a string corresponding to a specified gesture type.
@@ -319,7 +319,7 @@ public:
                not manipulating gestures (ie the gesture type selection on the 
                newGesturePanel)
      */
-    static String getGestureDescriptionString (int gestureType);
+    static String getGestureTypeDescription (int gestureType);
     /**
      *  \brief Method to know if the gesture currently creates a pitchWheel midi message.
      *
