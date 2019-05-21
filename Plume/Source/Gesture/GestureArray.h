@@ -185,6 +185,14 @@ public:
     void cancelMapMode();
     
     //==============================================================================
+    // Methods to move gestures around
+
+    bool isIdAvailable (int idToCheck);
+    void moveGestureToId (int idToMoveFrom, int idToMoveTo);
+    void duplicateGesture (int idToDuplicateFrom, bool prioritizeHigherId = true);
+    void swapGestures (int firstId, int secondId);
+
+    //==============================================================================
     // Xml related methods
     
     /**
@@ -235,6 +243,9 @@ private:
      *  Initializes Plume with the default gestures, that eventually will be changeable / renable.
      */
     void initializeGestures();
+
+    void addGestureCopyingOther (Gesture* other, int gestureId, String gestureName = String());
+    int findClosestIdToDuplicate (int idToDuplicateFrom, bool prioritizeHigherId = true);
     
     //==============================================================================
     bool shouldMergePitch = false;

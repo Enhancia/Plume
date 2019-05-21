@@ -24,7 +24,8 @@
 class Roll : public Gesture
 {
 public:
-    Roll (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters, float lowValue = -30.0f, float highValue = 30.0f);
+    Roll (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
+          float lowValue = -30.0f, float highValue = 30.0f, String description = "");
     ~Roll();
     
     //==============================================================================

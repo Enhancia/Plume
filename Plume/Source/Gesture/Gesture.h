@@ -69,6 +69,12 @@ public:
         {
             TRACE_IN;
         }
+
+        MappedParameter (const MappedParameter& other)
+            : parameter (other.parameter), range(other.range), reversed (other.reversed)
+        {
+            TRACE_IN;
+        }
         
         ~MappedParameter()
         {
@@ -92,7 +98,7 @@ public:
      *  \param defaultValue The default value of the gesture's value attribute.
      */
     Gesture (String gestName, int gestType, int gestId, const NormalisableRange<float> maxRange,
-             AudioProcessorValueTreeState& plumeParameters,
+             AudioProcessorValueTreeState& plumeParameters, String gestureDescription = String(),
              float defaultValue = 0.0f, int defaultCc = 1,
              Range<float> defaultMidiRange = Range<float> (0.0f, 1.0f));
     
@@ -294,6 +300,15 @@ public:
     void setName (String nameToSet);
     
     /**
+     *  \brief Returns a string corresponding to the gesture's description.
+     */
+    String getDescription() const;
+    /**
+     *  \brief Returns a string corresponding to the gesture's description.
+     */
+    void setDescription (String descrptionToSet);
+
+    /**
      *  \brief Returns a string corresponding to the gesture's type.
      */
     String getTypeString (bool capitalized = false) const;
@@ -360,6 +375,11 @@ public:
      *  \return True if the parameter is found for this gesture.
      */
     bool parameterIsMapped (int parameterId);
+
+    /**
+     *  \brief Replaces the mapped parameters with another gesture's.
+     */
+    void swapParametersWithOtherGesture (Gesture& other);
     
     //==============================================================================
     const int type; /**< \brief Type of Gesture. Int value from gestureType enum */
@@ -443,6 +463,7 @@ protected:
     
     //==============================================================================
     String name; /**< \brief Specific name of the gesture. By default it is the gesture type*/
+    String description; /**< \brief User specified description of the gesture. By default it is empty*/
     bool mapped; /**< \brief Boolean that represents if the gesture is mapped or not. */
     int lastMidi = -1; /**< \brief Integer value that represents the midiValue supposedely sent to the previous midiBuffer */
     

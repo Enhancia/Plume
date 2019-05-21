@@ -175,6 +175,10 @@
           <FILE id="iz3dGi" name="GestureSettingsComponent.h" compile="0" resource="0"
                 file="Source/Ui/Gesture/GestureSettingsComponent.h"/>
           <GROUP id="{94FA1FB9-480C-C968-3466-0795EE8D84A4}" name="SettingsTabs">
+            <FILE id="FHQ36F" name="DescriptionPanel.cpp" compile="1" resource="0"
+                  file="Source/Ui/Gesture/SettingsTabs/DescriptionPanel.cpp"/>
+            <FILE id="T68x6g" name="DescriptionPanel.h" compile="0" resource="0"
+                  file="Source/Ui/Gesture/SettingsTabs/DescriptionPanel.h"/>
             <FILE id="YNQxRp" name="MappedParameterComponent.h" compile="0" resource="0"
                   file="Source/Ui/Gesture/SettingsTabs/MappedParameterComponent.h"/>
             <FILE id="LcBscD" name="MapperComponent.cpp" compile="1" resource="0"

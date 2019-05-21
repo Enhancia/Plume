@@ -18,9 +18,11 @@
 using namespace PLUME;
 
 PitchBend::PitchBend (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
-                      float leftLow, float leftHigh, float rightLow, float rightHigh)
+                      float leftLow, float leftHigh, float rightLow, float rightHigh, String description)
                       
-    : Gesture (gestName, Gesture::pitchBend, gestId, NormalisableRange<float> (PITCHBEND_MIN, PITCHBEND_MAX, 0.1f), plumeParameters),
+    : Gesture (gestName, Gesture::pitchBend, gestId,
+               NormalisableRange<float> (PITCHBEND_MIN, PITCHBEND_MAX, 0.1f),
+               plumeParameters, description),
     
       rangeLeftLow   (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::bend_leftLow]))),
       rangeLeftHigh  (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::bend_leftHigh]))),

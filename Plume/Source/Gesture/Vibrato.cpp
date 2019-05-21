@@ -11,8 +11,11 @@
 #include "Gesture/Vibrato.h"
 using namespace PLUME;
 
-Vibrato::Vibrato (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters, float val, float thresh)
-    : Gesture (gestName, Gesture::vibrato, gestId, NormalisableRange<float> (-VIBRATO_RANGE_MAX, VIBRATO_RANGE_MAX, 0.1f), plumeParameters),
+Vibrato::Vibrato (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
+                  float val, float thresh, String description)
+    : Gesture (gestName, Gesture::vibrato, gestId,
+               NormalisableRange<float> (-VIBRATO_RANGE_MAX, VIBRATO_RANGE_MAX, 0.1f),
+               plumeParameters, description),
     
       gain      (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::vibrato_range]))),
       intensity (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::vibrato_intensity]))),

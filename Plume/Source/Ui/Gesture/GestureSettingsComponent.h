@@ -17,6 +17,7 @@
 #include "Ui/Common/TabbedPanelComponent.h"
 #include "Ui/Gesture/Tuner/GesturesTuner.h"
 #include "Ui/Gesture/SettingsTabs/MapperComponent.h"
+#include "Ui/Gesture/SettingsTabs/DescriptionPanel.h"
 
 //==============================================================================
 /*
@@ -72,6 +73,7 @@ private:
     ScopedPointer<DualTextToggle> onOffToggle;
     ScopedPointer<MidiModeComponent> midiPanel;
     ScopedPointer<MapperComponent> mappedParametersPanel;
+    ScopedPointer<DescriptionPanel> descriptionPanel;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GestureSettingsComponent)

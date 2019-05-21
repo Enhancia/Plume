@@ -51,6 +51,7 @@ public:
     void parameterChanged (const String &parameterID, float newValue) override;
 
     void mouseUp (const MouseEvent &event) override;
+    void mouseDrag (const MouseEvent &event) override;
     bool keyPressed (const KeyPress &key) override;
 
     //==============================================================================
@@ -95,7 +96,6 @@ private:
     private:
         void createLabel();
         Gesture& gesture;
-        String gestureDescription = "";
         ScopedPointer<Label> gestureNameLabel;
         
         bool on = gesture.isActive(), selected = false, highlighted = false, solo = false;
@@ -127,12 +127,17 @@ private:
     };
 
     void switchGestureSelectionState (GestureComponent& gestureComponentToSwitch);
+    void selectGestureExclusive (const int idToSelect);
     void selectGestureExclusive (GestureComponent& gestureComponentToSelect);
     void unselectCurrentGesture ();
     void updateSlotIfNeeded (int slotToCheck);
+    void moveGestureToId (int idToMoveFrom, int idToMoveTo);
+    void swapGestures (int firstId, int secondId);
 
     void createMenuForGestureId (int id);
     void handleMenuResult (int gestureId, const int menuResult);
+    void handleLeftClickUp (const MouseEvent &event);
+    void handleLeftClickDrag (const MouseEvent &event);
 
     void setSettingsVisible (bool shouldBeVisible);
     void createAndAddCloseButton();

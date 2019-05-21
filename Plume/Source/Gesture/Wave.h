@@ -24,7 +24,8 @@
 class Wave : public Gesture
 {
 public:
-    Wave (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters);
+    Wave (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
+          String description = "");
     ~Wave();
     
     //==============================================================================

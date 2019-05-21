@@ -11,10 +11,10 @@ Author:  Alex
 #include "Gesture.h"
 
 Gesture::Gesture (String gestName, int gestType, int gestId, const NormalisableRange<float> maxRange,
-         		  AudioProcessorValueTreeState& plumeParameters,
+         		  AudioProcessorValueTreeState& plumeParameters, String gestureDescription,
          		  float defaultValue, int defaultCc, Range<float> defaultMidiRange)
         
-         		  : name (gestName), type (gestType), id (gestId), range (maxRange),
+         		  : name (gestName), type (gestType), id (gestId), range (maxRange), description (gestureDescription),
 	       		  value    (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::value]))),
 	       		  on       (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::on]))),
 	       		  midiOnParameterOff  (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::midi_on]))),
@@ -256,6 +256,16 @@ void Gesture::setName (String nameToSet)
     name = nameToSet;
 }
 
+String Gesture::getDescription() const
+{
+    return description;
+}
+
+void Gesture::setDescription (String descrptionToSet)
+{
+    description = descrptionToSet;
+}
+
 String Gesture::getTypeString (bool capitalized) const
 {
     return Gesture::getTypeString (type, capitalized);
@@ -400,6 +410,13 @@ bool Gesture::parameterIsMapped (int parameterId)
     }
     
     return false;
+}
+
+void Gesture::swapParametersWithOtherGesture (Gesture& other)
+{
+    ScopedLock paramlock (parameterArrayLock);
+
+    getParameterArray().swapWith (other.getParameterArray());
 }
 
 int Gesture::normalizeMidi (float minVal, float maxVal, float val)

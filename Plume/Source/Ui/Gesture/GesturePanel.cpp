@@ -150,21 +150,10 @@ void GesturePanel::mouseUp (const MouseEvent &event)
     {
         if (event.mods.isLeftButtonDown())
         {
-            if (auto* gestureComponent = dynamic_cast<GestureComponent*> (event.eventComponent))
-            {
-                if (!gestureComponent->isSelected())
-                {
-                    selectGestureExclusive (*gestureComponent);
-                }
-            }
-
-            if (auto* emptySlot = dynamic_cast<EmptyGestureSlotComponent*> (event.eventComponent))
-            {
-                newGesturePanel.showPanelForGestureID (emptySlot->id);
-            }
+			handleLeftClickUp (event);
         }
 
-        if (event.mods.isPopupMenu())
+        else if (event.mods.isPopupMenu())
         {
             if (auto* gestureComponent = dynamic_cast<GestureComponent*> (event.eventComponent))
             {
@@ -172,6 +161,75 @@ void GesturePanel::mouseUp (const MouseEvent &event)
             }
         }
     }
+}
+
+void GesturePanel::mouseDrag (const MouseEvent& event)
+{
+    auto relativeEvent = event.getEventRelativeTo (this);
+
+    if (relativeEvent.originalComponent != this)
+    {
+        if (relativeEvent.mods.isLeftButtonDown())
+        {
+            if (auto* gestureComponent = dynamic_cast<GestureComponent*> (relativeEvent.originalComponent))
+            {
+                if (Component* componentUnderMouse = getComponentAt (relativeEvent.getPosition()))
+                {
+                    if (auto* otherGesture = dynamic_cast<GestureComponent*> (componentUnderMouse))
+                    {
+                        // TODO set component dragged over flag to repaint
+                    }
+                    else if (auto* emptySlot = dynamic_cast<EmptyGestureSlotComponent*> (componentUnderMouse))
+                    {
+                        // TODO set component dragged over flag to repaint
+                    }
+                }
+            }
+        }
+    }
+}
+
+void GesturePanel::handleLeftClickUp (const MouseEvent& event)
+{
+    if (auto* gestureComponent = dynamic_cast<GestureComponent*> (event.eventComponent))
+    {
+        // Mouse didn't leave the component it clicked in the first place
+        if (getComponentAt (event.getEventRelativeTo (this).getPosition()) == event.eventComponent)
+        {
+            if (!gestureComponent->isSelected())
+            {
+                selectGestureExclusive (*gestureComponent);
+            }
+        }
+        else // Mouse was dragged to another component
+        {
+            if (Component* componentUnderMouse = getComponentAt (event.getEventRelativeTo (this).getPosition()))
+            {
+                if (auto* slotUnderMouse = dynamic_cast<EmptyGestureSlotComponent*> (componentUnderMouse))
+                {
+                    DBG ("Moving gesture " << gestureComponent->id << " to slot " << slotUnderMouse->id);
+                    moveGestureToId (gestureComponent->id, slotUnderMouse->id);
+                }
+                else if (auto* gestureComponentUnderMouse = dynamic_cast<GestureComponent*> (componentUnderMouse))
+                {
+                    DBG ("Swapping gestures " << gestureComponent->id << " and " << gestureComponentUnderMouse->id);
+                    unselectCurrentGesture();
+                    gestureArray.swapGestures (gestureComponent->id, gestureComponentUnderMouse->id);
+					update();
+                }
+            }
+        }
+    }
+
+    else if (auto* emptySlot = dynamic_cast<EmptyGestureSlotComponent*> (event.eventComponent))
+    {
+        newGesturePanel.showPanelForGestureID (emptySlot->id);
+    }
+}
+
+void GesturePanel::handleLeftClickDrag (const MouseEvent& event)
+{
+    
 }
 
 bool GesturePanel::keyPressed (const KeyPress &key)
@@ -250,6 +308,23 @@ void GesturePanel::updateSlotIfNeeded (int slotToCheck)
             repaint();
         }
     }
+}
+
+
+void GesturePanel::moveGestureToId (int idToMoveFrom, int idToMoveTo)
+{
+    bool mustChangeSelection = (selectedGesture == idToMoveFrom);
+    
+    if (mustChangeSelection) unselectCurrentGesture();
+
+    gestureArray.moveGestureToId (idToMoveFrom, idToMoveTo);
+    update();
+
+    if (mustChangeSelection) selectGestureExclusive (idToMoveTo);
+}
+
+void GesturePanel::swapGestures (int firstId, int secondId)
+{
 }
 
 void GesturePanel::addGestureComponent (Gesture& gest)
@@ -344,6 +419,16 @@ void GesturePanel::selectGestureExclusive (GestureComponent& gestureComponentToS
     setSettingsVisible (true);
 }
 
+void GesturePanel::selectGestureExclusive (const int idToSelect)
+{
+    if (idToSelect < 0 || idToSelect >= gestureSlots.size()) return;
+
+    if (auto* gestureComponent = dynamic_cast<GestureComponent*> (gestureSlots[idToSelect]))
+    {
+        selectGestureExclusive (*gestureComponent);
+    }
+}
+
 void GesturePanel::unselectCurrentGesture()
 {
 	// Can't unselect if nothing is selected..
@@ -383,7 +468,7 @@ void GesturePanel::createMenuForGestureId (int id)
     PopupMenu gestureMenu;
 
     gestureMenu.addItem (1, "Rename", true);
-    gestureMenu.addItem (2, "Duplicate", false);
+    gestureMenu.addItem (2, "Duplicate", true);
     gestureMenu.addItem (3, "Delete", true);
     
     handleMenuResult (id,
@@ -405,7 +490,9 @@ void GesturePanel::handleMenuResult (int gestureId, const int menuResult)
             break;
             
         case 2: // Duplicate
-            // TODO
+            gestureArray.duplicateGesture (gestureId);
+            update();
+            selectGestureExclusive (gestureId);
             break;
 
         case 3: // Delete gesture
@@ -517,7 +604,7 @@ void GesturePanel::parameterChanged (const String& parameterID, float)
 }
 
 //==============================================================================
-// Gesture Grid 
+// Gesture Component
 
 GesturePanel::GestureComponent::GestureComponent (Gesture& gest) : gesture (gest), id (gest.id)
 {
@@ -534,7 +621,7 @@ const String GesturePanel::GestureComponent::getInfoString()
     return gesture.getName() + " | " + gesture.getTypeString (true) + "\n\n" +
            "State : " + (gesture.isActive() ? "Enabled" : "Disabled") +
            " | Mode : " + (gesture.isMidiMapped() ? "MIDI\n" : "Parameters\n")
-           + "\n" + gestureDescription;
+           + "\n" + gesture.getDescription();
 }
 void GesturePanel::GestureComponent::update()
 {

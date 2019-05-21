@@ -29,6 +29,7 @@ GestureSettingsComponent::~GestureSettingsComponent()
     disabled = true;
     gestTuner = nullptr;
     midiParameterToggle = nullptr;
+    descriptionPanel = nullptr;
 }
 
 //==============================================================================
@@ -45,6 +46,7 @@ void GestureSettingsComponent::update()
     gestTuner->updateComponents();
     midiPanel->updateComponents();
     mappedParametersPanel->updateComponents();
+    descriptionPanel->update();
 }
 
 //==============================================================================
@@ -115,6 +117,9 @@ void GestureSettingsComponent::resized()
     midiParameterToggle->setBounds (area.removeFromTop (30).withLeft (area.getWidth()/2)
                                                            .withWidth (120)
                                                            .reduced (MARGIN));
+
+    descriptionPanel->setBounds (area.removeFromBottom (area.getHeight()/3)
+                                     .reduced (MARGIN, 3*MARGIN));
 
     midiPanel->setBounds (area.reduced (MARGIN));
     mappedParametersPanel->setBounds (area.reduced (MARGIN));
@@ -229,8 +234,9 @@ void GestureSettingsComponent::createToggles()
 
 void GestureSettingsComponent::createPanels()
 {
-    addAndMakeVisible (midiPanel = new MidiModeComponent(gesture));
-    addAndMakeVisible (mappedParametersPanel = new MapperComponent(gesture, gestureArray, wrapper));
+    addAndMakeVisible (midiPanel = new MidiModeComponent (gesture));
+    addAndMakeVisible (mappedParametersPanel = new MapperComponent (gesture, gestureArray, wrapper));
+    addAndMakeVisible (descriptionPanel = new DescriptionPanel (gesture));
 
     gesture.isMidiMapped() ? mappedParametersPanel->setVisible (false) : midiPanel->setVisible (false);
 }
