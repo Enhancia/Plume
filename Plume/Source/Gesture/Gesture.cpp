@@ -414,9 +414,20 @@ bool Gesture::parameterIsMapped (int parameterId)
 
 void Gesture::swapParametersWithOtherGesture (Gesture& other)
 {
-    ScopedLock paramlock (parameterArrayLock);
+    clearAllParameters();
 
-    getParameterArray().swapWith (other.getParameterArray());
+    for (auto* otherMappedParam : other.getParameterArray())
+    {
+        addParameter (otherMappedParam->parameter, otherMappedParam->range, otherMappedParam->reversed);
+    }
+
+    /*
+    parameterArray.swapWith (other.getParameterArray());
+
+    mapped = parameterArray.isEmpty();
+    */
+
+    sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
 }
 
 int Gesture::normalizeMidi (float minVal, float maxVal, float val)

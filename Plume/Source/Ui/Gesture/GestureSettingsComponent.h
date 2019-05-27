@@ -49,6 +49,7 @@ public:
     Tuner& getTuner();
     void updateDisplay();
     void updateComponents();
+    void updateMappedParameters();
     
 private:
     //==============================================================================

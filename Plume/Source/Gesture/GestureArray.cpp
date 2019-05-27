@@ -129,7 +129,6 @@ Gesture* GestureArray::getGesture (const String nameToSearch)
 
 Gesture* GestureArray::getGesture (const int idToSearch)
 {
-    
     if (idToSearch >= PLUME::NUM_GEST || idToSearch < 0)
     {
         DBG ("Gesture n°" << idToSearch << " cannot exist. \nNumber of gestures: " << gestures.size());
@@ -415,6 +414,7 @@ void GestureArray::moveGestureToId (int idToMoveFrom, int idToMoveTo)
     gestures.getLast()->swapParametersWithOtherGesture (*gestureToMove);
     removeGesture (idToMoveFrom);
     
+    //gestures.getLast()->sendChangeMessage(); // Alert to update Ui
 }
 
 void GestureArray::duplicateGesture (int idToDuplicateFrom, bool prioritizeHigherId)
@@ -456,7 +456,20 @@ int GestureArray::findClosestIdToDuplicate (int idToDuplicateFrom, bool prioriti
 
 void GestureArray::swapGestures (int firstId, int secondId)
 {
+    if (firstId == secondId || firstId  < 0 || firstId  >= PLUME::NUM_GEST ||
+                               secondId < 0 || secondId >= PLUME::NUM_GEST)
+        return;
 
+	ScopedLock gestlock(gestureArrayLock);
+
+    ScopedPointer<Gesture> secondGesture = gestures.removeAndReturn (gestures.indexOf (getGesture (secondId)));
+    
+    // Replaces second gesture with first
+    moveGestureToId (firstId, secondId);
+
+    // Copies second gesture to first Id
+    addGestureCopyingOther (secondGesture, firstId);
+    getGesture (firstId)->swapParametersWithOtherGesture (*secondGesture);
 }
 
 //==============================================================================

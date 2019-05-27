@@ -72,6 +72,7 @@ void GesturePanel::update()
     if (selectedGesture != -1)
     {
         gestureSettings->update();
+        gestureSettings->updateMappedParameters();
     }
 
     startTimerHz (freq);
@@ -213,9 +214,7 @@ void GesturePanel::handleLeftClickUp (const MouseEvent& event)
                 else if (auto* gestureComponentUnderMouse = dynamic_cast<GestureComponent*> (componentUnderMouse))
                 {
                     DBG ("Swapping gestures " << gestureComponent->id << " and " << gestureComponentUnderMouse->id);
-                    unselectCurrentGesture();
-                    gestureArray.swapGestures (gestureComponent->id, gestureComponentUnderMouse->id);
-					update();
+                    swapGestures (gestureComponent->id, gestureComponentUnderMouse->id);
                 }
             }
         }
@@ -318,13 +317,33 @@ void GesturePanel::moveGestureToId (int idToMoveFrom, int idToMoveTo)
     if (mustChangeSelection) unselectCurrentGesture();
 
     gestureArray.moveGestureToId (idToMoveFrom, idToMoveTo);
-    update();
+	update();
 
-    if (mustChangeSelection) selectGestureExclusive (idToMoveTo);
+    if (mustChangeSelection)
+    {
+        selectGestureExclusive (idToMoveTo);
+    }
 }
 
 void GesturePanel::swapGestures (int firstId, int secondId)
 {
+    bool mustChangeSelection = (selectedGesture == firstId || selectedGesture == secondId);
+    int idToSelect;
+
+    if (mustChangeSelection)
+    {
+        idToSelect = (selectedGesture == firstId ? secondId : firstId);
+        unselectCurrentGesture();
+    }
+
+    // Deletes GestureComponents for the 2 slots
+    gestureSlots.set (firstId, new EmptyGestureSlotComponent (firstId), true);
+    gestureSlots.set (secondId, new EmptyGestureSlotComponent (secondId), true);
+
+    gestureArray.swapGestures (firstId, secondId);
+    update();
+    
+    if (mustChangeSelection) selectGestureExclusive (idToSelect);
 }
 
 void GesturePanel::addGestureComponent (Gesture& gest)

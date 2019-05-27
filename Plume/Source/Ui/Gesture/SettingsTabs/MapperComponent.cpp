@@ -152,7 +152,6 @@ void MapperComponent::changeListenerCallback(ChangeBroadcaster* source)
         if (gesture.mapModeOn == false) mapButton->setColour (TextButton::buttonColourId, getLookAndFeel().findColour (TextButton::buttonColourId));
     
         // clears then redraws the array.
-        paramCompArray.clear();
         initializeParamCompArray();
         resized();
         
@@ -173,24 +172,23 @@ void MapperComponent::updateDisplay()
 {
     if (paramCompArray.isEmpty()) return;
     
-    for (auto* comp : paramCompArray)
+    if (PLUME::UI::ANIMATE_UI_FLAG)
     {
-        comp->updateDisplay();
+        for (auto* comp : paramCompArray)
+        {
+            comp->updateDisplay();
+        }
     }
 }
 
 void MapperComponent::updateComponents()
 {
-    if (PLUME::UI::ANIMATE_UI_FLAG)
-    {
-        getParentComponent()->repaint(); // repaints the whole gesture area
-        repaint(); // repaints mapper component
-    }
 }
 
 void MapperComponent::initializeParamCompArray()
 {
     TRACE_IN;
+    paramCompArray.clear();
     
 	int i = 0;
     // adds a MappedParameterComponent for each parameter of the gesture, and makes them visible.

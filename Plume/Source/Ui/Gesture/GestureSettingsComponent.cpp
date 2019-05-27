@@ -124,7 +124,7 @@ void GestureSettingsComponent::resized()
     midiPanel->setBounds (area.reduced (MARGIN));
     mappedParametersPanel->setBounds (area.reduced (MARGIN));
 
-    repaint();
+    //repaint();
 }
 
 //==============================================================================
@@ -163,6 +163,11 @@ void GestureSettingsComponent::updateDisplay()
         
         mappedParametersPanel->updateDisplay();
     }
+}
+
+void GestureSettingsComponent::updateMappedParameters()
+{
+    mappedParametersPanel->initializeParamCompArray();
 }
 
 void GestureSettingsComponent::disableIfGestureWasDeleted()
