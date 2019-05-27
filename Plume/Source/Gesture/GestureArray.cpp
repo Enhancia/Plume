@@ -424,7 +424,7 @@ void GestureArray::duplicateGesture (int idToDuplicateFrom, bool prioritizeHighe
 
     if (gestureToMove == nullptr || idToDuplicateTo == -1) return;
 
-    addGestureCopyingOther (gestureToMove, idToDuplicateTo, gestureToMove->getName() + String ("_copy"));
+    addGestureCopyingOther (gestureToMove, idToDuplicateTo, createDuplicateName (gestureToMove->getName()));
 }
 
 int GestureArray::findClosestIdToDuplicate (int idToDuplicateFrom, bool prioritizeHigherId)
@@ -452,6 +452,24 @@ int GestureArray::findClosestIdToDuplicate (int idToDuplicateFrom, bool prioriti
     }
 
     return lowerAvailableId;
+}
+
+
+String GestureArray::createDuplicateName (String originalGestureName)
+{
+    String endChars = originalGestureName.trimEnd().fromLastOccurrenceOf (" (", false, false);
+
+    if (endChars.getLastCharacter() == ')' && endChars.dropLastCharacters (1).containsOnly ("0123456789"))
+    {
+        int newNum = endChars.dropLastCharacters (1).getIntValue() + 1; 
+        DBG ("New num " << newNum);
+
+        return originalGestureName.upToLastOccurrenceOf ("(", true, false) + String(newNum) + String (")");
+    }
+    else
+    {
+        return originalGestureName + String (" (1)");
+    }
 }
 
 void GestureArray::swapGestures (int firstId, int secondId)

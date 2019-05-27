@@ -246,6 +246,7 @@ private:
 
     void addGestureCopyingOther (Gesture* other, int gestureId, String gestureName = String());
     int findClosestIdToDuplicate (int idToDuplicateFrom, bool prioritizeHigherId = true);
+    String createDuplicateName (String originalGestureName);
     
     //==============================================================================
     bool shouldMergePitch = false;
