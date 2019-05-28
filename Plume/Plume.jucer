@@ -170,6 +170,10 @@
           <FILE id="tb4LAs" name="GesturePanel.cpp" compile="1" resource="0"
                 file="Source/Ui/Gesture/GesturePanel.cpp"/>
           <FILE id="ZGz1SG" name="GesturePanel.h" compile="0" resource="0" file="Source/Ui/Gesture/GesturePanel.h"/>
+          <FILE id="bhSeXc" name="GesturePanelSlots.cpp" compile="1" resource="0"
+                file="Source/Ui/Gesture/GesturePanelSlots.cpp"/>
+          <FILE id="cKZVio" name="GesturePanelSlots.h" compile="0" resource="0"
+                file="Source/Ui/Gesture/GesturePanelSlots.h"/>
           <FILE id="tIRjc2" name="GestureSettingsComponent.cpp" compile="1" resource="0"
                 file="Source/Ui/Gesture/GestureSettingsComponent.cpp"/>
           <FILE id="iz3dGi" name="GestureSettingsComponent.h" compile="0" resource="0"

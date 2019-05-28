@@ -134,7 +134,7 @@ void NewGesturePanel::buttonClicked (Button* bttn)
 
 void NewGesturePanel::createNewGesture()
 {
-	processor.getGestureArray().addGesture (Gesture::getTypeString(selectedGestureType), selectedGestureType, selectedGestureSlot);
+	processor.getGestureArray().addGesture (Gesture::getTypeString (selectedGestureType, true), selectedGestureType, selectedGestureSlot);
 	updateGesturePanel();
 }
 

@@ -253,7 +253,10 @@ String Gesture::getName() const
 
 void Gesture::setName (String nameToSet)
 {
-    name = nameToSet;
+    if (!nameToSet.trimEnd().isEmpty())
+    {
+        name = nameToSet.trimEnd();
+    }
 }
 
 String Gesture::getDescription() const
