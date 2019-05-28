@@ -66,6 +66,7 @@ public:
     void renameGestureInSlot (int slotNumber);
 
 private:
+    //==============================================================================
     void switchGestureSelectionState (GestureComponent& gestureComponentToSwitch);
     void selectGestureExclusive (const int idToSelect);
     void selectGestureExclusive (GestureComponent& gestureComponentToSelect);
@@ -74,14 +75,20 @@ private:
     void moveGestureToId (int idToMoveFrom, int idToMoveTo);
     void swapGestures (int firstId, int secondId);
 
+    //==============================================================================
     void createMenuForGestureId (int id);
     void handleMenuResult (int gestureId, const int menuResult);
     void handleLeftClickUp (const MouseEvent &event);
     void handleLeftClickDrag (const MouseEvent &event);
 
+    //==============================================================================
     void setSettingsVisible (bool shouldBeVisible);
     void createAndAddCloseButton();
-    
+
+    //==============================================================================
+    void startDragMode (int slotBeingDragged);
+    void endDragMode();
+
     //==============================================================================
     Image backgroundImage = ImageFileFormat::loadFrom (PlumeData::homePageEnhancia_jpg,
                                                        PlumeData::homePageEnhancia_jpgSize);
@@ -94,6 +101,11 @@ private:
     int selectedGesture = -1;
     int freq;
     bool settingsVisible = false;
+
+    //==============================================================================
+    bool dragMode = false;
+    int draggedGestureComponentId = -1;
+    int draggedOverSlotId = -1;
 
     //==============================================================================
     GestureArray& gestureArray;

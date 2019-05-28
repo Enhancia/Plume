@@ -135,6 +135,8 @@ void GesturePanel::mouseUp (const MouseEvent &event)
     {
         if (event.mods.isLeftButtonDown())
         {
+            if (dragMode) endDragMode();
+
 			handleLeftClickUp (event);
         }
 
@@ -158,16 +160,33 @@ void GesturePanel::mouseDrag (const MouseEvent& event)
         {
             if (auto* gestureComponent = dynamic_cast<GestureComponent*> (relativeEvent.originalComponent))
             {
+                if (!dragMode)
+                {
+                    startDragMode (gestureComponent->id);
+                }
+
                 if (Component* componentUnderMouse = getComponentAt (relativeEvent.getPosition()))
                 {
                     if (auto* otherGesture = dynamic_cast<GestureComponent*> (componentUnderMouse))
                     {
-                        // TODO set component dragged over flag to repaint
-                    }
+						if (otherGesture->id != draggedGestureComponentId)
+						{
+							draggedOverSlotId = otherGesture->id;
+							otherGesture->repaint();
+						}
+					}
                     else if (auto* emptySlot = dynamic_cast<EmptyGestureSlotComponent*> (componentUnderMouse))
                     {
-                        // TODO set component dragged over flag to repaint
+                        draggedOverSlotId = emptySlot->id;
+                        otherGesture->repaint();
                     }
+                }
+                else
+                {
+                    int formerDraggedOverId = draggedOverSlotId;
+
+                    draggedOverSlotId = -1;
+                    gestureSlots[formerDraggedOverId]->repaint();
                 }
             }
         }
@@ -242,12 +261,16 @@ void GesturePanel::initialiseGestureSlots()
     {
         if (Gesture* gestureToCreateComponentFor = gestureArray.getGesture (i))
         {
-            gestureSlots.add (new GestureComponent (*gestureToCreateComponentFor));
+            gestureSlots.add (new GestureComponent (*gestureToCreateComponentFor, dragMode,
+                                                                                  draggedGestureComponentId,
+                                                                                  draggedOverSlotId));
             addParameterListenerForGestureId (i);
         }
         else
         {
-            gestureSlots.add (new EmptyGestureSlotComponent (i));
+            gestureSlots.add (new EmptyGestureSlotComponent (i, dragMode,
+                                                                draggedGestureComponentId,
+                                                                draggedOverSlotId));
         }
 
         addAndMakeVisible (gestureSlots.getLast());
@@ -263,7 +286,12 @@ void GesturePanel::updateSlotIfNeeded (int slotToCheck)
         if (gestureArray.getGesture (slotToCheck) == nullptr)
         {
             removeParameterListenerForGestureId (slotToCheck);
-            gestureSlots.set (slotToCheck, new EmptyGestureSlotComponent (slotToCheck), true);
+            gestureSlots.set (slotToCheck, new EmptyGestureSlotComponent (slotToCheck, 
+                                                                          dragMode,
+                                                                          draggedGestureComponentId,
+                                                                          draggedOverSlotId),
+                                           true);
+
             addAndMakeVisible (gestureSlots[slotToCheck]);
             gestureSlots[slotToCheck]->addMouseListener (this, false);
             resized();
@@ -277,7 +305,12 @@ void GesturePanel::updateSlotIfNeeded (int slotToCheck)
         {
             addParameterListenerForGestureId (slotToCheck);
 
-            gestureSlots.set (slotToCheck, new GestureComponent (*gestureThatWasCreated), true);
+            gestureSlots.set (slotToCheck, new GestureComponent (*gestureThatWasCreated,
+                                                                 dragMode,
+                                                                 draggedGestureComponentId,
+                                                                 draggedOverSlotId),
+                                           true);
+
             addAndMakeVisible (gestureSlots[slotToCheck]);
             gestureSlots[slotToCheck]->addMouseListener (this, false);
 
@@ -321,8 +354,12 @@ void GesturePanel::swapGestures (int firstId, int secondId)
     }
 
     // Deletes GestureComponents for the 2 slots
-    gestureSlots.set (firstId, new EmptyGestureSlotComponent (firstId), true);
-    gestureSlots.set (secondId, new EmptyGestureSlotComponent (secondId), true);
+    gestureSlots.set (firstId, new EmptyGestureSlotComponent (firstId, dragMode,
+                                                                       draggedGestureComponentId,
+                                                                       draggedOverSlotId), true);
+    gestureSlots.set (secondId, new EmptyGestureSlotComponent (secondId, dragMode,
+                                                                         draggedGestureComponentId,
+                                                                         draggedOverSlotId), true);
 
     gestureArray.swapGestures (firstId, secondId);
     update();
@@ -584,5 +621,32 @@ void GesturePanel::parameterChanged (const String& parameterID, float)
                 }
             }
         }
+    }
+}
+
+
+void GesturePanel::startDragMode (int slotBeingDragged)
+{
+    dragMode = true;
+    draggedGestureComponentId = slotBeingDragged;
+    draggedOverSlotId = -1;
+
+    for (auto* slot : gestureSlots)
+    {
+        slot->repaint();
+    }
+
+
+}
+
+void GesturePanel::endDragMode()
+{
+    dragMode = false;
+    draggedGestureComponentId = -1;
+    draggedOverSlotId = -1;
+
+    for (auto* slot : gestureSlots)
+    {
+        slot->repaint();
     }
 }

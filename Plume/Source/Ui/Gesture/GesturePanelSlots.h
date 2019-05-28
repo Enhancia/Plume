@@ -18,7 +18,9 @@ class GestureComponent : public PlumeComponent,
                          private Label::Listener
 {
 public:
-    GestureComponent (Gesture& gest);
+    GestureComponent (Gesture& gest, const bool& dragModeReference,
+                                     const int& draggedGestureReference,
+                                     const int& draggedOverSlotReference);
     ~GestureComponent();
 
     const String getInfoString() override;
@@ -48,6 +50,10 @@ private:
     
     bool on = gesture.isActive(), selected = false, highlighted = false, solo = false;
 
+    const bool& dragMode;
+    const int& draggedGesture;
+    const int& draggedOverSlot;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GestureComponent)
 };
 
@@ -55,7 +61,9 @@ private:
 class EmptyGestureSlotComponent : public PlumeComponent
 {
 public:
-    EmptyGestureSlotComponent (const int slotId);
+    EmptyGestureSlotComponent (const int slotId, const bool& dragModeReference,
+                                                 const int& draggedGestureReference,
+                                                 const int& draggedOverSlotReference);
     ~EmptyGestureSlotComponent();
 
     const String getInfoString() override;
@@ -72,5 +80,10 @@ public:
 
 private:
     bool highlighted = false;
+    
+    const bool& dragMode;
+    const int& draggedGesture;
+    const int& draggedOverSlot;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EmptyGestureSlotComponent)
 };

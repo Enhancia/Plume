@@ -13,7 +13,13 @@
 //==============================================================================
 // Gesture Component
 
-GestureComponent::GestureComponent (Gesture& gest) : gesture (gest), id (gest.id)
+GestureComponent::GestureComponent (Gesture& gest, const bool& dragModeReference,
+                                                   const int& draggedGestureReference,
+                                                   const int& draggedOverSlotReference)
+    : gesture (gest), id (gest.id),
+                      dragMode (dragModeReference),
+                      draggedGesture (draggedGestureReference),
+                      draggedOverSlot (draggedOverSlotReference)
 {
     createLabel();
 }
@@ -47,6 +53,12 @@ void GestureComponent::paint (Graphics& g)
     }
 
     g.fillRoundedRectangle (getLocalBounds().toFloat(), 3.0f);
+
+    if (dragMode && draggedGesture != id && draggedOverSlot == id)
+    {
+        g.setColour (Colour (0xeef00000));
+        g.drawRoundedRectangle (getLocalBounds().reduced (2).toFloat(), 3.0f, 3.0f);
+    }
 
     auto nameAndTypeArea = getLocalBounds().withHeight(30);
 
@@ -150,7 +162,13 @@ void GestureComponent::createLabel()
 //==============================================================================
 // Gesture Slot 
 
-EmptyGestureSlotComponent::EmptyGestureSlotComponent (const int slotId) : id (slotId)
+EmptyGestureSlotComponent::EmptyGestureSlotComponent (const int slotId,
+                                                      const bool& dragModeReference,
+                                                      const int& draggedGestureReference,
+                                                      const int& draggedOverSlotReference)
+    : id (slotId), dragMode (dragModeReference),
+                   draggedGesture (draggedGestureReference),
+                   draggedOverSlot (draggedOverSlotReference)
 {
 }
 EmptyGestureSlotComponent::~EmptyGestureSlotComponent()
@@ -167,6 +185,12 @@ void EmptyGestureSlotComponent::update()
 
 void EmptyGestureSlotComponent::paint (Graphics& g)
 {
+    if (dragMode && draggedGesture != id && draggedOverSlot == id)
+    {
+        g.setColour (Colour (0xeef00000));
+        g.drawRoundedRectangle (getLocalBounds().reduced (2).toFloat(), 3.0f, 3.0f);
+    }
+    
     g.setColour (highlighted ? Colours::white.withAlpha (0.4f) : Colours::white.withAlpha (0.1f));
     g.fillEllipse (getLocalBounds().withSizeKeepingCentre (20, 20).toFloat());
 
