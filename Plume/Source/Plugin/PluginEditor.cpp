@@ -155,15 +155,14 @@ void PlumeEditor::resized()
 //==============================================================================
 void PlumeEditor::componentPeerChanged()
 {
+  #if JUCE_WINDOWS
     jassert (getPeer() != nullptr);
 
     if (getPeer() != nullptr) // Peer was just created!
     {
 		if (!plumeHWNDIsSet)
         {
-          #if JUCE_WINDOWS
             registerEditorHWND();
-          #endif
 
             if (processor.getWrapper().isWrapping())
             {
@@ -176,6 +175,7 @@ void PlumeEditor::componentPeerChanged()
     {
         PLUME::globalPointers.removePlumeHWND (instanceHWND);
     }
+  #endif
 }
 
 //==============================================================================
