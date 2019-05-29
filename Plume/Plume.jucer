@@ -139,6 +139,10 @@
                 file="Source/Ui/Header/HeaderComponent.h"/>
         </GROUP>
         <GROUP id="{50A59D03-EF8C-6884-6A1F-9905EDBD4B18}" name="SideBar">
+          <FILE id="DV0B4f" name="HideSideBarButton.cpp" compile="1" resource="0"
+                file="Source/Ui/SideBar/HideSideBarButton.cpp"/>
+          <FILE id="DXd2V8" name="HideSideBarButton.h" compile="0" resource="0"
+                file="Source/Ui/SideBar/HideSideBarButton.h"/>
           <FILE id="CzkUFf" name="SideBarComponent.cpp" compile="1" resource="0"
                 file="Source/Ui/SideBar/SideBarComponent.cpp"/>
           <FILE id="lr3xWX" name="SideBarComponent.h" compile="0" resource="0"
@@ -265,8 +269,8 @@
   <EXPORTFORMATS>
     <VS2017 targetFolder="Builds/VisualStudio2017" bigIcon="YXx8Ce" smallIcon="YXx8Ce">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="0" name="Release" headerPath="D:\Workspace\GitWorkspace\Plume\Plume\Source"/>
-        <CONFIGURATION isDebug="1" name="Debug" headerPath="D:\Workspace\GitWorkspace\Plume\Plume\Source"/>
+        <CONFIGURATION isDebug="0" name="Release" headerPath="C:\Users\Enhancia Dev\Documents\Dev\Git_Workspace\Plume\Plume\Source"/>
+        <CONFIGURATION isDebug="1" name="Debug" headerPath="C:\Users\Enhancia Dev\Documents\Dev\Git_Workspace\Plume\Plume\Source"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../../../Programmes/JUCE/modules"/>

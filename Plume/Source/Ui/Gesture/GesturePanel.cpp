@@ -80,11 +80,6 @@ void GesturePanel::update()
 //==============================================================================
 void GesturePanel::paint (Graphics& g)
 {
-    using namespace PLUME::UI;
-
-    g.drawImage (backgroundImage, getLocalBounds().toFloat(), RectanglePlacement::xLeft +
-                                                              RectanglePlacement::yTop  +
-                                                              RectanglePlacement::doNotResize);
 }
 
 void GesturePanel::resized()

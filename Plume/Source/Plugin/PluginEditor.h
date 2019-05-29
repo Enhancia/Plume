@@ -15,6 +15,7 @@
 
 #include "Ui/SideBar/SideBarComponent.h"
 #include "Ui/SideBar/PresetComponent.h"
+#include "Ui/SideBar/HideSideBarButton.h"
 #include "Ui/Header/HeaderComponent.h"
 #include "Ui/Gesture/GesturePanel.h"
 #include "Ui/LookAndFeel/PlumeLookAndFeel.h"
@@ -111,12 +112,10 @@ public:
 private:
     //==============================================================================
     PlumeProcessor& processor; /**< \brief Reference to Plume's processor object */
-    //ScopedPointer<WrapperComponent> wrapperComp; /**< \brief Object allowing to choose a plugin to wrap and use with neova */
-    //ScopedPointer<PresetComponent> presetComp; /**< \brief Object allowing to save or load presets, in the xml format */
     ScopedPointer<GesturePanel> gesturePanel; /**< \brief Object that handles the different gesture gui objects */
     ScopedPointer<SideBarComponent> sideBar; /**< \brief Hideable SideBar object that displays the preset list, help, and buttons */
     ScopedPointer<HeaderComponent> header; /**< \brief Header object that displays the preset, and the wrapping features */
-    ScopedPointer<ShapeButton> sideBarButton; /**< \brief Button that hides or shows the sidebar */
+    ScopedPointer<HideSideBarButton> sideBarButton; /**< \brief Button that hides or shows the sidebar */
     ScopedPointer<OptionsPanel> optionsPanel;
     ScopedPointer<NewPresetPanel> newPresetPanel;
     ScopedPointer<NewGesturePanel> newGesturePanel;
@@ -137,6 +136,9 @@ private:
     //==============================================================================
     PLUME::UI::PlumeLookAndFeel plumeLookAndFeel;
     ScopedPointer<ResizableCornerComponent> resizableCorner;
+    
+    Image backgroundImage = ImageFileFormat::loadFrom (PlumeData::homePageEnhancia_jpg,
+                                                       PlumeData::homePageEnhancia_jpgSize);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeEditor)
 };

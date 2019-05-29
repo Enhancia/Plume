@@ -106,18 +106,13 @@ void HeaderComponent::paint (Graphics& g)
     grad.addColour (0.8, currentTheme.getColour(PLUME::colour::headerSeparatorBottom));
     g.setGradientFill (grad);
     
-    auto area = getLocalBounds().withLeft (getHeight() - 2*MARGIN);
-    
-    // Separator
-    g.drawVerticalLine (area.getX(),
-                        float(MARGIN),
-                        float(getHeight() - MARGIN));
+    auto area = getLocalBounds();
 
     // Preset area
     {
         auto presetArea = area.removeFromLeft (area.getWidth()/3 + 2*MARGIN);
 
-        // Preset folder drawing                   
+        // Preset folder drawing
         Path p = PLUME::path::createFolderPath();
 	    p.scaleToFit (float(presetArea.getX()) + MARGIN, 0.0f, float(getHeight()-2*MARGIN), float(getHeight()), true);
         g.fillPath (p);
@@ -153,7 +148,7 @@ void HeaderComponent::resized()
 {
     using namespace PLUME::UI;
     
-    auto area = getLocalBounds().withLeft (getHeight() - 2*MARGIN);
+    auto area = getLocalBounds();
 
     // Preset Area
     {
