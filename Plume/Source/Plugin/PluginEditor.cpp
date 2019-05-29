@@ -25,7 +25,6 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	// Creates the Top Panels
     addAndMakeVisible (newGesturePanel = new NewGesturePanel (processor));
     newGesturePanel->hidePanel();
-    newGesturePanel->setAlwaysOnTop (true);
 
 	addAndMakeVisible (optionsPanel = new OptionsPanel (processor));
 	optionsPanel->setVisible (false);
@@ -48,16 +47,13 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	// SideBarButton
 	bool sideBarHidden = false;
 
-	addAndMakeVisible (sideBarButton = new ShapeButton ("Side Bar Button",
-                                                        Colour (0x00000000),
-                                                        Colour (0x00000000),
-                                                        Colour (0x00000000)));
+	addAndMakeVisible (sideBarButton = new HideSideBarButton());
                                                         
 	sideBarButton->setToggleState (sideBarHidden, dontSendNotification); // side bar visible at first
     sideBarButton->setClickingTogglesState (true);
-	createSideBarButtonPath();
 	sideBarButton->addListener(this);
     
+
     // Adds itself as a change listener for plume's processor
     processor.addActionListener (this);
     if (auto* infoPanel = dynamic_cast<InfoPanel*> (sideBar->findChildWithID ("infoPanel")))
@@ -66,15 +62,17 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	// Base size and resize settings
 	setResizable (true, false);
 	addAndMakeVisible (resizableCorner = new ResizableCornerComponent (this, getConstrainer()));
-	
+
 	setSize(PLUME::UI::DEFAULT_WINDOW_WIDTH, PLUME::UI::DEFAULT_WINDOW_HEIGHT);
 	setResizeLimits (getWidth()*3/4, getHeight()*3/4, getWidth()*3, getHeight()*3);
+
 
 	for (Component* comp : getChildren())
     {
         comp->addMouseListener(this, true);
     }
 	
+
 	PLUME::UI::ANIMATE_UI_FLAG = true;
 
   #if JUCE_WINDOWS
@@ -87,7 +85,8 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     }
   #endif
 
-    
+    newGesturePanel->toFront (false);
+    sideBarButton->toFront (false);
 }
 
 PlumeEditor::~PlumeEditor()
@@ -123,6 +122,14 @@ void PlumeEditor::paint (Graphics& g)
 {
     // Background
     g.fillAll (Colour (0xff101717));
+
+    g.drawImage (backgroundImage, getLocalBounds().withTrimmedTop (sideBarButton->getHeight())
+                                                  .withTrimmedLeft (sideBarButton->getToggleState() ? 0
+																		: sideBar->getWidth())
+                                                  .toFloat(),
+                                  RectanglePlacement::xLeft +
+                                  RectanglePlacement::yTop  +
+                                  RectanglePlacement::doNotResize);
 }
 
 void PlumeEditor::resized()
@@ -135,16 +142,20 @@ void PlumeEditor::resized()
     
     auto sideBarButtonArea = juce::Rectangle<int> (sideBarButton->getToggleState() ? 0 : SIDEBAR_WIDTH, 0,
 	                                               HEADER_HEIGHT - 2*MARGIN, HEADER_HEIGHT);
-	sideBarButton->setBounds (sideBarButtonArea.reduced (MARGIN, MARGIN*3/2));
+	//sideBarButton->setBounds (sideBarButtonArea.reduced (MARGIN, MARGIN*3/2));
 
 	if (!sideBarButton->getToggleState())
 	{
 		sideBar->setBounds(area.removeFromLeft(SIDEBAR_WIDTH));
 	}
 
-	header->setBounds (area.removeFromTop (HEADER_HEIGHT));
+    sideBarButton->setBounds (area.withWidth (HEADER_HEIGHT/2)
+                                  .withSizeKeepingCentre (HEADER_HEIGHT/2, HEADER_HEIGHT*3/2));
 
+	header->setBounds (area.removeFromTop (HEADER_HEIGHT));
     newGesturePanel->setBounds (area);
+
+    area.setLeft (area.getX() + sideBarButton->getWidth());
 	gesturePanel->setBounds (area);
 
 	resizableCorner->setBounds (getWidth() - 20, getHeight() - 20, 20, 20);
@@ -208,14 +219,14 @@ void PlumeEditor::buttonClicked (Button* bttn)
     if (bttn == sideBarButton)
     {
 		sideBar->setVisible (!sideBarButton->getToggleState());
+        //sideBarButton->repaint();
 		resized();
-
-        createSideBarButtonPath();
     }
 }
 
 void PlumeEditor::createSideBarButtonPath()
 {
+    /*
     using namespace PLUME::UI;
 
     Path p;
@@ -235,13 +246,14 @@ void PlumeEditor::createSideBarButtonPath()
     
     sideBarButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 2.0f);
     sideBarButton->setShape (p, false, false, false);
+    */
 }
 
 void PlumeEditor::mouseEnter (const MouseEvent &event)
 {
     if (event.eventComponent == sideBarButton)
     {
-        sideBarButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerHighlightedText), 2.0f);
+        //sideBarButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerHighlightedText), 2.0f);
     }
 }
 
@@ -249,7 +261,7 @@ void PlumeEditor::mouseExit (const MouseEvent &event)
 {
     if (event.eventComponent == sideBarButton)
     {
-        sideBarButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 2.0f);
+        //sideBarButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 2.0f);
     }
 }
 
