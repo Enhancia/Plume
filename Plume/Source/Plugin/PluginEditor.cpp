@@ -13,7 +13,7 @@
 
 //==============================================================================
 PlumeEditor::PlumeEditor (PlumeProcessor& p)
-    : AudioProcessorEditor (&p), processor (p)
+    : AudioProcessorEditor (&p), processor (p), ComponentMovementWatcher (this)
 {
     TRACE_IN;
 	setComponentID ("plumeEditor");
@@ -23,23 +23,28 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	setBroughtToFrontOnMouseClick (true);
 
 	// Creates the Top Panels
+    addAndMakeVisible (newGesturePanel = new NewGesturePanel (processor));
+    newGesturePanel->hidePanel();
+    newGesturePanel->setAlwaysOnTop (true);
+
 	addAndMakeVisible (optionsPanel = new OptionsPanel (processor));
 	optionsPanel->setVisible (false);
 	optionsPanel->setAlwaysOnTop (true);
-	optionsPanel->setBounds (getBounds());
 	
 	addAndMakeVisible (newPresetPanel = new NewPresetPanel (processor));
 	newPresetPanel->setVisible (false);
 	newPresetPanel->setAlwaysOnTop (true);
-	newPresetPanel->setBounds (getBounds());
 
     // Creates the main components
     addAndMakeVisible (header = new HeaderComponent (processor, *newPresetPanel));
     addAndMakeVisible (sideBar = new SideBarComponent (processor, *optionsPanel));
     sideBar->addInfoPanelAsMouseListener (this);
     
+    
 	addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
-	                                                    processor.getParameterTree(), PLUME::UI::FRAMERATE));
+	                                                    processor.getParameterTree(), *newGesturePanel,
+                                                        PLUME::UI::FRAMERATE));
+                                                        
 	// SideBarButton
 	bool sideBarHidden = false;
 
@@ -55,6 +60,8 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     
     // Adds itself as a change listener for plume's processor
     processor.addActionListener (this);
+    if (auto* infoPanel = dynamic_cast<InfoPanel*> (sideBar->findChildWithID ("infoPanel")))
+        PlumeComponent::listenToAllChildrenPlumeComponents (this, infoPanel, false);
 
 	// Base size and resize settings
 	setResizable (true, false);
@@ -70,10 +77,17 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	
 	PLUME::UI::ANIMATE_UI_FLAG = true;
 
-    if (processor.getWrapper().isWrapping())
+  #if JUCE_WINDOWS
+    if (auto messageManagerPtr = MessageManager::getInstanceWithoutCreating())
     {
-        processor.getWrapper().minimiseWrapperEditor (false);
+    	plumeWindowHook = SetWindowsHookExA(WH_CALLWNDPROC, PLUME::messageHook,
+                                            NULL, (DWORD) messageManagerPtr->getCurrentMessageThread());
+
+    	jassert (plumeWindowHook != NULL);
     }
+  #endif
+
+    
 }
 
 PlumeEditor::~PlumeEditor()
@@ -82,7 +96,7 @@ PlumeEditor::~PlumeEditor()
 
 	if (processor.getWrapper().isWrapping())
 	{
-		processor.getWrapper().minimiseWrapperEditor (true);
+		processor.getWrapper().clearWrapperEditor();
 	}
 
     PLUME::UI::ANIMATE_UI_FLAG = false;
@@ -97,19 +111,27 @@ PlumeEditor::~PlumeEditor()
     optionsPanel = nullptr;
     newPresetPanel = nullptr;
     setLookAndFeel (nullptr);
+
+#if JUCE_WINDOWS
+    //PLUME::globalPointers.removePlumeHWND (static_cast<HWND> (getPeer()->getNativeHandle()));
+	jassert (UnhookWindowsHookEx (plumeWindowHook) != 0);
+#endif
 }
 
 //==============================================================================
 void PlumeEditor::paint (Graphics& g)
 {
     // Background
-    g.fillAll (PLUME::UI::currentTheme.getColour (PLUME::colour::basePanelBackground));
+    g.fillAll (Colour (0xff101717));
 }
 
 void PlumeEditor::resized()
 {
     using namespace PLUME::UI;
     auto area = getLocalBounds();
+    
+    optionsPanel->setBounds (area);
+    newPresetPanel->setBounds (area);
     
     auto sideBarButtonArea = juce::Rectangle<int> (sideBarButton->getToggleState() ? 0 : SIDEBAR_WIDTH, 0,
 	                                               HEADER_HEIGHT - 2*MARGIN, HEADER_HEIGHT);
@@ -121,12 +143,39 @@ void PlumeEditor::resized()
 	}
 
 	header->setBounds (area.removeFromTop (HEADER_HEIGHT));
-	gesturePanel->setBounds(area.reduced (2*MARGIN, 2*MARGIN));
+
+    newGesturePanel->setBounds (area);
+	gesturePanel->setBounds (area);
+
 	resizableCorner->setBounds (getWidth() - 20, getHeight() - 20, 20, 20);
-	optionsPanel->setBounds (0, 0, getWidth(), getHeight());
-	newPresetPanel->setBounds (0, 0, getWidth(), getHeight());
 
 	repaint();
+}
+
+//==============================================================================
+void PlumeEditor::componentPeerChanged()
+{
+  #if JUCE_WINDOWS
+    jassert (getPeer() != nullptr);
+
+    if (getPeer() != nullptr) // Peer was just created!
+    {
+		if (!plumeHWNDIsSet)
+        {
+            registerEditorHWND();
+
+            if (processor.getWrapper().isWrapping())
+            {
+                processor.getWrapper().createWrapperEditor (this);
+            }
+        }
+    }
+
+    else // Peer was deleted
+    {
+        PLUME::globalPointers.removePlumeHWND (instanceHWND);
+    }
+  #endif
 }
 
 //==============================================================================
@@ -214,17 +263,20 @@ PlumeProcessor& PlumeEditor::getProcessor()
 void PlumeEditor::updateFullInterface()
 {
     TRACE_IN;
+    removeChildComponent (gesturePanel);
     auto gpbounds = gesturePanel->getBounds();
-    gesturePanel.reset();
 
-    addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
-	                                                    processor.getParameterTree(), PLUME::UI::FRAMERATE));
+    gesturePanel.reset (new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
+                                          processor.getParameterTree(), *newGesturePanel,
+                                          PLUME::UI::FRAMERATE));
+    addAndMakeVisible (gesturePanel, 0);
 	gesturePanel->setBounds(gpbounds);
-	gesturePanel->addMouseListener (this, true);
+    
 	header->update();
 	sideBar->update();
 	
 	PLUME::UI::ANIMATE_UI_FLAG = true;
+	toFront (true);
 }
 
 void PlumeEditor::setInterfaceUpdates (bool shouldUpdate)
@@ -249,6 +301,11 @@ void PlumeEditor::setInterfaceUpdates (bool shouldUpdate)
 
 void PlumeEditor::broughtToFront()
 {
+  #if JUCE_WINDOWS
+	if (instanceHWND != NULL)
+		PLUME::globalPointers.setActiveHWND(instanceHWND);
+  #endif
+
     if (processor.getWrapper().isWrapping())
     {
         if (auto* wrapperWin = processor.getWrapper().getWrapperEditorWindow())
@@ -274,3 +331,15 @@ void PlumeEditor::minimisationStateChanged (bool isNowMinimized)
         processor.getWrapper().minimiseWrapperEditor (isNowMinimized);
     }
 }
+
+#if JUCE_WINDOWS
+void PlumeEditor::registerEditorHWND()
+{
+    if (plumeHWNDIsSet) return;
+    
+    instanceHWND = GetAncestor (static_cast <HWND> (getPeer()->getNativeHandle()), GA_ROOT);
+    PLUME::globalPointers.addPlumeHWND (instanceHWND);
+
+    plumeHWNDIsSet = true;
+}
+#endif

@@ -20,7 +20,7 @@ FilterBox::FilterBox (const String& componentName, PlumeProcessor& p)  : ListBox
     setRowHeight (16);
     
     auto& scrollBar = getVerticalScrollBar();
-    scrollBar.setColour (ScrollBar::thumbColourId, UI::currentTheme.getColour (colour::presetsBoxScrollBar));
+    scrollBar.setColour (ScrollBar::thumbColourId, PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxScrollBar));
 }
 
 FilterBox::~FilterBox()

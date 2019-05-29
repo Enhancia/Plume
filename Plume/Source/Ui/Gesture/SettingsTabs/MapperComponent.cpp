@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "Ui/Gesture/Mapper/MapperComponent.h"
+#include "Ui/Gesture/SettingsTabs/MapperComponent.h"
 
 #ifndef W 
 #define W Component::getWidth()
@@ -34,23 +34,6 @@ MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr, PluginWr
     clearMapButton->setButtonText ("Clear map");
     clearMapButton->addListener (this);
     
-    // midiMode Component
-    addAndMakeVisible (midiModeComp = new MidiModeComponent (gesture));
-    
-    // midiMode button
-    Image midiOn = ImageFileFormat::loadFrom (PlumeData::OnOff_png, PlumeData::OnOff_pngSize);
-    
-    addAndMakeVisible (midiMapButton = new ImageButton ("Midi Mode Button"));
-    midiMapButton->setImages (false, true, true,
-								midiOn, 1.0f, Colour (0xffffffff),
-								midiOn, 0.5f, Colour (0x80ffffff),
-								midiOn, 1.0f, Colour (0x00000000));
-    midiMapButton->setToggleState (gesture.isMidiMapped(), dontSendNotification);
-    midiMapButton->setClickingTogglesState (true);
-	midiMapButton->setState(gesture.isMidiMapped() ? Button::buttonDown
-	                                               : Button::buttonNormal);
-    midiMapButton->addListener (this);
-    
     // Adding the mapper as a change listener
     gesture.removeAllChangeListeners(); // In case the gesture had a previous listener
     gesture.addChangeListener (this);
@@ -58,7 +41,6 @@ MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr, PluginWr
     wrapper.addChangeListener (this);
     
     initializeParamCompArray();
-    setAlphas();
 }
 
 MapperComponent::~MapperComponent()
@@ -71,66 +53,27 @@ MapperComponent::~MapperComponent()
     
     mapButton->removeListener (this);
     clearMapButton->removeListener (this);
-    midiMapButton->removeListener (this);
     
     mapButton = nullptr;
     clearMapButton = nullptr;
-    midiMapButton = nullptr;
-    
-    midiModeComp = nullptr;
 }
 
 //==============================================================================
 void MapperComponent::paint (Graphics& g)
 {
-	using namespace PLUME::UI;
-
-    // Interface colour depending on MIDI Mode state
-    Colour c1, c2;
-    
-    if (midiMapButton->getToggleState() == false)
-    {
-		c1 = PLUME::UI::currentTheme.getColour(PLUME::colour::basePanelGestureHighlightedBackground);
-		c2 = PLUME::UI::currentTheme.getColour(PLUME::colour::basePanelGestureBackground);
-    }
-    else
-    {
-        c1 = PLUME::UI::currentTheme.getColour(PLUME::colour::basePanelGestureBackground);
-		c2 = PLUME::UI::currentTheme.getColour(PLUME::colour::basePanelGestureHighlightedBackground);
-    }
-    
-    g.setColour (c1);
-    g.fillRoundedRectangle (0.0f, 0.0f, float(W), float(H), float(MARGIN)/2.0f);
-    g.setColour (c2);
-    g.fillRect (W*2/3, H/2, W - W*2/3, H/2);
-    
-    // "Parameters" text        
-    drawMapperText (g, "Parameters",
-                    0,
-                    0,
-                    W*3/4,
-                    H/4);
-                        
-    // "MIDI Mode" text
-    drawMapperText (g, "MIDI Mode",
-                    W*7/9,
-                    H/2,
-                    W*2/9,
-                    H/8,
-                    true, 11.0f);
 }
 
 void MapperComponent::resized()
 {
-    int bttnPanW = W/3, bttnPanH = H/2;
-    
-    mapButton->setBounds (W*2/3 + bttnPanW/8, bttnPanH/8, bttnPanW*3/4, bttnPanH/3);
-    clearMapButton->setBounds (W*2/3 + bttnPanW/6, bttnPanH*5/8, bttnPanW*2/3, bttnPanH/3);
-    midiMapButton->setBounds (W*2/3, bttnPanH, bttnPanW/3, bttnPanH/4);
-    midiModeComp->setBounds (W*2/3, bttnPanH, bttnPanW, bttnPanH);
+    auto area = getLocalBounds();
+
+    auto buttonsArea = area.removeFromBottom (area.getHeight()/6);
+
+    mapButton->setBounds (buttonsArea.removeFromLeft (buttonsArea.getWidth()/2)
+                                     .reduced (getWidth()/8, 0));
+    clearMapButton->setBounds (buttonsArea.reduced (getWidth()/8, 0));
 	
-    resizeArray();
-    
+    resizeArray (area.reduced (PLUME::UI::MARGIN), NUM_COLUMNS, NUM_ROWS);
 	repaint();
 }
 
@@ -171,24 +114,6 @@ void MapperComponent::buttonClicked (Button* bttn)
         
         getParentComponent()->repaint(); // repaints the whole gesture area
     }
-    
-    else if (bttn == midiMapButton)
-    {
-        if (midiMapButton->getToggleState() == false) // midiMap off
-        {
-            gesture.setMidiMapped (false);
-            gesture.setMapped (!(paramCompArray.isEmpty()));
-        }
-        else // midiMapOn
-        {
-            gesture.setMidiMapped (true);
-            gesture.setMapped (true);
-        }
-        
-        setAlphas();
-        getParentComponent()->repaint(); // repaints the whole gesture area
-        repaint(); // repaints mapper component
-    }
 }
 
 void MapperComponent::labelTextChanged (Label* lbl)
@@ -227,9 +152,8 @@ void MapperComponent::changeListenerCallback(ChangeBroadcaster* source)
         if (gesture.mapModeOn == false) mapButton->setColour (TextButton::buttonColourId, getLookAndFeel().findColour (TextButton::buttonColourId));
     
         // clears then redraws the array.
-        paramCompArray.clear();
         initializeParamCompArray();
-        resizeArray();
+        resized();
         
         getParentComponent()->repaint(); // repaints the whole gesture area
     }
@@ -248,32 +172,23 @@ void MapperComponent::updateDisplay()
 {
     if (paramCompArray.isEmpty()) return;
     
-    for (auto* comp : paramCompArray)
+    if (PLUME::UI::ANIMATE_UI_FLAG)
     {
-        comp->updateDisplay();
+        for (auto* comp : paramCompArray)
+        {
+            comp->updateDisplay();
+        }
     }
 }
 
 void MapperComponent::updateComponents()
 {
-    // midi mode button
-    midiMapButton->setToggleState (gesture.isMidiMapped(), dontSendNotification);
-	midiMapButton->setState(gesture.isMidiMapped() ? Button::buttonDown
-	                                               : Button::buttonNormal);
-	
-    midiModeComp->updateComponents();
-	setAlphas();
-	
-    if (PLUME::UI::ANIMATE_UI_FLAG)
-    {
-        getParentComponent()->repaint(); // repaints the whole gesture area
-        repaint(); // repaints mapper component
-    }
 }
 
 void MapperComponent::initializeParamCompArray()
 {
     TRACE_IN;
+    paramCompArray.clear();
     
 	int i = 0;
     // adds a MappedParameterComponent for each parameter of the gesture, and makes them visible.
@@ -292,58 +207,26 @@ void MapperComponent::addAndMakeArrayVisible()
     }
 }
 
-void MapperComponent::resizeArray()
+void MapperComponent::resizeArray (juce::Rectangle<int> bounds, const int numColumns, const int numRows)
 {
-    int w = getWidth()*1/3, h = getHeight()*3/8;
+    int marginX = bounds.getWidth()/12;
+    int marginY = bounds.getHeight()/8;
+
+    int paramCompWidth = (bounds.getWidth() - marginX * (numColumns - 1))/numColumns;
+    int paramCompHeight = (bounds.getHeight() - marginY * (numRows - 1))/numRows;
     
     // sets bounds depending on the value in the array
     for (int i=0; i<paramCompArray.size(); i++)
     {
-        int x = (i%2) * w;
-        int y = (i/2) * h + getHeight()/4;
-    
-        paramCompArray[i]->setBounds (x, y, w, h);
-    }
-}
+        int paramCompX = bounds.getX() + (i % numColumns) * (paramCompWidth + marginX);
+        int paramCompY = bounds.getY() + (i / numColumns)    * (paramCompHeight + marginY);
 
-
-void MapperComponent::setAlphas()
-{
-    if (midiMapButton->getToggleState() == false)
-    {
-        // Sets midi mode panel to transparent
-        mapButton->setAlpha (1.0f);
-        clearMapButton->setAlpha (1.0f);
-        for (auto* comp : paramCompArray)
-        {
-            comp->setAlpha (1.0f);
-        }
-        
-        midiModeComp->setAlpha (0.5f);
-    
-    }
-    else
-    {
-        // Sets parameter panel and buttons to transparent
-        mapButton->setAlpha (0.5f);
-        clearMapButton->setAlpha (0.5f);
-        for (auto* comp : paramCompArray)
-        {
-            comp->setAlpha (0.5f);
-        }
-        
-        midiModeComp->setAlpha (1.0f);
+        paramCompArray[i]->setBounds (paramCompX, paramCompY, paramCompWidth, paramCompHeight);
     }
 }
 
 void MapperComponent::drawMapperText (Graphics& g, String text, int x, int y, int width, int height, bool opaqueWhenMidiMode, float fontSize)
 {
-    if (opaqueWhenMidiMode)     g.setColour (midiMapButton->getToggleState() ? Colour (0xffffffff) :
-                                                                               Colour (0x80ffffff));
-                                                                               
-    else                        g.setColour (midiMapButton->getToggleState() ? Colour (0x80ffffff) :
-                                                                               Colour (0xffffffff));
-    
     g.setFont (PLUME::font::plumeFont.withHeight (fontSize));
     g.drawText (TRANS(text), x, y, width, height,
                 Justification::centred, true);

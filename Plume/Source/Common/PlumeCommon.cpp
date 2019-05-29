@@ -24,37 +24,6 @@ namespace PLUME
     {
         const Font getPlumeFont (PlumeFontId type = regular)
         {
-          /*
-            // Anodina
-            if (type == regular)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::AnodinaRegular_otf,
-                                                                PlumeData::AnodinaRegular_otfSize));
-            else if (type == book)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::AnodinaRegular_otf,
-                                                                PlumeData::AnodinaRegular_otfSize));
-            else if (type == bold)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::AnodinaBold_otf,
-                                                                PlumeData::AnodinaBold_otfSize));
-            else if (type == light)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::AnodinaLight_otf,
-                                                                PlumeData::AnodinaLight_otfSize));
-            
-            // Avenir Next
-            if (type == regular)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::AvenirNextLTProRegular_otf,
-                                                                PlumeData::AvenirNextLTProRegular_otfSize));
-            else if (type == book)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::AvenirNextLTProRegular_otf,
-                                                                PlumeData::AvenirNextLTProRegular_otfSize));
-            else if (type == bold)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::AvenirNextLTProBold_otf,
-                                                                PlumeData::AvenirNextLTProRegular_otfSize));
-            else if (type == light)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::AvenirNextLTProRegular_otf,
-                                                                PlumeData::AvenirNextLTProRegular_otfSize));
-
-            */
-            
             // Halis Grotesque
             if (type == regular)
                 return Font (Typeface::createSystemTypefaceFor (PlumeData::Ahmet_Altun__HalisGRRegular_otf,
@@ -68,122 +37,6 @@ namespace PLUME
             else if (type == light)
                 return Font (Typeface::createSystemTypefaceFor (PlumeData::Ahmet_Altun__HalisGRLight_otf,
                                                                 PlumeData::Ahmet_Altun__HalisGRLight_otfSize));
-            
-            /*
-            // Brandon Grotesque
-            if (type == regular)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::Brandon_reg_otf,
-                                                                PlumeData::Brandon_reg_otfSize));
-            else if (type == book)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::Brandon_reg_otf,
-                                                                PlumeData::Brandon_reg_otfSize));
-            else if (type == bold)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::Brandon_bld_otf,
-                                                                PlumeData::Brandon_bld_otfSize));
-            else if (type == light)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::Brandon_light_otf,
-                                                                PlumeData::Brandon_light_otfSize));
-
-            // CocoGothic
-            if (type == regular)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::CocoGothic_trial_ttf,
-                                                                PlumeData::CocoGothic_trial_ttfSize));
-            else if (type == book)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::CocoGothic_trial_ttf,
-                                                                PlumeData::CocoGothic_trial_ttfSize));
-            else if (type == bold)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::CocoGothicBold_trial_ttf,
-                                                                PlumeData::CocoGothicBold_trial_ttfSize));
-            else if (type == light)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::CocoGothicLight_trial_ttf,
-                                                                PlumeData::CocoGothicLight_trial_ttfSize));
-
-
-            // FF Marselis Pro
-            if (type == regular)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::FF_Marselis_Pro_otf,
-                                                                PlumeData::FF_Marselis_Pro_otfSize));
-            else if (type == book)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::FF_Marselis_Pro_otf,
-                                                                PlumeData::FF_Marselis_Pro_otfSize));
-            else if (type == bold)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::FF_Marselis_Pro_Bold_otf,
-                                                                PlumeData::FF_Marselis_Pro_Bold_otfSize));
-            else if (type == light)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::FF_Marselis_Pro_Light_otf,
-                                                                PlumeData::FF_Marselis_Pro_Light_otfSize));
-
-            // Lack
-            if (type == regular)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::LackRegular_otf,
-                                                                PlumeData::LackRegular_otfSize));
-            else if (type == book)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::LackRegular_otf,
-                                                                PlumeData::LackRegular_otfSize));
-            else if (type == bold)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::LackRegular_otf,
-                                                                PlumeData::LackRegular_otfSize));
-            else if (type == light)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::LackRegular_otf,
-                                                                PlumeData::LackRegular_otfSize));
-            // Pangram
-            if (type == regular)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::PangramRegular_otf,
-                                                                PlumeData::PangramRegular_otfSize));
-            else if (type == book)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::PangramRegular_otf,
-                                                                PlumeData::PangramRegular_otfSize));
-            else if (type == bold)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::PangramBlack_otf,
-                                                                PlumeData::PangramBlack_otfSize));
-            else if (type == light)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::PangramExtraLight_otf,
-                                                                PlumeData::PangramExtraLight_otfSize));
-
-            // Roboto
-            if (type == regular)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::RobotoRegular_ttf,
-                                                                PlumeData::RobotoRegular_ttfSize));
-            else if (type == book)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::RobotoLight_ttf,
-                                                                PlumeData::RobotoLight_ttfSize));
-            else if (type == bold)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::RobotoBold_ttf,
-                                                                PlumeData::RobotoBold_ttfSize));
-            else if (type == light)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::RobotoThin_ttf,
-                                                                PlumeData::RobotoThin_ttfSize));
-
-            // TTNorms
-            if (type == regular)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::TTNormsRegular_otf,
-                                                                PlumeData::TTNormsRegular_otfSize));
-            else if (type == book)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::TTNormsLight_otf,
-                                                                PlumeData::TTNormsLight_otfSize));
-            else if (type == bold)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::TTNormsBold_otf,
-                                                                PlumeData::TTNormsBold_otfSize));
-            else if (type == light)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::TTNormsThin_otf,
-                                                                PlumeData::TTNormsThin_otfSize));
-
-          
-            // ValioOmnes
-            if (type == regular)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::ValioOmnesRegular_ttf,
-                                                                PlumeData::ValioOmnesRegular_ttfSize));
-            else if (type == book)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::ValioOmnesRegular_ttf,
-                                                                PlumeData::ValioOmnesRegular_ttfSize));
-            else if (type == bold)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::ValioOmnesSemibold_ttf,
-                                                                PlumeData::ValioOmnesSemibold_ttfSize));
-            else if (type == light)
-                return Font (Typeface::createSystemTypefaceFor (PlumeData::ValioOmnesRegular_ttf,
-                  
-                                                          PlumeData::ValioOmnesRegular_ttfSize));
-														  */
               
             return Font();
         }
@@ -194,7 +47,229 @@ namespace PLUME
         const Font plumeFontLight = getPlumeFont (light);
         
     }
+
+	GlobalPointers globalPointers;
+	
+  #if JUCE_WINDOWS
+    LRESULT CALLBACK messageHook (int nCode, WPARAM wParam, LPARAM lParam)
+    {
+		if (nCode == HC_ACTION)
+		{
+			if (auto* cwpStructPtr = reinterpret_cast<CWPSTRUCT*> (lParam))
+			{
+				uint64 message = cwpStructPtr->message;
+				char name[30];
+				GetWindowTextA (cwpStructPtr->hwnd, name, 30);
+
+                if (PLUME::globalPointers.isPlumeHWND (cwpStructPtr->hwnd))
+                {
+    				if (message == uint64 (877)) DBG ("Ableton mysterious message...");
+
+    				else if (message == uint64 (71))
+    				{
+    					if (auto* windowPosPtr = reinterpret_cast<WINDOWPOS*> (cwpStructPtr->lParam))
+    					{
+    						DBG ("flags: 0x" << String::toHexString (windowPosPtr->flags));
+
+                            if ((windowPosPtr->flags >> 7 & 1) == 1) // Flag SWP_HIDEWINDOW (bit 7) is active
+                            {
+                                using namespace PLUME;
+                                if (ComponentPeer* peer = globalPointers.getWrappedEditorPeer (cwpStructPtr->hwnd))
+                                {
+                                    peer->setMinimised (true);
+                                }
+                            }
+
+                            else if ((windowPosPtr->flags >> 6 & 1) == 1) // Flag SWP_SHOWWINDOW (bit 6) is active
+                            {
+                                using namespace PLUME;
+                                if (ComponentPeer* peer = globalPointers.getWrappedEditorPeer(cwpStructPtr->hwnd))
+                                {
+                                    peer->setMinimised (false);
+                                }
+                            }
+    					}
+    				}
+                }
+
+				return 0;
+			}
+		}
+		else
+		{
+			DBG ("Unprocessable window event! Tread : " + (wParam == 0 ? String("Other")
+                                                                       : String("Current")));
+		}
+
+        return CallNextHookEx (NULL, nCode, wParam, lParam);
+    }
     
+    bool GlobalPointers::isPlumeHWND (HWND HWNDToCheck)
+    {
+        ScopedLock hwndlock (hwndArrayLock);
+
+        for (auto* handle : plumeWindowArray)
+        {
+            if (handle == HWNDToCheck) return true;
+        }
+
+        return false;
+    }
+
+    const int GlobalPointers::findPlumeHWNDindex (HWND HWNDToCheck)
+    {
+        ScopedLock hwndlock (hwndArrayLock);
+
+        for (int i = 0; i<plumeWindowArray.size(); i++)
+        {
+            if (plumeWindowArray[i] == HWNDToCheck) return i;
+        }
+
+        return -1;
+    }
+
+    void GlobalPointers::addPlumeHWND (HWND newHWND)
+    {
+        ScopedLock hwndlock (hwndArrayLock);
+
+        plumeWindowArray.add (newHWND);
+        wrappedEditorPeerArray.add (nullptr);
+
+		setActiveHWND (newHWND);
+    
+      #if JUCE_DEBUG
+        DBG ("Adding HWND Global PTR!");
+      #endif
+    }
+
+    void GlobalPointers::removePlumeHWND (HWND HWNDToRemove)
+    {
+        jassert (HWNDToRemove != NULL);
+        jassert (plumeWindowArray.size() == wrappedEditorPeerArray.size());
+
+        ScopedLock hwndlock (hwndArrayLock);
+
+        int index = findPlumeHWNDindex (HWNDToRemove);
+
+        if (index >= 0 && index < plumeWindowArray.size())
+        {
+            plumeWindowArray.remove (index);
+            wrappedEditorPeerArray.remove (index);
+
+			if (activePlumeWindow == HWNDToRemove || plumeWindowArray.size() == 0)
+			{
+				activePlumeWindow == NULL;
+			}
+        }
+    }
+
+    void GlobalPointers::clearPlumeAndWrappedWindows()
+    {
+        ScopedLock hwndlock (hwndArrayLock);
+
+        plumeWindowArray.clear();
+        wrappedEditorPeerArray.clear();
+    }
+
+    void GlobalPointers::setActiveHWND (HWND HWNDToSetActive)
+    {
+        jassert (HWNDToSetActive != NULL);
+
+        if (isPlumeHWND (HWNDToSetActive))
+        {
+            activePlumeWindow = HWNDToSetActive;
+        }
+    }
+
+    HWND GlobalPointers::getActiveHWND()
+    {
+        jassert (activePlumeWindow != NULL);
+
+       return activePlumeWindow;
+    }
+
+    ComponentPeer* const GlobalPointers::getWrappedEditorPeer (HWND correspondingHWND)
+    {
+        jassert (correspondingHWND != NULL);
+        jassert (plumeWindowArray.size() == wrappedEditorPeerArray.size());
+
+        ScopedLock hwndlock (hwndArrayLock);
+
+        int index = findPlumeHWNDindex (correspondingHWND);
+
+        if (index >= 0 && index < plumeWindowArray.size())
+        {
+            return wrappedEditorPeerArray[index];
+        }
+    }
+
+    void GlobalPointers::setWrappedEditorPeer (HWND correspondingHWND, ComponentPeer* newPeerPtr)
+    {
+        jassert (correspondingHWND != NULL);
+        jassert (plumeWindowArray.size() == wrappedEditorPeerArray.size());
+
+        ScopedLock hwndlock (hwndArrayLock);
+
+        int index = findPlumeHWNDindex (correspondingHWND);
+
+        if (index >= 0 && index < wrappedEditorPeerArray.size())
+        {
+            jassert (wrappedEditorPeerArray[index] == nullptr);
+            wrappedEditorPeerArray.set (index, newPeerPtr);
+        }
+    }
+
+    void GlobalPointers::resetWrappedEditorPeer (HWND correspondingHWND)
+    {
+        jassert (correspondingHWND != NULL);
+        jassert (plumeWindowArray.size() == wrappedEditorPeerArray.size());
+
+        ScopedLock hwndlock (hwndArrayLock);
+
+        int index = findPlumeHWNDindex (correspondingHWND);
+
+        if (index >= 0 && index < plumeWindowArray.size())
+        {
+            jassert (wrappedEditorPeerArray[index] != nullptr);
+            wrappedEditorPeerArray.set (index, nullptr);
+        }
+
+          #if JUCE_DEBUG
+            DBG ("Modifying Component Peer Global PTR!");
+          #endif
+    }
+    
+  #endif
+    
+
+    void GlobalPointers::addWrappedEditorPeer (ComponentPeer* newPeerPtr)
+    {
+        if (ComponentPeer::isValidPeer(newPeerPtr))
+        {
+            wrappedEditorPeerArray.add (newPeerPtr);
+        
+          #if JUCE_DEBUG
+            DBG ("Adding Component Peer Global PTR!");
+          #endif
+        }
+    }
+
+    const int GlobalPointers::findComponentPeerIndex (ComponentPeer* componentPeerToCheck)
+    {
+        return wrappedEditorPeerArray.indexOf (componentPeerToCheck);
+    }
+
+    void GlobalPointers::resetWrappedEditorPeer (ComponentPeer* peerToReset)
+    {
+        int index = findComponentPeerIndex (peerToReset);
+
+        if (index != -1)
+        {
+            wrappedEditorPeerArray.set (index, nullptr);
+        }
+    }
+
+
     namespace path
     {
         const Path createGearPath()

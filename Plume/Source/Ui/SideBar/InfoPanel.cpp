@@ -61,11 +61,6 @@ void InfoPanel::paint (Graphics& g)
 
     g.setColour (currentTheme.getColour (PLUME::colour::sideBarMainText));
     g.setFont (PLUME::font::plumeFont.withHeight (9.0f));
-
-    /*
-    g.drawText (displayText, getLocalBounds().reduced (MARGIN),
-                Justification::centred, true);
-                */
 }
 
 void InfoPanel::resized()
@@ -73,14 +68,26 @@ void InfoPanel::resized()
     textEditor->setBounds (getLocalBounds().reduced (PLUME::UI::MARGIN, 0));
 }
 
-void InfoPanel::actionListenerCallback (const String&)
+void InfoPanel::actionListenerCallback (const String& alertMessage)
 {
+    alerted = true;
+    textEditor->applyColourToAllText (Colour (0xffe03030), true);
+    textEditor->setText (alertMessage, false);
 }
 
 void InfoPanel::mouseMove (const MouseEvent& event)
 {
     if (auto* plumeComp = dynamic_cast<PlumeComponent*> (event.eventComponent))
     {
-        textEditor->setText (plumeComp->getInfoString(), false);
+        if (plumeComp->hasInfoString())
+        {
+            if (alerted)
+            {
+                alerted = false;
+                textEditor->applyColourToAllText (PLUME::UI::currentTheme.getColour (PLUME::colour::sideBarMainText), true);
+            }
+
+            textEditor->setText (plumeComp->getInfoString(), false);
+        }
     }
 }

@@ -11,8 +11,11 @@
 #include "Gesture/Vibrato.h"
 using namespace PLUME;
 
-Vibrato::Vibrato (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters, float val, float thresh)
-    : Gesture (gestName, Gesture::vibrato, gestId, NormalisableRange<float> (-VIBRATO_RANGE_MAX, VIBRATO_RANGE_MAX, 0.1f), plumeParameters),
+Vibrato::Vibrato (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
+                  float val, float thresh, String description)
+    : Gesture (gestName, Gesture::vibrato, gestId,
+               NormalisableRange<float> (-VIBRATO_RANGE_MAX, VIBRATO_RANGE_MAX, 0.1f),
+               plumeParameters, description),
     
       gain      (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::vibrato_range]))),
       intensity (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::vibrato_intensity]))),
@@ -40,10 +43,10 @@ void Vibrato::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
     
 	if (vibVal == lastMidi) return; // Does nothing if the midi value did not change
 
-    if (send == true || isMidiMapped())
+    if (send == true)
     {
         // Creates the control change message
-        if (isMidiMapped())
+        if (!useDefaultMidi)
         {
             addMidiModeSignalToBuffer (midiMessages, plumeBuffer, vibVal, 0, 127, 1);
         }
@@ -68,7 +71,7 @@ int Vibrato::getMidiValue()
         vibLast = true;
         send = true;
         
-        if (isMidiMapped()) return Gesture::normalizeMidi (-(500.0f - gainVal), (500.01f - gainVal), getGestureValue());
+        if (!useDefaultMidi) return Gesture::normalizeMidi (-(500.0f - gainVal), (500.01f - gainVal), getGestureValue());
         else                return Gesture::map (getGestureValue(), -(500.0f - gainVal), (500.01f - gainVal), 0, 16383);
     }
     
@@ -78,13 +81,13 @@ int Vibrato::getMidiValue()
         vibLast = false;
         send = true;
         
-        if (isMidiMapped()) return 64;
+        if (!useDefaultMidi) return 64;
         else                return 8192;
     }
     
     // No vibrato
     send = false;
-    if (isMidiMapped()) return 64;
+    if (!useDefaultMidi) return 64;
     else                return 8192;
 }
 

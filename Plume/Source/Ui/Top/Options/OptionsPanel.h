@@ -14,7 +14,7 @@
 #include "Common/PlumeCommon.h"
 #include "Plugin/PluginProcessor.h"
 #include "Ui/Top/Options/ScannerComponent.h"
-#include "Ui/Top/Options/TabbedPanelComponent.h"
+#include "Ui/Common/TabbedPanelComponent.h"
 #include "Ui/Top/Options/SubPanels/FileOptionsSubPanel.h"
 #include "Ui/Top/Options/SubPanels/GeneralOptionsSubPanel.h"
 

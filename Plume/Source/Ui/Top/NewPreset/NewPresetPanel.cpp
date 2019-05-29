@@ -67,11 +67,11 @@ void NewPresetPanel::paint (Graphics& g)
     g.fillRect (panelArea);
     
     // panel outline
-    auto gradOut = ColourGradient::horizontal (currentTheme.getColour(colour::sideBarSeparatorOut),
+    auto gradOut = ColourGradient::horizontal (currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
                                                float(panelArea.getX()), 
-                                               currentTheme.getColour(colour::sideBarSeparatorOut),
+                                               currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
                                                float(panelArea.getRight()));
-    gradOut.addColour (0.5, currentTheme.getColour(colour::sideBarSeparatorIn));
+    gradOut.addColour (0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
 
     g.setGradientFill (gradOut);
     g.drawRect (panelArea);
@@ -80,7 +80,7 @@ void NewPresetPanel::paint (Graphics& g)
                                               .reduced (MARGIN, 0);
     
     // Text
-    g.setColour (currentTheme.getColour (colour::topPanelMainText));
+    g.setColour (currentTheme.getColour (PLUME::colour::topPanelMainText));
     g.setFont (PLUME::font::plumeFontBook.withHeight (13.0f));
     
     g.drawText ("Name :", 
@@ -107,7 +107,8 @@ void NewPresetPanel::paint (Graphics& g)
 void NewPresetPanel::resized()
 {
 	using namespace PLUME::UI;
-    int h = OPTIONS_HEIGHT < (getHeight() - 16*MARGIN)/6 ? OPTIONS_HEIGHT : (getHeight() - 16*MARGIN)/7;
+    int h = (OPTIONS_HEIGHT < (getHeight() - 16*MARGIN)/6) ? OPTIONS_HEIGHT
+                                                           : (getHeight() - 16*MARGIN)/7;
     
     // Panel Area
     panelArea = getBounds().reduced (getWidth()/3, 0)
@@ -135,8 +136,9 @@ void NewPresetPanel::visibilityChanged()
     {
         update();
 
-        // Makes the name ready to be edited
-        if (getParentComponent() != nullptr) nameLabel->showEditor();
+        // Makes the name ready to be edited!
+        if (getParentComponent() != nullptr)
+            nameLabel->showEditor();
     }
 }
 
@@ -162,6 +164,7 @@ void NewPresetPanel::buttonClicked (Button* bttn)
 
 void NewPresetPanel::labelTextChanged (Label* lbl)
 {
+	using namespace PLUME;
     if (lbl == nameLabel)
     {
         if (lbl->getText().isEmpty())
@@ -230,6 +233,8 @@ void NewPresetPanel::editorShown (Label* lbl, TextEditor& ed)
 
 void NewPresetPanel::update()
 {
+	using namespace PLUME;
+
     //PresetHandler::PresetSearchSettings settings = processor.getPresetHandler().getCurrentSettings();
     
     nameLabel->setText ("Preset Name...", dontSendNotification);
@@ -251,39 +256,36 @@ void NewPresetPanel::update()
 void NewPresetPanel::createLabels()
 {
     addAndMakeVisible (nameLabel = new Label ("name", "Preset Name..."));
-    nameLabel->setColour (Label::backgroundColourId, Colour (0x30000000));
-    nameLabel->setColour (Label::textColourId, UI::currentTheme.getColour (colour::topPanelMainText)
-                                                               .withAlpha (0.6f));
-    nameLabel->setFont (PLUME::font::plumeFont.withHeight (14.0f));
-    nameLabel->setEditable (true, false, false);
-    nameLabel->setMouseCursor (MouseCursor (MouseCursor::IBeamCursor));
-    nameLabel->addListener (this);
+    setLabelProperties (*nameLabel);
     
     addAndMakeVisible (authorLabel = new Label ("author", "Author Name..."));
-    authorLabel->setColour (Label::backgroundColourId, Colour (0x30000000));
-    authorLabel->setColour (Label::textColourId, UI::currentTheme.getColour (colour::topPanelMainText)
-                                                                 .withAlpha (0.6f));
-    authorLabel->setFont (PLUME::font::plumeFont.withHeight (14.0f));
-    authorLabel->setEditable (true, false, false);
-    authorLabel->setMouseCursor (MouseCursor (MouseCursor::IBeamCursor));
-    authorLabel->addListener (this);
+    setLabelProperties (*authorLabel);
     
     addAndMakeVisible (verLabel = new Label ("version", "1.0"));
-    verLabel->setColour (Label::backgroundColourId, Colour (0x30000000));
-    verLabel->setColour (Label::textColourId, UI::currentTheme.getColour (colour::topPanelMainText)
-                                                              .withAlpha (0.6f));
-    verLabel->setFont (PLUME::font::plumeFont.withHeight (14.0f));
-    verLabel->setEditable (true, false, false);
-    verLabel->setMouseCursor (MouseCursor (MouseCursor::IBeamCursor));
-    verLabel->addListener (this);
+    setLabelProperties (*verLabel);
     
     addAndMakeVisible (pluginLabel = new Label ("plugin", "None"));
-    pluginLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
-    pluginLabel->setColour (Label::textColourId, UI::currentTheme.getColour (colour::topPanelMainText)
-                                                                 .withAlpha (0.6f));
-    pluginLabel->setFont (PLUME::font::plumeFont.withHeight (14.0f));
-    pluginLabel->setEditable (false, false, false);
-    pluginLabel->addListener (this);
+    setLabelProperties (*pluginLabel, false);
+}
+
+void NewPresetPanel::setLabelProperties (Label& labelToSet, bool editable)
+{
+    labelToSet.setColour (Label::textColourId, PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText)
+                                                                      .withAlpha (0.6f));
+    labelToSet.setFont (PLUME::font::plumeFont.withHeight (14.0f));
+    labelToSet.addListener (this);
+
+    if (editable)
+    {
+        labelToSet.setColour (Label::backgroundColourId, Colour (0x30000000));
+        labelToSet.setEditable (true, false, false);
+        labelToSet.setMouseCursor (MouseCursor (MouseCursor::IBeamCursor));
+    }
+    else
+    {
+        labelToSet.setColour (Label::backgroundColourId, Colour (0x00000000));
+        labelToSet.setEditable (false, false, false);
+    }
 }
 
 void NewPresetPanel::createBox()

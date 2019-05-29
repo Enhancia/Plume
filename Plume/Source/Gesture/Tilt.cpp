@@ -11,8 +11,10 @@
 #include "Tilt.h"
 using namespace PLUME;
 
-Tilt::Tilt (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters, float lowValue, float highValue)
-    : Gesture (gestName, Gesture::tilt, gestId, NormalisableRange<float> (TILT_MIN, TILT_MAX, 0.1f), plumeParameters),
+Tilt::Tilt (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
+            float lowValue, float highValue, String description)
+    : Gesture (gestName, Gesture::tilt, gestId, NormalisableRange<float> (TILT_MIN, TILT_MAX, 0.1f),
+               plumeParameters, description),
     
       rangeLow  (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::tilt_low]))),
       rangeHigh (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::tilt_high])))
@@ -42,7 +44,7 @@ void Tilt::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 	int midiVal = getMidiValue();
 	if (midiVal == lastMidi) return; // Does nothing if the midi value did not change
 
-    if (isMidiMapped())
+    if (!useDefaultMidi)
     {
         addMidiModeSignalToBuffer (midiMessages, plumeBuffer, midiVal, 0, 127, 1);
     }

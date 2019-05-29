@@ -11,8 +11,10 @@
 #include "Roll.h"
 using namespace PLUME;
 
-Roll::Roll (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters, float lowValue, float highValue)
-    : Gesture (gestName, Gesture::roll, gestId, NormalisableRange<float> (ROLL_MIN, ROLL_MAX, 0.1f), plumeParameters),
+Roll::Roll (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
+            float lowValue, float highValue, String description)
+    : Gesture (gestName, Gesture::roll, gestId, NormalisableRange<float> (ROLL_MIN, ROLL_MAX, 0.1f),
+               plumeParameters, description),
     
       rangeLow  (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::roll_low]))),
       rangeHigh (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::roll_high])))
@@ -42,7 +44,7 @@ void Roll::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 	int midiVal = getMidiValue();
 	if (midiVal == lastMidi) return; // Does nothing if the midi value did not change
 
-    if (isMidiMapped())
+    if (!useDefaultMidi)
     {
         addMidiModeSignalToBuffer (midiMessages, plumeBuffer, getMidiValue(), 0, 127, 1);
     }

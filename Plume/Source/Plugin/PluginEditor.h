@@ -20,9 +20,8 @@
 #include "Ui/LookAndFeel/PlumeLookAndFeel.h"
 #include "Ui/Top/Options/OptionsPanel.h"
 #include "Ui/Top/NewPreset/NewPresetPanel.h"
+#include "Ui/Top/NewGesture/NewGesturePanel.h"
 
-//#define TRACE_IN  Logger::writeToLog ("[FNC] Entering function: " + __FUNCTION__);
-//#define TRACE_OUT Logger::writeToLog ("[FNC] Entering function: " + __FUNCTION__);
 //==============================================================================
 /**
 */
@@ -39,7 +38,8 @@ class PresetComponent;
  */
 class PlumeEditor  : public AudioProcessorEditor,
                      public ActionListener,
-                     public Button::Listener
+                     public Button::Listener,
+                     public ComponentMovementWatcher
 {
 public:
     /**
@@ -79,6 +79,11 @@ public:
     void minimisationStateChanged (bool) override;
 
     //==============================================================================
+    void componentMovedOrResized (bool wasMoved, bool wasResized) override {}
+    void componentPeerChanged() override;
+    void componentVisibilityChanged() override {}
+
+    //==============================================================================
     /**
      * \brief Callback to a change message sent by the processor.
      *
@@ -114,10 +119,20 @@ private:
     ScopedPointer<ShapeButton> sideBarButton; /**< \brief Button that hides or shows the sidebar */
     ScopedPointer<OptionsPanel> optionsPanel;
     ScopedPointer<NewPresetPanel> newPresetPanel;
+    ScopedPointer<NewGesturePanel> newGesturePanel;
     
     
     //==============================================================================
     void createSideBarButtonPath(); //TODO mettre dans common avec les autres chemins
+
+    //==============================================================================
+  #if JUCE_WINDOWS
+    HHOOK plumeWindowHook;
+    void registerEditorHWND();
+
+    bool plumeHWNDIsSet = false;
+    HWND instanceHWND = NULL;
+  #endif
     
     //==============================================================================
     PLUME::UI::PlumeLookAndFeel plumeLookAndFeel;

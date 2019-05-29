@@ -11,348 +11,592 @@
 #include "Gesture/GestureArray.h"
 #include "Ui/Gesture/GesturePanel.h"
 #include "Ui/Gesture/Tuner/GesturesTuner.h"
-#include "Ui/Gesture/Mapper/MapperComponent.h"
-
-#define MARGIN PLUME::UI::MARGIN
-
-//==============================================================================
-class  GesturePanel::GestureComponent   : public Component,
-										  private Button::Listener
-{
-public:
-    GestureComponent(Gesture& gest, GestureArray& gestArray, PluginWrapper& wrap): gesture (gest), gestureArray (gestArray), wrapper (wrap)
-    {
-        TRACE_IN;
-        // Creates the on/off button
-        Image onOff = ImageFileFormat::loadFrom (PlumeData::OnOff_png, PlumeData::OnOff_pngSize);
-    
-        addAndMakeVisible (onOffButton = new ImageButton ("On Off Button"));
-        onOffButton->setImages (false, true, true,
-								onOff, 1.0f, Colour (0xffffffff),
-								onOff, 0.5f, Colour (0x80ffffff),
-								onOff, 1.0f, Colour (0x00000000));
-        onOffButton->setToggleState (gesture.isActive(), dontSendNotification);
-        onOffButton->setClickingTogglesState (true);
-		onOffButton->setState(Button::buttonNormal);
-        onOffButton->addListener (this);
-        
-        // Creates the right Tuner Object
-        createTuner();
-        
-        // Creates the mapper object
-        addAndMakeVisible( gestMapper = new MapperComponent(gesture, gestureArray, wrapper));
-    }
-    
-    ~GestureComponent()
-    {
-        TRACE_IN;
-        onOffButton = nullptr;
-        gestMapper = nullptr;
-        gestTuner = nullptr;
-    }
-    
-    void paint (Graphics& g) override
-    {
-		if (getWidth() == 0) return; // Nothing is painted if the component isn't set to it's right size
-
-        int tunerWidth = getWidth()*5/8 - MARGIN;
-        int mapperWidth = getWidth()*3/8 - MARGIN;
-        Colour fillColour;
-        
-        // Fills the area for the Tuner and Mapper
-        {                              
-			g.setColour (PLUME::UI::currentTheme.getColour(PLUME::colour::basePanelGestureHighlightedBackground));
-                
-            g.fillRoundedRectangle (0.0f, 0.0f, float(tunerWidth), float(getHeight()), float(MARGIN/2));
-            g.fillRoundedRectangle (float(tunerWidth+2*MARGIN), 0.0f, float(mapperWidth), float(getHeight()), float(MARGIN/2));
-            
-            // Visual link between tuner and mapper
-            if (gesture.isMapped() || gesture.isMidiMapped()) g.fillRect (tunerWidth, getHeight()*9/20, 2*MARGIN, getHeight()/10);
-        }
-        
-        // Loads the gesture image
-		{
-            int x, y, width, height;
-            
-            x = MARGIN;
-            y = MARGIN;
-            width = tunerWidth/8 - 2*MARGIN;
-            height = getHeight() - 2*MARGIN;
-
-            Image gest;
-            
-            // Gets the gesture Image
-            switch (gesture.type)
-            {
-                case Gesture::vibrato:
-                    gest = ImageFileFormat::loadFrom (PlumeData::vibrato_png, PlumeData::vibrato_pngSize);
-                    break;
-            
-                case Gesture::pitchBend:
-                    gest = ImageFileFormat::loadFrom (PlumeData::pitchBend_png, PlumeData::pitchBend_pngSize);
-                    break;
-            
-                case Gesture::tilt:
-                    gest = ImageFileFormat::loadFrom (PlumeData::tilt_png, PlumeData::tilt_pngSize);
-                    break;
-              
-                case Gesture::wave:
-                    gest = ImageFileFormat::loadFrom (PlumeData::wave_png, PlumeData::wave_pngSize);
-                    break;
-            
-                case Gesture::roll:
-                    gest = ImageFileFormat::loadFrom (PlumeData::roll_png, PlumeData::roll_pngSize);
-                    break;
-            }
-            
-			g.drawImageWithin(gest, x, y, width, height,
-							  RectanglePlacement(RectanglePlacement::centred));
-        }
-        
-        // Gesture Name text
-        drawGestureText(g, gesture.name,
-                        tunerWidth/8 + 2*MARGIN,
-                        0,
-                        (tunerWidth - tunerWidth/8 - 2*MARGIN)*3/4,
-                        getHeight()/4,
-                        19.0f);
-        
-        // "Values" text
-        drawGestureText(g, "Values",
-                        tunerWidth*3/4 + (tunerWidth/8 + 2*MARGIN)/4,
-                        0,
-                        (tunerWidth - tunerWidth/8 - 2*MARGIN)/4,
-                        getHeight()/4);
-        
-    }
-    
-    void paintOverChildren (Graphics& g) override
-    {
-		if (getWidth() == 0) return; // Nothing is painted if the component isn't set to it's right size
-
-		int tunerWidth = getWidth() * 5 / 8 - MARGIN;
-		int mapperWidth = getWidth() * 3 / 8 - MARGIN;
-                        
-        if (onOffButton->getToggleState() == false)
-        {
-            g.setColour (PLUME::UI::currentTheme.getColour(PLUME::colour::basePanelGestureBackground));
-            
-            g.setOpacity (0.5f);
-			g.fillRoundedRectangle(0.0f, 0.0f, float(tunerWidth), float(getHeight()), float(MARGIN / 2));
-			g.fillRoundedRectangle(float(tunerWidth + 2 * MARGIN), 0.0f, float(mapperWidth), float(getHeight()), float(MARGIN / 2));
-            
-            // Visual link between tuner and mapper
-            if (gesture.isMapped() || gesture.isMidiMapped()) g.fillRect (tunerWidth, getHeight()*9/20, 2*MARGIN, getHeight()/10);
-        }
-    }
-    
-    void resized() override
-    {
-		int tunerWidth = getWidth() * 5/8 - MARGIN;
-		int mapperWidth = getWidth() * 3/8 - MARGIN;
-
-        onOffButton->setBounds (tunerWidth/8 + 2*MARGIN, MARGIN, 20, 20);
-        gestTuner->setBounds (tunerWidth/8 + 2*MARGIN, getHeight()/4, tunerWidth*7/8 - 2*MARGIN, getHeight()*3/4);
-        gestMapper->setBounds (getWidth() * 5/8 + MARGIN, 0, mapperWidth, getHeight());
-        repaint();
-    }
-    
-    //==============================================================================
-    void buttonClicked (Button*) override
-    {
-		// Sets all subcomponents active/inactive depending of the button state
-		
-		gesture.setActive (onOffButton->getToggleState()); // Sets gesture active or inactive.
-		gestureArray.checkPitchMerging();
-		
-		onOffButton->setState(onOffButton->getState() ? Button::buttonNormal:
-														Button::buttonDown);
-														
-		repaint(); // repaints to get the inactive/active appearance
-    }
-    
-    
-    //==============================================================================
-    int getGestureId()
-    {
-        return gesture.id;
-    }
-    
-    Tuner& getTuner()
-    {
-        return *gestTuner;
-    }
-    
-    void updateDisplay()
-    {
-        if (gesture.isActive()) gestTuner->updateDisplay();
-        if (gesture.isMapped()) gestMapper->updateDisplay();
-    }
-    
-    void updateComponents()
-    {
-        onOffButton->setToggleState (gesture.isActive(), dontSendNotification);
-        gestTuner->updateComponents();
-        gestMapper->updateComponents();
-        //repaint();
-    }
-    
-private:
-    void createTuner()
-    {
-		if      (gesture.type == Gesture::vibrato)
-        {
-            Vibrato& vib = dynamic_cast<Vibrato&> (gesture);
-            addAndMakeVisible (gestTuner = new VibratoTuner (vib));
-        }
-        
-        else if (gesture.type == Gesture::pitchBend)
-        {
-            PitchBend& pitchBend = dynamic_cast<PitchBend&> (gesture);
-            addAndMakeVisible (gestTuner = new PitchBendTuner (pitchBend));
-        }
-        
-        else if (gesture.type == Gesture::tilt)
-        {
-            Tilt& tilt = dynamic_cast<Tilt&> (gesture);
-            addAndMakeVisible (gestTuner = new TiltTuner (tilt));
-        }
-        /*
-        else if (gesture.type == Gesture::wave)
-        {
-            Wave& wave = dynamic_cast<Wave&> (gesture);
-            addAndMakeVisible (gestTuner = new WaveTuner (wave));
-        }
-        */
-        else if (gesture.type == Gesture::roll)
-        {
-            Roll& roll = dynamic_cast<Roll&> (gesture);
-            addAndMakeVisible (gestTuner = new RollTuner (roll));
-        }
-        else
-        {
-            DBG ("Unknown Gesture type. No tuner was created.");
-        }
-    }
-    
-    void drawGestureText(Graphics& g, String text, int x, int y, int width, int height, float fontSize = 15.0f)
-    {
-        g.setColour (Colour(0xffffffff));                    
-        g.setFont (PLUME::font::plumeFont.withHeight (fontSize));
-        g.drawText (TRANS(text), x, y, width, height,
-                    Justification::centred, true);
-    }
-    
-    Gesture& gesture;
-    GestureArray& gestureArray;
-    PluginWrapper& wrapper;
-    ScopedPointer<ImageButton> onOffButton;
-    
-    ScopedPointer<Tuner> gestTuner;
-    ScopedPointer<MapperComponent> gestMapper;
-};
+#include "Ui/Gesture/SettingsTabs/MapperComponent.h"
+#include "GestureSettingsComponent.h"
 
 //==============================================================================
-GesturePanel::GesturePanel (GestureArray& gestArray, PluginWrapper& wrap, AudioProcessorValueTreeState& params, int freqHz)
-                            : gestureArray (gestArray), wrapper (wrap), parameters (params)
+GesturePanel::GesturePanel (GestureArray& gestArray, PluginWrapper& wrap,
+                            AudioProcessorValueTreeState& params, NewGesturePanel& newGest,
+                            int freqHz)
+                            : gestureArray (gestArray), wrapper (wrap),
+                              parameters (params), newGesturePanel (newGest),
+                              freq (freqHz)
 {
     TRACE_IN;
-    freq = freqHz;
-    initialize();
+    setComponentID ("gesturePanel");
+    setWantsKeyboardFocus (true);
+
+    initialiseGestureSlots();
+    createAndAddCloseButton();
+
+    startTimerHz (freq);
 }
 
 GesturePanel::~GesturePanel()
 {
     TRACE_IN;
+    stopTimer();
+    unselectCurrentGesture();
+    newGesturePanel.hidePanel (true);
     removeListenerForAllParameters();
-    gestureComponents.clear();
 }
 
-void GesturePanel::paint (Graphics&)
+//==============================================================================
+const String GesturePanel::getInfoString()
 {
+    return "Gesture Panel: \n\n"
+           "- Click on a gesture to access to its settings.\n"
+           "- Click on a \"+\" button to add a gesture in a slot.";
+}
+
+void GesturePanel::update()
+{
+    if (newGesturePanel.isVisible())
+    {
+        int lastSlot = newGesturePanel.getLastSelectedSlot();
+
+        updateSlotIfNeeded (lastSlot);
+        newGesturePanel.hidePanel();
+
+        renameGestureInSlot (lastSlot);
+    }
+
+    stopTimer();
+
+    for (int i=0; i<PLUME::NUM_GEST; i++)
+    {
+        updateSlotIfNeeded (i);
+    }
+
+    if (selectedGesture != -1)
+    {
+        gestureSettings->update();
+        gestureSettings->updateMappedParameters();
+    }
+
+    startTimerHz (freq);
+}
+
+//==============================================================================
+void GesturePanel::paint (Graphics& g)
+{
+    using namespace PLUME::UI;
+
+    g.drawImage (backgroundImage, getLocalBounds().toFloat(), RectanglePlacement::xLeft +
+                                                              RectanglePlacement::yTop  +
+                                                              RectanglePlacement::doNotResize);
 }
 
 void GesturePanel::resized()
 {
-    int gestureHeight = (getHeight() - (PLUME::NUM_GEST - 1) * MARGIN) / PLUME::NUM_GEST; // gets the height of each gesture component
-    
-    for (int i=0; i<gestureComponents.size(); i++)
+    using namespace PLUME::UI;
+
+    auto area = getLocalBounds();
+
+    if (settingsVisible)
     {
-        // Places the gestureComponent for each existing gesture.
-        gestureComponents[i]->setBounds (0, gestureComponents[i]->getGestureId() *(gestureHeight + MARGIN), getWidth(), gestureHeight);
+        gestureSettings->setBounds (area.removeFromRight (jmax (getWidth()/2, getWidth() - SIDEBAR_WIDTH*3/2)));
+        closeButton->setBounds (juce::Rectangle<int> (30, 30).withX (gestureSettings->getRight() - 2*MARGIN - 30)
+                                                             .withY (gestureSettings->getY() + 2*MARGIN)
+                                                             .reduced (7));
+    }
+    
+    // Sets the area for each gestureComp
+    area = area.reduced (2*PLUME::UI::MARGIN, 2*PLUME::UI::MARGIN);
+
+    int gestureHeight = (area.getHeight() - (PLUME::NUM_GEST - 1) * PLUME::UI::MARGIN) / PLUME::NUM_GEST;
+
+    for (int i=0; i<gestureSlots.size(); i++)
+    {
+        gestureSlots[i]->setBounds (area.removeFromTop (gestureHeight));
+        area.removeFromTop (PLUME::UI::MARGIN);
     }
 }
 
-void GesturePanel::initialize()
-{  
-	//int gestureHeight = (getHeight() - (PLUME::NUM_GEST - 1) * 2 * MARGIN) / PLUME::NUM_GEST; // gets the height of each gesture component
-
-    for (auto* gesture : gestureArray.getArray())
-    {
-        addGestureComponent (*gesture);
-    }
-    
-    startTimerHz (freq);
-}
-
-void GesturePanel::addGestureComponent (Gesture& gest)
+void GesturePanel::timerCallback()
 {
-    if (gestureComponents.addIfNotAlreadyThere (new GestureComponent (gest, gestureArray, wrapper)))
+    if (gestureSettings != nullptr)
     {
-        addAndMakeVisible (gestureComponents.getLast());
+        gestureSettings->updateDisplay();
+    }
+}
 
-		int gestureHeight = (getHeight() - (PLUME::NUM_GEST - 1) * MARGIN) / PLUME::NUM_GEST; // gets the height of each gesture component4
-        gestureComponents.getLast()->setBounds (0, gest.id * (gestureHeight + MARGIN), getWidth(), gestureHeight);
-    
-    
-        for (int i=0; i<PLUME::param::numParams; i++)
+void GesturePanel::buttonClicked (Button* bttn)
+{
+    if (bttn == closeButton)
+    {
+        unselectCurrentGesture();
+    }
+}
+
+void GesturePanel::mouseUp (const MouseEvent &event)
+{
+    if (event.eventComponent != this)
+    {
+        if (event.mods.isLeftButtonDown())
         {
-            parameters.addParameterListener (String (gest.id) + PLUME::param::paramIds[i], this);
+            if (dragMode) endDragMode();
+
+			handleLeftClickUp (event);
+        }
+
+        else if (event.mods.isPopupMenu())
+        {
+            if (auto* gestureComponent = dynamic_cast<GestureComponent*> (event.eventComponent))
+            {
+                createMenuForGestureId (gestureComponent->id);
+            }
         }
     }
 }
 
-void GesturePanel::removeGestureComponent (int gestureId)
+void GesturePanel::mouseDrag (const MouseEvent& event)
 {
-	if (gestureId > PLUME::NUM_GEST) return;
+    auto relativeEvent = event.getEventRelativeTo (this);
 
-    for (auto* gComp : gestureComponents)
+    if (relativeEvent.mods.isLeftButtonDown())
     {
-        if (gComp->getGestureId() == gestureId)
+        if (auto* gestureComponent = dynamic_cast<GestureComponent*> (relativeEvent.originalComponent))
         {
-            gestureComponents.removeObject (gComp);
+            if (!dragMode)
+            {
+                startDragMode (gestureComponent->id);
+            }
 
-			for (int i = 0; i<PLUME::param::numParams; i++)
+			int formerDraggedOverId = draggedOverSlotId;
+
+            if (Component* componentUnderMouse = getComponentAt (relativeEvent.getPosition()))
+            {
+                if (auto* otherGesture = dynamic_cast<GestureComponent*> (componentUnderMouse))
+                {
+					if (otherGesture->id != draggedGestureComponentId)
+					{
+						draggedOverSlotId = otherGesture->id;
+						otherGesture->repaint();
+					}
+				}
+                else if (auto* emptySlot = dynamic_cast<EmptyGestureSlotComponent*> (componentUnderMouse))
+                {
+                    draggedOverSlotId = emptySlot->id;
+					emptySlot->repaint();
+                }
+				else
+				{
+					draggedOverSlotId = -1;
+				}
+            }
+            else
+            {
+                draggedOverSlotId = -1;
+            }
+
+			if (formerDraggedOverId != -1 && formerDraggedOverId != draggedOverSlotId)
+				gestureSlots[formerDraggedOverId]->repaint();
+        }
+    }
+}
+
+void GesturePanel::handleLeftClickUp (const MouseEvent& event)
+{
+    if (auto* gestureComponent = dynamic_cast<GestureComponent*> (event.eventComponent))
+    {
+        // Mouse didn't leave the component it clicked in the first place
+        if (getComponentAt (event.getEventRelativeTo (this).getPosition()) == event.eventComponent)
+        {
+            if (!gestureComponent->isSelected())
+            {
+                selectGestureExclusive (*gestureComponent);
+            }
+        }
+        else // Mouse was dragged to another component
+        {
+            if (Component* componentUnderMouse = getComponentAt (event.getEventRelativeTo (this).getPosition()))
+            {
+                if (auto* slotUnderMouse = dynamic_cast<EmptyGestureSlotComponent*> (componentUnderMouse))
+                {
+                    DBG ("Moving gesture " << gestureComponent->id << " to slot " << slotUnderMouse->id);
+                    moveGestureToId (gestureComponent->id, slotUnderMouse->id);
+                }
+                else if (auto* gestureComponentUnderMouse = dynamic_cast<GestureComponent*> (componentUnderMouse))
+                {
+                    DBG ("Swapping gestures " << gestureComponent->id << " and " << gestureComponentUnderMouse->id);
+                    swapGestures (gestureComponent->id, gestureComponentUnderMouse->id);
+                }
+            }
+        }
+    }
+
+    else if (auto* emptySlot = dynamic_cast<EmptyGestureSlotComponent*> (event.eventComponent))
+    {
+        newGesturePanel.showPanelForGestureID (emptySlot->id);
+    }
+}
+
+void GesturePanel::handleLeftClickDrag (const MouseEvent& event)
+{
+    
+}
+
+bool GesturePanel::keyPressed (const KeyPress &key)
+{
+    if (hasSelectedGesture() && key.isValid())
+    {
+        if (key.getKeyCode() == KeyPress::deleteKey || key.getKeyCode() == KeyPress::backspaceKey)
+        {
+            removeGestureAndGestureComponent (selectedGesture);
+        }
+
+        else if (key.getTextCharacter() == 'r')
+        {
+			if (key.getModifiers().isAltDown())
 			{
-				parameters.removeParameterListener(String(gestureId) + PLUME::param::paramIds[i], this);
+				renameGestureInSlot (selectedGesture);
+			}
+        }
+    }
+
+	return false;
+}
+
+void GesturePanel::initialiseGestureSlots()
+{
+    for (int i=0; i<PLUME::NUM_GEST; i++)
+    {
+        if (Gesture* gestureToCreateComponentFor = gestureArray.getGesture (i))
+        {
+            gestureSlots.add (new GestureComponent (*gestureToCreateComponentFor, dragMode,
+                                                                                  draggedGestureComponentId,
+                                                                                  draggedOverSlotId));
+            addParameterListenerForGestureId (i);
+        }
+        else
+        {
+            gestureSlots.add (new EmptyGestureSlotComponent (i, dragMode,
+                                                                draggedGestureComponentId,
+                                                                draggedOverSlotId));
+        }
+
+        addAndMakeVisible (gestureSlots.getLast());
+        gestureSlots.getLast()->addMouseListener (this, false);
+    }
+}
+
+void GesturePanel::updateSlotIfNeeded (int slotToCheck)
+{
+    // 1st check, if a gesture was deleted (slot is GestureComponent but should be empty)
+    if (auto* gestureComponent = dynamic_cast<GestureComponent*> (gestureSlots[slotToCheck]))
+    {
+        if (gestureArray.getGesture (slotToCheck) == nullptr)
+        {
+            removeParameterListenerForGestureId (slotToCheck);
+            gestureSlots.set (slotToCheck, new EmptyGestureSlotComponent (slotToCheck, 
+                                                                          dragMode,
+                                                                          draggedGestureComponentId,
+                                                                          draggedOverSlotId),
+                                           true);
+
+            addAndMakeVisible (gestureSlots[slotToCheck]);
+            gestureSlots[slotToCheck]->addMouseListener (this, false);
+            resized();
+            repaint();
+        }
+    }
+    // 2nd check, if a gesture was created (slot is empty but should be a gestureComponent)
+    else if (auto* emptySlot = dynamic_cast<EmptyGestureSlotComponent*> (gestureSlots[slotToCheck]))
+    {
+        if (auto* gestureThatWasCreated = gestureArray.getGesture (slotToCheck))
+        {
+            addParameterListenerForGestureId (slotToCheck);
+
+            gestureSlots.set (slotToCheck, new GestureComponent (*gestureThatWasCreated,
+                                                                 dragMode,
+                                                                 draggedGestureComponentId,
+                                                                 draggedOverSlotId),
+                                           true);
+
+            addAndMakeVisible (gestureSlots[slotToCheck]);
+            gestureSlots[slotToCheck]->addMouseListener (this, false);
+
+			if (newGesturePanel.getLastSelectedSlot() == slotToCheck)
+			{
+				newGesturePanel.hidePanel(true);
+				selectGestureExclusive(*dynamic_cast<GestureComponent*> (gestureSlots[slotToCheck]));
 			}
 
-            return;
+            resized();
+            repaint();
         }
     }
+}
+
+
+void GesturePanel::moveGestureToId (int idToMoveFrom, int idToMoveTo)
+{
+    bool mustChangeSelection = (selectedGesture == idToMoveFrom);
     
+    if (mustChangeSelection) unselectCurrentGesture();
+
+    gestureArray.moveGestureToId (idToMoveFrom, idToMoveTo);
+	update();
+
+    if (mustChangeSelection)
+    {
+        selectGestureExclusive (idToMoveTo);
+    }
+}
+
+void GesturePanel::swapGestures (int firstId, int secondId)
+{
+    bool mustChangeSelection = (selectedGesture == firstId || selectedGesture == secondId);
+    int idToSelect;
+
+    if (mustChangeSelection)
+    {
+        idToSelect = (selectedGesture == firstId ? secondId : firstId);
+        unselectCurrentGesture();
+    }
+
+    // Deletes GestureComponents for the 2 slots
+    gestureSlots.set (firstId, new EmptyGestureSlotComponent (firstId, dragMode,
+                                                                       draggedGestureComponentId,
+                                                                       draggedOverSlotId), true);
+    gestureSlots.set (secondId, new EmptyGestureSlotComponent (secondId, dragMode,
+                                                                         draggedGestureComponentId,
+                                                                         draggedOverSlotId), true);
+
+    gestureArray.swapGestures (firstId, secondId);
+    update();
     
+    if (mustChangeSelection) selectGestureExclusive (idToSelect);
+}
+
+void GesturePanel::renameGestureInSlot (int slotNumber)
+{
+    if (auto* gestureComponent = dynamic_cast<GestureComponent*> (gestureSlots[slotNumber]))
+    {
+        gestureComponent->startNameEntry();
+    }
+    else
+    {
+        /* Tried to rename a gesture, but the selected dlot was empty...
+        */
+        jassertfalse;
+    }
+}
+
+void GesturePanel::removeGestureAndGestureComponent (int gestureId)
+{
+    if (gestureId < 0 || gestureId > PLUME::NUM_GEST) return;
+    stopTimer();
+
+    if (gestureId == selectedGesture)
+    {
+        unselectCurrentGesture();
+        gestureSettings.reset (nullptr);
+    }
+
+    removeParameterListenerForGestureId (gestureId);
+    gestureArray.removeGesture (gestureId);
+    updateSlotIfNeeded (gestureId);
+
+    if (!isTimerRunning()) startTimerHz (freq);
+}
+
+bool GesturePanel::hasSelectedGesture()
+{
+    return selectedGesture != -1;
+}
+
+void GesturePanel::switchGestureSelectionState (GestureComponent& gestureComponentToSwitch)
+{
+    if (gestureComponentToSwitch.isSelected())
+    {
+        gestureComponentToSwitch.setSelected (false);
+        selectedGesture = -1;
+        setSettingsVisible (false);
+    }
+    else
+    {
+        selectGestureExclusive (gestureComponentToSwitch);
+    }
+}
+
+void GesturePanel::selectGestureExclusive (GestureComponent& gestureComponentToSelect)
+{
+    gestureComponentToSelect.setSelected (true);
+
+    for (auto* slot : gestureSlots)
+    {
+        if (auto* gestureComponent = dynamic_cast<GestureComponent*> (slot))
+        {
+            if (gestureComponent != &gestureComponentToSelect && gestureComponent->isSelected())
+            {
+                gestureComponent->setSelected (false);
+                gestureArray.getGesture (gestureComponent->id)->removeAllChangeListeners();
+            }
+        }
+    }
+
+    gestureSettings.reset (new GestureSettingsComponent (gestureComponentToSelect.getGesture(),
+                                                         gestureArray, wrapper));
+    selectedGesture = gestureComponentToSelect.id;
+    setSettingsVisible (true);
+}
+
+void GesturePanel::selectGestureExclusive (const int idToSelect)
+{
+    if (idToSelect < 0 || idToSelect >= gestureSlots.size()) return;
+
+    if (auto* gestureComponent = dynamic_cast<GestureComponent*> (gestureSlots[idToSelect]))
+    {
+        selectGestureExclusive (*gestureComponent);
+    }
+}
+
+void GesturePanel::unselectCurrentGesture()
+{
+	// Can't unselect if nothing is selected..
+	if (selectedGesture == -1) return;
+
+    if (auto* gestureComponentToUnselect = dynamic_cast<GestureComponent*> (gestureSlots[selectedGesture]))
+    {
+        if (!gestureComponentToUnselect->isSelected())
+        {
+            // Plume tried to unselect an already unselected gesture...
+            jassertfalse;
+            return;
+        }
+
+        gestureComponentToUnselect->setSelected (false);
+
+        if (auto* gestureToUnselect = gestureArray.getGesture (selectedGesture))
+            gestureToUnselect->removeAllChangeListeners();
+
+        selectedGesture = -1;
+        setSettingsVisible (false);
+        gestureSettings.reset (nullptr);
+
+        return;
+    }
+
+    /* Hitting this assert means that Plume tried to unselect a gesture, but the slot
+       it tried to access is an empty slot. That might either mean that an emptySlot failed
+       to be updated to a GestureComponent, or that Plume failed to keep track of the actual
+       selected Gesture.
+    */
+    jassertfalse;
+}
+
+void GesturePanel::createMenuForGestureId (int id)
+{
+    PopupMenu gestureMenu;
+
+    gestureMenu.addItem (1, "Rename", true);
+    gestureMenu.addItem (2, "Duplicate", true);
+    gestureMenu.addItem (3, "Delete", true);
+    
+    handleMenuResult (id,
+                      gestureMenu.showMenu (PopupMenu::Options().withParentComponent (getParentComponent())
+                                                                .withMaximumNumColumns (3)
+                                                                .withPreferredPopupDirection (PopupMenu::Options::PopupDirection::downwards)
+                                                                .withStandardItemHeight (20)));
+}
+
+void GesturePanel::handleMenuResult (int gestureId, const int menuResult)
+{
+    switch (menuResult)
+    {
+        case 0: // No choice
+            break;
+            
+        case 1: // Rename gesture
+            renameGestureInSlot (gestureId);
+            break;
+            
+        case 2: // Duplicate
+            gestureArray.duplicateGesture (gestureId);
+            update();
+            selectGestureExclusive (gestureId);
+            break;
+
+        case 3: // Delete gesture
+            removeGestureAndGestureComponent (gestureId);
+            update();
+    }
+}
+
+void GesturePanel::setSettingsVisible (bool shouldBeVisible)
+{
+    if (!shouldBeVisible)
+    {
+        gestureSettings->setVisible (false);
+        closeButton->setVisible (false);
+        settingsVisible = false;
+        resized();
+        repaint();
+
+        return;
+    }
+
+    if (shouldBeVisible && gestureSettings != nullptr)
+    {
+        addAndMakeVisible (gestureSettings, 0);
+        closeButton->setVisible (true);
+        settingsVisible = true;
+        resized();
+        repaint();
+
+        return;
+    }
+
+    /* Plume attempted to show the gesture settings panel when it was not instanciated!
+       There should be a call similar to the following one before calling this method if you want
+       to display the settings panel:
+            gestureSettings.reset ( [gesture that was selected] , gestureArray, wrapper); 
+    */
+    jassertfalse;
+}
+
+void GesturePanel::createAndAddCloseButton()
+{
+    addAndMakeVisible (closeButton = new ShapeButton ("Close Settings Button", Colour(0x00000000),
+                                                                               Colour(0x00000000),
+                                                                               Colour(0x00000000)),
+                      -1);
+
+    Path p;
+    p.startNewSubPath (0, 0);
+    p.lineTo (3*PLUME::UI::MARGIN, 3*PLUME::UI::MARGIN);
+    p.startNewSubPath (0, 3*PLUME::UI::MARGIN);
+    p.lineTo (3*PLUME::UI::MARGIN, 0);
+
+    closeButton->setShape (p, false, true, false);
+    closeButton->setOutline (Colour (0xff101010), 1.0f);
+    closeButton->addMouseListener (this, false);
+    closeButton->addListener (this);
 }
 
 void GesturePanel::removeListenerForAllParameters()
 {
     for (auto* gesture : gestureArray.getArray())
     {
-        for (int i = 0; i<PLUME::param::numParams; i++)
-		{
-			parameters.removeParameterListener (String (gesture->id) + PLUME::param::paramIds[i], this);
-		}
+		removeParameterListenerForGestureId (gesture->id);
     }
 }
 
-void GesturePanel::timerCallback()
+void GesturePanel::addParameterListenerForGestureId (const int id)
 {
-    if (PLUME::UI::ANIMATE_UI_FLAG)
+    for (int i = 0; i<PLUME::param::numParams; i++)
     {
-        for (auto* gComp : gestureComponents)
-        {
-            gComp->updateDisplay();
-        }
+        parameters.addParameterListener (String (id) + PLUME::param::paramIds[i], this);
+    }
+}
+
+void GesturePanel::removeParameterListenerForGestureId (const int id)
+{
+    for (int i = 0; i<PLUME::param::numParams; i++)
+    {
+        parameters.removeParameterListener (String (id) + PLUME::param::paramIds[i], this);
     }
 }
 
@@ -361,15 +605,51 @@ void GesturePanel::parameterChanged (const String& parameterID, float)
     // if the ID is "x_value" or "x_vibrato_intensity": doesn't update
     // (only the MovingCursor object in the the GestureTunerComponent is updated)
     if (parameterID.endsWith ("ue") || parameterID.endsWith ("y") || !PLUME::UI::ANIMATE_UI_FLAG) return;
-        
     
-    int numGesture = parameterID.substring(0,1).getIntValue();
+    const int gestureId = parameterID.substring(0,1).getIntValue();
     
-    for (auto* gComp : gestureComponents)
+    if (auto* gestureComponentToUpdate = dynamic_cast<GestureComponent*> (gestureSlots[gestureId]))
     {
-        if (gComp->getGestureId() == numGesture)
+        if (gestureComponentToUpdate->id == gestureId)
         {
-            gComp->updateComponents();
+			const MessageManagerLock mmLock;
+
+			gestureComponentToUpdate->update();
+
+            if (gestureSettings != nullptr)
+            {
+                if (gestureSettings->getGestureId() == gestureId)
+                {
+                    gestureSettings->update();
+                }
+            }
         }
+    }
+}
+
+
+void GesturePanel::startDragMode (int slotBeingDragged)
+{
+    dragMode = true;
+    draggedGestureComponentId = slotBeingDragged;
+    draggedOverSlotId = -1;
+
+    for (auto* slot : gestureSlots)
+    {
+        slot->repaint();
+    }
+
+
+}
+
+void GesturePanel::endDragMode()
+{
+    dragMode = false;
+    draggedGestureComponentId = -1;
+    draggedOverSlotId = -1;
+
+    for (auto* slot : gestureSlots)
+    {
+        slot->repaint();
     }
 }

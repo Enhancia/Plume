@@ -28,7 +28,7 @@ GestureArray::~GestureArray()
 void GestureArray::initializeGestures()
 {
     addGesture ("Vibrato", Gesture::vibrato, 0);
-    addGesture ("PitchBend", Gesture::pitchBend, 1);
+    addGesture ("Pitch Bend", Gesture::pitchBend, 1);
     addGesture ("Tilt", Gesture::tilt, 2);
     //addGesture ("Roll", Gesture::roll, 3);
 }
@@ -43,13 +43,13 @@ void GestureArray::process (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 {
     ScopedLock gestlock (gestureArrayLock);
-        
+    
     if (shouldMergePitch)
     {
         // Adds non-pitch midi
         for (auto* g : gestures)
         {
-            if (g->affectsPitch() == false && ( g->isMapped() == false || (g->isMidiMapped() == true && g->midiType != Gesture::pitch)))
+            if (g->isMidiMapped() == true && g->affectsPitch() == false)
             {
                 g->addGestureMidi (midiMessages, plumeBuffer);
             }
@@ -64,7 +64,7 @@ void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages, MidiBuffer&
         // Adds all midi
         for (auto* g : gestures)
         {
-            if (g->isMapped() == false || g->isMidiMapped() == true)
+            if (g->isMidiMapped() == true)
             {
                 g->addGestureMidi (midiMessages, plumeBuffer);
             }
@@ -110,14 +110,14 @@ void GestureArray::updateAllValues()
 }
 
 //==============================================================================
-Gesture* GestureArray::getGestureByName (const String nameToSearch)
+Gesture* GestureArray::getGesture (const String nameToSearch)
 {
     ScopedLock gestlock (gestureArrayLock);
     
     // Browses every gesture to compare their name with nameToSearch
     for (auto* g : gestures)
     {
-        if (g->name.compare(nameToSearch) == 0)
+        if (g->getName().compare(nameToSearch) == 0)
         {
             return g;
         }
@@ -127,17 +127,28 @@ Gesture* GestureArray::getGestureByName (const String nameToSearch)
     return nullptr;
 }
 
-Gesture* GestureArray::getGestureById (const int idToSearch)
+Gesture* GestureArray::getGesture (const int idToSearch)
 {
-    ScopedLock gestlock (gestureArrayLock);
-    
-    if (idToSearch >= gestures.size() || idToSearch < 0)
+    if (idToSearch >= PLUME::NUM_GEST || idToSearch < 0)
     {
-        DBG ("Gesture n°" << idToSearch << " doesn't exist. Number of gestures: " << gestures.size());
+        DBG ("Gesture n°" << idToSearch << " cannot exist. \nNumber of gestures: " << gestures.size());
         return nullptr;
     }
-    
-    return gestures[idToSearch];
+
+    {
+        ScopedLock gestlock (gestureArrayLock);
+
+        for (auto* gesture : gestures)
+        {
+            if (gesture->id == idToSearch)
+            {
+                return gesture;
+            }
+        }
+    }
+
+    DBG ("Gesture n°" << idToSearch << " doesn't exist");
+    return nullptr;
 }
 
 OwnedArray<Gesture>& GestureArray::getArray()
@@ -171,6 +182,12 @@ void GestureArray::changeListenerCallback(ChangeBroadcaster*)
 //==============================================================================
 void GestureArray::addGesture (String gestureName, int gestureType, int gestureId)
 {
+    if (!isIdAvailable (gestureId))
+    {
+        jassertfalse;
+        return;
+    }
+
     switch (gestureType)
     {
         case Gesture::vibrato:
@@ -196,6 +213,106 @@ void GestureArray::addGesture (String gestureName, int gestureType, int gestureI
     
     gestures.getLast()->setActive(true);
     
+    checkPitchMerging();
+}
+
+void GestureArray::addGestureCopyingOther (Gesture* other, int gestureId, String gestureName)
+{
+    if (!isIdAvailable (gestureId))
+    {
+        jassertfalse;
+        return;
+    }
+
+    if (gestureName.isEmpty()) gestureName = other->getName();
+
+    switch (other->type)
+    {
+        case Gesture::vibrato:
+            if (auto* vibrato = dynamic_cast<Vibrato*> (other))
+            {
+                gestures.add (new Vibrato (gestureName, gestureId, parameters,
+                                           vibrato->gain.convertFrom0to1 (vibrato->gain.getValue()),
+                                           vibrato->threshold.convertFrom0to1 (vibrato->threshold.getValue()),
+                                           other->getDescription()));
+            }
+            break;
+        
+        case Gesture::pitchBend:
+            if (auto* pitchBend = dynamic_cast<PitchBend*> (other))
+            {
+                gestures.add (new PitchBend (gestureName, gestureId, parameters,
+                                             pitchBend->rangeLeftLow.convertFrom0to1 (pitchBend->rangeLeftLow.getValue()),
+                                             pitchBend->rangeLeftHigh.convertFrom0to1 (pitchBend->rangeLeftHigh.getValue()),
+                                             pitchBend->rangeRightLow.convertFrom0to1 (pitchBend->rangeRightLow.getValue()),
+                                             pitchBend->rangeRightHigh.convertFrom0to1 (pitchBend->rangeRightHigh.getValue()),
+                                             other->getDescription()));
+            }
+            break;
+            
+        case Gesture::tilt:
+            if (auto* tilt = dynamic_cast<Tilt*> (other))
+            {
+                gestures.add (new Tilt (gestureName, gestureId, parameters,
+                                        tilt->rangeLow.convertFrom0to1 (tilt->rangeLow.getValue()),
+                                        tilt->rangeHigh.convertFrom0to1 (tilt->rangeHigh.getValue()),
+                                        other->getDescription()));
+            }
+            break;
+        /*    
+        case Gesture::wave:
+            if (auto* wave = dynamic_cast<Wave*> (other))
+            {
+                gestures.add (new Wave (gestureName, gestureId, parameters,
+                                        wave->rangeLow.convertFrom0to1 (wave->rangeLow.getValue()),
+                                        wave->rangeHigh.convertFrom0to1 (wave->rangeHigh.getValue()),
+                                        other->getDescription()));
+            }
+            break;
+        */
+        case Gesture::roll:
+            if (auto* roll = dynamic_cast<Roll*> (other))
+            {
+                gestures.add (new Roll (gestureName, gestureId, parameters,
+                                        roll->rangeLow.convertFrom0to1 (roll->rangeLow.getValue()),
+                                        roll->rangeHigh.convertFrom0to1 (roll->rangeHigh.getValue()),
+                                        other->getDescription()));
+            }
+            break;
+    }
+    
+    gestures.getLast()->setActive (other->isActive());
+    gestures.getLast()->setMidiMapped (other->isMidiMapped());
+    gestures.getLast()->midiType = other->midiType;
+    gestures.getLast()->useDefaultMidi = other->useDefaultMidi;
+    gestures.getLast()->setCc (other->getCc());
+    gestures.getLast()->setMidiLow (other->midiLow.getValue());
+    gestures.getLast()->setMidiHigh (other->midiHigh.getValue());
+    
+    checkPitchMerging();
+}
+
+void GestureArray::removeGesture (const int gestureId)
+{
+    if (auto* gestureToRemove = getGesture (gestureId))
+    {
+        ScopedLock gestlock (gestureArrayLock);
+
+        gestures.removeObject (gestureToRemove, true);
+    }
+
+    checkPitchMerging();
+}
+
+void GestureArray::removeGesture (const String gestureName)
+{
+    if (auto* gestureToRemove = getGesture (gestureName))
+    {
+        ScopedLock gestlock (gestureArrayLock);
+
+        gestures.removeObject (gestureToRemove, true);
+    }
+
     checkPitchMerging();
 }
 
@@ -266,6 +383,111 @@ void GestureArray::cancelMapMode()
     sendChangeMessage();
     
     TRACE_OUT;
+}
+
+bool GestureArray::isIdAvailable (int idToCheck)
+{
+    if (idToCheck < 0 || idToCheck >= PLUME::NUM_GEST) return false;
+
+    ScopedLock gestlock (gestureArrayLock);
+
+    for (auto* g : gestures)
+    {
+        if (g->id == idToCheck)
+			return false;
+    }
+
+    return true;
+}
+
+//==============================================================================
+
+void GestureArray::moveGestureToId (int idToMoveFrom, int idToMoveTo)
+{
+    Gesture* gestureToMove = getGesture (idToMoveFrom);
+
+    if (gestureToMove == nullptr || !isIdAvailable(idToMoveTo)) return;
+
+    ScopedLock gestlock (gestureArrayLock);
+
+    addGestureCopyingOther (gestureToMove, idToMoveTo);
+    gestures.getLast()->swapParametersWithOtherGesture (*gestureToMove);
+    removeGesture (idToMoveFrom);
+    
+    //gestures.getLast()->sendChangeMessage(); // Alert to update Ui
+}
+
+void GestureArray::duplicateGesture (int idToDuplicateFrom, bool prioritizeHigherId)
+{
+    Gesture* gestureToMove = getGesture (idToDuplicateFrom);
+    int idToDuplicateTo = findClosestIdToDuplicate (idToDuplicateFrom, prioritizeHigherId);
+
+    if (gestureToMove == nullptr || idToDuplicateTo == -1) return;
+
+    addGestureCopyingOther (gestureToMove, idToDuplicateTo, createDuplicateName (gestureToMove->getName()));
+}
+
+int GestureArray::findClosestIdToDuplicate (int idToDuplicateFrom, bool prioritizeHigherId)
+{
+    int lowerAvailableId = -1;
+
+    for (int offset=1;
+        (idToDuplicateFrom + offset < PLUME::NUM_GEST || idToDuplicateFrom - offset >= 0);
+        offset++)
+    {
+        if (isIdAvailable (idToDuplicateFrom + offset))
+        {
+            return idToDuplicateFrom + offset;
+        }
+
+        if (lowerAvailableId == -1 && isIdAvailable (idToDuplicateFrom - offset))
+        {
+            if (!prioritizeHigherId)
+            {
+                return idToDuplicateFrom - offset;
+            }
+
+            lowerAvailableId = idToDuplicateFrom - offset;
+        }
+    }
+
+    return lowerAvailableId;
+}
+
+
+String GestureArray::createDuplicateName (String originalGestureName)
+{
+    String endChars = originalGestureName.trimEnd().fromLastOccurrenceOf (" (", false, false);
+
+    if (endChars.getLastCharacter() == ')' && endChars.dropLastCharacters (1).containsOnly ("0123456789"))
+    {
+        int newNum = endChars.dropLastCharacters (1).getIntValue() + 1; 
+        DBG ("New num " << newNum);
+
+        return originalGestureName.upToLastOccurrenceOf ("(", true, false) + String(newNum) + String (")");
+    }
+    else
+    {
+        return originalGestureName + String (" (1)");
+    }
+}
+
+void GestureArray::swapGestures (int firstId, int secondId)
+{
+    if (firstId == secondId || firstId  < 0 || firstId  >= PLUME::NUM_GEST ||
+                               secondId < 0 || secondId >= PLUME::NUM_GEST)
+        return;
+
+	ScopedLock gestlock(gestureArrayLock);
+
+    ScopedPointer<Gesture> secondGesture = gestures.removeAndReturn (gestures.indexOf (getGesture (secondId)));
+    
+    // Replaces second gesture with first
+    moveGestureToId (firstId, secondId);
+
+    // Copies second gesture to first Id
+    addGestureCopyingOther (secondGesture, firstId);
+    getGesture (firstId)->swapParametersWithOtherGesture (*secondGesture);
 }
 
 //==============================================================================
@@ -366,35 +588,51 @@ void GestureArray::addGestureFromXml (XmlElement& gesture)
     switch (gesture.getIntAttribute ("type", -1))
     {
         case Gesture::vibrato:
-            gestures.add (new Vibrato (gesture.getTagName(), gesture.getIntAttribute ("id", 0), parameters,
-														     float(gesture.getDoubleAttribute ("gain", 400.0)),
-														     float(gesture.getDoubleAttribute ("thresh", 40.0))));
+            gestures.add (new Vibrato (gesture.getTagName().compare ("gesture") == 0 ? gesture.getStringAttribute ("name", "Vibrato")
+                                                                                     : gesture.getTagName(),
+                                       gesture.getIntAttribute ("id", 0), parameters,
+									   float(gesture.getDoubleAttribute ("gain", 400.0)),
+									   float(gesture.getDoubleAttribute ("thresh", 40.0)),
+                                       gesture.getStringAttribute ("desc", "")));
             break;
         
         case Gesture::pitchBend:
-            gestures.add (new PitchBend (gesture.getTagName(), gesture.getIntAttribute("id", 1), parameters,
-				                                               float(gesture.getDoubleAttribute ("startLeft", -50.0)),
-                                                               float(gesture.getDoubleAttribute ("endLeft", -20.0)),
-                                                               float(gesture.getDoubleAttribute ("startRight", 30.0)),
-                                                               float(gesture.getDoubleAttribute ("endRight", 60.0))));
+            gestures.add (new PitchBend (gesture.getTagName().compare("gesture") == 0 ? gesture.getStringAttribute("name", "PitchBend")
+                                                                                      : gesture.getTagName(),
+                                         gesture.getIntAttribute("id", 1), parameters,
+				                         float(gesture.getDoubleAttribute ("startLeft", -50.0)),
+                                         float(gesture.getDoubleAttribute ("endLeft", -20.0)),
+                                         float(gesture.getDoubleAttribute ("startRight", 30.0)),
+                                         float(gesture.getDoubleAttribute ("endRight", 60.0)),
+                                         gesture.getStringAttribute ("desc", "")));
             break;
             
         case Gesture::tilt:
-            gestures.add (new Tilt (gesture.getTagName(), gesture.getIntAttribute("id", 2), parameters,
-				                                          float(gesture.getDoubleAttribute ("start", 0.0)),
-                                                          float(gesture.getDoubleAttribute ("end", 50.0))));
+            gestures.add (new Tilt (gesture.getTagName().compare("gesture") == 0 ? gesture.getStringAttribute("name", "Tilt")
+                                                                                 : gesture.getTagName(),
+                                    gesture.getIntAttribute("id", 2), parameters,
+				                    float(gesture.getDoubleAttribute ("start", 0.0)),
+                                    float(gesture.getDoubleAttribute ("end", 50.0)),
+                                    gesture.getStringAttribute ("desc", "")));
             break;
-        /*    
+
+        /* TODO WAVE
         case Gesture::wave:
-            gestures.add (new Wave (gesture.getTagName(), gesture.getIntAttribute("id", 0), parameters,
-				                                          float(gesture.getDoubleAttribute ("start", 0.0)),
-                                                          float(gesture.getDoubleAttribute ("end", 50.0))));
+            gestures.add (new Wave (gesture.getTagName().compare ("gesture") == 0 ? gesture.getStringAttribute ("name", "Wave")
+                                                                                  : gesture.getTagName(),
+                                    gesture.getIntAttribute("id", 0), parameters,
+				                    float(gesture.getDoubleAttribute ("start", 0.0)),
+                                    float(gesture.getDoubleAttribute ("end", 50.0)),
+                                    gesture.getStringAttribute ("desc", "")));
             break;
         */
         case Gesture::roll:
-            gestures.add (new Roll (gesture.getTagName(), gesture.getIntAttribute("id", 3), parameters,
-				                                          float(gesture.getDoubleAttribute ("start", -30.0)),
-                                                          float(gesture.getDoubleAttribute ("end", 30.0))));
+            gestures.add (new Roll (gesture.getTagName().compare("gesture") == 0 ? gesture.getStringAttribute("name", "Roll")
+                                                                                 : gesture.getTagName(),
+                                    gesture.getIntAttribute("id", 3), parameters,
+				                    float(gesture.getDoubleAttribute ("start", -30.0)),
+                                    float(gesture.getDoubleAttribute ("end", 30.0)),
+                                    gesture.getStringAttribute ("desc", "")));
             break;
         
         default:
@@ -419,10 +657,12 @@ void GestureArray::createGestureXml (XmlElement& gesturesData)
     
     for (auto* g : gestures)
     {
-        auto gestXml = new XmlElement (g->name);
+        auto gestXml = new XmlElement ("gesture");
         
         // General attributes
+        gestXml->setAttribute ("name", g->getName());
         gestXml->setAttribute ("type", g->type);
+        gestXml->setAttribute ("desc", g->getDescription());
 		gestXml->setAttribute ("id", g->id);
         gestXml->setAttribute ("on", g->isActive());
         gestXml->setAttribute ("mapped", g->isMapped());
@@ -456,7 +696,7 @@ void GestureArray::createGestureXml (XmlElement& gesturesData)
             gestXml->setAttribute ("start", double (t.rangeLow.convertFrom0to1 (t.rangeLow.getValue())));
             gestXml->setAttribute ("end", double (t.rangeHigh.convertFrom0to1 (t.rangeHigh.getValue())));
         }
-        /*
+        /* TODO WAVE
         else if (g->type == Gesture::wave)
         {
             Wave& w = dynamic_cast<Wave&> (*g);

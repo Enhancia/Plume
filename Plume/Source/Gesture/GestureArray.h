@@ -82,7 +82,7 @@ public:
      *  \param nameToSearch Name of the Gesture to look for.
      *  \return Pointer to the searched Gesture object, or nullptr if not found.
      */
-    Gesture* getGestureByName (const String nameToSearch);
+    Gesture* getGesture (const String nameToSearch);
     
     /**
      *  \brief Getter for a Gesture object, searched using it's id.
@@ -93,7 +93,7 @@ public:
      *  \param idToSearch Id of the Gesture to look for.
      *  \return Pointer to the searched Gesture object, or nullptr if not found.
      */
-    Gesture* getGestureById(const int idToSearch);
+    Gesture* getGesture (const int idToSearch);
     
     /**
      *  \brief Getter for the array's reference.
@@ -136,6 +136,20 @@ public:
      *  The Gesture will have the specified name and type (chosen with the GestureType enum).
      */
     void addGesture (String gestureName, int gestureType, int gestureId);
+
+    /**
+     *  \brief Method to remove a gesture from the array
+     *
+     *  This method will remove a Gesture from the array, for the specified id.
+     */
+    void removeGesture (const int gestureId);
+
+    /**
+     *  \brief Method to remove a gesture from the array
+     *
+     *  This method will remove a Gesture from the array, for the specified name.
+     */
+    void removeGesture (const String gestureName);
     
     /**
      *  \brief Method to add a parameter to the gesture in mapMode.
@@ -170,6 +184,14 @@ public:
      */
     void cancelMapMode();
     
+    //==============================================================================
+    // Methods to move gestures around
+
+    bool isIdAvailable (int idToCheck);
+    void moveGestureToId (int idToMoveFrom, int idToMoveTo);
+    void duplicateGesture (int idToDuplicateFrom, bool prioritizeHigherId = true);
+    void swapGestures (int firstId, int secondId);
+
     //==============================================================================
     // Xml related methods
     
@@ -221,6 +243,10 @@ private:
      *  Initializes Plume with the default gestures, that eventually will be changeable / renable.
      */
     void initializeGestures();
+
+    void addGestureCopyingOther (Gesture* other, int gestureId, String gestureName = String());
+    int findClosestIdToDuplicate (int idToDuplicateFrom, bool prioritizeHigherId = true);
+    String createDuplicateName (String originalGestureName);
     
     //==============================================================================
     bool shouldMergePitch = false;

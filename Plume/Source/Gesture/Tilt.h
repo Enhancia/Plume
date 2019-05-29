@@ -24,7 +24,8 @@
 class Tilt : public Gesture
 {
 public:
-    Tilt (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters, float lowValue = 0.0f, float highValue = 50.0f);
+    Tilt (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
+          float lowValue = 0.0f, float highValue = 50.0f, String description = "");
     ~Tilt();
     
     //==============================================================================

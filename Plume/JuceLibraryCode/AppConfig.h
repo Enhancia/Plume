@@ -258,7 +258,7 @@
 // juce_gui_basics flags:
 
 #ifndef    JUCE_ENABLE_REPAINT_DEBUGGING
- //#define JUCE_ENABLE_REPAINT_DEBUGGING 0
+ #define   JUCE_ENABLE_REPAINT_DEBUGGING 0
 #endif
 
 #ifndef    JUCE_USE_XRANDR
@@ -374,13 +374,13 @@
  #define JucePlugin_EditorRequiresKeyboardFocus  0
 #endif
 #ifndef  JucePlugin_Version
- #define JucePlugin_Version                1.2.4
+ #define JucePlugin_Version                1.3.1
 #endif
 #ifndef  JucePlugin_VersionCode
- #define JucePlugin_VersionCode            0x10204
+ #define JucePlugin_VersionCode            0x10301
 #endif
 #ifndef  JucePlugin_VersionString
- #define JucePlugin_VersionString          "1.2.4"
+ #define JucePlugin_VersionString          "1.3.1"
 #endif
 #ifndef  JucePlugin_VSTUniqueID
  #define JucePlugin_VSTUniqueID            JucePlugin_PluginCode

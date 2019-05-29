@@ -16,7 +16,7 @@ PresetSearchBar::PresetSearchBar (PlumeProcessor& proc) : processor (proc), sear
 {
     addAndMakeVisible (searchLabel);
     searchLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
-    searchLabel->setColour (Label::textColourId, UI::currentTheme.getColour (colour::presetsBoxStandartText)
+    searchLabel->setColour (Label::textColourId, PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxStandartText)
                                                                  .withAlpha (0.6f));
     searchLabel->setFont (PLUME::font::plumeFont.withHeight (PLUME::font::SIDEBAR_LABEL_FONT_H));
     searchLabel->setColour (Label::outlineWhenEditingColourId, Colour (0x00000000));

@@ -33,6 +33,8 @@ public:
     {
         createComboBox();
         createLabels();
+        createDefaultToggle();
+        setComponentsVisibility();
     }
 
     ~MidiModeComponent()
@@ -46,19 +48,61 @@ public:
         ccLabel = nullptr;
 	    rangeLabelMin = nullptr;
 	    rangeLabelMax = nullptr;
+        defaultMidiToggle = nullptr;
     }
 
     //==============================================================================
-    void paint (Graphics&) override
+    void paint (Graphics& g) override
     {
+        auto area = getLocalBounds().reduced (PLUME::UI::MARGIN);
+        area.removeFromRight (area.getWidth()*2/3);
+        int areaHeight = area.getHeight();
+
+        g.setColour (Colours::black);
+        g.setFont (PLUME::font::plumeFont.withHeight (13.0f));
+
+        g.drawText ("Use Default MIDI:",
+                    area.removeFromTop (areaHeight/4),
+                    Justification::centredLeft, false);
+        area.removeFromTop (areaHeight/8); // Space
+
+        if (gesture.useDefaultMidi) 
+            g.setColour (Colours::black.withAlpha (0.3f));
+    
+        g.drawText ("MIDI Type:",
+                    area.removeFromTop (areaHeight/4),
+                    Justification::centredLeft, false);
+
+        area.removeFromTop (areaHeight/8); // Space
+
+        g.drawText ("MIDI Range:",
+                    area,
+                    Justification::centredLeft, false);
     }
 
     void resized() override
     {
-        midiTypeBox->setBounds (4 , H/4 + 1, W - 8, H/4 - 2);
-        ccLabel->setBounds (W/4 , H/2 + 1, W/2, H/4 - 2);
-	    rangeLabelMin->setBounds (2, H*3/4 + 2, W/2 - 4, H/4 - 4);
-	    rangeLabelMax->setBounds (W/2 + 2, H*3/4 + 2, W/2 - 4, H/4 - 4);
+        using namespace PLUME::UI;
+
+		auto area = getLocalBounds().reduced (MARGIN);
+		area.removeFromLeft (area.getWidth()/3);
+
+        int areaHeight = area.getHeight();
+
+        defaultMidiToggle->setBounds (area.removeFromTop (areaHeight/4)
+                                          .reduced (MARGIN)
+                                          .withWidth (50));
+        area.removeFromTop (areaHeight/8); // Space
+
+        auto typeArea = area.removeFromTop (areaHeight/4);
+        midiTypeBox->setBounds (typeArea.removeFromLeft (typeArea.getWidth()/2).reduced (MARGIN));
+        ccLabel->setBounds (typeArea.reduced (MARGIN));
+
+        area.removeFromTop (areaHeight/8); // Space
+
+        auto rangeArea = area;
+        rangeLabelMin->setBounds (rangeArea.removeFromLeft (rangeArea.getWidth()/2).reduced (MARGIN));
+        rangeLabelMax->setBounds (rangeArea.reduced (MARGIN));
     }
 
     //==============================================================================
@@ -134,6 +178,8 @@ public:
             
             // Affects the gesture's midiType variable
             gesture.midiType = midiTypeBox->getSelectedId();
+
+            repaint();
         }
     }
     
@@ -142,6 +188,7 @@ public:
         ccLabel->setText (String (gesture.getCc()), dontSendNotification);
         rangeLabelMin->setText (String (gesture.midiLow.getValue(), 2), dontSendNotification);
 		rangeLabelMax->setText (String (gesture.midiHigh.getValue(), 2), dontSendNotification);
+        defaultMidiToggle->setToggleState (gesture.useDefaultMidi);
     }
 
 private:
@@ -178,7 +225,6 @@ private:
         ccLabel->addListener (this);
         
         //=== range Control labels ===
-        
         addAndMakeVisible (rangeLabelMin = new Label ("Min Label", TRANS (String (gesture.midiLow.getValue(), 2))));
         addAndMakeVisible (rangeLabelMax = new Label ("Max Label", TRANS (String (gesture.midiHigh.getValue(), 2))));
         
@@ -196,12 +242,35 @@ private:
         rangeLabelMin->addListener (this);
         rangeLabelMax->addListener (this);
     }
+
+    void createDefaultToggle()
+    {
+        addAndMakeVisible (defaultMidiToggle = new DualTextToggle ("Off", "On",
+                                                                   Colour (0x00000000),
+                                                                   Colour (0x804d94d9)));
+
+        defaultMidiToggle->setToggleState (gesture.useDefaultMidi);
+        defaultMidiToggle->onStateChange = [this] () {
+                                                         gesture.useDefaultMidi = defaultMidiToggle->getToggleState();
+                                                         setComponentsVisibility();
+                                                         repaint();
+                                                     };
+    }
+
+    void setComponentsVisibility()
+    {
+        midiTypeBox->setAlpha   (gesture.useDefaultMidi ? 0.3f : 1.0f);
+        ccLabel->setAlpha       (gesture.useDefaultMidi ? 0.3f : 1.0f);
+        rangeLabelMin->setAlpha (gesture.useDefaultMidi ? 0.3f : 1.0f);
+        rangeLabelMax->setAlpha (gesture.useDefaultMidi ? 0.3f : 1.0f);
+    }
     
     //==============================================================================
     ScopedPointer<ComboBox> midiTypeBox;
     ScopedPointer<Label> ccLabel;
     ScopedPointer<Label> rangeLabelMin;
     ScopedPointer<Label> rangeLabelMax;
+    ScopedPointer<DualTextToggle> defaultMidiToggle;
 
     //==============================================================================
     Gesture& gesture;

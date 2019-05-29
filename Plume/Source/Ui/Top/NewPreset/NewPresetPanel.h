@@ -40,6 +40,7 @@ private:
     //==============================================================================
     void update();
     void createLabels();
+    void setLabelProperties (Label& labelToSet, bool editable =true);
     void createBox();
     void createUserPreset();
     

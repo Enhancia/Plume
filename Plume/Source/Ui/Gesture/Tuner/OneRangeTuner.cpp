@@ -34,9 +34,8 @@ void OneRangeTuner::paint (Graphics& g)
 	Tuner::paint(g); // Base class paint method
 		
 	// Sets the text style
-    Colour fillColour = Colour (0xffffffff);
-    g.setColour (fillColour);
-    g.setFont (Font (PLUME::UI::font, 12.0f, Font::plain).withTypefaceStyle ("Regular"));
+    g.setColour (Colour (0xff303030));
+    g.setFont (Font (PLUME::UI::font, 12.0f, Font::plain));
         
     // Writes the "min" text
     int x = W*3/4,

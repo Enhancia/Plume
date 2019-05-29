@@ -24,7 +24,8 @@
 class Roll : public Gesture
 {
 public:
-    Roll (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters, float lowValue = -30.0f, float highValue = 30.0f);
+    Roll (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
+          float lowValue = -30.0f, float highValue = 30.0f, String description = "");
     ~Roll();
     
     //==============================================================================
@@ -36,11 +37,12 @@ public:
     
     //==============================================================================
     void updateValue (const Array<float> rawData) override;
-    
+
     //==============================================================================
     RangedAudioParameter& rangeLow; /**< \brief Tilt's low range value. The full effect will happend between this and rangeHigh. */
 	RangedAudioParameter& rangeHigh; /**< \brief Tilt's high range value. The full effect will happend between rangeLow and this. */
 
+private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Roll)
 };
