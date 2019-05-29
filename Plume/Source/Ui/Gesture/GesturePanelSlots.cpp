@@ -56,8 +56,8 @@ void GestureComponent::paint (Graphics& g)
 
     if (dragMode && draggedGesture != id && draggedOverSlot == id)
     {
-        g.setColour (Colour (0xeef00000));
-        g.drawRoundedRectangle (getLocalBounds().reduced (2).toFloat(), 3.0f, 3.0f);
+        g.setColour (Colour (0xeefffffff));
+        g.drawRoundedRectangle (getLocalBounds().reduced (1.5f).toFloat(), 3.0f, 3.0f);
     }
 
     auto nameAndTypeArea = getLocalBounds().withHeight(30);
@@ -187,8 +187,8 @@ void EmptyGestureSlotComponent::paint (Graphics& g)
 {
     if (dragMode && draggedGesture != id && draggedOverSlot == id)
     {
-        g.setColour (Colour (0xeef00000));
-        g.drawRoundedRectangle (getLocalBounds().reduced (2).toFloat(), 3.0f, 3.0f);
+		g.setColour (Colour (0xeefffffff));
+		g.drawRoundedRectangle(getLocalBounds().reduced (1.5f).toFloat(), 3.0f, 3.0f);
     }
     
     g.setColour (highlighted ? Colours::white.withAlpha (0.4f) : Colours::white.withAlpha (0.1f));

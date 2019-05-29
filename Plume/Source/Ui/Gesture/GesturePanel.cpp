@@ -154,41 +154,44 @@ void GesturePanel::mouseDrag (const MouseEvent& event)
 {
     auto relativeEvent = event.getEventRelativeTo (this);
 
-    if (relativeEvent.originalComponent != this)
+    if (relativeEvent.mods.isLeftButtonDown())
     {
-        if (relativeEvent.mods.isLeftButtonDown())
+        if (auto* gestureComponent = dynamic_cast<GestureComponent*> (relativeEvent.originalComponent))
         {
-            if (auto* gestureComponent = dynamic_cast<GestureComponent*> (relativeEvent.originalComponent))
+            if (!dragMode)
             {
-                if (!dragMode)
-                {
-                    startDragMode (gestureComponent->id);
-                }
-
-                if (Component* componentUnderMouse = getComponentAt (relativeEvent.getPosition()))
-                {
-                    if (auto* otherGesture = dynamic_cast<GestureComponent*> (componentUnderMouse))
-                    {
-						if (otherGesture->id != draggedGestureComponentId)
-						{
-							draggedOverSlotId = otherGesture->id;
-							otherGesture->repaint();
-						}
-					}
-                    else if (auto* emptySlot = dynamic_cast<EmptyGestureSlotComponent*> (componentUnderMouse))
-                    {
-                        draggedOverSlotId = emptySlot->id;
-                        otherGesture->repaint();
-                    }
-                }
-                else
-                {
-                    int formerDraggedOverId = draggedOverSlotId;
-
-                    draggedOverSlotId = -1;
-                    gestureSlots[formerDraggedOverId]->repaint();
-                }
+                startDragMode (gestureComponent->id);
             }
+
+			int formerDraggedOverId = draggedOverSlotId;
+
+            if (Component* componentUnderMouse = getComponentAt (relativeEvent.getPosition()))
+            {
+                if (auto* otherGesture = dynamic_cast<GestureComponent*> (componentUnderMouse))
+                {
+					if (otherGesture->id != draggedGestureComponentId)
+					{
+						draggedOverSlotId = otherGesture->id;
+						otherGesture->repaint();
+					}
+				}
+                else if (auto* emptySlot = dynamic_cast<EmptyGestureSlotComponent*> (componentUnderMouse))
+                {
+                    draggedOverSlotId = emptySlot->id;
+					emptySlot->repaint();
+                }
+				else
+				{
+					draggedOverSlotId = -1;
+				}
+            }
+            else
+            {
+                draggedOverSlotId = -1;
+            }
+
+			if (formerDraggedOverId != -1 && formerDraggedOverId != draggedOverSlotId)
+				gestureSlots[formerDraggedOverId]->repaint();
         }
     }
 }
