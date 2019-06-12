@@ -61,7 +61,7 @@ void GestureSettingsComponent::paint (Graphics& g)
                                             float(getWidth() - MARGIN));
     grad.addColour (0.5, Colour (0x50323232));
     
-    auto area = getLocalBounds().reduced (2*MARGIN).withLeft (0);
+    auto area = getLocalBounds();
 
     g.setColour (Colours::white);
     g.fillRoundedRectangle (area.toFloat(), 3.0f);
@@ -86,27 +86,13 @@ void GestureSettingsComponent::paint (Graphics& g)
                           float(area.getX() + 4*MARGIN), float(area.getWidth() - 4*MARGIN));
     g.drawHorizontalLine (area.getY(),
                           float(area.getX() + 4*MARGIN), float(area.getWidth() - 4*MARGIN));
-
-    // Toggle on/off Text
-    g.setColour (Colour(0xff323232));  
-    g.setFont (PLUME::font::plumeFont.withHeight (13.0f));
-    g.drawText ("Toggle On/Off : ",
-                area.removeFromTop (30).withWidth (area.getWidth()/2).reduced (2*MARGIN, 0),
-                Justification::centredRight, false);
-
-    // Control Type Text
-    g.setColour (Colour(0xff323232));  
-    g.setFont (PLUME::font::plumeFont.withHeight (13.0f));
-    g.drawText ("Control Type : ",
-                area.removeFromTop (30).withWidth (area.getWidth()/2).reduced (2*MARGIN, 0),
-                Justification::centredRight, false);
 }
 
 void GestureSettingsComponent::resized()
 {
     using namespace PLUME::UI;
 
-    auto area = getLocalBounds().reduced (3*MARGIN).withLeft (MARGIN).withTrimmedTop (40);
+    auto area = getLocalBounds().withTrimmedTop (40);
 
     gestTuner->setBounds (area.removeFromTop (80).reduced (MARGIN));
 
@@ -227,8 +213,8 @@ void GestureSettingsComponent::createToggles()
         getParentComponent()->repaint();
     };
     
-    addAndMakeVisible (onOffToggle = new DualTextToggle ("Off", "On", Colour (0xffe0e0e0), Colour (0xffa0f0a0)));
-    onOffToggle->setStyle (DualTextToggle::twoStatesVisible);
+    addAndMakeVisible (onOffToggle = new DualTextToggle ("Unmute", "Mute", Colour (0xffe0e0e0), Colour (0xff6065e0)));
+    onOffToggle->setStyle (DualTextToggle::oneStateVisible);
     onOffToggle->setToggleState (gesture.isActive());
     onOffToggle->onStateChange = [this] ()
     { 

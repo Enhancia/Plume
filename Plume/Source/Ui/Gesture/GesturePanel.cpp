@@ -86,25 +86,15 @@ void GesturePanel::resized()
 {
     using namespace PLUME::UI;
 
-    auto area = getLocalBounds();
-
+    auto area = getLocalBounds().reduced (2*MARGIN, 4*MARGIN);
+    resizeSlotsAndTrimAreaAccordingly (area, MARGIN);
+    
     if (settingsVisible)
     {
-        gestureSettings->setBounds (area.removeFromRight (jmax (getWidth()/2, getWidth() - SIDEBAR_WIDTH*3/2)));
-        closeButton->setBounds (juce::Rectangle<int> (30, 30).withX (gestureSettings->getRight() - 2*MARGIN - 30)
-                                                             .withY (gestureSettings->getY() + 2*MARGIN)
+        gestureSettings->setBounds (area.reduced (MARGIN)); //.removeFromRight (jmax (getWidth()/2, getWidth() - SIDEBAR_WIDTH*3/2)));
+        closeButton->setBounds (juce::Rectangle<int> (30, 30).withX (gestureSettings->getRight() - MARGIN - 30)
+                                                             .withY (gestureSettings->getY() + MARGIN)
                                                              .reduced (7));
-    }
-    
-    // Sets the area for each gestureComp
-    area = area.reduced (2*PLUME::UI::MARGIN, 2*PLUME::UI::MARGIN);
-
-    int gestureHeight = (area.getHeight() - (PLUME::NUM_GEST - 1) * PLUME::UI::MARGIN) / PLUME::NUM_GEST;
-
-    for (int i=0; i<gestureSlots.size(); i++)
-    {
-        gestureSlots[i]->setBounds (area.removeFromTop (gestureHeight));
-        area.removeFromTop (PLUME::UI::MARGIN);
     }
 }
 
@@ -273,6 +263,35 @@ void GesturePanel::initialiseGestureSlots()
 
         addAndMakeVisible (gestureSlots.getLast());
         gestureSlots.getLast()->addMouseListener (this, false);
+    }
+}
+
+void GesturePanel::resizeSlotsAndTrimAreaAccordingly (juce::Rectangle<int>& area, int margin)
+{
+    using namespace PLUME::UI;
+    if (PLUME::NUM_GEST == 0 || gestureSlots.size() == 0) return;
+
+    // There should be an even number of gestures for the grid of gesture slots to make sense...
+    jassert (PLUME::NUM_GEST%2 == 0);
+    int numRows = PLUME::NUM_GEST/2;
+
+    int tempWidth = area.getWidth()/4;
+
+    if (!settingsVisible)
+    {
+        area.reduce (tempWidth, 0);
+    }
+
+    auto column1 = area.removeFromLeft (tempWidth);
+    auto column2 = area.removeFromRight (tempWidth);
+
+    int slotHeight = area.getHeight()/numRows;
+
+    // sets bounds depending on the value in the array
+    for (int i=0; i<gestureSlots.size(); i++)
+    {
+        gestureSlots[i]->setBounds (i < numRows ? column1.removeFromTop (slotHeight).reduced (margin)
+                                                : column2.removeFromTop (slotHeight).reduced (margin));
     }
 }
 

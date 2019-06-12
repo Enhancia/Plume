@@ -269,8 +269,8 @@
   <EXPORTFORMATS>
     <VS2017 targetFolder="Builds/VisualStudio2017" bigIcon="YXx8Ce" smallIcon="YXx8Ce">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="0" name="Release" headerPath="C:\Users\Enhancia Dev\Documents\Dev\Git_Workspace\Plume\Plume\Source"/>
-        <CONFIGURATION isDebug="1" name="Debug" headerPath="C:\Users\Enhancia Dev\Documents\Dev\Git_Workspace\Plume\Plume\Source"/>
+        <CONFIGURATION isDebug="0" name="Release" headerPath="D:\Workspace\GitWorkspace\Plume\Plume\Source"/>
+        <CONFIGURATION isDebug="1" name="Debug" headerPath="D:\Workspace\GitWorkspace\Plume\Plume\Source"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../../../Programmes/JUCE/modules"/>

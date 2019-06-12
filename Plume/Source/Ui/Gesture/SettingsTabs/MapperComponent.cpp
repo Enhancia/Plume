@@ -219,7 +219,7 @@ void MapperComponent::resizeArray (juce::Rectangle<int> bounds, const int numCol
     for (int i=0; i<paramCompArray.size(); i++)
     {
         int paramCompX = bounds.getX() + (i % numColumns) * (paramCompWidth + marginX);
-        int paramCompY = bounds.getY() + (i / numColumns)    * (paramCompHeight + marginY);
+        int paramCompY = bounds.getY() + (i / numColumns) * (paramCompHeight + marginY);
 
         paramCompArray[i]->setBounds (paramCompX, paramCompY, paramCompWidth, paramCompHeight);
     }
