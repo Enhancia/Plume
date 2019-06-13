@@ -55,9 +55,9 @@ void GestureSettingsComponent::paint (Graphics& g)
     using namespace PLUME::UI;
 
     //Gradient for horizontal lines
-    auto grad = ColourGradient::horizontal (Colour (0x15323232),
+    auto grad = ColourGradient::horizontal (Colour (0x10323232),
                                             float(MARGIN), 
-                                            Colour (0x15323232),
+                                            Colour (0x10323232),
                                             float(getWidth() - MARGIN));
     grad.addColour (0.5, Colour (0x50323232));
     
@@ -67,50 +67,52 @@ void GestureSettingsComponent::paint (Graphics& g)
     g.fillRoundedRectangle (area.toFloat(), 3.0f);
 
     area.reduce (MARGIN, MARGIN);
+    auto headerArea = area.removeFromTop (this->HEADER_HEIGHT);
+
+    //Gesture Type Text
+    g.setColour (Colour(0xff626262));
+    g.setFont (PLUME::font::plumeFont.withHeight (13.0f));
+    g.drawText (gesture.getTypeString (true),
+                headerArea.removeFromLeft (getWidth()/4).reduced (MARGIN, 0),
+                Justification::centred, false);
 
     // Gesture Name text
     g.setColour (Colour(0xff323232));                    
     g.setFont (PLUME::font::plumeFontBold.withHeight (15.0f));
     g.drawText (gesture.getName(),
-                area.removeFromTop (20),
-                Justification::centredLeft, false);
-
-    //Gesture Type Text
-    g.setFont (PLUME::font::plumeFont.withHeight (13.0f));
-    g.drawText (gesture.getTypeString (true),
-                area.removeFromTop (20),
-                Justification::centredLeft, false);
+                headerArea.removeFromLeft (getWidth()/2).reduced (MARGIN, 0),
+                Justification::centred, false);
 
     g.setGradientFill (grad);
-    g.drawHorizontalLine (area.removeFromTop (80).getY(),
-                          float(area.getX() + 4*MARGIN), float(area.getWidth() - 4*MARGIN));
+    g.drawHorizontalLine (area.removeFromTop (getHeight()*6/10).getY(),
+                          float(area.getX() + 2*MARGIN), float(area.getWidth() - 2*MARGIN));
     g.drawHorizontalLine (area.getY(),
-                          float(area.getX() + 4*MARGIN), float(area.getWidth() - 4*MARGIN));
+                          float(area.getX() + 2*MARGIN), float(area.getWidth() - 2*MARGIN));
 }
 
 void GestureSettingsComponent::resized()
 {
     using namespace PLUME::UI;
 
-    auto area = getLocalBounds().withTrimmedTop (40);
+    auto area = getLocalBounds().reduced (MARGIN);
+    auto headerArea = area.removeFromTop (HEADER_HEIGHT);
 
-    gestTuner->setBounds (area.removeFromTop (80).reduced (MARGIN));
+    muteToggle->setBounds (headerArea.removeFromRight (getWidth()/4)
+                                      .withTrimmedRight (30)
+                                      .reduced (0.5*MARGIN, MARGIN));
 
-    onOffToggle->setBounds (area.removeFromTop (30).withLeft (area.getWidth()/2)
-                                                   .withWidth (120)
-                                                   .reduced (MARGIN));
+    gestTuner->setBounds (area.removeFromTop (getHeight()*6/10)
+                              .withSizeKeepingCentre (jmin (getWidth() - 2*MARGIN, 300), 
+                                                      jmin (getHeight()*6/10 - 6*MARGIN, 100)));
 
-    midiParameterToggle->setBounds (area.removeFromTop (30).withLeft (area.getWidth()/2)
-                                                           .withWidth (120)
-                                                           .reduced (MARGIN));
+    midiParameterToggle->setBounds (area.removeFromTop (30).removeFromRight (area.getWidth()/4)
+                                                           .reduced (0.5*MARGIN, MARGIN));
 
-    descriptionPanel->setBounds (area.removeFromBottom (area.getHeight()/3)
-                                     .reduced (MARGIN, 3*MARGIN));
+    //descriptionPanel->setBounds (area.removeFromBottom (area.getHeight()/3)
+    //                                 .reduced (MARGIN, MARGIN));
 
     midiPanel->setBounds (area.reduced (MARGIN));
     mappedParametersPanel->setBounds (area.reduced (MARGIN));
-
-    //repaint();
 }
 
 //==============================================================================
@@ -213,12 +215,12 @@ void GestureSettingsComponent::createToggles()
         getParentComponent()->repaint();
     };
     
-    addAndMakeVisible (onOffToggle = new DualTextToggle ("Unmute", "Mute", Colour (0xffe0e0e0), Colour (0xff6065e0)));
-    onOffToggle->setStyle (DualTextToggle::oneStateVisible);
-    onOffToggle->setToggleState (gesture.isActive());
-    onOffToggle->onStateChange = [this] ()
+    addAndMakeVisible (muteToggle = new DualTextToggle ("Unmute", "Mute", Colour (0xffe0e0e0), Colour (0xff7c80de)));
+    muteToggle->setStyle (DualTextToggle::oneStateVisible);
+    muteToggle->setToggleState (gesture.isActive());
+    muteToggle->onStateChange = [this] ()
     { 
-        gesture.setActive (onOffToggle->getToggleState());
+        gesture.setActive (muteToggle->getToggleState());
         getParentComponent()->repaint();
     };
 }

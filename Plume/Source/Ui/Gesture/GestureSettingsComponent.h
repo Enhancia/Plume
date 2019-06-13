@@ -67,11 +67,12 @@ private:
     const int gestureId;
     GestureArray& gestureArray;
     PluginWrapper& wrapper;
-    
+    const int HEADER_HEIGHT = 35;
+
     ScopedPointer<Tuner> gestTuner;
     ScopedPointer<MapperComponent> gestMapper;
     ScopedPointer<DualTextToggle> midiParameterToggle;
-    ScopedPointer<DualTextToggle> onOffToggle;
+    ScopedPointer<DualTextToggle> muteToggle;
     ScopedPointer<MidiModeComponent> midiPanel;
     ScopedPointer<MapperComponent> mappedParametersPanel;
     ScopedPointer<DescriptionPanel> descriptionPanel;
