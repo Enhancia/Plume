@@ -114,6 +114,9 @@ void MidiModeComponent::labelTextChanged (Label* lbl)
         gesture.setCc(val);
 
         lbl->setText (String(val), dontSendNotification);
+
+        if (auto* parentComp = getParentComponent())
+        	parentComp->repaint();
     }
     
     else if (lbl == rangeLabelMin || lbl == rangeLabelMax)
@@ -168,7 +171,8 @@ void MidiModeComponent::comboBoxChanged (ComboBox* box)
         // Affects the gesture's midiType variable
         gesture.midiType = midiTypeBox->getSelectedId();
 
-        repaint();
+        if (auto* parentComp = getParentComponent())
+        	parentComp->repaint();
     }
 }
 
@@ -251,4 +255,33 @@ void MidiModeComponent::setComponentsVisibility()
     ccLabel->setAlpha       (gesture.useDefaultMidi ? 0.3f : 1.0f);
     rangeLabelMin->setAlpha (gesture.useDefaultMidi ? 0.3f : 1.0f);
     rangeLabelMax->setAlpha (gesture.useDefaultMidi ? 0.3f : 1.0f);
+}
+
+//==============================================================================
+// Midi Banner
+
+MidiBanner::MidiBanner (Gesture& gest)	: gesture (gest)
+{
+}
+MidiBanner::~MidiBanner()
+{
+}
+void MidiBanner::paint (Graphics& g)
+{
+    g.setColour (Colour (0xff202020));
+
+    String midiString = (gesture.midiType == Gesture::controlChange ?
+    				    	"CC " + String (gesture.getCc()) :
+    						(gesture.midiType == Gesture::pitch ? "Pitch" : "Unknown" ));
+
+    g.setFont (PLUME::font::plumeFont.withHeight(15));
+	g.drawText ("MIDI", getLocalBounds().withWidth (getWidth()/4),
+                            Justification::centred);
+
+    g.setFont (PLUME::font::plumeFontBold.withHeight(13));
+    g.drawText (midiString, getLocalBounds().withSizeKeepingCentre (getWidth()/2, getHeight()),
+                            Justification::centred);
+}
+void MidiBanner::resized()
+{
 }

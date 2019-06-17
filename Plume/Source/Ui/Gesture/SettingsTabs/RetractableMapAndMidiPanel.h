@@ -18,38 +18,6 @@
 #include "MapperComponent.h"
 #include "MidiModeComponent.h"
 
-class ParametersBanner : public Component 
-{
-public:
-    ParametersBanner() {}
-    ~ParametersBanner() {}
-
-    void paint (Graphics& g) override
-    {
-    }
-
-    void resized() override {}
-
-private:
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ParametersBanner)
-};
-
-class MidiBanner : public Component 
-{
-public:
-    MidiBanner() {}
-    ~MidiBanner() {}
-
-    void paint (Graphics& g) override
-    {
-    }
-
-    void resized() override {}
-
-private:
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MidiBanner)
-};
-
 //==============================================================================
 /*
 */

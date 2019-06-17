@@ -56,3 +56,22 @@ private:
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MidiModeComponent)
 };
+
+class MidiBanner : public Component
+{
+public:
+    //==============================================================================
+    MidiBanner (Gesture& gest);
+    ~MidiBanner();
+    
+    //==============================================================================
+    void paint (Graphics&) override;
+    void resized() override;
+
+private:
+    //==============================================================================
+    Gesture& gesture;
+
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MidiBanner)
+};

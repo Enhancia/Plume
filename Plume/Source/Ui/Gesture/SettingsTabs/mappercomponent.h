@@ -83,6 +83,11 @@ public:
     void updateComponents();
 
 private:
+    void paintParameterSlotDisplay (Graphics& g, juce::Rectangle<int> area,
+                                                 const int numRows,
+                                                 const int numColumns,
+                                                 const int margin = 0);
+
     //==============================================================================
     Gesture& gesture;
     GestureArray& gestureArray;

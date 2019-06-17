@@ -95,7 +95,7 @@ PlumeTheme PlumeTheme::createDefaultTheme()
                          0xffffffff, //detailPanelHighlightedMainText
                          0xffffffff, //detailPanelHighlightedSubText
                          0xff000000, //detailPanelSubComponentsOutline
-                         0xff943cb0,  //detailPanelActiveMapping
+                         0xff7c80de, //detailPanelActiveMapping ( old 0xff943cb0 )
                          
                          // Top Panels
                          0xff494949, //topPanelBackground

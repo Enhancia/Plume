@@ -17,7 +17,7 @@ RetractableMapAndMidiPanel::RetractableMapAndMidiPanel (Gesture& gest, GestureAr
 {
 	addAndMakeVisible (parametersBanner = new MapperBanner (gesture, gestureArray, wrapper));
 	addAndMakeVisible (parametersBody = new MapperComponent (gesture, gestureArray, wrapper));
-	addAndMakeVisible (midiBanner = new MidiBanner());
+	addAndMakeVisible (midiBanner = new MidiBanner (gesture));
 	addAndMakeVisible (midiBody = new MidiModeComponent (gesture));
 
 	parametersRetractable.setComponents (parametersBanner, parametersBody);
@@ -90,11 +90,15 @@ void RetractableMapAndMidiPanel::paint (Graphics& g)
     grad.addColour (0.5, Colour (0x50323232));
 
     auto area = getLocalBounds();
-    area.removeFromTop (bannerHeight);
+    area.removeFromTop (bannerHeight + MARGIN);
 
     g.setGradientFill (grad);
-    g.drawHorizontalLine (area.getY(),
-                          float(area.getX() + 2*MARGIN), float(area.getWidth() - 2*MARGIN));
+
+    if (!retracted)
+    {
+    	g.drawHorizontalLine (area.getY(), float(area.getX() + 2*MARGIN),
+    									   float(area.getWidth() - 2*MARGIN));
+	}
 }
 
 void RetractableMapAndMidiPanel::resized()
@@ -105,7 +109,7 @@ void RetractableMapAndMidiPanel::resized()
 	auto bannerArea = getLocalBounds().removeFromTop (bannerHeight);
 	hideBodyButton->setBounds (bannerArea.removeFromBottom (bannerHeight/2)
 								         .removeFromRight (getWidth()/4)
-								         .reduced (3));
+								         .reduced (20, 2));
 	createHideBodyButtonPath();
 }
 
@@ -141,7 +145,7 @@ void RetractableMapAndMidiPanel::changeListenerCallback(ChangeBroadcaster* sourc
     // Recreates the array of parameterComponent, and redraws the mapperComponent
     if (source == &gesture)
     {
-        parametersBody->initializeParamCompArray();
+        parametersBody->updateParamCompArray();
         parametersBody->resized();
     }
     

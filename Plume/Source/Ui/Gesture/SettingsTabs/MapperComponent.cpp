@@ -118,11 +118,8 @@ void MapperComponent::updateParamCompArray()
             i++;
         }
 
-        if (!shouldCheckIfUpdateIsNecessary)
-        {
-            // Trims outdated parameterComponents
-            paramCompArray.removeLast (paramCompArray.size() - gesture.getParameterArray().size());
-        }
+        // Trims outdated parameterComponents
+        paramCompArray.removeLast (paramCompArray.size() - gesture.getParameterArray().size());
     }
 }
 
@@ -172,6 +169,7 @@ MapperBanner::~MapperBanner()
 
 void MapperBanner::paint (Graphics& g)
 {
+    /*
     g.setColour (Colour (0xff202020));
     g.setFont (PLUME::font::plumeFont.withHeight(13));
     g.drawText (String ("Parameters : ") + String (gesture.getParameterArray().size())
@@ -179,6 +177,10 @@ void MapperBanner::paint (Graphics& g)
                                          + String (PLUME::MAX_PARAMETER),
                         getLocalBounds().withSizeKeepingCentre (getWidth()/2, getHeight()),
                         Justification::centred);
+    */
+    
+	paintParameterSlotDisplay(g, getLocalBounds().withSizeKeepingCentre (90, getHeight()),
+                                 1, 6, 5);
 }
 
 void MapperBanner::resized()
@@ -186,7 +188,7 @@ void MapperBanner::resized()
     using namespace PLUME::UI;
     auto area = getLocalBounds();
 
-    mapButton->setBounds (area.removeFromLeft (area.getWidth()/3).reduced (MARGIN/2));
+    mapButton->setBounds (area.removeFromLeft (area.getWidth()/4));
 }
 
 
@@ -223,4 +225,39 @@ void MapperBanner::updateComponents()
                           gesture.mapModeOn ? PLUME::UI::currentTheme.getColour (detailPanelActiveMapping)
                                             : getLookAndFeel().findColour (TextButton::buttonColourId));
     repaint();
+}
+
+
+void MapperBanner::paintParameterSlotDisplay  (Graphics& g, juce::Rectangle<int> area,
+                                                            const int numRows,
+                                                            const int numColumns,
+                                                            const int margin)
+{
+    /*  Hitting this assert means you're trying to paint this object with a number of
+        parameters that doesn't match the actual maximum number of parameters allowed
+        for a gesture.
+    */
+    jassert (numRows * numColumns == PLUME::MAX_PARAMETER);
+
+    int rowHeight = area.getHeight()/numRows;
+    int columnWidth = area.getWidth()/numColumns;
+
+    for (int row=0; row < numRows; row++)
+    {
+        auto columnArea = area.removeFromTop (rowHeight);
+
+        for (int column=0; column < numColumns; column++)
+        {
+            auto slotArea = columnArea.removeFromLeft (columnWidth)
+                                      .reduced (jmin (margin, jmin (rowHeight/3, columnWidth/3)));
+
+            g.setColour ((row*numColumns) + column < gesture.getParameterArray().size() ?
+                            PLUME::UI::currentTheme.getColour (PLUME::colour::detailPanelActiveMapping) :
+                            Colour (0x000000));
+            g.fillRect (slotArea);
+
+            g.setColour (Colour (0x60202020));
+            g.drawRect (slotArea, 1.5f);
+        }
+    }
 }

@@ -65,7 +65,7 @@ void GestureSettingsComponent::paint (Graphics& g)
     auto retractableArea = area.removeFromBottom (getHeight() - (this->HEADER_HEIGHT + getHeight()*6/10
                                                                                      - MARGIN));
     retractableArea.setTop (retractableArea.getY() + 2*MARGIN);
-    if (retractablePanel->isRetracted()) retractableArea.setHeight (retractablePanel->bannerHeight + MARGIN);
+    if (retractablePanel->isRetracted()) retractableArea.setHeight (retractablePanel->bannerHeight + 2*MARGIN);
 
     g.fillRoundedRectangle (area.toFloat(), 3.0f);
     g.fillRoundedRectangle (retractableArea.toFloat(), 3.0f);
@@ -88,8 +88,10 @@ void GestureSettingsComponent::paint (Graphics& g)
                 Justification::centred, false);
 
     g.setGradientFill (grad);
+
     g.drawHorizontalLine (area.removeFromTop (getHeight()*6/10).getY(),
-                          float(area.getX() + 2*MARGIN), float(area.getWidth() - 2*MARGIN));
+                              float(area.getX() + 2*MARGIN), float(area.getWidth() - 2*MARGIN));
+
     //g.drawHorizontalLine (area.getY(),
     //                      float(area.getX() + 2*MARGIN), float(area.getWidth() - 2*MARGIN));
 }
