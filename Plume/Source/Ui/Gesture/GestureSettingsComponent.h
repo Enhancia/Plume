@@ -16,6 +16,7 @@
 #include "Wrapper/PluginWrapper.h"
 #include "Ui/Common/TabbedPanelComponent.h"
 #include "Ui/Gesture/Tuner/GesturesTuner.h"
+#include "Ui/Gesture/SettingsTabs/RetractableMapAndMidiPanel.h"
 #include "Ui/Gesture/SettingsTabs/MapperComponent.h"
 #include "Ui/Gesture/SettingsTabs/DescriptionPanel.h"
 
@@ -73,8 +74,7 @@ private:
     ScopedPointer<MapperComponent> gestMapper;
     ScopedPointer<DualTextToggle> midiParameterToggle;
     ScopedPointer<DualTextToggle> muteToggle;
-    ScopedPointer<MidiModeComponent> midiPanel;
-    ScopedPointer<MapperComponent> mappedParametersPanel;
+    ScopedPointer<RetractableMapAndMidiPanel> retractablePanel;
     ScopedPointer<DescriptionPanel> descriptionPanel;
     
     //==============================================================================

@@ -64,7 +64,7 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	addAndMakeVisible (resizableCorner = new ResizableCornerComponent (this, getConstrainer()));
 
 	setSize(PLUME::UI::DEFAULT_WINDOW_WIDTH, PLUME::UI::DEFAULT_WINDOW_HEIGHT);
-	setResizeLimits (getWidth()*3/4, getHeight()*3/4, getWidth()*3, getHeight()*3);
+	setResizeLimits (getWidth(), getHeight(), getWidth()*3, getHeight()*3);
 
 
 	for (Component* comp : getChildren())
@@ -155,7 +155,7 @@ void PlumeEditor::resized()
 	header->setBounds (area.removeFromTop (HEADER_HEIGHT));
     newGesturePanel->setBounds (area);
 
-    area.setLeft (area.getX() + sideBarButton->getWidth());
+    area.reduce (sideBarButton->getWidth(), sideBarButton->getWidth());
 	gesturePanel->setBounds (area);
 
 	resizableCorner->setBounds (getWidth() - 20, getHeight() - 20, 20, 20);

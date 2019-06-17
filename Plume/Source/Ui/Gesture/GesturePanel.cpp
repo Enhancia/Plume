@@ -86,7 +86,7 @@ void GesturePanel::resized()
 {
     using namespace PLUME::UI;
 
-    auto area = getLocalBounds().reduced (2*MARGIN, 4*MARGIN);
+    auto area = getLocalBounds();
     resizeSlotsAndTrimAreaAccordingly (area, MARGIN);
     
     if (settingsVisible)

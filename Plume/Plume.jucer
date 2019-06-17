@@ -193,8 +193,14 @@
                   file="Source/Ui/Gesture/SettingsTabs/MapperComponent.cpp"/>
             <FILE id="NrssXB" name="MapperComponent.h" compile="0" resource="0"
                   file="Source/Ui/Gesture/SettingsTabs/MapperComponent.h"/>
+            <FILE id="K8E9DQ" name="MidiModeComponent.cpp" compile="1" resource="0"
+                  file="Source/Ui/Gesture/SettingsTabs/MidiModeComponent.cpp"/>
             <FILE id="n4LhnU" name="MidiModeComponent.h" compile="0" resource="0"
                   file="Source/Ui/Gesture/SettingsTabs/MidiModeComponent.h"/>
+            <FILE id="ka0SiX" name="RetractableMapAndMidiPanel.cpp" compile="1"
+                  resource="0" file="Source/Ui/Gesture/SettingsTabs/RetractableMapAndMidiPanel.cpp"/>
+            <FILE id="m0o7BP" name="RetractableMapAndMidiPanel.h" compile="0" resource="0"
+                  file="Source/Ui/Gesture/SettingsTabs/RetractableMapAndMidiPanel.h"/>
           </GROUP>
           <GROUP id="{027C4BCF-8809-483D-C6DA-16DDB0E6F69A}" name="Tuner">
             <FILE id="B0V3Qw" name="Tuner.cpp" compile="1" resource="0" file="Source/Ui/Gesture/Tuner/Tuner.cpp"/>
