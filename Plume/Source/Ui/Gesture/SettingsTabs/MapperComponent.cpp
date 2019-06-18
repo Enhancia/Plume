@@ -253,12 +253,16 @@ void MapperBanner::paintParameterSlotDisplay  (Graphics& g, juce::Rectangle<int>
                                       .withSizeKeepingCentre (slotSide, slotSide);
 
             g.setColour ((row*numColumns) + column < gesture.getParameterArray().size() ?
-                            PLUME::UI::currentTheme.getColour (PLUME::colour::detailPanelActiveMapping) :
-                            Colour (0x000000));
+                            //PLUME::UI::currentTheme.getColour (PLUME::colour::detailPanelActiveMapping) :
+                            Colour (0xffffffff) :
+                            Colour (0x60202020));
             g.fillRect (slotArea);
 
-            g.setColour (Colour (0x60202020));
-            g.drawRect (slotArea, 1.5f);
+            if ((row*numColumns) + column < gesture.getParameterArray().size())
+            {
+                g.setColour (Colour (0x60202020));
+                g.drawRect (slotArea, 1.5f);
+            }
         }
     }
 }

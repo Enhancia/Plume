@@ -41,6 +41,7 @@ public:
 
     //==============================================================================
     bool getSend(); /**< \brief Getter for the send boolean value */
+    bool shouldSend();
     
     //==============================================================================
     RangedAudioParameter& rangeLeftLow; /**< \brief Bend's low range value. The down pitch effect will happen between this and rangeLeftHigh. */
