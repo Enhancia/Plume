@@ -62,10 +62,9 @@ void GestureSettingsComponent::paint (Graphics& g)
     auto area = getLocalBounds();
     g.setColour (Colours::white);
 
-    auto retractableArea = area.removeFromBottom (getHeight() - (this->HEADER_HEIGHT + getHeight()*6/10
-                                                                                     - MARGIN));
+    auto retractableArea = area.removeFromBottom (retractablePanel->getBounds().expanded (MARGIN).getHeight() + 2*MARGIN);
     retractableArea.setTop (retractableArea.getY() + 2*MARGIN);
-    if (retractablePanel->isRetracted()) retractableArea.setHeight (retractablePanel->bannerHeight + 2*MARGIN);
+    //if (retractablePanel->isRetracted()) retractableArea.setHeight (retractablePanel->bannerHeight + 2*MARGIN);
 
     g.fillRoundedRectangle (area.toFloat(), 3.0f);
     g.fillRoundedRectangle (retractableArea.toFloat(), 3.0f);
@@ -107,17 +106,23 @@ void GestureSettingsComponent::resized()
                                       .withTrimmedRight (30)
                                       .reduced (0.5*MARGIN, MARGIN));
 
-    gestTuner->setBounds (area.removeFromTop (getHeight()*6/10)
-                              .withSizeKeepingCentre (jmin (getWidth() - 2*MARGIN, 300), 
+    retractablePanel->setBounds (area.removeFromBottom (retractablePanel->isRetracted() ? 
+                                                            retractablePanel->bannerHeight :
+                                                            getHeight()*2/5 - HEADER_HEIGHT)
+                                     .reduced (MARGIN, 0));
+
+    gestTuner->setBounds (area.withSizeKeepingCentre (jmin (getWidth() - 2*MARGIN, 300), 
                                                       jmin (getHeight()*6/10 - 6*MARGIN, 100)));
 
-    retractablePanel->setBounds (area.reduced (MARGIN));
 
-    midiParameterToggle->setBounds (retractablePanel->getBounds()
-                                        .withHeight (retractablePanel->bannerHeight/2)
-                                        .withLeft (area.getWidth()*3/4)
-                                        .withSizeKeepingCentre (area.getWidth()/4 - MARGIN,
-                                                                retractablePanel->bannerHeight/2));
+    if (gesture.type != Gesture::pitchBend && gesture.type != Gesture::vibrato)
+    {
+        midiParameterToggle->setBounds (retractablePanel->getBounds()
+                                            .withHeight (retractablePanel->bannerHeight/2)
+                                            .withLeft (area.getWidth()*3/4)
+                                            .withSizeKeepingCentre (area.getWidth()/4 - MARGIN,
+                                                                    retractablePanel->bannerHeight/2));
+    }
 }
 
 //==============================================================================
@@ -220,6 +225,7 @@ void GestureSettingsComponent::createToggles()
         showAppropriatePanel();
         getParentComponent()->repaint();
     };
+    
     
     addAndMakeVisible (muteToggle = new DualTextToggle ("Mute", "Mute",
                                                         Colour (0xff7c80de), Colour (0xffe0e0e0)));

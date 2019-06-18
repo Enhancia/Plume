@@ -642,12 +642,17 @@ void GestureArray::addGestureFromXml (XmlElement& gesture)
     // Sets the gesture parameters to the Xlm's values
     gestures.getLast()->setActive (gesture.getBoolAttribute ("on", true));
     gestures.getLast()->setMapped (gesture.getBoolAttribute ("mapped", false));
-    gestures.getLast()->setMidiMapped (gesture.getBoolAttribute ("midiMap", false));
     gestures.getLast()->setCc (gesture.getIntAttribute ("cc", 1));
     gestures.getLast()->setMidiLow (float(gesture.getDoubleAttribute ("midiStart", 0.0)), false);
     gestures.getLast()->setMidiHigh (float(gesture.getDoubleAttribute ("midiEnd", 1.0)), false);
-    gestures.getLast()->midiType = gesture.getIntAttribute ("midiType", Gesture::controlChange);
     
+    if (gestures.getLast()->type != Gesture::vibrato &&
+        gestures.getLast()->type != Gesture::pitchBend)
+    {
+        gestures.getLast()->setMidiMapped (gesture.getBoolAttribute ("midiMap", false));
+        gestures.getLast()->midiType = gesture.getIntAttribute ("midiType", Gesture::controlChange);
+    }
+
     checkPitchMerging();
 }
 
@@ -678,6 +683,7 @@ void GestureArray::createGestureXml (XmlElement& gesturesData)
             Vibrato& v = dynamic_cast<Vibrato&> (*g);
             gestXml->setAttribute ("gain", double (v.gain.convertFrom0to1 (v.gain.getValue())));
 			gestXml->setAttribute("thresh", double(v.threshold.convertFrom0to1 (v.threshold.getValue())));
+            gestXml->setAttribute ("midiMap", true);
         }
         
         else if (g->type == Gesture::pitchBend)
@@ -688,6 +694,7 @@ void GestureArray::createGestureXml (XmlElement& gesturesData)
             
             gestXml->setAttribute ("startRight", double (pb.rangeRightLow.convertFrom0to1 (pb.rangeRightLow.getValue())));
             gestXml->setAttribute ("endRight", double (pb.rangeRightHigh.convertFrom0to1 (pb.rangeRightHigh.getValue())));
+            gestXml->setAttribute ("midiMap", true);
         }
         
         else if (g->type == Gesture::tilt)

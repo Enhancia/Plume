@@ -29,6 +29,9 @@ PitchBend::PitchBend (String gestName, int gestId, AudioProcessorValueTreeState&
       rangeRightLow  (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::bend_rightLow]))),
       rangeRightHigh (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::bend_rightHigh])))
 {
+    midiType = Gesture::pitch;
+	midiOnParameterOff.setValueNotifyingHost(1.0f);
+    
     rangeLeftLow.beginChangeGesture();
     rangeLeftLow.setValueNotifyingHost   (rangeLeftLow.convertTo0to1 (leftLow));
     rangeLeftLow.endChangeGesture();

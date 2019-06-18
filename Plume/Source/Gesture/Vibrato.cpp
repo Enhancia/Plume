@@ -21,6 +21,9 @@ Vibrato::Vibrato (String gestName, int gestId, AudioProcessorValueTreeState& plu
       intensity (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::vibrato_intensity]))),
       threshold (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::vibrato_thresh])))
 {
+    midiType = Gesture::pitch;
+    midiOnParameterOff.setValueNotifyingHost(1.0f);
+
     gain.beginChangeGesture();
     gain.setValueNotifyingHost (gain.convertTo0to1 (val));
     gain.endChangeGesture();

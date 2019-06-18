@@ -22,8 +22,6 @@ MidiModeComponent::MidiModeComponent(Gesture& gest) : gesture (gest)
 {
     createComboBox();
     createLabels();
-    createDefaultToggle();
-    setComponentsVisibility();
 }
 
 MidiModeComponent::~MidiModeComponent()
@@ -37,7 +35,6 @@ MidiModeComponent::~MidiModeComponent()
     ccLabel = nullptr;
     rangeLabelMin = nullptr;
     rangeLabelMax = nullptr;
-    defaultMidiToggle = nullptr;
 }
 
 //==============================================================================
@@ -45,24 +42,13 @@ void MidiModeComponent::paint (Graphics& g)
 {
     auto area = getLocalBounds().reduced (PLUME::UI::MARGIN);
     area.removeFromRight (area.getWidth()*2/3);
-    int areaHeight = area.getHeight();
 
     g.setColour (Colours::black);
     g.setFont (PLUME::font::plumeFont.withHeight (13.0f));
 
-    g.drawText ("Use Default MIDI:",
-                area.removeFromTop (areaHeight/4),
-                Justification::centredLeft, false);
-    area.removeFromTop (areaHeight/8); // Space
-
-    if (gesture.useDefaultMidi) 
-        g.setColour (Colours::black.withAlpha (0.3f));
-
     g.drawText ("MIDI Type:",
-                area.removeFromTop (areaHeight/4),
+                area.removeFromTop (area.getHeight()/2),
                 Justification::centredLeft, false);
-
-    area.removeFromTop (areaHeight/8); // Space
 
     g.drawText ("MIDI Range:",
                 area,
@@ -76,22 +62,15 @@ void MidiModeComponent::resized()
 	auto area = getLocalBounds().reduced (MARGIN);
 	area.removeFromLeft (area.getWidth()/3);
 
-    int areaHeight = area.getHeight();
-
-    defaultMidiToggle->setBounds (area.removeFromTop (areaHeight/4)
-                                      .reduced (MARGIN)
-                                      .withWidth (50));
-    area.removeFromTop (areaHeight/8); // Space
-
-    auto typeArea = area.removeFromTop (areaHeight/4);
-    midiTypeBox->setBounds (typeArea.removeFromLeft (typeArea.getWidth()/2).reduced (MARGIN));
-    ccLabel->setBounds (typeArea.reduced (MARGIN));
-
-    area.removeFromTop (areaHeight/8); // Space
+    auto typeArea = area.removeFromTop (getHeight()/2);
+    midiTypeBox->setBounds (typeArea.removeFromLeft (typeArea.getWidth()/2)
+    								.withSizeKeepingCentre (area.getWidth()*4/10, 20));
+    ccLabel->setBounds (typeArea.withSizeKeepingCentre (area.getWidth()/4, 20));
 
     auto rangeArea = area;
-    rangeLabelMin->setBounds (rangeArea.removeFromLeft (rangeArea.getWidth()/2).reduced (MARGIN));
-    rangeLabelMax->setBounds (rangeArea.reduced (MARGIN));
+    rangeLabelMin->setBounds (rangeArea.removeFromLeft (rangeArea.getWidth()/2)
+    								.withSizeKeepingCentre (area.getWidth()/4, 20));
+    rangeLabelMax->setBounds (rangeArea.withSizeKeepingCentre (area.getWidth()/4, 20));
 }
 
 //==============================================================================
@@ -181,7 +160,6 @@ void MidiModeComponent::updateComponents()
     ccLabel->setText (String (gesture.getCc()), dontSendNotification);
     rangeLabelMin->setText (String (gesture.midiLow.getValue(), 2), dontSendNotification);
 	rangeLabelMax->setText (String (gesture.midiHigh.getValue(), 2), dontSendNotification);
-    defaultMidiToggle->setToggleState (gesture.useDefaultMidi);
 }
 
 //==============================================================================
@@ -196,6 +174,12 @@ void MidiModeComponent::createComboBox()
     // ComboBox look
     midiTypeBox->setJustificationType (Justification::centred);
     midiTypeBox->setColour (ComboBox::outlineColourId, Colour (0xff000000));
+
+    if (gesture.type == Gesture::vibrato || gesture.type == Gesture::pitchBend)
+    {
+    	midiTypeBox->setAlpha (0.3f);
+    	midiTypeBox->setInterceptsMouseClicks (false, false);
+    }
     
     midiTypeBox->addListener (this);
 }
@@ -233,28 +217,6 @@ void MidiModeComponent::createLabels()
     
     rangeLabelMin->addListener (this);
     rangeLabelMax->addListener (this);
-}
-
-void MidiModeComponent::createDefaultToggle()
-{
-    addAndMakeVisible (defaultMidiToggle = new DualTextToggle ("Off", "On",
-                                                               Colour (0x00000000),
-                                                               Colour (0x804d94d9)));
-
-    defaultMidiToggle->setToggleState (gesture.useDefaultMidi);
-    defaultMidiToggle->onStateChange = [this] () {
-                                                     gesture.useDefaultMidi = defaultMidiToggle->getToggleState();
-                                                     setComponentsVisibility();
-                                                     repaint();
-                                                 };
-}
-
-void MidiModeComponent::setComponentsVisibility()
-{
-    midiTypeBox->setAlpha   (gesture.useDefaultMidi ? 0.3f : 1.0f);
-    ccLabel->setAlpha       (gesture.useDefaultMidi ? 0.3f : 1.0f);
-    rangeLabelMin->setAlpha (gesture.useDefaultMidi ? 0.3f : 1.0f);
-    rangeLabelMax->setAlpha (gesture.useDefaultMidi ? 0.3f : 1.0f);
 }
 
 //==============================================================================

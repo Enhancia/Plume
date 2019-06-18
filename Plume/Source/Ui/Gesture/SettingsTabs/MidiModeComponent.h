@@ -40,16 +40,12 @@ private:
     //==============================================================================
     void createComboBox();
     void createLabels();
-    void createDefaultToggle();
-
-    void setComponentsVisibility();
     
     //==============================================================================
     ScopedPointer<ComboBox> midiTypeBox;
     ScopedPointer<Label> ccLabel;
     ScopedPointer<Label> rangeLabelMin;
     ScopedPointer<Label> rangeLabelMax;
-    ScopedPointer<DualTextToggle> defaultMidiToggle;
 
     //==============================================================================
     Gesture& gesture;

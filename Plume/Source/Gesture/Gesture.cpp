@@ -194,9 +194,12 @@ void Gesture::setMapped (bool shouldBeMapped)
 
 void Gesture::setMidiMapped (bool shouldBeMidiMapped)
 {
-    midiOnParameterOff.beginChangeGesture();
-	midiOnParameterOff.setValueNotifyingHost (shouldBeMidiMapped ? 1.0f : 0.0f);
-	midiOnParameterOff.endChangeGesture();
+    if (type != Gesture::pitchBend && type != Gesture::vibrato)
+    {
+        midiOnParameterOff.beginChangeGesture();
+    	midiOnParameterOff.setValueNotifyingHost (shouldBeMidiMapped ? 1.0f : 0.0f);
+    	midiOnParameterOff.endChangeGesture();
+    }
 }
 
 void Gesture::setCc (int ccValue)

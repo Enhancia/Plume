@@ -180,7 +180,7 @@ void MapperBanner::paint (Graphics& g)
     */
     
 	paintParameterSlotDisplay(g, getLocalBounds().withSizeKeepingCentre (90, getHeight()),
-                                 1, 6, 5);
+                                 2, 3, 8);
 }
 
 void MapperBanner::resized()
@@ -248,8 +248,9 @@ void MapperBanner::paintParameterSlotDisplay  (Graphics& g, juce::Rectangle<int>
 
         for (int column=0; column < numColumns; column++)
         {
+            int slotSide = jmin (rowHeight - margin, columnWidth - margin);
             auto slotArea = columnArea.removeFromLeft (columnWidth)
-                                      .reduced (jmin (margin, jmin (rowHeight/3, columnWidth/3)));
+                                      .withSizeKeepingCentre (slotSide, slotSide);
 
             g.setColour ((row*numColumns) + column < gesture.getParameterArray().size() ?
                             PLUME::UI::currentTheme.getColour (PLUME::colour::detailPanelActiveMapping) :

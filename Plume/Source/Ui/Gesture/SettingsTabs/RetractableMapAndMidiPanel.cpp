@@ -191,7 +191,10 @@ void RetractableMapAndMidiPanel::setRetracted (bool shouldBeRetracted)
 
 		resized();
 		if (auto* parentComponent = getParentComponent())
+		{
+			parentComponent->resized();
 			parentComponent->repaint();
+		}
 	}
 }
 
@@ -230,15 +233,15 @@ void RetractableMapAndMidiPanel::createHideBodyButtonPath()
     
     if (hideBodyButton->getToggleState())
     {
-        p.startNewSubPath (0,0);
-        p.lineTo (1, 2);
-        p.lineTo (2, 0);
-    }
-    else
-    {
         p.startNewSubPath (0, 2);
         p.lineTo (1, 0);
         p.lineTo (2, 2);
+    }
+    else
+    {
+        p.startNewSubPath (0,0);
+        p.lineTo (1, 2);
+        p.lineTo (2, 0);
     }
     
     hideBodyButton->setShape (p, false, true, false);
