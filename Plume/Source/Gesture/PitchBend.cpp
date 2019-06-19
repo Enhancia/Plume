@@ -209,3 +209,11 @@ void PitchBend::updateValue (const Array<float> rawData)
 {
     setGestureValue (-rawData[5]);
 }
+
+
+void PitchBend::setActive (bool shouldBeOn)
+{
+    Gesture::setActive (shouldBeOn);
+
+    if (shouldBeOn) pbLast = true;
+}
