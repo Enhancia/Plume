@@ -143,7 +143,7 @@ int Gesture::getRescaledMidiValue()
 {
     if (midiType == Gesture::pitch)
     {
-        return mapInt (getMidiValue(), 0, 127, map (midiLow.getValue(), 0.0f, 1.0f, 0, 16383),
+        return mapInt (getMidiValue(), 0, 16383, map (midiLow.getValue(), 0.0f, 1.0f, 0, 16383),
                                       map (midiHigh.getValue(),   0.0f, 1.0f, 0, 16383));
     }
        

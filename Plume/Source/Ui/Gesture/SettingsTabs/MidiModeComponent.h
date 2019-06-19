@@ -13,6 +13,7 @@
 #include "../../../../JuceLibraryCode/JuceHeader.h"
 #include "Common/PlumeCommon.h"
 #include "Gesture/Gesture.h"
+#include "Gesture/GestureArray.h"
 
 //==============================================================================
 /*
@@ -22,7 +23,7 @@ class MidiModeComponent    : public Component,
                              private ComboBox::Listener
 {
 public:
-    MidiModeComponent(Gesture& gest);
+    MidiModeComponent (Gesture& gest, GestureArray& gestArray);
     ~MidiModeComponent();
 
     //==============================================================================
@@ -49,6 +50,7 @@ private:
 
     //==============================================================================
     Gesture& gesture;
+    GestureArray& gestureArray;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MidiModeComponent)
 };

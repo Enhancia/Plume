@@ -18,7 +18,7 @@ RetractableMapAndMidiPanel::RetractableMapAndMidiPanel (Gesture& gest, GestureAr
 	addAndMakeVisible (parametersBanner = new MapperBanner (gesture, gestureArray, wrapper));
 	addAndMakeVisible (parametersBody = new MapperComponent (gesture, gestureArray, wrapper));
 	addAndMakeVisible (midiBanner = new MidiBanner (gesture));
-	addAndMakeVisible (midiBody = new MidiModeComponent (gesture));
+	addAndMakeVisible (midiBody = new MidiModeComponent (gesture, gestureArray));
 
 	parametersRetractable.setComponents (parametersBanner, parametersBody);
 	midiRetractable.setComponents (midiBanner, midiBody);

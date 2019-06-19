@@ -531,15 +531,8 @@ void GestureArray::addMergedPitchMessage (MidiBuffer& midiMessages, MidiBuffer& 
             // Checks if each specific gesture should send a midi signal, before adding it to pitchVal
             int gestValue;
             
-            // Midi mode on pitch
-            if (g->isMidiMapped() && g->midiType == Gesture::pitch /*&& g->getMidiValue() != 64*/)
-            {
-                send = true;
-                pitchVal += g->getRescaledMidiValue() - 8192;
-            }
-            
             // Vibrato
-            else if (g->type == Gesture::vibrato)
+            if (g->type == Gesture::vibrato)
             {
 				if (Vibrato* vib = dynamic_cast <Vibrato*> (g))
 				{
@@ -567,8 +560,16 @@ void GestureArray::addMergedPitchMessage (MidiBuffer& midiMessages, MidiBuffer& 
 					}
 				}
             }
+
+            // Midi mode on pitch
+            else if (g->isMidiMapped() && g->midiType == Gesture::pitch /*&& g->getMidiValue() != 64*/)
+            {
+                send = true;
+                pitchVal += g->getRescaledMidiValue() - 8192;
+            }
         }
     }
+
     if (!send) return; // Does nothing if no pitch midi should be sent
     
     // Limits the value to be inbounds

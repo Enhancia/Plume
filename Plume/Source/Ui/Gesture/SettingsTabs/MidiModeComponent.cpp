@@ -18,7 +18,8 @@
 #define H Component::getHeight()
 #endif
 
-MidiModeComponent::MidiModeComponent(Gesture& gest) : gesture (gest)
+MidiModeComponent::MidiModeComponent (Gesture& gest, GestureArray& gestArray)
+    : gesture (gest), gestureArray (gestArray)
 {
     createComboBox();
     createLabels();
@@ -149,6 +150,7 @@ void MidiModeComponent::comboBoxChanged (ComboBox* box)
         
         // Affects the gesture's midiType variable
         gesture.midiType = midiTypeBox->getSelectedId();
+        gestureArray.checkPitchMerging();
 
         if (auto* parentComp = getParentComponent())
         	parentComp->repaint();
