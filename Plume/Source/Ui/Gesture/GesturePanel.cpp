@@ -277,11 +277,11 @@ void GesturePanel::resizeSlotsAndTrimAreaAccordingly (juce::Rectangle<int>& area
 
     int tempWidth = area.getWidth()/4;
 
-    /*
+    
     if (!settingsVisible)
     {
-        area.reduce (tempWidth, 0);
-    }*/
+        area.reduce (tempWidth/2, 0);
+    }
 
     auto column1 = area.removeFromLeft (tempWidth);
     auto column2 = area.removeFromRight (tempWidth);

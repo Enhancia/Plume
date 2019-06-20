@@ -33,7 +33,7 @@ const String GestureComponent::getInfoString()
 {
     return gesture.getName() + " | " + gesture.getTypeString (true) + "\n\n" +
            "State : " + (gesture.isActive() ? "Enabled" : "Disabled") +
-           " | Mode : " + (gesture.isMidiMapped() ? "MIDI\n" : "Parameters\n")
+           " | Mode : " + (gesture.generatesMidi() ? "MIDI\n" : "Parameters\n")
            + "\n" + gesture.getDescription();
 }
 void GestureComponent::update()
@@ -80,7 +80,7 @@ void GestureComponent::paint (Graphics& g)
                 stateArea.removeFromTop (stateArea.getHeight()/2),
                 Justification::centredRight, true);
     
-    g.drawText (gesture.isMidiMapped() ? "MIDI" : "Param",
+    g.drawText (gesture.generatesMidi() ? "MIDI" : "Param",
                 stateArea,
                 Justification::centredRight, true);
     

@@ -245,7 +245,7 @@ public:
      *  \param shouldBeSendingMidi The boolean value to set. If true the gesture will affect midi.
                                    If false it will affect parameters.
      */
-    void setMidiMapped (bool shouldBeSendingMidi);
+    void setGeneratesMidi (bool shouldBeSendingMidi);
     
     /**
      *  \brief Setter for the "cc" integer value.
@@ -269,7 +269,7 @@ public:
     /**
      *  \brief Getter for the "midiMap" boolean value.
      */
-    bool isMidiMapped() const;
+    bool generatesMidi() const;
     
     /**
      *  \brief Setter for midiLow parameter float value.

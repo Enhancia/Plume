@@ -218,10 +218,10 @@ void GestureSettingsComponent::createToggles()
     addAndMakeVisible (midiParameterToggle = new DualTextToggle ("MIDI", "Param",
                                                                  Colour (0xffd0d010), Colour (0xff10d0d0)));
     midiParameterToggle->setStyle (DualTextToggle::oneStateVisible);
-    midiParameterToggle->setToggleState (!gesture.isMidiMapped());
+    midiParameterToggle->setToggleState (!gesture.generatesMidi());
     midiParameterToggle->onStateChange = [this] ()
     { 
-        gesture.setMidiMapped (!midiParameterToggle->getToggleState());
+        gesture.setGeneratesMidi (!midiParameterToggle->getToggleState());
         showAppropriatePanel();
         getParentComponent()->repaint();
     };
@@ -247,6 +247,6 @@ void GestureSettingsComponent::createPanels()
 
 void GestureSettingsComponent::showAppropriatePanel()
 {
-    retractablePanel->setPanelMode (gesture.isMidiMapped() ? RetractableMapAndMidiPanel::midiMode
+    retractablePanel->setPanelMode (gesture.generatesMidi() ? RetractableMapAndMidiPanel::midiMode
                                                            : RetractableMapAndMidiPanel::parameterMode);
 }

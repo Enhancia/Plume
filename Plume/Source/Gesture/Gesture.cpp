@@ -192,12 +192,12 @@ void Gesture::setMapped (bool shouldBeMapped)
     mapped = shouldBeMapped;
 }
 
-void Gesture::setMidiMapped (bool shouldBeMidiMapped)
+void Gesture::setGeneratesMidi (bool shouldGenerateMidi)
 {
     if (type != Gesture::pitchBend && type != Gesture::vibrato)
     {
         midiOnParameterOff.beginChangeGesture();
-    	midiOnParameterOff.setValueNotifyingHost (shouldBeMidiMapped ? 1.0f : 0.0f);
+    	midiOnParameterOff.setValueNotifyingHost (shouldGenerateMidi ? 1.0f : 0.0f);
     	midiOnParameterOff.endChangeGesture();
     }
 }
@@ -219,7 +219,7 @@ bool Gesture::isMapped() const
     return mapped;
 }
 
-bool Gesture::isMidiMapped() const
+bool Gesture::generatesMidi() const
 {
     return (midiOnParameterOff.getValue() < 0.5f ? false : true);
 }
@@ -346,7 +346,7 @@ bool Gesture::affectsPitch()
 {
     // vibrato/pitchBend or any gesture with a pitch midi mode return true
     if (type == Gesture::vibrato || type == Gesture::pitchBend ||
-        (isMidiMapped() && midiType == Gesture::pitch))
+        (generatesMidi() && midiType == Gesture::pitch))
     {
         return true;
     }
@@ -485,7 +485,7 @@ float Gesture::mapParameter (float val, float minVal, float maxVal, Range<float>
 
 void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int channel)
 {
-	if (!isMidiMapped()) return; //Does nothing if not in default midi mode
+	if (!generatesMidi()) return; //Does nothing if not in default midi mode
 
     int newMidi;
     int val = getMidiValue();
