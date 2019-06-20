@@ -40,25 +40,16 @@ void Tilt::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
     {
         return;
     }
-    
-	int midiVal = getMidiValue();
-	if (midiVal == lastMidi) return; // Does nothing if the midi value did not change
 
-    if (!useDefaultMidi)
-    {
-        addMidiModeSignalToBuffer (midiMessages, plumeBuffer, midiVal, 0, 127, 1);
-    }
-    else
-    {
-        addEventAndMergeCCToBuffer (midiMessages, plumeBuffer, midiVal, 1, 1);
-    }
-
-	lastMidi = midiVal;
+    addRightMidiSignalToBuffer (midiMessages, plumeBuffer, 1);
 }
 
 int Tilt::getMidiValue()
 {
-    return Gesture::normalizeMidi (rangeLow.convertFrom0to1 (rangeLow.getValue()), rangeHigh.convertFrom0to1 (rangeHigh.getValue()), getGestureValue());
+    return Gesture::normalizeMidi (getGestureValue(),
+                                   rangeLow.convertFrom0to1 (rangeLow.getValue()),
+                                   rangeHigh.convertFrom0to1 (rangeHigh.getValue()),
+                                   (midiType == Gesture::pitch));
 }
 
 void Tilt::updateMappedParameters()
@@ -78,7 +69,10 @@ void Tilt::updateMappedParameters()
 
 float Tilt::getValueForMappedParameter (Range<float> paramRange, bool reversed = false)
 {
-	return Gesture::mapParameter (getGestureValue(), rangeLow.convertFrom0to1 (rangeLow.getValue()), rangeHigh.convertFrom0to1 (rangeHigh.getValue()), paramRange, reversed);
+	return Gesture::mapParameter (getGestureValue(),
+                                  rangeLow.convertFrom0to1 (rangeLow.getValue()),
+                                  rangeHigh.convertFrom0to1 (rangeHigh.getValue()),
+                                  paramRange, reversed);
 }
     
 //==============================================================================

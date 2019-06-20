@@ -29,6 +29,9 @@ PitchBend::PitchBend (String gestName, int gestId, AudioProcessorValueTreeState&
       rangeRightLow  (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::bend_rightLow]))),
       rangeRightHigh (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::bend_rightHigh])))
 {
+    midiType = Gesture::pitch;
+	midiOnParameterOff.setValueNotifyingHost(1.0f);
+    
     rangeLeftLow.beginChangeGesture();
     rangeLeftLow.setValueNotifyingHost   (rangeLeftLow.convertTo0to1 (leftLow));
     rangeLeftLow.endChangeGesture();
@@ -62,16 +65,7 @@ void PitchBend::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffe
     if (send == true)
     {
         // Creates the pitchwheel message
-        if (!useDefaultMidi)
-        {
-            addMidiModeSignalToBuffer (midiMessages, plumeBuffer, pbVal, 0, 16383, 1);
-        }
-        else
-        {
-            addEventAndMergePitchToBuffer (midiMessages, plumeBuffer, pbVal, 1);
-        }
-
-		lastMidi = pbVal;
+        addRightMidiSignalToBuffer (midiMessages, plumeBuffer, 1);
     }
 }
 
@@ -113,6 +107,20 @@ int PitchBend::getMidiValue()
     
     send = false;
     return 8192;
+}
+
+bool PitchBend::shouldSend()
+{
+    const float val = getGestureValue();
+
+    if ((val >= rangeRightStart && val < 140.0f) || // Right side
+        (val < rangeLeftEnd && val > -140.0f) || // Left side
+        (val > rangeLeftEnd && val < rangeRightStart && pbLast == true)) // Back to center
+    {
+        return true;
+    }
+    
+    return false;
 }
    
 void PitchBend::updateMappedParameters()
@@ -200,4 +208,12 @@ bool PitchBend::getSend()
 void PitchBend::updateValue (const Array<float> rawData)
 {
     setGestureValue (-rawData[5]);
+}
+
+
+void PitchBend::setActive (bool shouldBeOn)
+{
+    Gesture::setActive (shouldBeOn);
+
+    if (shouldBeOn) pbLast = true;
 }

@@ -245,7 +245,7 @@ public:
      *  \param shouldBeSendingMidi The boolean value to set. If true the gesture will affect midi.
                                    If false it will affect parameters.
      */
-    void setMidiMapped (bool shouldBeSendingMidi);
+    void setGeneratesMidi (bool shouldBeSendingMidi);
     
     /**
      *  \brief Setter for the "cc" integer value.
@@ -269,7 +269,7 @@ public:
     /**
      *  \brief Getter for the "midiMap" boolean value.
      */
-    bool isMidiMapped() const;
+    bool generatesMidi() const;
     
     /**
      *  \brief Setter for midiLow parameter float value.
@@ -403,7 +403,7 @@ protected:
      *  \param maxVal High value of the range
      *  \param val  Current value inside the range
      */
-    static int normalizeMidi (float minVal, float maxVal, float val);
+    static int normalizeMidi (float val, float minVal, float maxVal, bool is14BitMidi = false);
     
     /**
      *  \brief Helper function to map a floating point value to an int interval.
@@ -458,8 +458,7 @@ protected:
      *  \param midiMin maximum of "value"'s range. Can be 127 or 16383.
      *  \param channel midi channel.
      */
-    void addMidiModeSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer,
-                                    int val, int midiMin, int midiMax, int channel);
+    void addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int channel);
     
     //==============================================================================
     String name; /**< \brief Specific name of the gesture. By default it is the gesture type*/

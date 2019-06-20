@@ -64,7 +64,9 @@ void DualTextToggle::paintStateInAreaWithAlpha (Graphics& g, bool stateToPaint,
 
 	g.setColour (Colours::black.withAlpha (alpha));
 	g.setFont (PLUME::font::plumeFont.withHeight (getHeight() * 6.0f/10));
-	g.drawText (stateToPaint ? stateTrueText : stateFalseText, areaToPaint, Justification::centred, true);
+	g.drawFittedText (stateToPaint ? stateTrueText : stateFalseText,
+		              areaToPaint.reduced (areaToPaint.getWidth()/4, areaToPaint.getHeight()/4),
+		              Justification::centred, 1);
 }
 
 void DualTextToggle::resized()

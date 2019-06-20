@@ -23,39 +23,14 @@ MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr, PluginWr
     :   gesture (gest), gestureArray (gestArr), wrapper (wrap)
 {
     TRACE_IN;
-    
-    // map button
-    addAndMakeVisible (mapButton = new TextButton ("Map Button"));
-    mapButton->setButtonText ("Map");
-    mapButton->addListener (this);
-    
-    // clear map button
-    addAndMakeVisible (clearMapButton = new TextButton ("Clear Map Button"));
-    clearMapButton->setButtonText ("Clear map");
-    clearMapButton->addListener (this);
-    
-    // Adding the mapper as a change listener
-    gesture.removeAllChangeListeners(); // In case the gesture had a previous listener
-    gesture.addChangeListener (this);
-    gestureArray.addChangeListener (this);
-    wrapper.addChangeListener (this);
-    
+
     initializeParamCompArray();
 }
 
 MapperComponent::~MapperComponent()
 {
     TRACE_IN;
-    //gesture.removeChangeListener (this);
-    gestureArray.removeChangeListener (this);
-    wrapper.removeChangeListener (this);
     paramCompArray.clear();
-    
-    mapButton->removeListener (this);
-    clearMapButton->removeListener (this);
-    
-    mapButton = nullptr;
-    clearMapButton = nullptr;
 }
 
 //==============================================================================
@@ -65,106 +40,8 @@ void MapperComponent::paint (Graphics& g)
 
 void MapperComponent::resized()
 {
-    auto area = getLocalBounds();
-
-    auto buttonsArea = area.removeFromBottom (area.getHeight()/6);
-
-    mapButton->setBounds (buttonsArea.removeFromLeft (buttonsArea.getWidth()/2)
-                                     .reduced (getWidth()/8, 0));
-    clearMapButton->setBounds (buttonsArea.reduced (getWidth()/8, 0));
-	
-    resizeArray (area.reduced (PLUME::UI::MARGIN), NUM_COLUMNS, NUM_ROWS);
-	repaint();
-}
-
-//==============================================================================
-void MapperComponent::buttonClicked (Button* bttn)
-{
-    TRACE_IN;
-    
-    if (bttn == mapButton)
-    {
-        // Map: clears mapMode for every other gesture, puts it on for the right one and changes the button color.
-        if (gesture.mapModeOn == false)
-        {
-            gestureArray.cancelMapMode();
-            gesture.mapModeOn = true;
-            gestureArray.mapModeOn = true;
-            mapButton->setColour (TextButton::buttonColourId, PLUME::UI::currentTheme.getColour(PLUME::colour::detailPanelActiveMapping));
-            
-            wrapper.createWrapperEditor (findParentComponentOfClass<AudioProcessorEditor> ());
-        }
-        
-        // Cancels map mode for the gesture and colours it accordingly
-        else
-        {
-            gestureArray.cancelMapMode();
-            mapButton->setColour (TextButton::buttonColourId, getLookAndFeel().findColour (TextButton::buttonColourId));
-        }
-    }
-    
-    else if (bttn == clearMapButton)
-    {
-        // Clear all parameters and cancels map for the gesture.
-        gesture.clearAllParameters();
-        if (gesture.mapModeOn) gestureArray.cancelMapMode();
-        
-        paramCompArray.clear();
-        mapButton->setColour (TextButton::buttonColourId, getLookAndFeel().findColour (TextButton::buttonColourId));
-        
-        getParentComponent()->repaint(); // repaints the whole gesture area
-    }
-}
-
-void MapperComponent::labelTextChanged (Label* lbl)
-{
-    // checks that the string is numbers only
-    if (lbl->getText().containsOnly ("0123456789") == false)
-    {
-        lbl->setText (String (gesture.getCc()), dontSendNotification);
-        return;
-    }
-    
-    int val = lbl->getText().getIntValue();
-    
-    if (val < 0) val = 0;
-    else if (val > 127) val = 127;
-    
-    gesture.setCc(val);
-    
-    lbl->setText (String(val), dontSendNotification);
-}
-
-void MapperComponent::changeListenerCallback(ChangeBroadcaster* source)
-{   
-    // if Another gesture wants to be mapped
-    // Draws the map button in non-map colour
-    if (source == &gestureArray && gestureArray.mapModeOn && gesture.mapModeOn == false)
-    {
-        mapButton->setColour (TextButton::buttonColourId, getLookAndFeel().findColour (TextButton::buttonColourId));
-        return;
-    }
-    
-    // If gesture mapping changed
-    // Recreates the array of parameterComponent, and redraws the mapperComponent
-    else if (source == &gesture)
-    {
-        if (gesture.mapModeOn == false) mapButton->setColour (TextButton::buttonColourId, getLookAndFeel().findColour (TextButton::buttonColourId));
-    
-        // clears then redraws the array.
-        initializeParamCompArray();
-        resized();
-        
-        getParentComponent()->repaint(); // repaints the whole gesture area
-    }
-    
-    // If the editor is closed with map mode still on
-    // Cancels map mode and colors map button to non-map
-    else if (source == &wrapper && gesture.mapModeOn)
-    {
-        gestureArray.cancelMapMode();
-        mapButton->setColour (TextButton::buttonColourId, getLookAndFeel().findColour (TextButton::buttonColourId));
-    }
+    resizeArray (getLocalBounds().reduced (PLUME::UI::MARGIN), NUM_COLUMNS, NUM_ROWS);
+	//repaint();
 }
 
 //==============================================================================
@@ -188,6 +65,7 @@ void MapperComponent::updateComponents()
 void MapperComponent::initializeParamCompArray()
 {
     TRACE_IN;
+    ScopedLock paramComplock (paramCompArrayLock);
     paramCompArray.clear();
     
 	int i = 0;
@@ -196,6 +74,52 @@ void MapperComponent::initializeParamCompArray()
     {
         paramCompArray.add (new MappedParameterComponent (gesture, *gestureParam, i++));
         addAndMakeVisible (paramCompArray.getLast());
+    }
+}
+
+void MapperComponent::updateParamCompArray()
+{
+    TRACE_IN;
+    ScopedLock paramComplock (paramCompArrayLock);
+    
+    if (paramCompArray.size() < gesture.getParameterArray().size()) // Parameters were added
+    {
+        // Adds every new parameter as a parameterComp at the end of the array
+        for (int i=paramCompArray.size(); i<gesture.getParameterArray().size(); i++)
+        {
+            paramCompArray.add (new MappedParameterComponent (gesture, *gesture.getParameterArray()[i], i));
+            addAndMakeVisible (paramCompArray.getLast());
+        }
+    }
+    else if (paramCompArray.size() > gesture.getParameterArray().size()) // Parameters were removed
+    {
+        int i = 0;
+        bool shouldCheckIfUpdateIsNecessary = true;
+
+        // Checks for each gesture parameter if there should be an update. If so, updates it.
+        // As soon as one parameter is updated, updates all the subsequent ones without checking.
+        for (auto* gestureParam : gesture.getParameterArray())
+        {
+            if (shouldCheckIfUpdateIsNecessary)
+            {
+                if (&(paramCompArray[i]->getMappedParameter()) != gestureParam)
+                {
+                    paramCompArray.set (i, new MappedParameterComponent (gesture, *gestureParam, i));
+                    addAndMakeVisible (paramCompArray[i]);
+                    shouldCheckIfUpdateIsNecessary = false;
+                }
+            }
+            else
+            {
+                paramCompArray.set (i, new MappedParameterComponent (gesture, *gestureParam, i));
+                addAndMakeVisible (paramCompArray[i]);
+            }
+
+            i++;
+        }
+
+        // Trims outdated parameterComponents
+        paramCompArray.removeLast (paramCompArray.size() - gesture.getParameterArray().size());
     }
 }
 
@@ -219,15 +143,126 @@ void MapperComponent::resizeArray (juce::Rectangle<int> bounds, const int numCol
     for (int i=0; i<paramCompArray.size(); i++)
     {
         int paramCompX = bounds.getX() + (i % numColumns) * (paramCompWidth + marginX);
-        int paramCompY = bounds.getY() + (i / numColumns)    * (paramCompHeight + marginY);
+        int paramCompY = bounds.getY() + (i / numColumns) * (paramCompHeight + marginY);
 
         paramCompArray[i]->setBounds (paramCompX, paramCompY, paramCompWidth, paramCompHeight);
     }
 }
 
-void MapperComponent::drawMapperText (Graphics& g, String text, int x, int y, int width, int height, bool opaqueWhenMidiMode, float fontSize)
+//==============================================================================
+MapperBanner::MapperBanner (Gesture& gest, GestureArray& gestArr, PluginWrapper& wrap)
+    :   gesture (gest), gestureArray (gestArr), wrapper (wrap)
 {
-    g.setFont (PLUME::font::plumeFont.withHeight (fontSize));
-    g.drawText (TRANS(text), x, y, width, height,
-                Justification::centred, true);
+    TRACE_IN;
+    
+    // map button
+    addAndMakeVisible (mapButton = new TextButton ("Map Button"));
+    mapButton->setButtonText ("Map");
+    mapButton->addListener (this);
+}
+
+MapperBanner::~MapperBanner()
+{
+    mapButton->removeListener (this);
+    mapButton = nullptr;
+}
+
+void MapperBanner::paint (Graphics& g)
+{
+    /*
+    g.setColour (Colour (0xff202020));
+    g.setFont (PLUME::font::plumeFont.withHeight(13));
+    g.drawText (String ("Parameters : ") + String (gesture.getParameterArray().size())
+                                         + String ("/")
+                                         + String (PLUME::MAX_PARAMETER),
+                        getLocalBounds().withSizeKeepingCentre (getWidth()/2, getHeight()),
+                        Justification::centred);
+    */
+    
+	paintParameterSlotDisplay(g, getLocalBounds().withSizeKeepingCentre (90, getHeight()),
+                                 2, 3, 8);
+}
+
+void MapperBanner::resized()
+{
+    using namespace PLUME::UI;
+    auto area = getLocalBounds();
+
+    mapButton->setBounds (area.removeFromLeft (area.getWidth()/4));
+}
+
+
+void MapperBanner::buttonClicked (Button* bttn)
+{
+    if (bttn == mapButton)
+    {
+        // Map: clears mapMode for every other gesture, puts it on for the right one and changes the button color.
+        if (gesture.mapModeOn == false && gesture.getParameterArray().size() < PLUME::MAX_PARAMETER)
+        {
+            gestureArray.cancelMapMode();
+            gesture.mapModeOn = true;
+            gestureArray.mapModeOn = true;
+            mapButton->setColour (TextButton::buttonColourId, PLUME::UI::currentTheme.getColour(PLUME::colour::detailPanelActiveMapping));
+            
+            wrapper.createWrapperEditor (findParentComponentOfClass<AudioProcessorEditor> ());
+        }
+        
+        // Cancels map mode for the gesture and colours it accordingly
+        else
+        {
+            gestureArray.cancelMapMode();
+            mapButton->setColour (TextButton::buttonColourId,
+                                  getLookAndFeel().findColour (TextButton::buttonColourId));
+        }
+    }
+}
+
+void MapperBanner::updateComponents()
+{
+    using namespace PLUME::colour;
+
+    mapButton->setColour (TextButton::buttonColourId,
+                          gesture.mapModeOn ? PLUME::UI::currentTheme.getColour (detailPanelActiveMapping)
+                                            : getLookAndFeel().findColour (TextButton::buttonColourId));
+    repaint();
+}
+
+
+void MapperBanner::paintParameterSlotDisplay  (Graphics& g, juce::Rectangle<int> area,
+                                                            const int numRows,
+                                                            const int numColumns,
+                                                            const int margin)
+{
+    /*  Hitting this assert means you're trying to paint this object with a number of
+        parameters that doesn't match the actual maximum number of parameters allowed
+        for a gesture.
+    */
+    jassert (numRows * numColumns == PLUME::MAX_PARAMETER);
+
+    int rowHeight = area.getHeight()/numRows;
+    int columnWidth = area.getWidth()/numColumns;
+
+    for (int row=0; row < numRows; row++)
+    {
+        auto columnArea = area.removeFromTop (rowHeight);
+
+        for (int column=0; column < numColumns; column++)
+        {
+            int slotSide = jmin (rowHeight - margin, columnWidth - margin);
+            auto slotArea = columnArea.removeFromLeft (columnWidth)
+                                      .withSizeKeepingCentre (slotSide, slotSide);
+
+            g.setColour ((row*numColumns) + column < gesture.getParameterArray().size() ?
+                            //PLUME::UI::currentTheme.getColour (PLUME::colour::detailPanelActiveMapping) :
+                            Colour (0xffffffff) :
+                            Colour (0x60202020));
+            g.fillRect (slotArea);
+
+            if ((row*numColumns) + column < gesture.getParameterArray().size())
+            {
+                g.setColour (Colour (0x60202020));
+                g.drawRect (slotArea, 1.5f);
+            }
+        }
+    }
 }

@@ -18,8 +18,8 @@ GestureSettingsComponent::GestureSettingsComponent (Gesture& gest, GestureArray&
 {
     TRACE_IN;
     createTuner();
-    createToggles();
     createPanels();
+    createToggles();
 }
 
 GestureSettingsComponent::~GestureSettingsComponent()
@@ -43,9 +43,7 @@ void GestureSettingsComponent::update()
 {
     if (disabled) return;
 
-    gestTuner->updateComponents();
-    midiPanel->updateComponents();
-    mappedParametersPanel->updateComponents();
+	retractablePanel->update();
     descriptionPanel->update();
 }
 
@@ -55,76 +53,76 @@ void GestureSettingsComponent::paint (Graphics& g)
     using namespace PLUME::UI;
 
     //Gradient for horizontal lines
-    auto grad = ColourGradient::horizontal (Colour (0x15323232),
+    auto grad = ColourGradient::horizontal (Colour (0x10323232),
                                             float(MARGIN), 
-                                            Colour (0x15323232),
+                                            Colour (0x10323232),
                                             float(getWidth() - MARGIN));
     grad.addColour (0.5, Colour (0x50323232));
     
-    auto area = getLocalBounds().reduced (2*MARGIN).withLeft (0);
-
+    auto area = getLocalBounds();
     g.setColour (Colours::white);
+
+    auto retractableArea = area.removeFromBottom (retractablePanel->getBounds().expanded (MARGIN).getHeight() + 2*MARGIN);
+    retractableArea.setTop (retractableArea.getY() + 2*MARGIN);
+    //if (retractablePanel->isRetracted()) retractableArea.setHeight (retractablePanel->bannerHeight + 2*MARGIN);
+
     g.fillRoundedRectangle (area.toFloat(), 3.0f);
+    g.fillRoundedRectangle (retractableArea.toFloat(), 3.0f);
 
     area.reduce (MARGIN, MARGIN);
+    auto headerArea = area.removeFromTop (this->HEADER_HEIGHT);
+
+    //Gesture Type Text
+    g.setColour (Colour(0xff626262));
+    g.setFont (PLUME::font::plumeFont.withHeight (13.0f));
+    g.drawText (gesture.getTypeString (true),
+                headerArea.removeFromLeft (getWidth()/4).reduced (MARGIN, 0),
+                Justification::centred, false);
 
     // Gesture Name text
     g.setColour (Colour(0xff323232));                    
     g.setFont (PLUME::font::plumeFontBold.withHeight (15.0f));
     g.drawText (gesture.getName(),
-                area.removeFromTop (20),
-                Justification::centredLeft, false);
-
-    //Gesture Type Text
-    g.setFont (PLUME::font::plumeFont.withHeight (13.0f));
-    g.drawText (gesture.getTypeString (true),
-                area.removeFromTop (20),
-                Justification::centredLeft, false);
+                headerArea.removeFromLeft (getWidth()/2).reduced (MARGIN, 0),
+                Justification::centred, false);
 
     g.setGradientFill (grad);
-    g.drawHorizontalLine (area.removeFromTop (80).getY(),
-                          float(area.getX() + 4*MARGIN), float(area.getWidth() - 4*MARGIN));
-    g.drawHorizontalLine (area.getY(),
-                          float(area.getX() + 4*MARGIN), float(area.getWidth() - 4*MARGIN));
 
-    // Toggle on/off Text
-    g.setColour (Colour(0xff323232));  
-    g.setFont (PLUME::font::plumeFont.withHeight (13.0f));
-    g.drawText ("Toggle On/Off : ",
-                area.removeFromTop (30).withWidth (area.getWidth()/2).reduced (2*MARGIN, 0),
-                Justification::centredRight, false);
+    g.drawHorizontalLine (area.removeFromTop (getHeight()*6/10).getY(),
+                              float(area.getX() + 2*MARGIN), float(area.getWidth() - 2*MARGIN));
 
-    // Control Type Text
-    g.setColour (Colour(0xff323232));  
-    g.setFont (PLUME::font::plumeFont.withHeight (13.0f));
-    g.drawText ("Control Type : ",
-                area.removeFromTop (30).withWidth (area.getWidth()/2).reduced (2*MARGIN, 0),
-                Justification::centredRight, false);
+    //g.drawHorizontalLine (area.getY(),
+    //                      float(area.getX() + 2*MARGIN), float(area.getWidth() - 2*MARGIN));
 }
 
 void GestureSettingsComponent::resized()
 {
     using namespace PLUME::UI;
 
-    auto area = getLocalBounds().reduced (3*MARGIN).withLeft (MARGIN).withTrimmedTop (40);
+    auto area = getLocalBounds().reduced (MARGIN);
+    auto headerArea = area.removeFromTop (HEADER_HEIGHT);
 
-    gestTuner->setBounds (area.removeFromTop (80).reduced (MARGIN));
+    muteToggle->setBounds (headerArea.removeFromRight (getWidth()/4)
+                                      .withTrimmedRight (30)
+                                      .reduced (0.5*MARGIN, MARGIN));
 
-    onOffToggle->setBounds (area.removeFromTop (30).withLeft (area.getWidth()/2)
-                                                   .withWidth (120)
-                                                   .reduced (MARGIN));
+    retractablePanel->setBounds (area.removeFromBottom (retractablePanel->isRetracted() ? 
+                                                            retractablePanel->bannerHeight :
+                                                            getHeight()*2/5 - HEADER_HEIGHT)
+                                     .reduced (MARGIN, 0));
 
-    midiParameterToggle->setBounds (area.removeFromTop (30).withLeft (area.getWidth()/2)
-                                                           .withWidth (120)
-                                                           .reduced (MARGIN));
+    gestTuner->setBounds (area.withSizeKeepingCentre (jmin (getWidth() - 2*MARGIN, 300), 
+                                                      jmin (getHeight()*6/10 - 6*MARGIN, 100)));
 
-    descriptionPanel->setBounds (area.removeFromBottom (area.getHeight()/3)
-                                     .reduced (MARGIN, 3*MARGIN));
 
-    midiPanel->setBounds (area.reduced (MARGIN));
-    mappedParametersPanel->setBounds (area.reduced (MARGIN));
-
-    //repaint();
+    if (gesture.type != Gesture::pitchBend && gesture.type != Gesture::vibrato)
+    {
+        midiParameterToggle->setBounds (retractablePanel->getBounds()
+                                            .withHeight (retractablePanel->bannerHeight/2)
+                                            .withLeft (area.getWidth()*3/4)
+                                            .withSizeKeepingCentre (area.getWidth()/4 - MARGIN,
+                                                                    retractablePanel->bannerHeight/2));
+    }
 }
 
 //==============================================================================
@@ -161,13 +159,13 @@ void GestureSettingsComponent::updateDisplay()
     {
         if (gesture.isActive()) gestTuner->updateDisplay();
         
-        mappedParametersPanel->updateDisplay();
+        retractablePanel->updateDisplay();
     }
 }
 
 void GestureSettingsComponent::updateMappedParameters()
 {
-    mappedParametersPanel->initializeParamCompArray();
+    retractablePanel->initializeParamCompArray();
 }
 
 void GestureSettingsComponent::disableIfGestureWasDeleted()
@@ -217,37 +215,38 @@ void GestureSettingsComponent::createTuner()
 
 void GestureSettingsComponent::createToggles()
 {
-    addAndMakeVisible (midiParameterToggle = new DualTextToggle ("MIDI", "Param"));
-    midiParameterToggle->setStyle (DualTextToggle::twoStatesVisible);
-    midiParameterToggle->setToggleState (!gesture.isMidiMapped());
+    addAndMakeVisible (midiParameterToggle = new DualTextToggle ("MIDI", "Param",
+                                                                 Colour (0xffd0d010), Colour (0xff10d0d0)));
+    midiParameterToggle->setStyle (DualTextToggle::oneStateVisible);
+    midiParameterToggle->setToggleState (!gesture.generatesMidi());
     midiParameterToggle->onStateChange = [this] ()
     { 
-        gesture.setMidiMapped (!midiParameterToggle->getToggleState());
+        gesture.setGeneratesMidi (!midiParameterToggle->getToggleState());
         showAppropriatePanel();
         getParentComponent()->repaint();
     };
     
-    addAndMakeVisible (onOffToggle = new DualTextToggle ("Off", "On", Colour (0xffe0e0e0), Colour (0xffa0f0a0)));
-    onOffToggle->setStyle (DualTextToggle::twoStatesVisible);
-    onOffToggle->setToggleState (gesture.isActive());
-    onOffToggle->onStateChange = [this] ()
+    
+    addAndMakeVisible (muteToggle = new DualTextToggle ("Mute", "Mute",
+                                                        Colour (0xff7c80de), Colour (0xffe0e0e0)));
+    muteToggle->setStyle (DualTextToggle::oneStateVisible);
+    muteToggle->setToggleState (gesture.isActive());
+    muteToggle->onStateChange = [this] ()
     { 
-        gesture.setActive (onOffToggle->getToggleState());
+        gesture.setActive (muteToggle->getToggleState());
         getParentComponent()->repaint();
     };
 }
 
 void GestureSettingsComponent::createPanels()
 {
-    addAndMakeVisible (midiPanel = new MidiModeComponent (gesture));
-    addAndMakeVisible (mappedParametersPanel = new MapperComponent (gesture, gestureArray, wrapper));
     addAndMakeVisible (descriptionPanel = new DescriptionPanel (gesture));
-
-    gesture.isMidiMapped() ? mappedParametersPanel->setVisible (false) : midiPanel->setVisible (false);
+    addAndMakeVisible (retractablePanel = new RetractableMapAndMidiPanel (gesture, gestureArray, wrapper));
+	showAppropriatePanel();
 }
 
 void GestureSettingsComponent::showAppropriatePanel()
 {
-    midiPanel->setVisible (gesture.isMidiMapped());
-    mappedParametersPanel->setVisible (!gesture.isMidiMapped());
+    retractablePanel->setPanelMode (gesture.generatesMidi() ? RetractableMapAndMidiPanel::midiMode
+                                                           : RetractableMapAndMidiPanel::parameterMode);
 }

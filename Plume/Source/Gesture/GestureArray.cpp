@@ -49,7 +49,7 @@ void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages, MidiBuffer&
         // Adds non-pitch midi
         for (auto* g : gestures)
         {
-            if (g->isMidiMapped() == true && g->affectsPitch() == false)
+            if (g->generatesMidi() == true && g->affectsPitch() == false)
             {
                 g->addGestureMidi (midiMessages, plumeBuffer);
             }
@@ -64,7 +64,7 @@ void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages, MidiBuffer&
         // Adds all midi
         for (auto* g : gestures)
         {
-            if (g->isMidiMapped() == true)
+            if (g->generatesMidi() == true)
             {
                 g->addGestureMidi (midiMessages, plumeBuffer);
             }
@@ -80,7 +80,7 @@ void GestureArray::updateAllMappedParameters()
     // mapMode (to prevent the parameter from changing) and that is mapped
     for (auto* g : gestures)
     {
-        if (mapModeOn == false && g->isMapped() && g->isMidiMapped() == false)
+        if (mapModeOn == false && g->isMapped() && g->generatesMidi() == false)
         {
             g->updateMappedParameters();
         }
@@ -282,7 +282,7 @@ void GestureArray::addGestureCopyingOther (Gesture* other, int gestureId, String
     }
     
     gestures.getLast()->setActive (other->isActive());
-    gestures.getLast()->setMidiMapped (other->isMidiMapped());
+    gestures.getLast()->setGeneratesMidi (other->generatesMidi());
     gestures.getLast()->midiType = other->midiType;
     gestures.getLast()->useDefaultMidi = other->useDefaultMidi;
     gestures.getLast()->setCc (other->getCc());
@@ -531,15 +531,8 @@ void GestureArray::addMergedPitchMessage (MidiBuffer& midiMessages, MidiBuffer& 
             // Checks if each specific gesture should send a midi signal, before adding it to pitchVal
             int gestValue;
             
-            // Midi mode on pitch
-            if (g->isMidiMapped() && g->midiType == Gesture::pitch /*&& g->getMidiValue() != 64*/)
-            {
-                send = true;
-                pitchVal += g->getRescaledMidiValue() - 8192;
-            }
-            
             // Vibrato
-            else if (g->type == Gesture::vibrato)
+            if (g->type == Gesture::vibrato)
             {
 				if (Vibrato* vib = dynamic_cast <Vibrato*> (g))
 				{
@@ -567,8 +560,16 @@ void GestureArray::addMergedPitchMessage (MidiBuffer& midiMessages, MidiBuffer& 
 					}
 				}
             }
+
+            // Midi mode on pitch
+            else if (g->generatesMidi() && g->midiType == Gesture::pitch /*&& g->getMidiValue() != 64*/)
+            {
+                send = true;
+                pitchVal += g->getRescaledMidiValue() - 8192;
+            }
         }
     }
+
     if (!send) return; // Does nothing if no pitch midi should be sent
     
     // Limits the value to be inbounds
@@ -642,12 +643,17 @@ void GestureArray::addGestureFromXml (XmlElement& gesture)
     // Sets the gesture parameters to the Xlm's values
     gestures.getLast()->setActive (gesture.getBoolAttribute ("on", true));
     gestures.getLast()->setMapped (gesture.getBoolAttribute ("mapped", false));
-    gestures.getLast()->setMidiMapped (gesture.getBoolAttribute ("midiMap", false));
     gestures.getLast()->setCc (gesture.getIntAttribute ("cc", 1));
     gestures.getLast()->setMidiLow (float(gesture.getDoubleAttribute ("midiStart", 0.0)), false);
     gestures.getLast()->setMidiHigh (float(gesture.getDoubleAttribute ("midiEnd", 1.0)), false);
-    gestures.getLast()->midiType = gesture.getIntAttribute ("midiType", Gesture::controlChange);
     
+    if (gestures.getLast()->type != Gesture::vibrato &&
+        gestures.getLast()->type != Gesture::pitchBend)
+    {
+        gestures.getLast()->setGeneratesMidi (gesture.getBoolAttribute ("midiMap", false));
+        gestures.getLast()->midiType = gesture.getIntAttribute ("midiType", Gesture::controlChange);
+    }
+
     checkPitchMerging();
 }
 
@@ -666,7 +672,7 @@ void GestureArray::createGestureXml (XmlElement& gesturesData)
 		gestXml->setAttribute ("id", g->id);
         gestXml->setAttribute ("on", g->isActive());
         gestXml->setAttribute ("mapped", g->isMapped());
-        gestXml->setAttribute ("midiMap", g->isMidiMapped());
+        gestXml->setAttribute ("midiMap", g->generatesMidi());
         gestXml->setAttribute ("cc", g->getCc());
         gestXml->setAttribute ("midiStart", g->midiLow.getValue());
         gestXml->setAttribute ("midiEnd", g->midiHigh.getValue());
@@ -678,6 +684,7 @@ void GestureArray::createGestureXml (XmlElement& gesturesData)
             Vibrato& v = dynamic_cast<Vibrato&> (*g);
             gestXml->setAttribute ("gain", double (v.gain.convertFrom0to1 (v.gain.getValue())));
 			gestXml->setAttribute("thresh", double(v.threshold.convertFrom0to1 (v.threshold.getValue())));
+            gestXml->setAttribute ("midiMap", true);
         }
         
         else if (g->type == Gesture::pitchBend)
@@ -688,6 +695,7 @@ void GestureArray::createGestureXml (XmlElement& gesturesData)
             
             gestXml->setAttribute ("startRight", double (pb.rangeRightLow.convertFrom0to1 (pb.rangeRightLow.getValue())));
             gestXml->setAttribute ("endRight", double (pb.rangeRightHigh.convertFrom0to1 (pb.rangeRightHigh.getValue())));
+            gestXml->setAttribute ("midiMap", true);
         }
         
         else if (g->type == Gesture::tilt)

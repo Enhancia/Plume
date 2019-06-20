@@ -143,7 +143,7 @@ int Gesture::getRescaledMidiValue()
 {
     if (midiType == Gesture::pitch)
     {
-        return mapInt (getMidiValue(), 0, 127, map (midiLow.getValue(), 0.0f, 1.0f, 0, 16383),
+        return mapInt (getMidiValue(), 0, 16383, map (midiLow.getValue(), 0.0f, 1.0f, 0, 16383),
                                       map (midiHigh.getValue(),   0.0f, 1.0f, 0, 16383));
     }
        
@@ -192,11 +192,14 @@ void Gesture::setMapped (bool shouldBeMapped)
     mapped = shouldBeMapped;
 }
 
-void Gesture::setMidiMapped (bool shouldBeMidiMapped)
+void Gesture::setGeneratesMidi (bool shouldGenerateMidi)
 {
-    midiOnParameterOff.beginChangeGesture();
-	midiOnParameterOff.setValueNotifyingHost (shouldBeMidiMapped ? 1.0f : 0.0f);
-	midiOnParameterOff.endChangeGesture();
+    if (type != Gesture::pitchBend && type != Gesture::vibrato)
+    {
+        midiOnParameterOff.beginChangeGesture();
+    	midiOnParameterOff.setValueNotifyingHost (shouldGenerateMidi ? 1.0f : 0.0f);
+    	midiOnParameterOff.endChangeGesture();
+    }
 }
 
 void Gesture::setCc (int ccValue)
@@ -216,7 +219,7 @@ bool Gesture::isMapped() const
     return mapped;
 }
 
-bool Gesture::isMidiMapped() const
+bool Gesture::generatesMidi() const
 {
     return (midiOnParameterOff.getValue() < 0.5f ? false : true);
 }
@@ -342,8 +345,8 @@ String Gesture::getGestureTypeDescription (int gestureType)
 bool Gesture::affectsPitch()
 {
     // vibrato/pitchBend or any gesture with a pitch midi mode return true
-    if (((type == Gesture::vibrato || type == Gesture::pitchBend) && isMidiMapped()) &&
-        (useDefaultMidi || (midiType == Gesture::pitch)))
+    if (type == Gesture::vibrato || type == Gesture::pitchBend ||
+        (generatesMidi() && midiType == Gesture::pitch))
     {
         return true;
     }
@@ -433,21 +436,11 @@ void Gesture::swapParametersWithOtherGesture (Gesture& other)
     sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
 }
 
-int Gesture::normalizeMidi (float minVal, float maxVal, float val)
+int Gesture::normalizeMidi (float val, float minVal, float maxVal, bool is14BitMidi)
 {
     if (minVal == maxVal && val == minVal) return 0;
     
-    int norm;
-    float a, b;
-    
-    a = 127.0f / (maxVal - minVal);
-    b = -a * minVal;
-
-    norm = int(a*val+b);
-    if (norm < 0) norm = 0;
-    if (norm > 127) norm = 127;
-
-    return (int) norm;
+    return Gesture::map (val, minVal, maxVal, 0, is14BitMidi ? 16383 : 127);
 }
 
 int Gesture::map (float val, float minVal, float maxVal, int minNew, int maxNew)
@@ -490,41 +483,47 @@ float Gesture::mapParameter (float val, float minVal, float maxVal, Range<float>
     else           return (paramRange.getStart() + paramRange.getLength()*(maxVal - val)/(maxVal - minVal));
 }
 
-void Gesture::addMidiModeSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer,
-										 int val, int midiMin, int midiMax, int channel)
+void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int channel)
 {
-	if (!isMidiMapped() || useDefaultMidi) return; //Does nothing if not in default midi mode
+	if (!generatesMidi()) return; //Does nothing if not in default midi mode
 
     int newMidi;
+    int val = getMidiValue();
     
-    // assigns the right midi value depending on the signal and the midiRange parameter, then adds message to buffer
-    switch (midiType)
+    if (val != lastMidi) // Prevents to send the same message twice in a row
     {
-		case (Gesture::pitch):
-            newMidi = mapInt (val, midiMin, midiMax,
-                              map (midiLow.getValue(), 0.0f, 1.0f, 0, 16383),
-                              map (midiHigh.getValue(),   0.0f, 1.0f, 0, 16383));
-                              
-            addEventAndMergePitchToBuffer (midiMessages, plumeBuffer, newMidi, channel);
-            break;
-        
-		case (Gesture::controlChange):
-            newMidi = mapInt (val, midiMin, midiMax,
-                              map (midiLow.getValue(), 0.0f, 1.0f, 0, 127),
-                              map (midiHigh.getValue(),   0.0f, 1.0f, 0, 127));
-                              
-            addEventAndMergeCCToBuffer (midiMessages, plumeBuffer, newMidi, getCc(), channel);
-            break;
-        
-		case (Gesture::afterTouch):
-            newMidi = mapInt (val, midiMin, midiMax,
-                              map (midiLow.getValue(), 0.0f, 1.0f, 0, 127),
-                              map (midiHigh.getValue(),   0.0f, 1.0f, 0, 127));
-                              
-            addEventAndMergeAfterTouchToBuffer (midiMessages, plumeBuffer, newMidi, channel);
-            break;
-        
-        default:
-            break;
+        // Assigns the right midi value depending on the signal and
+        // the midiRange parameter, then adds message to the buffers
+        switch (midiType)
+        {
+    		case (Gesture::pitch):
+                newMidi = mapInt (val, 0, 16383,
+                                  map (midiLow.getValue(), 0.0f, 1.0f, 0, 16383),
+                                  map (midiHigh.getValue(),   0.0f, 1.0f, 0, 16383));
+                                  
+                addEventAndMergePitchToBuffer (midiMessages, plumeBuffer, newMidi, channel);
+                break;
+            
+    		case (Gesture::controlChange):
+                newMidi = mapInt (val, 0, 127,
+                                  map (midiLow.getValue(), 0.0f, 1.0f, 0, 127),
+                                  map (midiHigh.getValue(),   0.0f, 1.0f, 0, 127));
+                                  
+                addEventAndMergeCCToBuffer (midiMessages, plumeBuffer, newMidi, getCc(), channel);
+                break;
+            
+    		case (Gesture::afterTouch):
+                newMidi = mapInt (val, 0, 127,
+                                  map (midiLow.getValue(), 0.0f, 1.0f, 0, 127),
+                                  map (midiHigh.getValue(),   0.0f, 1.0f, 0, 127));
+                                  
+                addEventAndMergeAfterTouchToBuffer (midiMessages, plumeBuffer, newMidi, channel);
+                break;
+            
+            default:
+                break;
+        }
+
+        lastMidi = val;
     }
 }

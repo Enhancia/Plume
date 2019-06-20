@@ -38,9 +38,11 @@ public:
     
     //==============================================================================
     void updateValue (const Array<float> rawData) override;
+    void setActive (bool shouldBeOn);
 
     //==============================================================================
     bool getSend(); /**< \brief Getter for the send boolean value */
+    bool shouldSend(); /**< \brief Hides Gesture::shouldSend(). Handles the case where the PB is set active while in the middle range */
     
     //==============================================================================
     RangedAudioParameter& rangeLeftLow; /**< \brief Bend's low range value. The down pitch effect will happen between this and rangeLeftHigh. */

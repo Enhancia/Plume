@@ -170,6 +170,11 @@ public:
         
         modifyLabelCursors();
     }
+
+    Gesture::MappedParameter& getMappedParameter()
+    {
+        return mappedParameter;
+    }
     
     void updateDisplay()
     {
