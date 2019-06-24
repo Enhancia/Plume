@@ -101,5 +101,23 @@ private:
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TwoRangeTunerLookAndFeel)
 };
 
+class TestTunerLookAndFeel : public PlumeLookAndFeel
+{
+public:
+    TestTunerLookAndFeel()
+    {
+        setColour (Slider::thumbColourId, findColour (Slider::backgroundColourId));
+    }
+    
+    ~TestTunerLookAndFeel() {}
+                      
+    void drawRotarySlider (Graphics &,
+                           int x, int y, int width, int height,
+                           float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle,
+                           Slider &);
+private:
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TestTunerLookAndFeel)
+};
+
 } // namespace UI
 } // namespace PLUME

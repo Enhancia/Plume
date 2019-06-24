@@ -38,8 +38,12 @@ public:
 	virtual void resized() override;
     
     //==============================================================================
-	void updateDisplay();
+	virtual void updateDisplay();
 	virtual void updateComponents() = 0;
+/*
+    virtual void mouseDown (MouseEvent& e);
+    virtual void mouseDrag (MouseEvent& e);
+    virtual void mouseUp (MouseEvent& e);*/
 	
 protected:
     //==============================================================================

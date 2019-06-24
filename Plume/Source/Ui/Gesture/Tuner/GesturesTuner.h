@@ -16,6 +16,7 @@
 #include "Ui/Gesture/Tuner/SymmetricalTuner.h"
 #include "Ui/Gesture/Tuner/TwoRangeTuner.h"
 #include "Ui/Gesture/Tuner/OneRangeTuner.h"
+#include "Ui/Gesture/Tuner/TestTuner.h"
 
 #include "Gesture/Vibrato.h"
 #include "Gesture/PitchBend.h"
@@ -44,11 +45,11 @@ private:
 
 
 //==============================================================================
-class TiltTuner: public OneRangeTuner
+class TiltTuner: public TestTuner
 {
 public:
     TiltTuner(Tilt& tilt)
-        :   OneRangeTuner (tilt.getValueReference(), tilt.getRangeReference(),
+        :   TestTuner     (tilt.getValueReference(), tilt.getRangeReference(),
 			               tilt.rangeLow,
 						   tilt.rangeHigh,
 			               Range<float> (PLUME::UI::TILT_DISPLAY_MIN, PLUME::UI::TILT_DISPLAY_MAX),
