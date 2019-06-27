@@ -44,6 +44,7 @@ public:
     
 private:
     void createSliders();
+    void resizeSliders();
     void createLabels();
     
     void setRangeLow (float value);
@@ -66,6 +67,7 @@ private:
     DraggableObject getObjectToDrag (const MouseEvent& e);
 
     void drawTunerSliderBackground (Graphics& g);
+    void updateLabelBounds (Label* labelToUpdate);
     
     //==============================================================================
     const float& value;
@@ -76,6 +78,7 @@ private:
     RangedAudioParameter& rangeLow;
     RangedAudioParameter& rangeHigh;
     
+    juce::Rectangle<int> sliderBounds;
     ScopedPointer<Slider> lowSlider;
     ScopedPointer<Slider> highSlider;
     ScopedPointer<Label> rangeLabelMin;

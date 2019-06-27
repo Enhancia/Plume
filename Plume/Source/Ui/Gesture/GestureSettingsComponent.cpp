@@ -114,8 +114,8 @@ void GestureSettingsComponent::resized()
 
     area.removeFromBottom (2*MARGIN);
 
-    gestTuner->setBounds (area.withSizeKeepingCentre (jmin (getWidth() - 2*MARGIN, 150),
-                                                      jmin (area.getHeight() - 2*MARGIN, 150)));
+    gestTuner->setBounds (area.withSizeKeepingCentre (jmin (getWidth() - 2*MARGIN, 180),
+                                                      jmin (area.getHeight() - 2*MARGIN, 180)));
 
 
     if (gesture.type != Gesture::pitchBend && gesture.type != Gesture::vibrato)

@@ -328,6 +328,23 @@ void TwoRangeTunerLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int 
 //==============================================================================================================================
 // TestTuner:
 
+TestTunerLookAndFeel::TestTunerLookAndFeel()
+{
+    setColour (Slider::thumbColourId, Colour (0xffffffff));
+    
+    // Label
+    setColour (Label::textColourId, Colour (0xff7c80de));
+    setColour (Label::backgroundColourId, Colour (0x00000000));
+    setColour (Label::textWhenEditingColourId , Colour (0xff6060de));
+
+    // Text 
+    setColour (TextEditor::textColourId, Colour (0xff6060de));
+    setColour (TextEditor::focusedOutlineColourId, Colour (0x00000000));
+    setColour (TextEditor::highlightColourId, Colour (0x507c80de));
+    setColour (TextEditor::highlightedTextColourId, Colour (0xff6060de));
+    setColour (CaretComponent::caretColourId, Colour (0xff7c80de));
+}
+
 void TestTunerLookAndFeel::drawRotarySlider (Graphics& g, int x, int y, int width, int height, float sliderPos,
                                        const float rotaryStartAngle, const float rotaryEndAngle, Slider& slider)
 {

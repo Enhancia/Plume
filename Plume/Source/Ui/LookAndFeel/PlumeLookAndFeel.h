@@ -104,11 +104,7 @@ private:
 class TestTunerLookAndFeel : public PlumeLookAndFeel
 {
 public:
-    TestTunerLookAndFeel()
-    {
-        setColour (Slider::thumbColourId, findColour (Slider::backgroundColourId));
-    }
-    
+    TestTunerLookAndFeel();
     ~TestTunerLookAndFeel() {}
                       
     void drawRotarySlider (Graphics &,
