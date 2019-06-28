@@ -13,17 +13,21 @@
 
 TestTuner::TestTuner(const float& val, NormalisableRange<float> gestRange,
                 RangedAudioParameter& rangeL, RangedAudioParameter& rangeH, const Range<float> paramMax,
-                const String unit, bool show)
+                const String unit, bool show, TunerStyle style)
     : Tuner(val, gestRange, paramMax, unit, show),
-		value (val), gestureRange (gestRange), rangeLow (rangeL), rangeHigh (rangeH), parameterMax (paramMax)
+		value (val), gestureRange (gestRange), rangeLow (rangeL), rangeHigh (rangeH), parameterMax (paramMax),
+        tunerStyle (style)
 {
     setLookAndFeel (&testTunerLookAndFeel);
+    setStyle (style);
     createSliders();
     createLabels();
 }
 
 TestTuner::~TestTuner()
 {
+    setLookAndFeel (nullptr);
+
 	lowSlider = nullptr;
     highSlider = nullptr;
 	rangeLabelMin = nullptr;
@@ -34,6 +38,9 @@ TestTuner::~TestTuner()
 void TestTuner::paint (Graphics& g)
 {
     drawTunerSliderBackground (g);
+    drawMousePosition (g);
+	g.setColour(Colour (0x80006000));
+    drawLineFromSliderCenter (g, lastAngle);
 }
 
 void TestTuner::resized()
@@ -52,12 +59,32 @@ void TestTuner::resized()
 
 void TestTuner::resizeSliders()
 {
-    auto sliderRadius = jmin (sliderBounds.getWidth(), sliderBounds.getHeight()/2);
+    switch (tunerStyle)
+    {
+        case wave:
+            sliderRadius = jmin (sliderBounds.getWidth()/2.0f, sliderBounds.getHeight()/2.0f);
+            sliderCentre = {getLocalBounds().getCentreX() - (int) sliderRadius/2,
+                            sliderBounds.getCentreY()};
+            break;
+
+        case tilt:
+            sliderRadius = jmin (sliderBounds.getWidth()*2/3.0f, sliderBounds.getHeight()*2/3.0f);
+            sliderCentre = {getLocalBounds().getCentreX() - (int) sliderRadius/2,
+                            sliderBounds.getCentreY() + (int) sliderRadius/2};
+            break;
+
+        case roll:
+            sliderRadius = jmin (sliderBounds.getWidth()/2.0f, sliderBounds.getHeight()/2.0f);
+            sliderCentre = {getLocalBounds().getCentreX() - (int) sliderRadius/2,
+                            sliderBounds.getCentreY()};
+            break;
+    }
+
+    
 
     auto adjustedBounds = sliderBounds.withWidth (sliderBounds.getWidth()*2)
                                       .expanded (10)
-                                      .withCentre ({getLocalBounds().getCentreX() - sliderRadius/2,
-                                                    sliderBounds.getCentreY()});
+                                      .withCentre (sliderCentre);
 
     lowSlider->setBounds (adjustedBounds);
     highSlider->setBounds (adjustedBounds);
@@ -87,6 +114,39 @@ void TestTuner::updateComponents()
     }
 }
     
+void TestTuner::setStyle (TunerStyle newStyle)
+{
+    tunerStyle = newStyle;
+
+    switch (newStyle)
+    {
+        case wave:
+            //setAngles (MathConstants<float>::pi, 0.0f);
+            //setAngles (0.0f, MathConstants<float>::pi);
+
+            //setAngles (MathConstants<float>::halfPi*3, MathConstants<float>::halfPi*5);
+            //setAngles (MathConstants<float>::halfPi*5, MathConstants<float>::halfPi*3);
+
+            //setAngles (MathConstants<float>::halfPi, 0.0f);
+            //setAngles (0.0f, MathConstants<float>::halfPi);
+            setAngles (MathConstants<float>::halfPi*4/5, 0.0f);
+            break;
+
+        case tilt:
+            setAngles (MathConstants<float>::halfPi, 0.0f);
+            break;
+
+        case roll:
+            setAngles (MathConstants<float>::halfPi*3, MathConstants<float>::halfPi*5);
+            break;
+    }
+}
+void TestTuner::setAngles (float start, float end)
+{
+    startAngle = start;
+    endAngle = end;
+}
+
 //==============================================================================
 void TestTuner::labelTextChanged (Label* lbl)
 {
@@ -170,62 +230,80 @@ void TestTuner::sliderValueChanged (Slider* sldr)
 
 void TestTuner::mouseDown (const MouseEvent& e)
 {
+    mousePosition = e.getMouseDownPosition();
+
     if (getObjectToDrag (e) == lowThumb)
     {
         objectBeingDragged = lowThumb;
         //updateMouseCursor();
-        lowSlider->mouseDown (e);
+        lowSlider->mouseDown (e.getEventRelativeTo (lowSlider));
+        rangeLabelMin->setVisible (true);
     }
     else if (getObjectToDrag (e) == highThumb)
     {
 		objectBeingDragged = highThumb;
         //updateMouseCursor();
-        highSlider->mouseDown (e);
+        highSlider->mouseDown (e.getEventRelativeTo (highSlider));
+        rangeLabelMax->setVisible (true);
     }
+    
     else
     {
         objectBeingDragged = middleArea;
+
         //updateMouseCursor();
-        lowSlider->mouseDown (e);
-        highSlider->mouseDown (e);
+        lowSlider->mouseDown (e.getEventRelativeTo (lowSlider));
+        highSlider->mouseDown (e.getEventRelativeTo (highSlider));
+        rangeLabelMin->setVisible (true);
+        rangeLabelMax->setVisible (true);
     }
+
+    repaint();
 }
 
 void TestTuner::mouseDrag (const MouseEvent& e)
 {
-    if (objectBeingDragged == lowThumb )
+    mousePosition = e.getPosition();
+
+    if (objectBeingDragged == lowThumb)
     {
-        lowSlider->mouseDrag (e);
+        lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider));
     }
     else if (objectBeingDragged == highThumb)
     {
-        highSlider->mouseDrag (e);
+        highSlider->mouseDrag (e.getEventRelativeTo (highSlider));
     }
     else
     {
-        lowSlider->mouseDrag (e);
-        highSlider->mouseDrag (e);
+        lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider));
+        highSlider->mouseDrag (e.getEventRelativeTo (highSlider));
     }
+
+    repaint();
 }
 
 void TestTuner::mouseUp (const MouseEvent& e)
 {
+    mousePosition = {-1, -1};
+
     if (objectBeingDragged == lowThumb)
     {
-        lowSlider->mouseUp (e);
+        lowSlider->mouseUp (e.getEventRelativeTo (lowSlider));
     }
     else if (objectBeingDragged == highThumb)
     {
-        highSlider->mouseUp (e);
+        highSlider->mouseUp (e.getEventRelativeTo (highSlider));
     }
     else 
     {
-        lowSlider->mouseUp (e);
-        highSlider->mouseUp (e);
+        lowSlider->mouseUp (e.getEventRelativeTo (lowSlider));
+        highSlider->mouseUp (e.getEventRelativeTo (highSlider));
     }
 
     if (objectBeingDragged != none)
     {
+        rangeLabelMin->setVisible (false);
+        rangeLabelMax->setVisible (false);
         objectBeingDragged = none;
         //updateMouseCursor();
         repaint();
@@ -249,10 +327,10 @@ void TestTuner::createSliders()
     addAndMakeVisible (lowSlider = new Slider ("Range Low Slider"));
         
     // Slider style
-	lowSlider->setSliderStyle (Slider::RotaryVerticalDrag);
-    lowSlider->setRotaryParameters (MathConstants<float>::pi, 0.0f, true);
+	lowSlider->setSliderStyle (tunerStyle == roll ? Slider::RotaryHorizontalDrag
+                                                  : Slider::RotaryVerticalDrag);
+    lowSlider->setRotaryParameters (startAngle, endAngle, true);
     lowSlider->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
-    lowSlider->setColour (Slider::thumbColourId, Colour (0xffffffff));
     lowSlider->setColour (Slider::rotarySliderFillColourId, Colour (0x00000000));
     lowSlider->setColour (Slider::rotarySliderOutlineColourId, Colour (0x00000000));
 	    
@@ -265,8 +343,9 @@ void TestTuner::createSliders()
     addAndMakeVisible (highSlider = new Slider ("Range High Slider"));
         
     // Slider style
-    highSlider->setSliderStyle (Slider::RotaryVerticalDrag);
-    highSlider->setRotaryParameters (MathConstants<float>::pi, 0.0f, true);
+    highSlider->setSliderStyle (tunerStyle == roll ? Slider::RotaryHorizontalDrag
+                                                   : Slider::RotaryVerticalDrag);
+    highSlider->setRotaryParameters (startAngle, endAngle, true);
     highSlider->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
     highSlider->setColour (Slider::rotarySliderFillColourId, Colour (0x00000000));
     highSlider->setColour (Slider::rotarySliderOutlineColourId, Colour (0x00000000));
@@ -282,7 +361,8 @@ void TestTuner::createLabels()
 {
     Tuner::addAndMakeVisible (rangeLabelMin = new Label ("Min Label", TRANS (String(int(getRangeLow())) + valueUnit)));
     Tuner::addAndMakeVisible (rangeLabelMax = new Label ("Max Label", TRANS (String(int(getRangeHigh())) + valueUnit)));
-        
+    
+
     // LabelMin style
     rangeLabelMin->setEditable (true, false, false);
     rangeLabelMin->setFont (Font (PLUME::UI::font, 13.0f, Font::plain));
@@ -296,6 +376,12 @@ void TestTuner::createLabels()
     rangeLabelMax->setSize (30, 20);
         
     // Labels settings
+    updateLabelBounds (rangeLabelMin);
+    updateLabelBounds (rangeLabelMax);
+
+    rangeLabelMin->setVisible (false);
+    rangeLabelMax->setVisible (false);
+
     rangeLabelMin->addListener (this);
     rangeLabelMax->addListener (this);
 }
@@ -327,8 +413,12 @@ float TestTuner::getRangeHigh()
 
 double TestTuner::getAngleFromMouseEventRadians (const MouseEvent& e)
 {
-    return std::atan2 (e.getMouseDownX() - sliderBounds.getX(),
-                        -(e.getMouseDownY() - sliderBounds.getCentreY()));
+    double angle =  std::atan2 (e.getMouseDownX() - sliderCentre.x,
+                                -(e.getMouseDownY() - sliderCentre.y));
+
+	if (angle < 0) angle += MathConstants<double>::twoPi;
+
+	return angle;
 }
 
 double TestTuner::getThumbAngleRadians (const DraggableObject thumb)
@@ -337,9 +427,8 @@ double TestTuner::getThumbAngleRadians (const DraggableObject thumb)
     
     Slider& slider = (thumb == lowThumb) ? *lowSlider : *highSlider;
 
-    return slider.getRotaryParameters().startAngleRadians
-				+ ((slider.getValue() - slider.getMinimum())/slider.getRange().getLength())
-                     *(slider.getRotaryParameters().endAngleRadians - slider.getRotaryParameters().startAngleRadians);
+    return startAngle + ((slider.getValue() - slider.getMinimum())/slider.getRange().getLength())
+                             *(endAngle - startAngle);
 }
 
 TestTuner::DraggableObject TestTuner::getObjectToDrag (const MouseEvent& e)
@@ -347,29 +436,74 @@ TestTuner::DraggableObject TestTuner::getObjectToDrag (const MouseEvent& e)
     if (e.mods.isShiftDown()) return middleArea;
 
     double mouseAngle = getAngleFromMouseEventRadians (e);
-    auto radius = jmin (sliderBounds.getWidth(), sliderBounds.getHeight()/2);
+    lastAngle = mouseAngle;
+	bool inverted = startAngle > endAngle;
 
     // Either a ~6-pixels-long arc OR the 4th of the angle between the two thumbs.
-    double tolerance = jmax (std::asin (6.0/radius),
-                            ((highSlider->getValue() - lowSlider->getValue())*MathConstants<double>::pi)
-                                /(lowSlider->getRange().getLength()*4));
+    double tolerance = ((highSlider->getValue() - lowSlider->getValue())*(endAngle - startAngle))
+                                /(lowSlider->getRange().getLength()*5);
+    if (inverted) tolerance *= -1.0;
 
-    if (mouseAngle > 0) // Mouse click in the right side
+    // Mouse click inside the range
+	float startAngleModulo = startAngle, endAngleModulo = endAngle;
+
+	while (startAngleModulo > MathConstants<float>::twoPi
+		   && endAngleModulo > MathConstants<float>::twoPi)
+	{
+		startAngleModulo -= MathConstants<float>::twoPi;
+		endAngleModulo -= MathConstants<float>::twoPi;
+	}
+	bool differentRef = jmax(startAngleModulo, endAngleModulo) > MathConstants<float>::twoPi
+		                && jmin(startAngleModulo, endAngleModulo) < MathConstants<float>::twoPi;
+		
+	if (differentRef && jmax(startAngleModulo, endAngleModulo) - MathConstants<float>::twoPi
+						> jmin(startAngleModulo, endAngleModulo))
+	{
+		differentRef = false;
+		inverted ? startAngleModulo -= MathConstants<float>::twoPi
+			     : endAngleModulo -= MathConstants<float>::twoPi;
+	}
+
+	DBG("\n\nMouseAngle : " << mouseAngle * 180/ MathConstants<float>::pi
+		<< "\nlowThumbAngle : " << getThumbAngleRadians(lowThumb) * 180 / MathConstants<float>::pi
+		<< " | highThumbAngle : " << getThumbAngleRadians(highThumb) * 180 / MathConstants<float>::pi
+		<< "\nstartAngle : " << startAngle * 180 / MathConstants<float>::pi
+		<< " | endAngle : " << endAngle * 180 / MathConstants<float>::pi
+		<< "\nstartAngleModulo : " << startAngleModulo * 180 / MathConstants<float>::pi
+		<< " | endAngleModulo : " << endAngleModulo * 180 / MathConstants<float>::pi
+		<< "\n Different Ref : " << (differentRef ? "true" : "false")
+		<< " | Inverted : " << (inverted ? "true" : "false")
+	);
+
+	// Click whithin the slider
+    if ((!differentRef && (mouseAngle > jmin (startAngleModulo, endAngleModulo)
+                       && mouseAngle < jmax (startAngleModulo, endAngleModulo)))
+		|| (differentRef && (mouseAngle > jmin(startAngleModulo, endAngleModulo)
+			             || mouseAngle + MathConstants<float>::twoPi
+                                < jmax(startAngleModulo, endAngleModulo))))
     {
-        if (mouseAngle > getThumbAngleRadians (lowThumb) - tolerance)
-        {
-            return lowThumb;
-        }
-        else if (mouseAngle < getThumbAngleRadians (highThumb) + tolerance)
-        {
-            return highThumb;
-        }
-        else
-        {
-            return middleArea;
-        }
+		DraggableObject thumb1 = inverted ? lowThumb : highThumb;
+		DraggableObject thumb2 = inverted ? highThumb : lowThumb;
+
+
+		if (!differentRef)
+		{
+			if (mouseAngle > getThumbAngleRadians(thumb1) - tolerance)      return thumb1;
+			else if (mouseAngle < getThumbAngleRadians(thumb2) + tolerance) return thumb2;
+			else return middleArea;
+		}
+		else
+		{
+			if (mouseAngle < jmax(startAngleModulo, endAngleModulo) - MathConstants<float>::twoPi)
+				mouseAngle += MathConstants<float>::twoPi;
+
+
+			if (mouseAngle > getThumbAngleRadians(thumb1) - tolerance)      return thumb1;
+			else if (mouseAngle < getThumbAngleRadians(thumb2) + tolerance) return thumb2;
+			else return middleArea;
+		}
     }
-    else // Mouse click on the left side
+    else // Click outside slider range
     {
         if (mouseAngle < -MathConstants<double>::pi/2) return lowThumb;
         else return highThumb;
@@ -382,27 +516,24 @@ void TestTuner::drawTunerSliderBackground (Graphics& g)
 {
     auto outline = Colour (0xff505050);
     auto fill    = objectBeingDragged == middleArea ? Colour (0xffdedeff) : Colour (0xff7c80de);
-    const float rotaryStartAngle = lowSlider->getRotaryParameters().startAngleRadians;
-    const float rotaryEndAngle = lowSlider->getRotaryParameters().endAngleRadians;
 
-    auto radius = jmin (sliderBounds.toFloat().getWidth(), sliderBounds.getHeight()/2.0f);
-    auto lowAngle = rotaryStartAngle
+    auto lowAngle = startAngle
                         + (lowSlider->getValue() - lowSlider->getMinimum()) / lowSlider->getRange().getLength()
-                                                                          * (rotaryEndAngle - rotaryStartAngle);
-    auto highAngle = rotaryStartAngle
+                                                                          * (endAngle - startAngle);
+    auto highAngle = startAngle
                         + (highSlider->getValue() - lowSlider->getMinimum()) / lowSlider->getRange().getLength()
-                                                                           * (rotaryEndAngle - rotaryStartAngle);
-    auto lineW = jmin (8.0f, radius * 0.5f);
-    auto arcRadius = radius - lineW * 0.5f;
+                                                                           * (endAngle - startAngle);
+    auto lineW = jmin (8.0f, sliderRadius * 0.5f);
+    auto arcRadius = sliderRadius - lineW * 0.5f;
 
     Path backgroundArc;
-    backgroundArc.addCentredArc (sliderBounds.getCentreX() - radius/2,
-                                 sliderBounds.getCentreY(),
+    backgroundArc.addCentredArc (sliderCentre.x,
+                                 sliderCentre.y,
                                  arcRadius,
                                  arcRadius,
                                  0.0f,
-                                 rotaryStartAngle,
-                                 rotaryEndAngle,
+                                 startAngle,
+                                 endAngle,
                                  true);
 
     g.setColour (outline);
@@ -411,8 +542,8 @@ void TestTuner::drawTunerSliderBackground (Graphics& g)
     if (isEnabled())
     {
         Path valueArc;
-        valueArc.addCentredArc (sliderBounds.getCentreX() - radius/2,
-                                sliderBounds.getCentreY(),
+        valueArc.addCentredArc (sliderCentre.x,
+                                sliderCentre.y,
                                 arcRadius,
                                 arcRadius,
                                 0.0f,
@@ -428,29 +559,47 @@ void TestTuner::drawTunerSliderBackground (Graphics& g)
     {
         auto angle = getThumbAngleRadians (objectBeingDragged);
 
-        Point<float> thumbPoint (sliderBounds.getCentreX() - radius/2
-                                     + arcRadius * std::cos (angle - MathConstants<float>::halfPi),
-                                 sliderBounds.getCentreY()
-                                     + arcRadius * std::sin (angle - MathConstants<float>::halfPi));
+        Point<float> thumbPoint (sliderCentre.x + arcRadius * std::cos (angle - MathConstants<float>::halfPi),
+                                 sliderCentre.y + arcRadius * std::sin (angle - MathConstants<float>::halfPi));
 
         g.setColour (fill.withAlpha (0.6f));
         g.fillEllipse (juce::Rectangle<float> (25, 25).withCentre (thumbPoint));
+    }
+
+    {
+        // TO DELETE: draws thumb angles and tolerances
+		double tolerance = ((highSlider->getValue() - lowSlider->getValue())*MathConstants<double>::pi)
+			                 / (lowSlider->getRange().getLength() * 5);
+
+
+        g.setColour (Colour (0xff323232));
+        drawLineFromSliderCenter (g, 0.0f);
+        drawLineFromSliderCenter (g, MathConstants<float>::pi);
+
+        g.setColour (Colour (0xffdedeff));
+        drawLineFromSliderCenter (g, getThumbAngleRadians (lowThumb));
+        drawLineFromSliderCenter (g, getThumbAngleRadians (highThumb));
+
+        g.setColour (Colour (0xff903030));
+        bool invertTolerance = startAngle > endAngle;
+        drawLineFromSliderCenter (g, getThumbAngleRadians (lowThumb) + (invertTolerance ? -tolerance
+                                                                                        : tolerance));
+        drawLineFromSliderCenter (g, getThumbAngleRadians (highThumb) + (invertTolerance ? tolerance
+                                                                                         : -tolerance));
     }
 }
 
 void TestTuner::updateLabelBounds (Label* labelToUpdate)
 {
-    auto sliderRadius = jmin (sliderBounds.getWidth(), sliderBounds.getHeight()/2);
+    if (!labelToUpdate->isVisible()) return;
 
     if (labelToUpdate == rangeLabelMin)
     {
         auto radius = sliderRadius - 20;
         auto angle = getThumbAngleRadians (lowThumb);
 
-        rangeLabelMin->setCentrePosition (sliderBounds.getCentreX() - sliderRadius/2
-                                              + radius * std::cos (angle - MathConstants<float>::halfPi),
-                                          sliderBounds.getCentreY()
-                                              + radius * std::sin (angle - MathConstants<float>::halfPi));
+        rangeLabelMin->setCentrePosition (sliderCentre.x + radius * std::cos (angle - MathConstants<float>::halfPi),
+                                          sliderCentre.y + radius * std::sin (angle - MathConstants<float>::halfPi));
 
     }
     else if (labelToUpdate == rangeLabelMax)
@@ -458,9 +607,24 @@ void TestTuner::updateLabelBounds (Label* labelToUpdate)
         auto radius = sliderRadius + 15;
         auto angle = getThumbAngleRadians (highThumb);
 
-        rangeLabelMax->setCentrePosition (sliderBounds.getCentreX() - sliderRadius/2
-                                              + radius * std::cos (angle - MathConstants<float>::halfPi),
-                                          sliderBounds.getCentreY()
-                                              + radius * std::sin (angle - MathConstants<float>::halfPi));
+        rangeLabelMax->setCentrePosition (sliderCentre.x + radius * std::cos (angle - MathConstants<float>::halfPi),
+                                          sliderCentre.y + radius * std::sin (angle - MathConstants<float>::halfPi));
     }
+}
+
+void TestTuner::drawMousePosition (Graphics& g)
+{
+    if (mousePosition.x != -1 && mousePosition.y != -1)
+    {
+        g.setColour (Colour (0xf000ff00));
+        g.drawLine (Line<int> (mousePosition, sliderCentre).toFloat(), 1.0f);
+    }
+}
+
+void TestTuner::drawLineFromSliderCenter (Graphics& g, float angleRadian)
+{
+    Point<float> point (sliderCentre.x + sliderRadius * std::cos (angleRadian - MathConstants<float>::halfPi),
+                        sliderCentre.y + sliderRadius * std::sin (angleRadian - MathConstants<float>::halfPi));
+
+    g.drawLine (Line<float> (sliderCentre.toFloat(), point), 1.0f);
 }

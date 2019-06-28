@@ -19,10 +19,17 @@ class TestTuner:    public Tuner,
                     private Label::Listener
 {
 public:
+    enum TunerStyle
+    {
+        tilt =0,
+        roll,
+        wave
+    };
+
     //==============================================================================
     TestTuner(const float& val, NormalisableRange<float> gestureRange,
                   RangedAudioParameter& rangeL, RangedAudioParameter& rangeH, const Range<float> paramMax,
-                  const String unit = "", bool show = true);
+                  const String unit = "", bool show = true, TunerStyle style = wave);
     ~TestTuner();
     
     //==============================================================================
@@ -36,11 +43,15 @@ public:
     void labelTextChanged (Label* lbl) override;
     void sliderValueChanged (Slider* sldr) override;
 
-
+    //==============================================================================
     void mouseDown (const MouseEvent& e) override;
     void mouseDrag (const MouseEvent& e) override;
     void mouseUp (const MouseEvent& e) override;
     MouseCursor getMouseCursor() override;
+
+    //==============================================================================
+    void setStyle (TunerStyle newStyle);
+    void setAngles (float startAngle, float endAngle);
     
 private:
     void createSliders();
@@ -78,7 +89,6 @@ private:
     RangedAudioParameter& rangeLow;
     RangedAudioParameter& rangeHigh;
     
-    juce::Rectangle<int> sliderBounds;
     ScopedPointer<Slider> lowSlider;
     ScopedPointer<Slider> highSlider;
     ScopedPointer<Label> rangeLabelMin;
@@ -86,6 +96,21 @@ private:
     
     //==============================================================================
     DraggableObject objectBeingDragged = none;
+
+    TunerStyle tunerStyle;
+    juce::Rectangle<int> sliderBounds;
+    float sliderRadius;
+    Point<int> sliderCentre;
+    float startAngle;
+    float endAngle;
+
+    //======== TO DELETE =====
+    Point<int> mousePosition = {-1, -1};
+    float lastAngle = 0.0f;
+    void drawLineFromSliderCenter (Graphics&, float angleRadian);
+    void drawMousePosition (Graphics&);
+    //======== \TO DELETE =====
+
     //==============================================================================
     PLUME::UI::TestTunerLookAndFeel testTunerLookAndFeel;
 
