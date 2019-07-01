@@ -53,8 +53,7 @@ public:
 			               tilt.rangeLow,
 						   tilt.rangeHigh,
 			               Range<float> (PLUME::UI::TILT_DISPLAY_MIN, PLUME::UI::TILT_DISPLAY_MAX),
-                           String (CharPointer_UTF8 ("\xc2\xb0")), true, TestTuner::wave)//,
-                          // MathConstants<float>::pi, 0.0f)
+                           String (CharPointer_UTF8 ("\xc2\xb0")), true, TestTuner::tilt)
     {}
     
     ~TiltTuner()

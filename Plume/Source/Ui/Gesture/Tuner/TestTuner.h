@@ -37,7 +37,7 @@ public:
     void resized() override;
     
     void updateComponents() override;
-    void updateDisplay() override {}
+    void updateDisplay() override;
     
     //==============================================================================
     void labelTextChanged (Label* lbl) override;
@@ -79,6 +79,9 @@ private:
 
     void drawTunerSliderBackground (Graphics& g);
     void updateLabelBounds (Label* labelToUpdate);
+
+    float getValueAngle();
+    void drawValueCursor (Graphics& g);
     
     //==============================================================================
     const float& value;
@@ -96,6 +99,7 @@ private:
     
     //==============================================================================
     DraggableObject objectBeingDragged = none;
+    float previousCursorAngle = value;
 
     TunerStyle tunerStyle;
     juce::Rectangle<int> sliderBounds;
