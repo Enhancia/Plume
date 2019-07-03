@@ -82,6 +82,7 @@ private:
 
     float getValueAngle();
     void drawValueCursor (Graphics& g);
+    void drawThumbsAndToleranceLines (Graphics& g);
     
     //==============================================================================
     const float& value;

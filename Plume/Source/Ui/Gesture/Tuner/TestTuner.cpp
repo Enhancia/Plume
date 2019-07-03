@@ -37,10 +37,18 @@ TestTuner::~TestTuner()
 //==============================================================================
 void TestTuner::paint (Graphics& g)
 {
+    /*
+	g.setColour(Colour(0xff323232));
+    g.drawRect (getLocalBounds(), 1.0f);
+    g.drawRect (sliderBounds, 1.0f);
+    g.drawRect (lowSlider->getBounds(), 1.0f);
+    */
+
     drawTunerSliderBackground (g);
-    drawMousePosition (g);
     drawValueCursor (g);
 
+    //drawThumbsAndToleranceLines (g);
+    //drawMousePosition (g);
 	//g.setColour(Colour (0x80006000));
     //drawLineFromSliderCenter (g, lastAngle);
 }
@@ -144,7 +152,7 @@ void TestTuner::setStyle (TunerStyle newStyle)
             break;
 
         case tilt:
-            setAngles (0.0f, MathConstants<float>::halfPi);
+            setAngles (0.0f, MathConstants<float>::pi*4/10);
             break;
 
         case roll:
@@ -246,19 +254,19 @@ void TestTuner::mouseDown (const MouseEvent& e)
 
     if (objectBeingDragged == lowThumb)
     {
-        //updateMouseCursor();
+        updateMouseCursor();
         lowSlider->mouseDown (e.getEventRelativeTo (lowSlider));
         rangeLabelMin->setVisible (true);
     }
     else if (objectBeingDragged == highThumb)
     {
-        //updateMouseCursor();
+        updateMouseCursor();
         highSlider->mouseDown (e.getEventRelativeTo (highSlider));
         rangeLabelMax->setVisible (true);
     }
     else if (objectBeingDragged == middleArea)
     {
-        //updateMouseCursor();
+        updateMouseCursor();
         lowSlider->setSliderStyle (tunerStyle == wave ? Slider::RotaryVerticalDrag
                                                       : tunerStyle == tilt ? Slider::RotaryHorizontalVerticalDrag
 																		   : Slider::RotaryHorizontalDrag);
@@ -326,7 +334,7 @@ void TestTuner::mouseUp (const MouseEvent& e)
         rangeLabelMin->setVisible (false);
         rangeLabelMax->setVisible (false);
         objectBeingDragged = none;
-        //updateMouseCursor();
+        updateMouseCursor();
         repaint();
     }
 
@@ -335,12 +343,12 @@ void TestTuner::mouseUp (const MouseEvent& e)
 MouseCursor TestTuner::getMouseCursor()
 {
 	return MouseCursor::NormalCursor;
-    /*
+
     switch (objectBeingDragged)
     {
         case (none): return MouseCursor::NormalCursor;
         default: return MouseCursor::NoCursor;
-    }*/
+    }
 }
 
 void TestTuner::createSliders()
@@ -582,23 +590,6 @@ void TestTuner::drawTunerSliderBackground (Graphics& g)
         g.setColour (fill.withAlpha (0.6f));
         g.fillEllipse (juce::Rectangle<float> (25, 25).withCentre (thumbPoint));
     }
-
-    {
-        // TO DELETE: draws thumb angles and tolerances
-		double tolerance = ((highSlider->getValue() - lowSlider->getValue())*(std::abs (endAngle - startAngle)))
-			                 / (lowSlider->getRange().getLength() * 5);
-
-        g.setColour (Colour (0xffdedeff));
-        drawLineFromSliderCenter (g, getThumbAngleRadians (lowThumb));
-        drawLineFromSliderCenter (g, getThumbAngleRadians (highThumb));
-
-        g.setColour (Colour (0xff903030));
-        bool invertTolerance = startAngle > endAngle;
-        drawLineFromSliderCenter (g, getThumbAngleRadians (lowThumb) + (invertTolerance ? -tolerance
-                                                                                        : tolerance));
-        drawLineFromSliderCenter (g, getThumbAngleRadians (highThumb) + (invertTolerance ? tolerance
-                                                                                         : -tolerance));
-    }
 }
 
 void TestTuner::updateLabelBounds (Label* labelToUpdate)
@@ -655,15 +646,25 @@ float TestTuner::getValueAngle()
 void TestTuner::drawValueCursor (Graphics& g)
 {
     float cursorAngle = getValueAngle();
-
     previousCursorAngle = cursorAngle;
 
-    auto cursorRadius = sliderRadius + 10;
+    auto cursorRadius = sliderRadius + 7;
     Point<float> cursorPoint (sliderCentre.x + cursorRadius * std::cos (cursorAngle - MathConstants<float>::halfPi),
                               sliderCentre.y + cursorRadius * std::sin (cursorAngle - MathConstants<float>::halfPi));
 
-    g.setColour (Colour (0xff7c80de));
-    g.fillEllipse (juce::Rectangle<float> (6, 6).withCentre (cursorPoint));
+    Path cursorPath;
+    cursorPath.addTriangle ({cursorPoint.x - 3.0f, cursorPoint.y - 3.0f},
+                            {cursorPoint.x + 3.0f, cursorPoint.y - 3.0f},
+                            {cursorPoint.x,        cursorPoint.y + 3.0f});
+    
+    AffineTransform transform = AffineTransform::rotation (cursorAngle,
+														   cursorPath.getBounds().getCentreX(),
+		                                                   cursorPath.getBounds().getCentreY());
+
+    g.setColour ((gestureRange.convertFrom0to1 (value) >= getRangeLow())
+                 && (gestureRange.convertFrom0to1 (value) <= getRangeHigh()) ? Colour (0xff7c80de)
+                                                                            : Colour (0x80808080));
+    g.fillPath (cursorPath, transform);
 }
 
 void TestTuner::drawMousePosition (Graphics& g)
@@ -681,4 +682,21 @@ void TestTuner::drawLineFromSliderCenter (Graphics& g, float angleRadian)
                         sliderCentre.y + sliderRadius * std::sin (angleRadian - MathConstants<float>::halfPi));
 
     g.drawLine (Line<float> (sliderCentre.toFloat(), point), 1.0f);
+}
+
+void TestTuner::drawThumbsAndToleranceLines (Graphics& g)
+{
+    double tolerance = ((highSlider->getValue() - lowSlider->getValue())*(std::abs (endAngle - startAngle)))
+                         / (lowSlider->getRange().getLength() * 5);
+
+    g.setColour (Colour (0xffdedeff));
+    drawLineFromSliderCenter (g, getThumbAngleRadians (lowThumb));
+    drawLineFromSliderCenter (g, getThumbAngleRadians (highThumb));
+
+    g.setColour (Colour (0xff903030));
+    bool invertTolerance = startAngle > endAngle;
+    drawLineFromSliderCenter (g, getThumbAngleRadians (lowThumb) + (invertTolerance ? -tolerance
+                                                                                    : tolerance));
+    drawLineFromSliderCenter (g, getThumbAngleRadians (highThumb) + (invertTolerance ? tolerance
+                                                                                     : -tolerance));
 }

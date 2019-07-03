@@ -45,15 +45,15 @@ private:
 
 
 //==============================================================================
-class TiltTuner: public TestTuner
+class TiltTuner: public OneRangeTuner
 {
 public:
     TiltTuner(Tilt& tilt)
-        :   TestTuner     (tilt.getValueReference(), tilt.getRangeReference(),
+        :   OneRangeTuner (tilt.getValueReference(), tilt.getRangeReference(),
 			               tilt.rangeLow,
 						   tilt.rangeHigh,
 			               Range<float> (PLUME::UI::TILT_DISPLAY_MIN, PLUME::UI::TILT_DISPLAY_MAX),
-                           String (CharPointer_UTF8 ("\xc2\xb0")), true, TestTuner::tilt)
+                           String (CharPointer_UTF8 ("\xc2\xb0")), true, OneRangeTuner::tilt)
     {}
     
     ~TiltTuner()
@@ -71,7 +71,7 @@ public:
     WaveTuner(Wave& wave)
         :   OneRangeTuner (wave.getValueReference(), wave.getRangeReference(), wave.range,
                            Range<float> (PLUME::UI::WAVE_DISPLAY_MIN, PLUME::UI::WAVE_DISPLAY_MAX),
-                           String (CharPointer_UTF8 ("\xc2\xb0")))
+                           String (CharPointer_UTF8 ("\xc2\xb0")), true, OneRangeTuner::wave)
     {}
     
     ~WaveTuner()
@@ -90,7 +90,7 @@ public:
         :   OneRangeTuner (roll.getValueReference(), roll.getRangeReference(),
 			               roll.rangeLow, roll.rangeHigh,
 				           Range<float> (PLUME::UI::ROLL_DISPLAY_MIN, PLUME::UI::ROLL_DISPLAY_MAX),
-                           String (CharPointer_UTF8 ("\xc2\xb0")))
+                           String (CharPointer_UTF8 ("\xc2\xb0")), true, OneRangeTuner::roll)
     {}
     
     ~RollTuner()
