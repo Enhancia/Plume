@@ -190,6 +190,11 @@ void OneRangeTuner::labelTextChanged (Label* lbl)
         lbl->setText (String (int (getRangeHigh())) + valueUnit, dontSendNotification);
     }
 }
+
+void OneRangeTuner::editorHidden (Label* lbl, TextEditor& ted)
+{
+    lbl->setVisible (false);
+}
     
 void OneRangeTuner::sliderValueChanged (Slider* sldr)
 {
@@ -230,8 +235,23 @@ void OneRangeTuner::sliderValueChanged (Slider* sldr)
 
 void OneRangeTuner::mouseDown (const MouseEvent& e)
 {
-    objectBeingDragged = getObjectToDrag (e);
+    if (e.mods.isLeftButtonDown())
+    {
+        if (e.getNumberOfClicks() == 1)
+        {
+            handleSingleClick (e);
+        }
+        else
+        {
+            handleDoubleClick (e);
+        }
+    }
+}
 
+void OneRangeTuner::handleSingleClick (const MouseEvent& e)
+{
+    objectBeingDragged = getObjectToDrag (e);
+    
     if (objectBeingDragged == lowThumb)
     {
         lowSlider->mouseDown (e.getEventRelativeTo (lowSlider));
@@ -261,8 +281,25 @@ void OneRangeTuner::mouseDown (const MouseEvent& e)
     repaint();
 }
 
+void OneRangeTuner::handleDoubleClick (const MouseEvent& e)
+{
+    if (getObjectToDrag (e) == lowThumb)
+    {
+        rangeLabelMin->setVisible (true);
+        rangeLabelMin->showEditor();
+    }
+
+    else if (getObjectToDrag (e) == highThumb)
+    {
+        rangeLabelMax->setVisible (true);
+        rangeLabelMax->showEditor();
+    }
+}
+
 void OneRangeTuner::mouseDrag (const MouseEvent& e)
 {
+    if (!e.mods.isLeftButtonDown() || e.getNumberOfClicks() > 1) return;
+
     if (objectBeingDragged == lowThumb)
     {
         lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider));
