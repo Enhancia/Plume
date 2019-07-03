@@ -86,6 +86,8 @@ private:
 
     float getValueAngle();
     void drawValueCursor (Graphics& g);
+    void drawLineFromSliderCentre (Graphics& g, float angleRadian);
+    void drawThumbsAndToleranceLines (Graphics& g);
     
     //==============================================================================
     const float& value;
@@ -110,7 +112,7 @@ private:
     ScopedPointer<Label> rangeLabelMaxRight;
     
     //==============================================================================
-    Colour tunerColour = Colour (0xff7c80de);
+    Colour tunerColour = Colour (0xff1fcaa8);
 
     DraggableObject objectBeingDragged = none;
     float previousCursorAngle = value;

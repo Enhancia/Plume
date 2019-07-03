@@ -23,7 +23,6 @@ TwoRangeTuner::TwoRangeTuner(const float& val, const NormalisableRange<float> ge
         parameterMax (paramMax)
 {
     setAngles (MathConstants<float>::pi*5/3, MathConstants<float>::pi*7/3);
-    tunerColour = Colour (0xffa255f3);
     createSliders();
     createLabels();
 }
@@ -157,28 +156,28 @@ void TwoRangeTuner::labelTextChanged (Label* lbl)
     // Sets slider and labels accordingly
     if (lbl == rangeLabelMinLeft)   // Min left
     {
-        if ( val > getRangeLeftHigh()) val = getRangeLeftHigh();
+        if (val > getRangeLeftHigh()) val = getRangeLeftHigh();
             
         setRangeLeftLow (val);
-        leftLowSlider->setValue (getRangeLeftLow(), dontSendNotification);
+        leftLowSlider->setValue (getRangeLeftLow(), sendNotification);
         lbl->setText (String (int (getRangeLeftLow())) + valueUnit, dontSendNotification);
     }
     else if (lbl == rangeLabelMaxLeft)  // Max left
     {
-        if ( val < getRangeLeftLow()) val = getRangeLeftLow();
-        else if (val > (parameterMax.getStart() + parameterMax.getEnd())/2) val = (parameterMax.getStart() + parameterMax.getEnd())/2;
+        if (val < getRangeLeftLow()) val = getRangeLeftLow();
+        else if (val > getRangeRightLow()) val = getRangeRightLow();
             
         setRangeLeftHigh (val);
-        leftHighSlider->setValue (getRangeLeftHigh(), dontSendNotification);
+        leftHighSlider->setValue (getRangeLeftHigh(), sendNotification);
         lbl->setText (String (int (getRangeLeftHigh())) + valueUnit, dontSendNotification);
     }
     else if (lbl == rangeLabelMinRight)   // Min right
     {
         if ( val > getRangeRightHigh()) val = getRangeRightHigh();
-        else if (val < (parameterMax.getStart() + parameterMax.getEnd())/2) val = (parameterMax.getStart() + parameterMax.getEnd())/2;
+        else if (val < getRangeLeftHigh()) val = getRangeLeftHigh();
             
         setRangeRightLow (val);
-        rightLowSlider->setValue (getRangeRightLow(), dontSendNotification);
+        rightLowSlider->setValue (getRangeRightLow(), sendNotification);
         lbl->setText (String (int (getRangeRightLow())) + valueUnit, dontSendNotification);
     }
     else if (lbl == rangeLabelMaxRight)  // Max right
@@ -186,7 +185,7 @@ void TwoRangeTuner::labelTextChanged (Label* lbl)
         if ( val < getRangeRightLow()) val = getRangeRightLow();
             
         setRangeRightHigh (val);
-        rightHighSlider->setValue (getRangeRightHigh(), dontSendNotification);
+        rightHighSlider->setValue (getRangeRightHigh(), sendNotification);
         lbl->setText (String (int (getRangeRightHigh())) + valueUnit, dontSendNotification);
     }
 }
@@ -196,15 +195,27 @@ void TwoRangeTuner::sliderValueChanged (Slider* sldr)
 	// min left value changed
 	if (sldr == leftLowSlider)
 	{
-	    setRangeLeftLow (float (sldr->getValue()));
-        updateLabelBounds (rangeLabelMinLeft);
-	    rangeLabelMinLeft->setText (String (int (getRangeLeftLow())) + valueUnit, dontSendNotification);
-	        
-	    // in case the other thumb is dragged along..
+        // Illegal attempt to get left range over right range
+        if (sldr->getValue() > rightLowSlider->getValue())
+        {
+            setRangeLeftLow (rightLowSlider->getValue());
+            sldr->setValue (double (rightLowSlider->getValue()), dontSendNotification);
+            updateLabelBounds (rangeLabelMinLeft);
+            rangeLabelMinLeft->setText (String (int (getRangeLeftHigh())) + valueUnit, dontSendNotification);
+            return;
+        }
+        else // Normal drag
+        {
+            setRangeLeftLow (float (sldr->getValue()));
+            updateLabelBounds (rangeLabelMinLeft);
+            rangeLabelMinLeft->setText (String (int (getRangeLeftLow())) + valueUnit, dontSendNotification);
+	    }
+
+	    // In case the other thumb is dragged along..
 		if (rangeLeftLow.getValue() > rangeLeftHigh.getValue())
 		{
 			setRangeLeftHigh (float(sldr->getValue()));
-            leftHighSlider->setValue (double (getRangeLeftHigh()), dontSendNotification);
+            leftHighSlider->setValue (double (getRangeLeftHigh()), sendNotification);
             updateLabelBounds (rangeLabelMaxLeft);
 			rangeLabelMaxLeft->setText(String(int(getRangeLeftHigh())) + valueUnit, dontSendNotification);
 		}
@@ -248,7 +259,7 @@ void TwoRangeTuner::sliderValueChanged (Slider* sldr)
             setRangeRightLow (leftHighSlider->getValue());
             sldr->setValue (double (leftHighSlider->getValue()), dontSendNotification);
             updateLabelBounds (rangeLabelMinRight);
-            rangeLabelMinRight->setText (String (int (getRangeRightLow())) + valueUnit, dontSendNotification);
+            rangeLabelMinRight->setText (String (int (getRangeLeftHigh())) + valueUnit, dontSendNotification);
             return;
         }
 
@@ -270,15 +281,25 @@ void TwoRangeTuner::sliderValueChanged (Slider* sldr)
 	// max right value changed
 	else if (sldr == rightHighSlider)
 	{
-		setRangeRightHigh (float (sldr->getValue()));
-        updateLabelBounds (rangeLabelMaxRight);
-	    rangeLabelMaxRight->setText (String (int (getRangeRightHigh())) + valueUnit, dontSendNotification);
-	        
+        // Illegal attempt to get right range over left range
+        if (leftHighSlider->getValue() > sldr->getValue())
+        {
+            setRangeRightHigh (leftHighSlider->getValue());
+            sldr->setValue (double (leftHighSlider->getValue()), dontSendNotification);
+            updateLabelBounds (rangeLabelMaxRight);
+            rangeLabelMaxRight->setText (String (int (getRangeLeftHigh())) + valueUnit, dontSendNotification);
+        }
+        else // Normal drag
+        {
+    		setRangeRightHigh (float (sldr->getValue()));
+            updateLabelBounds (rangeLabelMaxRight);
+    	    rangeLabelMaxRight->setText (String (int (getRangeRightHigh())) + valueUnit, dontSendNotification);
+	    }  
 	    // in case the other thumb is dragged along..
 		if (rangeRightLow.getValue() > rangeRightHigh.getValue())
 		{
 			setRangeRightLow (float(sldr->getValue()));
-            rightLowSlider->setValue (double (getRangeRightLow()), dontSendNotification);
+            rightLowSlider->setValue (double (getRangeRightLow()), sendNotification);
             updateLabelBounds (rangeLabelMinRight);
 			rangeLabelMinRight->setText(String(int(getRangeRightLow())) + valueUnit, dontSendNotification);
 		}
@@ -319,7 +340,7 @@ void TwoRangeTuner::mouseDown (const MouseEvent& e)
         rangeLabelMinLeft->setVisible (true);
         rangeLabelMaxLeft->setVisible (true);
     }
-    else if (objectBeingDragged == middleAreaLeft)
+    else if (objectBeingDragged == middleAreaRight)
     {
         rightLowSlider->setSliderStyle (Slider::RotaryHorizontalDrag);
         rightHighSlider->setSliderStyle (Slider::RotaryHorizontalDrag);
@@ -373,6 +394,7 @@ void TwoRangeTuner::mouseUp (const MouseEvent& e)
 
     if (objectBeingDragged != none)
     {
+        
         rangeLabelMinLeft->setVisible (false);
         rangeLabelMaxLeft->setVisible (false);
         rangeLabelMinRight->setVisible (false);
@@ -508,6 +530,16 @@ void TwoRangeTuner::createLabels()
     rangeLabelMaxLeft->addListener (this);
     rangeLabelMinRight->addListener (this);
     rangeLabelMaxRight->addListener (this);
+
+    rangeLabelMinLeft->setVisible (false);
+    rangeLabelMaxLeft->setVisible (false);
+    rangeLabelMinRight->setVisible (false);
+    rangeLabelMaxRight->setVisible (false);
+
+    rangeLabelMinLeft->setLookAndFeel (&slidersLookAndFeel);
+    rangeLabelMaxLeft->setLookAndFeel (&slidersLookAndFeel);
+    rangeLabelMinRight->setLookAndFeel (&slidersLookAndFeel);
+    rangeLabelMaxRight->setLookAndFeel (&slidersLookAndFeel);
 }
     
 void TwoRangeTuner::setRangeLeftLow (float val)
@@ -589,67 +621,109 @@ double TwoRangeTuner::getThumbAngleRadians (const DraggableObject thumb)
 
 TwoRangeTuner::DraggableObject TwoRangeTuner::getObjectToDrag (const MouseEvent& e)
 {
-    if (e.mods.isShiftDown()) return middleAreaLeft;
-
     double mouseAngle = getAngleFromMouseEventRadians (e);
-    bool inverted = startAngle > endAngle;
+    float twoPi =  MathConstants<float>::twoPi;
 
-    // The 4th of the angle between the two thumbs.
-    double tolerance = ((leftHighSlider->getValue() - leftLowSlider->getValue())*(std::abs (endAngle - startAngle)))
-                                /(leftLowSlider->getRange().getLength()*5);
+    //================ Figures out the scenario surrounding the click ==============
+    bool inverted = startAngle > endAngle;
 
     // Computes "% 2*pi" if both angles are somehow greater that 2*pi
     float startAngleModulo = startAngle, endAngleModulo = endAngle;
-    while (startAngleModulo > MathConstants<float>::twoPi
-           && endAngleModulo > MathConstants<float>::twoPi)
+    while (startAngleModulo > twoPi
+           && endAngleModulo > twoPi)
     {
-        startAngleModulo -= MathConstants<float>::twoPi;
-        endAngleModulo -= MathConstants<float>::twoPi;
+        startAngleModulo -= twoPi;
+        endAngleModulo -= twoPi;
     }
 
-    // If only one thumb is higher than 2*pi, the process needs a different logic.
+    // If only one extreme angle is higher than 2*pi, the process needs a different logic.
     // Boolean "differentRef" notifies that this is the case.
-    bool differentRef = jmax(startAngleModulo, endAngleModulo) > MathConstants<float>::twoPi
-                        && jmin(startAngleModulo, endAngleModulo) < MathConstants<float>::twoPi;
+    bool differentRef = jmax(startAngleModulo, endAngleModulo) > twoPi
+                        && jmin(startAngleModulo, endAngleModulo) < twoPi;
     
-    // If the higher thumb minus 2pi is still higher that the smaller, then we fall back to the
-    // previous logic with "inverted" thumbs.
-    if (differentRef && jmax(startAngleModulo, endAngleModulo) - MathConstants<float>::twoPi
+    // If the higher angle minus 2pi is still higher that the smaller, then we fall back to the
+    // previous logic with "inverted" angles.
+    if (differentRef && jmax(startAngleModulo, endAngleModulo) - twoPi
                         > jmin(startAngleModulo, endAngleModulo))
     {
         differentRef = false;
-        inverted ? startAngleModulo -= MathConstants<float>::twoPi
-                 : endAngleModulo -= MathConstants<float>::twoPi;
+        inverted ? startAngleModulo -= twoPi
+                 : endAngleModulo -= twoPi;
     }
 
-    DraggableObject thumb1 = inverted ? leftLowThumb : leftHighThumb;
-    DraggableObject thumb2 = inverted ? leftHighThumb : leftLowThumb;
+    //================ Primary check: should we consider the left or right range? ==============
+    bool leftNotRight = true;
+
+    float leftHighAngle = jmax (getThumbAngleRadians (leftLowThumb), getThumbAngleRadians (leftHighThumb));
+    float rightLowAngle = jmin (getThumbAngleRadians (rightLowThumb), getThumbAngleRadians (rightHighThumb));
+    
+    auto adjustedMouseAngle = !differentRef ? mouseAngle
+                                            : mouseAngle < startAngle ? mouseAngle + twoPi
+                                                                      : mouseAngle;
+
+    // case1: both middle thumbs in the same side (< 2pi)
+    if (!differentRef || (leftHighAngle < twoPi && rightLowAngle < twoPi))
+    {
+        if (adjustedMouseAngle < (leftHighAngle + rightLowAngle)/2.0f) leftNotRight = true;
+        else                                                           leftNotRight = false;
+    }
+    // case2: both middle thumbs in the same side (> 2pi)
+    else if (leftHighAngle > twoPi && rightLowAngle > twoPi)
+    {
+        if (adjustedMouseAngle < (leftHighAngle + rightLowAngle)/2.0f) leftNotRight = true;
+        else                                                           leftNotRight = false;
+    }
+    // case3: One midde thumb < 2pi, the other >2pi
+    else if (leftHighAngle < twoPi && rightLowAngle > twoPi)
+    {
+        if (adjustedMouseAngle < (leftHighAngle + rightLowAngle)/2.0f)
+        {
+            leftNotRight = true;
+        }
+        else leftNotRight = false;
+    }
+
+    DraggableObject lowThumb = leftNotRight ? leftLowThumb : rightLowThumb;
+    DraggableObject highThumb = leftNotRight ? leftHighThumb : rightHighThumb;
+    DraggableObject middleArea = leftNotRight ? middleAreaLeft : middleAreaRight;
+    Slider* lowSlider = leftNotRight ? leftLowSlider : rightLowSlider;
+    Slider* highSlider = leftNotRight ? leftHighSlider : rightHighSlider;
+
+    //================ Finds the object to drag ==============
+    if (e.mods.isShiftDown()) return middleArea;
+
+    DraggableObject thumb1 = inverted ? lowThumb : highThumb;
+    DraggableObject thumb2 = inverted ? highThumb : lowThumb;
+
+    // The 4th of the angle between the two thumbs.
+    double tolerance = ((highSlider->getValue() - lowSlider->getValue())*(std::abs (endAngle - startAngle)))
+                                /(lowSlider->getRange().getLength()*5);
 
     // Click within the slider range
     if ((!differentRef && (mouseAngle > jmin (startAngleModulo, endAngleModulo)
                        && mouseAngle < jmax (startAngleModulo, endAngleModulo)))
         || (differentRef && (mouseAngle > jmin(startAngleModulo, endAngleModulo)
-                                || mouseAngle + MathConstants<float>::twoPi
+                                || mouseAngle + twoPi
                                    < jmax(startAngleModulo, endAngleModulo))))
     {
         if (!differentRef)
         {
             if (mouseAngle > getThumbAngleRadians(thumb1) - tolerance)      return thumb1;
             else if (mouseAngle < getThumbAngleRadians(thumb2) + tolerance) return thumb2;
-            else return middleAreaLeft;
+            else return middleArea;
         }
         else
         {
-            if (mouseAngle < jmax(startAngleModulo, endAngleModulo) - MathConstants<float>::twoPi)
-                mouseAngle += MathConstants<float>::twoPi;
+            if (mouseAngle < jmax(startAngleModulo, endAngleModulo) - twoPi)
+                mouseAngle += twoPi;
 
             if (mouseAngle > getThumbAngleRadians(thumb1) - tolerance)      return thumb1;
             else if (mouseAngle < getThumbAngleRadians(thumb2) + tolerance) return thumb2;
-            else return middleAreaLeft;
+            else return middleArea;
         }
     }
     
-    return none; // Somehow no thumb could be chosen...
+    return none;
 }
 
 void TwoRangeTuner::drawTunerSliderBackground (Graphics& g)
@@ -721,8 +795,8 @@ void TwoRangeTuner::drawTunerSliderBackground (Graphics& g)
 
     }
 
-    if (objectBeingDragged != none && objectBeingDragged == middleAreaLeft
-                                   && objectBeingDragged == middleAreaRight)
+    if (objectBeingDragged != none && objectBeingDragged != middleAreaLeft
+                                   && objectBeingDragged != middleAreaRight)
     {
         auto angle = getThumbAngleRadians (objectBeingDragged);
 
@@ -754,7 +828,7 @@ void TwoRangeTuner::updateLabelBounds (Label* labelToUpdate)
         radius = sliderRadius - 20;
         angle = getThumbAngleRadians (rightLowThumb);
     }
-    else if (labelToUpdate == rangeLabelMinRight)
+    else if (labelToUpdate == rangeLabelMaxRight)
     {
         radius = sliderRadius + 15;
         angle = getThumbAngleRadians (rightHighThumb);
@@ -816,4 +890,38 @@ void TwoRangeTuner::drawValueCursor (Graphics& g)
                   ? tunerColour
                   : Colour (0x80808080));
     g.fillPath (cursorPath, transform);
+}
+
+void TwoRangeTuner::drawLineFromSliderCentre (Graphics& g, float angleRadian)
+{
+    Point<float> point (sliderCentre.x + sliderRadius * std::cos (angleRadian - MathConstants<float>::halfPi),
+                        sliderCentre.y + sliderRadius * std::sin (angleRadian - MathConstants<float>::halfPi));
+
+    g.drawLine (Line<float> (sliderCentre.toFloat(), point), 1.0f);
+}
+
+void TwoRangeTuner::drawThumbsAndToleranceLines (Graphics& g)
+{
+    double leftTolerance = ((leftHighSlider->getValue() - leftLowSlider->getValue())*(std::abs (endAngle - startAngle)))
+                         / (leftLowSlider->getRange().getLength() * 5);
+
+    double rightTolerance = ((rightHighSlider->getValue() - rightLowSlider->getValue())*(std::abs (endAngle - startAngle)))
+                         / (rightLowSlider->getRange().getLength() * 5);
+
+    g.setColour (tunerColour.withAlpha (0.5f));
+    drawLineFromSliderCentre (g, getThumbAngleRadians (leftLowThumb));
+    drawLineFromSliderCentre (g, getThumbAngleRadians (leftHighThumb));
+    drawLineFromSliderCentre (g, getThumbAngleRadians (rightLowThumb));
+    drawLineFromSliderCentre (g, getThumbAngleRadians (rightHighThumb));
+
+    g.setColour (Colour (0xff903030));
+    bool invertTolerance = startAngle > endAngle;
+    drawLineFromSliderCentre (g, getThumbAngleRadians (leftLowThumb) + (invertTolerance ? -leftTolerance
+                                                                                    : leftTolerance));
+    drawLineFromSliderCentre (g, getThumbAngleRadians (leftHighThumb) + (invertTolerance ? leftTolerance
+                                                                                     : -leftTolerance));
+    drawLineFromSliderCentre (g, getThumbAngleRadians (rightLowThumb) + (invertTolerance ? -rightTolerance
+                                                                                    : rightTolerance));
+    drawLineFromSliderCentre (g, getThumbAngleRadians (rightHighThumb) + (invertTolerance ? rightTolerance
+                                                                                     : -rightTolerance));
 }

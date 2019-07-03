@@ -328,7 +328,7 @@ MouseCursor OneRangeTuner::getMouseCursor()
 void OneRangeTuner::createSliders()
 {
     addAndMakeVisible (lowSlider = new Slider ("Range Low Slider"));
-        
+    
     // Slider style
     lowSlider->setSliderStyle (Slider::Rotary);
     lowSlider->setRotaryParameters (startAngle, endAngle, true);
@@ -336,7 +336,7 @@ void OneRangeTuner::createSliders()
     lowSlider->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
     lowSlider->setColour (Slider::rotarySliderFillColourId, Colour (0x00000000));
     lowSlider->setColour (Slider::rotarySliderOutlineColourId, Colour (0x00000000));
-        
+    
     // Slider values
     lowSlider->setRange (double (parameterMax.getStart()), double (parameterMax.getEnd()), 1.0);
     lowSlider->setValue (double (getRangeLow()), dontSendNotification);
@@ -344,7 +344,7 @@ void OneRangeTuner::createSliders()
     lowSlider->setInterceptsMouseClicks (false, false);
 
     addAndMakeVisible (highSlider = new Slider ("Range High Slider"));
-        
+    
     // Slider style
     highSlider->setSliderStyle (Slider::Rotary);
     highSlider->setRotaryParameters (startAngle, endAngle, true);
@@ -352,7 +352,7 @@ void OneRangeTuner::createSliders()
     highSlider->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
     highSlider->setColour (Slider::rotarySliderFillColourId, Colour (0x00000000));
     highSlider->setColour (Slider::rotarySliderOutlineColourId, Colour (0x00000000));
-        
+    
     // Slider values
     highSlider->setRange (double (parameterMax.getStart()), double (parameterMax.getEnd()), 1.0);
     highSlider->setValue (double (getRangeHigh()), dontSendNotification);
@@ -371,14 +371,14 @@ void OneRangeTuner::createLabels()
     rangeLabelMin->setColour (Label::textColourId, tunerColour);
     rangeLabelMin->setJustificationType (Justification::centred);
     rangeLabelMin->setSize (30, 20);
-        
+
     // LabelMax style
     rangeLabelMax->setEditable (true, false, false);
     rangeLabelMax->setFont (Font (PLUME::UI::font, 13.0f, Font::plain));
     rangeLabelMax->setColour (Label::textColourId, tunerColour);
     rangeLabelMax->setJustificationType (Justification::centred);
     rangeLabelMax->setSize (30, 20);
-        
+
     // Labels settings
     updateLabelBounds (rangeLabelMin);
     updateLabelBounds (rangeLabelMax);
@@ -437,14 +437,13 @@ double OneRangeTuner::getThumbAngleRadians (const DraggableObject thumb)
 
 OneRangeTuner::DraggableObject OneRangeTuner::getObjectToDrag (const MouseEvent& e)
 {
+    //================ Figures out the scenario surrounding the click ==============
+
     if (e.mods.isShiftDown()) return middleArea;
 
     double mouseAngle = getAngleFromMouseEventRadians (e);
     bool inverted = startAngle > endAngle;
 
-    // The 4th of the angle between the two thumbs.
-    double tolerance = ((highSlider->getValue() - lowSlider->getValue())*(std::abs (endAngle - startAngle)))
-                                /(lowSlider->getRange().getLength()*5);
 
     // Computes "% 2*pi" if both angles are somehow greater that 2*pi
     float startAngleModulo = startAngle, endAngleModulo = endAngle;
@@ -455,13 +454,13 @@ OneRangeTuner::DraggableObject OneRangeTuner::getObjectToDrag (const MouseEvent&
         endAngleModulo -= MathConstants<float>::twoPi;
     }
 
-    // If only one thumb is higher than 2*pi, the process needs a different logic.
+    // If only one extreme angle is higher than 2*pi, the process needs a different logic.
     // Boolean "differentRef" notifies that this is the case.
     bool differentRef = jmax(startAngleModulo, endAngleModulo) > MathConstants<float>::twoPi
                         && jmin(startAngleModulo, endAngleModulo) < MathConstants<float>::twoPi;
     
-    // If the higher thumb minus 2pi is still higher that the smaller, then we fall back to the
-    // previous logic with "inverted" thumbs.
+    // If the higher angle minus 2pi is still higher that the smaller, then we fall back to the
+    // previous logic with "inverted" angles.
     if (differentRef && jmax(startAngleModulo, endAngleModulo) - MathConstants<float>::twoPi
                         > jmin(startAngleModulo, endAngleModulo))
     {
@@ -470,8 +469,14 @@ OneRangeTuner::DraggableObject OneRangeTuner::getObjectToDrag (const MouseEvent&
                  : endAngleModulo -= MathConstants<float>::twoPi;
     }
 
+    //================ Finds the object to drag ==============
+
     DraggableObject thumb1 = inverted ? lowThumb : highThumb;
     DraggableObject thumb2 = inverted ? highThumb : lowThumb;
+
+    // The 4th of the angle between the two thumbs.
+    double tolerance = ((highSlider->getValue() - lowSlider->getValue())*(std::abs (endAngle - startAngle)))
+                                /(lowSlider->getRange().getLength()*5);
 
     // Click within the slider range
     if ((!differentRef && (mouseAngle > jmin (startAngleModulo, endAngleModulo)
