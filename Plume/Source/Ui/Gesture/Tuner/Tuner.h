@@ -15,14 +15,6 @@
 #include "Common/PlumeCommon.h"
 #include "Ui/Common/MovingCursor.h"
 
-#ifndef W 
-#define W Component::getWidth()
-#endif
-
-#ifndef H 
-#define H Component::getHeight()
-#endif
-
 //==============================================================================
 /*
 */
@@ -30,7 +22,7 @@ class Tuner    : public Component
 {
 public:
     //==============================================================================
-	Tuner(const float& val, NormalisableRange<float> gestRange, const Range<float> dispRange, const String unit = "", bool show = true);
+	Tuner (const String unit = String(), Colour colour = Colour (0xff7c80de));
 	~Tuner();
 
     //==============================================================================
@@ -40,26 +32,11 @@ public:
     //==============================================================================
 	virtual void updateDisplay();
 	virtual void updateComponents() = 0;
-/*
-    virtual void mouseDown (MouseEvent& e);
-    virtual void mouseDrag (MouseEvent& e);
-    virtual void mouseUp (MouseEvent& e);*/
-	
+
 protected:
-    //==============================================================================
-    Range<int> sliderPlacement;
+    Colour tunerColour;
     const String valueUnit;
-    
-private:
-    //==============================================================================
-    const float& value;
-    const Range<float> displayRange;
-    NormalisableRange<float> gestureRange;
-    const bool showValue;
-    
-    //==============================================================================
-    ScopedPointer<Label> valueLabel;
-    ScopedPointer<MovingCursor> cursor;
-    
+    Range<int> sliderPlacement;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Tuner)
 };

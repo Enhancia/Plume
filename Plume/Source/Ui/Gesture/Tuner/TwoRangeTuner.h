@@ -36,6 +36,7 @@ public:
     
     //==============================================================================
     void labelTextChanged (Label* lbl) override;
+    void editorHidden (Label* lbl, TextEditor& ted) override;
     void sliderValueChanged (Slider* sldr) override;
     
     //==============================================================================
@@ -80,6 +81,8 @@ private:
     double getThumbAngleRadians (const DraggableObject thumb);
 
     DraggableObject getObjectToDrag (const MouseEvent& e);
+    void handleSingleClick (const MouseEvent& e);
+    void handleDoubleClick (const MouseEvent& e);
 
     void drawTunerSliderBackground (Graphics& g);
     void updateLabelBounds (Label* labelToUpdate);
@@ -112,8 +115,6 @@ private:
     ScopedPointer<Label> rangeLabelMaxRight;
     
     //==============================================================================
-    Colour tunerColour = Colour (0xff1fcaa8);
-
     DraggableObject objectBeingDragged = none;
     float previousCursorAngle = value;
 

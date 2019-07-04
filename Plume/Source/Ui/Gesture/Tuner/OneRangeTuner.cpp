@@ -14,12 +14,12 @@
 OneRangeTuner::OneRangeTuner(const float& val, NormalisableRange<float> gestRange,
                 RangedAudioParameter& rangeL, RangedAudioParameter& rangeH, const Range<float> paramMax,
                 const String unit, bool show, TunerStyle style)
-    : Tuner(val, gestRange, paramMax, unit, show),
+    : Tuner (unit),
         value (val), gestureRange (gestRange),
         rangeLow (rangeL), rangeHigh (rangeH), parameterMax (paramMax),
         tunerStyle (style)
 {
-    setLookAndFeel (&OneRangeTunerLookAndFeel);
+    setLookAndFeel (&oneRangeTunerLookAndFeel);
     setStyle (style);
     createSliders();
     createLabels();
@@ -191,7 +191,7 @@ void OneRangeTuner::labelTextChanged (Label* lbl)
     }
 }
 
-void OneRangeTuner::editorHidden (Label* lbl, TextEditor& ted)
+void OneRangeTuner::editorHidden (Label* lbl, TextEditor&)
 {
     lbl->setVisible (false);
 }
@@ -365,36 +365,24 @@ MouseCursor OneRangeTuner::getMouseCursor()
 void OneRangeTuner::createSliders()
 {
     addAndMakeVisible (lowSlider = new Slider ("Range Low Slider"));
-    
-    // Slider style
-    lowSlider->setSliderStyle (Slider::Rotary);
-    lowSlider->setRotaryParameters (startAngle, endAngle, true);
-    lowSlider->setSliderSnapsToMousePosition (false);
-    lowSlider->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
-    lowSlider->setColour (Slider::rotarySliderFillColourId, Colour (0x00000000));
-    lowSlider->setColour (Slider::rotarySliderOutlineColourId, Colour (0x00000000));
-    
-    // Slider values
-    lowSlider->setRange (double (parameterMax.getStart()), double (parameterMax.getEnd()), 1.0);
-    lowSlider->setValue (double (getRangeLow()), dontSendNotification);
-    lowSlider->addListener (this);
-    lowSlider->setInterceptsMouseClicks (false, false);
-
     addAndMakeVisible (highSlider = new Slider ("Range High Slider"));
     
-    // Slider style
-    highSlider->setSliderStyle (Slider::Rotary);
-    highSlider->setRotaryParameters (startAngle, endAngle, true);
-    highSlider->setSliderSnapsToMousePosition (false);
-    highSlider->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
-    highSlider->setColour (Slider::rotarySliderFillColourId, Colour (0x00000000));
-    highSlider->setColour (Slider::rotarySliderOutlineColourId, Colour (0x00000000));
-    
-    // Slider values
-    highSlider->setRange (double (parameterMax.getStart()), double (parameterMax.getEnd()), 1.0);
-    highSlider->setValue (double (getRangeHigh()), dontSendNotification);
-    highSlider->addListener (this);
-    highSlider->setInterceptsMouseClicks (false, false);
+    auto setSliderSettings = [this] (Slider& slider, float valueToSet)
+    {
+        slider.setSliderStyle (Slider::Rotary);
+        slider.setRotaryParameters (startAngle, endAngle, true);
+        slider.setSliderSnapsToMousePosition (false);
+        slider.setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
+        slider.setColour (Slider::rotarySliderFillColourId, Colour (0x00000000));
+        slider.setColour (Slider::rotarySliderOutlineColourId, Colour (0x00000000));
+        slider.setRange (double (parameterMax.getStart()), double (parameterMax.getEnd()), 1.0);
+        slider.setValue (double (valueToSet));
+        slider.addListener (this);
+        slider.setInterceptsMouseClicks (false, false);
+	};
+
+    setSliderSettings (*lowSlider, getRangeLow());
+    setSliderSettings (*highSlider, getRangeHigh());
 }
     
 void OneRangeTuner::createLabels()
@@ -402,29 +390,24 @@ void OneRangeTuner::createLabels()
     Tuner::addAndMakeVisible (rangeLabelMin = new Label ("Min Label", TRANS (String(int(getRangeLow())) + valueUnit)));
     Tuner::addAndMakeVisible (rangeLabelMax = new Label ("Max Label", TRANS (String(int(getRangeHigh())) + valueUnit)));
 
-    // LabelMin style
-    rangeLabelMin->setEditable (true, false, false);
-    rangeLabelMin->setFont (Font (PLUME::UI::font, 13.0f, Font::plain));
-    rangeLabelMin->setColour (Label::textColourId, tunerColour);
-    rangeLabelMin->setJustificationType (Justification::centred);
-    rangeLabelMin->setSize (30, 20);
+    auto setLabelSettings = [this] (Label& label)
+    {
+        label.setEditable (true, false, false);
+        label.setFont (Font (PLUME::UI::font, 13.0f, Font::plain));
+        label.setJustificationType (Justification::centred);
+        label.setColour (Label::textColourId, tunerColour);
+        label.setColour (Label::textWhenEditingColourId, tunerColour);
+        label.setColour (TextEditor::textColourId, tunerColour);
+        label.setColour (TextEditor::highlightColourId, tunerColour.withAlpha (0.2f));
+        label.setColour (TextEditor::highlightedTextColourId, tunerColour);
+        label.setColour (CaretComponent::caretColourId, tunerColour.withAlpha (0.2f));
+        label.setSize (30, 20);
+        label.addListener (this);
+        label.setVisible (false);
+    };
 
-    // LabelMax style
-    rangeLabelMax->setEditable (true, false, false);
-    rangeLabelMax->setFont (Font (PLUME::UI::font, 13.0f, Font::plain));
-    rangeLabelMax->setColour (Label::textColourId, tunerColour);
-    rangeLabelMax->setJustificationType (Justification::centred);
-    rangeLabelMax->setSize (30, 20);
-
-    // Labels settings
-    updateLabelBounds (rangeLabelMin);
-    updateLabelBounds (rangeLabelMax);
-
-    rangeLabelMin->setVisible (false);
-    rangeLabelMax->setVisible (false);
-
-    rangeLabelMin->addListener (this);
-    rangeLabelMax->addListener (this);
+    setLabelSettings (*rangeLabelMin);
+    setLabelSettings (*rangeLabelMax);
 }
     
 void OneRangeTuner::setRangeLow (float val)
@@ -600,7 +583,7 @@ void OneRangeTuner::drawTunerSliderBackground (Graphics& g)
 
 void OneRangeTuner::updateLabelBounds (Label* labelToUpdate)
 {
-    if (!labelToUpdate->isVisible()) return;
+    if (labelToUpdate == nullptr) return;
 
     if (labelToUpdate == rangeLabelMin)
     {

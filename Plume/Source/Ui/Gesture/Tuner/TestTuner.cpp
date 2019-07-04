@@ -14,7 +14,7 @@
 TestTuner::TestTuner(const float& val, NormalisableRange<float> gestRange,
                 RangedAudioParameter& rangeL, RangedAudioParameter& rangeH, const Range<float> paramMax,
                 const String unit, bool show, TunerStyle style)
-    : Tuner(val, gestRange, paramMax, unit, show),
+    : Tuner(unit),
 		value (val), gestureRange (gestRange), rangeLow (rangeL), rangeHigh (rangeH), parameterMax (paramMax),
         tunerStyle (style)
 {

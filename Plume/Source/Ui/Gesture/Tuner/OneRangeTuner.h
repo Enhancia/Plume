@@ -108,7 +108,6 @@ private:
     
     //==============================================================================
     TunerStyle tunerStyle;
-    Colour tunerColour = Colour (0xff7c80de);
 
     DraggableObject objectBeingDragged = none;
     float previousCursorAngle = value;
@@ -120,7 +119,7 @@ private:
     float endAngle;
 
     //==============================================================================
-    PLUME::UI::OneRangeTunerLookAndFeel OneRangeTunerLookAndFeel;
+    PLUME::UI::OneRangeTunerLookAndFeel oneRangeTunerLookAndFeel;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OneRangeTuner)

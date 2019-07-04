@@ -12,22 +12,11 @@
 
 #define CURSOR_SIZE 4
 
-Tuner::Tuner (const float& val, NormalisableRange<float> gestRange, const Range<float> dispRange, const String unit, bool show)
-	: value(val), gestureRange(gestRange), displayRange(dispRange), valueUnit(unit), showValue(show)
+Tuner::Tuner (const String unit, Colour colour)
+	: valueUnit(unit), tunerColour (colour)
 {
 	TRACE_IN;
-	sliderPlacement = Range<int>((W * 3/4) / 8, (W *3/4) * 7/8);
-
-	if (showValue)
-	{
-	    addAndMakeVisible (valueLabel = new Label ("value Label"));
-	    valueLabel->setEditable (false, false, false);
-	    valueLabel->setText (String (int(value)), dontSendNotification);
-	    valueLabel->setFont (PLUME::font::plumeFont.withHeight (13.0f));
-	    valueLabel->setJustificationType(Justification::centred);
-	    
-	    addAndMakeVisible (cursor = new MovingCursor (value, displayRange, gestureRange, CURSOR_SIZE, 5));
-	}
+	sliderPlacement = Range<int>((getWidth() * 3/4) / 8, (getWidth() *3/4) * 7/8);
 }
 
 Tuner::~Tuner()
@@ -43,30 +32,11 @@ void Tuner::paint(Graphics&)
 
 void Tuner::resized()
 {
-	sliderPlacement.setStart ((W* 3/4)/8);
-	sliderPlacement.setEnd ((W*3/4)*7/8);
-
-	if (showValue)
-    {
-	    cursor->setBounds (sliderPlacement.getStart(), H/3 - CURSOR_SIZE - 2, sliderPlacement.getLength(), CURSOR_SIZE);
-	    valueLabel->setBounds ((W*3/4)*7/16, H*2/3, (W*3/4)/8, H/6);
-    }
+	sliderPlacement.setStart ((getWidth()* 3/4)/8);
+	sliderPlacement.setEnd ((getWidth()*3/4)*7/8);
 }
 
 	//==============================================================================
 void Tuner::updateDisplay()
 {
-    if (showValue)
-	{
-	    float convertedValue = gestureRange.convertFrom0to1 (value);
-
-	    if (convertedValue >= displayRange.getStart() && convertedValue <= displayRange.getEnd())
-	    {
-		    valueLabel->setText (String (int (convertedValue)) + valueUnit, dontSendNotification);
-			if (!(cursor->isSamePosition()))
-			{
-				cursor->repaint();
-			}
-		}
-	}
 }

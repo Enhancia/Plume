@@ -16,7 +16,7 @@ TwoRangeTuner::TwoRangeTuner(const float& val, const NormalisableRange<float> ge
                 RangedAudioParameter& rangeRL, RangedAudioParameter& rangeRH,
                 const Range<float> paramMax,
                 const String unit, bool show)
-    :   Tuner (val, gestRange, paramMax, unit, show),
+    :   Tuner (unit, Colour (0xff1fcaa8)),
         value (val), gestureRange (gestRange),
         rangeLeftLow (rangeLL), rangeLeftHigh (rangeLH),
         rangeRightLow (rangeRL), rangeRightHigh (rangeRH),
@@ -189,7 +189,12 @@ void TwoRangeTuner::labelTextChanged (Label* lbl)
         lbl->setText (String (int (getRangeRightHigh())) + valueUnit, dontSendNotification);
     }
 }
-    
+
+void TwoRangeTuner::editorHidden (Label* lbl, TextEditor&)
+{
+    lbl->setVisible (false);
+}
+
 void TwoRangeTuner::sliderValueChanged (Slider* sldr)
 {
 	// min left value changed
@@ -308,6 +313,21 @@ void TwoRangeTuner::sliderValueChanged (Slider* sldr)
 
 void TwoRangeTuner::mouseDown (const MouseEvent& e)
 {
+    if (e.mods.isLeftButtonDown())
+    {
+        if (e.getNumberOfClicks() == 1)
+        {
+            handleSingleClick (e);
+        }
+        else
+        {
+            handleDoubleClick (e);
+        }
+    }
+}
+
+void TwoRangeTuner::handleSingleClick (const MouseEvent& e)
+{
     objectBeingDragged = getObjectToDrag (e);
 
     if (objectBeingDragged == leftLowThumb)
@@ -354,8 +374,35 @@ void TwoRangeTuner::mouseDown (const MouseEvent& e)
     updateMouseCursor();
     repaint();
 }
+
+void TwoRangeTuner::handleDoubleClick (const MouseEvent& e)
+{
+    if (getObjectToDrag (e) == leftLowThumb)
+    {
+		rangeLabelMinLeft->setVisible (true);
+        rangeLabelMinLeft->showEditor();
+    }
+    else if (getObjectToDrag (e) == leftHighThumb)
+    {
+		rangeLabelMaxLeft->setVisible (true);
+        rangeLabelMaxLeft->showEditor();
+    }
+    else if (getObjectToDrag (e) == rightLowThumb)
+    {
+        rangeLabelMinRight->setVisible (true);
+		rangeLabelMinRight->showEditor();
+    }
+    else if (getObjectToDrag (e) == rightHighThumb)
+    {
+		rangeLabelMaxRight->setVisible (true);
+		rangeLabelMaxRight->showEditor();
+    }
+}
+
 void TwoRangeTuner::mouseDrag (const MouseEvent& e)
 {
+    if (!e.mods.isLeftButtonDown() || e.getNumberOfClicks() > 1) return;
+
     if (objectBeingDragged == leftLowThumb)        leftLowSlider->mouseDrag (e.getEventRelativeTo (leftLowSlider));
     else if (objectBeingDragged == leftHighThumb)  leftHighSlider->mouseDrag (e.getEventRelativeTo (leftHighSlider));
     else if (objectBeingDragged == rightLowThumb)  rightLowSlider->mouseDrag (e.getEventRelativeTo (rightLowSlider));
@@ -422,68 +469,25 @@ void TwoRangeTuner::createSliders()
     Tuner::addAndMakeVisible (rightLowSlider = new Slider ("Range Slider Right Low"));
     Tuner::addAndMakeVisible (rightHighSlider = new Slider ("Range Slider Right High"));
         
-    // Slider style
-    //Left
-    leftLowSlider->setSliderStyle (Slider::Rotary);
-    leftLowSlider->setRotaryParameters (startAngle, endAngle, true);
-    leftLowSlider->setSliderSnapsToMousePosition (false);
-    leftLowSlider->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
-    leftLowSlider->setColour (Slider::rotarySliderFillColourId, Colour (0x00000000));
-    leftLowSlider->setColour (Slider::rotarySliderOutlineColourId, Colour (0x00000000));
+    auto setSliderSettings = [this] (Slider& slider, float valueToSet)
+    {
+        slider.setSliderStyle (Slider::Rotary);
+        slider.setRotaryParameters (startAngle, endAngle, true);
+        slider.setSliderSnapsToMousePosition (false);
+        slider.setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
+        slider.setColour (Slider::rotarySliderFillColourId, Colour (0x00000000));
+        slider.setColour (Slider::rotarySliderOutlineColourId, Colour (0x00000000));
+        slider.setRange (double (parameterMax.getStart()), double (parameterMax.getEnd()), 1.0);
+        slider.setValue (double (valueToSet));
+        slider.addListener (this);
+        slider.setInterceptsMouseClicks (false, false);
+        slider.setLookAndFeel (&slidersLookAndFeel);
+	};
 
-    leftHighSlider->setSliderStyle (Slider::Rotary);
-    leftHighSlider->setRotaryParameters (startAngle, endAngle, true);
-    leftHighSlider->setSliderSnapsToMousePosition (false);
-    leftHighSlider->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
-    leftHighSlider->setColour (Slider::rotarySliderFillColourId, Colour (0x00000000));
-    leftHighSlider->setColour (Slider::rotarySliderOutlineColourId, Colour (0x00000000));
-        
-    //Right
-    rightLowSlider->setSliderStyle (Slider::Rotary);
-    rightLowSlider->setRotaryParameters (startAngle, endAngle, true);
-    rightLowSlider->setSliderSnapsToMousePosition (false);
-    rightLowSlider->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
-    rightLowSlider->setColour (Slider::rotarySliderFillColourId, Colour (0x00000000));
-    rightLowSlider->setColour (Slider::rotarySliderOutlineColourId, Colour (0x00000000));
-
-    rightHighSlider->setSliderStyle (Slider::Rotary);
-    rightHighSlider->setRotaryParameters (startAngle, endAngle, true);
-    rightHighSlider->setSliderSnapsToMousePosition (false);
-    rightHighSlider->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
-    rightHighSlider->setColour (Slider::rotarySliderFillColourId, Colour (0x00000000));
-    rightHighSlider->setColour (Slider::rotarySliderOutlineColourId, Colour (0x00000000));
-	    
-    // Slider values
-    leftLowSlider->setRange (double (parameterMax.getStart()), double (parameterMax.getEnd()), 1.0);
-    leftLowSlider->setValue (double (getRangeLeftLow()), dontSendNotification);
-    leftLowSlider->addListener (this);
-    leftLowSlider->setInterceptsMouseClicks (false, false);
-
-    leftHighSlider->setRange (double (parameterMax.getStart()), double (parameterMax.getEnd()), 1.0);
-    leftHighSlider->setValue (double (getRangeLeftHigh()), dontSendNotification);
-    leftHighSlider->addListener (this);
-    leftHighSlider->setInterceptsMouseClicks (false, false);
-
-    rightLowSlider->setRange (double (parameterMax.getStart()), double (parameterMax.getEnd()), 1.0);
-    rightLowSlider->setValue (double (getRangeRightLow()), dontSendNotification);
-    rightLowSlider->addListener (this);
-    rightLowSlider->setInterceptsMouseClicks (false, false);
-
-    rightHighSlider->setRange (double (parameterMax.getStart()), double (parameterMax.getEnd()), 1.0);
-    rightHighSlider->setValue (double (getRangeRightHigh()), dontSendNotification);
-    rightHighSlider->addListener (this);
-    rightHighSlider->setInterceptsMouseClicks (false, false);
-
-    // l&f
-    leftLowSlider->setLookAndFeel (&slidersLookAndFeel);
-    leftHighSlider->setLookAndFeel (&slidersLookAndFeel);
-    rightLowSlider->setLookAndFeel (&slidersLookAndFeel);
-    rightHighSlider->setLookAndFeel (&slidersLookAndFeel);
-
-    leftLowSlider->addListener (this);
-    leftHighSlider->addListener (this);
-    rightLowSlider->addListener (this);
-    rightHighSlider->addListener (this);
+    setSliderSettings (*leftLowSlider, getRangeLeftLow());
+    setSliderSettings (*leftHighSlider, getRangeLeftHigh());
+    setSliderSettings (*rightLowSlider, getRangeRightLow());
+    setSliderSettings (*rightHighSlider, getRangeRightHigh());
 }
     
 void TwoRangeTuner::createLabels()
@@ -496,50 +500,28 @@ void TwoRangeTuner::createLabels()
                                                                 TRANS (String(int(getRangeRightLow())) + valueUnit)));
     Tuner::addAndMakeVisible (rangeLabelMaxRight = new Label ("Max Right Label",
                                                                 TRANS (String(int(getRangeRightHigh())) + valueUnit)));
-        
-    // LabelMinLeft style
-    rangeLabelMinLeft->setEditable (true, false, false);
-    rangeLabelMinLeft->setFont (Font (PLUME::UI::font, 13.0f, Font::plain));
-    rangeLabelMinLeft->setJustificationType (Justification::centred);
-    rangeLabelMinLeft->setColour (Label::textColourId, tunerColour);
-    rangeLabelMinLeft->setSize (30, 20);
-        
-    // LabelMaxLeft style
-    rangeLabelMaxLeft->setEditable (true, false, false);
-    rangeLabelMaxLeft->setFont (Font (PLUME::UI::font, 13.0f, Font::plain));
-    rangeLabelMaxLeft->setJustificationType (Justification::centred);
-    rangeLabelMaxLeft->setColour (Label::textColourId, tunerColour);
-    rangeLabelMaxLeft->setSize (30, 20);
-        
-    // LabelMinRight style
-    rangeLabelMinRight->setEditable (true, false, false);
-    rangeLabelMinRight->setFont (Font (PLUME::UI::font, 13.0f, Font::plain));
-    rangeLabelMinRight->setJustificationType (Justification::centred);
-    rangeLabelMinRight->setColour (Label::textColourId, tunerColour);
-    rangeLabelMinRight->setSize (30, 20);
-        
-    // LabelMaxRight style
-    rangeLabelMaxRight->setEditable (true, false, false);
-    rangeLabelMaxRight->setFont (Font (PLUME::UI::font, 13.0f, Font::plain));
-    rangeLabelMaxRight->setJustificationType (Justification::centred);
-    rangeLabelMaxRight->setColour (Label::textColourId, tunerColour);
-    rangeLabelMaxRight->setSize (30, 20);
-        
-    // Labels settings
-    rangeLabelMinLeft->addListener (this);
-    rangeLabelMaxLeft->addListener (this);
-    rangeLabelMinRight->addListener (this);
-    rangeLabelMaxRight->addListener (this);
+    
+    auto setLabelSettings = [this] (Label& label)
+    {
+        label.setEditable (true, false, false);
+        label.setFont (Font (PLUME::UI::font, 13.0f, Font::plain));
+        label.setJustificationType (Justification::centred);
+        label.setColour (Label::textColourId, tunerColour);
+        label.setColour (Label::textWhenEditingColourId, tunerColour);
+        label.setColour (TextEditor::textColourId, tunerColour);
+        label.setColour (TextEditor::highlightColourId, tunerColour.withAlpha (0.2f));
+        label.setColour (TextEditor::highlightedTextColourId, tunerColour);
+        label.setColour (CaretComponent::caretColourId, tunerColour.withAlpha (0.2f));
+        label.setSize (30, 20);
+        label.addListener (this);
+        label.setVisible (false);
+        label.setLookAndFeel (&slidersLookAndFeel);
+    };
 
-    rangeLabelMinLeft->setVisible (false);
-    rangeLabelMaxLeft->setVisible (false);
-    rangeLabelMinRight->setVisible (false);
-    rangeLabelMaxRight->setVisible (false);
-
-    rangeLabelMinLeft->setLookAndFeel (&slidersLookAndFeel);
-    rangeLabelMaxLeft->setLookAndFeel (&slidersLookAndFeel);
-    rangeLabelMinRight->setLookAndFeel (&slidersLookAndFeel);
-    rangeLabelMaxRight->setLookAndFeel (&slidersLookAndFeel);
+    setLabelSettings (*rangeLabelMinLeft);
+    setLabelSettings (*rangeLabelMaxLeft);
+    setLabelSettings (*rangeLabelMinRight);
+    setLabelSettings (*rangeLabelMaxRight);
 }
     
 void TwoRangeTuner::setRangeLeftLow (float val)
@@ -809,7 +791,8 @@ void TwoRangeTuner::drawTunerSliderBackground (Graphics& g)
 }
 void TwoRangeTuner::updateLabelBounds (Label* labelToUpdate)
 {
-    if (!labelToUpdate->isVisible()) return;
+    if (labelToUpdate == nullptr) return;
+
     int radius;
     float angle;
 

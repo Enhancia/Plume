@@ -12,9 +12,8 @@
 
 SymmetricalTuner::SymmetricalTuner(const float& val, NormalisableRange<float> gestureRange, RangedAudioParameter& param, float paramMax,
                     const String unit, bool show)
-    :   Tuner (val, gestureRange, Range<float> (0.0f, paramMax), unit, show), parameter (param), parameterMax (paramMax)
+    :   Tuner (unit), parameter (param), parameterMax (paramMax)
 {
-    Component::setBounds (Tuner::getBounds());
     createSlider();
     createLabels();
 }
@@ -32,10 +31,10 @@ void SymmetricalTuner::paint (Graphics& g)
 
     {
         // Writes the "range" text
-        int x = W*3/4,
+        int x = getWidth()*3/4,
             y = 0,
-            width = W/4,
-            height = H/4;
+            width = getWidth()/4,
+            height = getHeight()/4;
                 
         String text (TRANS("Range"));
 
@@ -52,8 +51,8 @@ void SymmetricalTuner::resized()
         
     // Sets bounds and changes the slider position
     setBounds (Tuner::getBounds());
-    symmetricalSlider->setBounds (Tuner::sliderPlacement.getStart(), H/3 - 6, Tuner::sliderPlacement.getLength(), 15);
-    rangeLabel->setBounds (W*3/4+W/16, H/4, W/8, H/5);
+    symmetricalSlider->setBounds (Tuner::sliderPlacement.getStart(), getHeight()/3 - 6, Tuner::sliderPlacement.getLength(), 15);
+    rangeLabel->setBounds (getWidth()*3/4+getWidth()/16, getHeight()/4, getWidth()/8, getHeight()/5);
     repaint();
 }
     
@@ -145,7 +144,7 @@ void SymmetricalTuner::createSlider()
     symmetricalSlider->setMinValue (double (-parameter.convertFrom0to1 (parameter.getValue())), dontSendNotification);
     symmetricalSlider->setMaxValue (double (parameter.convertFrom0to1 (parameter.getValue())), dontSendNotification);
         
-    symmetricalSlider->setBounds (Tuner::sliderPlacement.getStart(), H/3 - 7, Tuner::sliderPlacement.getLength(), 15);
+    symmetricalSlider->setBounds (Tuner::sliderPlacement.getStart(), getHeight()/3 - 7, Tuner::sliderPlacement.getLength(), 15);
     symmetricalSlider->addListener (this);
 }
     
@@ -158,7 +157,7 @@ void SymmetricalTuner::createLabels()
     rangeLabel->setFont (Font (PLUME::UI::font, 13.0f, Font::plain));
     rangeLabel->setJustificationType (Justification::centred);
         
-    rangeLabel->setBounds (W*(3/4+1/16), H/4, W/8, H/4);
+    rangeLabel->setBounds (getWidth()*(3/4+1/16), getHeight()/4, getWidth()/8, getHeight()/4);
     rangeLabel->addListener (this);
 }
     

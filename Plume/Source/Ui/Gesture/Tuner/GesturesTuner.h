@@ -130,10 +130,10 @@ public:
         g.setFont (PLUME::font::plumeFont);
         
         // Writes the "threshold" text
-        int x = W*3/4,
-            y = H*1/2,
-            width = W/4,
-            height = H/4;
+        int x = getWidth()*3/4,
+            y = getHeight()*1/2,
+            width = getWidth()/4,
+            height = getHeight()/4;
                 
         String text (TRANS("Threshold"));
         g.drawText (text, x, y, width, height,
@@ -144,7 +144,7 @@ public:
     {
         SymmetricalTuner::resized();
         
-        threshLabel->setBounds (W*3/4+W/16, H*3/4, W/8, H/5);
+        threshLabel->setBounds (getWidth()*3/4+getWidth()/16, getHeight()*3/4, getWidth()/8, getHeight()/5);
         repaint();
     }
     
