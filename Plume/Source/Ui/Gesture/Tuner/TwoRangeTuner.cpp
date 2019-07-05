@@ -14,8 +14,7 @@
 TwoRangeTuner::TwoRangeTuner(const float& val, const NormalisableRange<float> gestRange,
                 RangedAudioParameter& rangeLL, RangedAudioParameter& rangeLH,
                 RangedAudioParameter& rangeRL, RangedAudioParameter& rangeRH,
-                const Range<float> paramMax,
-                const String unit, bool show)
+                const Range<float> paramMax, const String unit)
     :   Tuner (unit, Colour (0xff1fcaa8)),
         value (val), gestureRange (gestRange),
         rangeLeftLow (rangeLL), rangeLeftHigh (rangeLH),
@@ -492,14 +491,14 @@ void TwoRangeTuner::createSliders()
     
 void TwoRangeTuner::createLabels()
 {
-    Tuner::addAndMakeVisible (rangeLabelMinLeft  = new Label ("Min Left Label",
-                                                                TRANS (String (int(getRangeLeftLow())) + valueUnit)));
-    Tuner::addAndMakeVisible (rangeLabelMaxLeft  = new Label ("Max Left Label",
-                                                                TRANS (String(int(getRangeLeftHigh())) + valueUnit)));
-    Tuner::addAndMakeVisible (rangeLabelMinRight = new Label ("Min Right Label",
-                                                                TRANS (String(int(getRangeRightLow())) + valueUnit)));
-    Tuner::addAndMakeVisible (rangeLabelMaxRight = new Label ("Max Right Label",
-                                                                TRANS (String(int(getRangeRightHigh())) + valueUnit)));
+    addAndMakeVisible (rangeLabelMinLeft  = new Label ("Min Left Label",
+                                                       TRANS (String (int(getRangeLeftLow())) + valueUnit)));
+    addAndMakeVisible (rangeLabelMaxLeft  = new Label ("Max Left Label",
+                                                       TRANS (String(int(getRangeLeftHigh())) + valueUnit)));
+    addAndMakeVisible (rangeLabelMinRight = new Label ("Min Right Label",
+                                                       TRANS (String(int(getRangeRightLow())) + valueUnit)));
+    addAndMakeVisible (rangeLabelMaxRight = new Label ("Max Right Label",
+                                                       TRANS (String(int(getRangeRightHigh())) + valueUnit)));
     
     auto setLabelSettings = [this] (Label& label)
     {
@@ -732,7 +731,7 @@ void TwoRangeTuner::drawTunerSliderBackground (Graphics& g)
                         + (rightHighSlider->getValue() - rightLowSlider->getMinimum())
                             / rightLowSlider->getRange().getLength() * (endAngle - startAngle);
 
-    auto lineW = 7.0f;
+    auto lineW = jmin (8.0f, sliderRadius * 0.5f);
     auto arcRadius = sliderRadius - lineW * 0.5f;
 
     Path backgroundArc;
@@ -786,7 +785,7 @@ void TwoRangeTuner::drawTunerSliderBackground (Graphics& g)
                                  sliderCentre.y + arcRadius * std::sin (angle - MathConstants<float>::halfPi));
 
         g.setColour (tunerColour.withAlpha (0.6f));
-        g.fillEllipse (juce::Rectangle<float> (25, 25).withCentre (thumbPoint));
+        g.fillEllipse (juce::Rectangle<float> (25.0f, 25.0f).withCentre (thumbPoint));
     }
 }
 void TwoRangeTuner::updateLabelBounds (Label* labelToUpdate)

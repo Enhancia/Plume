@@ -185,7 +185,7 @@ void GestureSettingsComponent::createTuner()
 	if (gesture.type == Gesture::vibrato)
     {
         Vibrato& vib = dynamic_cast<Vibrato&> (gesture);
-        addAndMakeVisible (gestTuner = new VibratoTuner (vib));
+        addAndMakeVisible (gestTuner = new VibratoTestTuner (vib));
     }
     
     else if (gesture.type == Gesture::pitchBend)

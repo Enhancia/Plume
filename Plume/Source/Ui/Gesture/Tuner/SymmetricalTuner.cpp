@@ -12,7 +12,7 @@
 
 SymmetricalTuner::SymmetricalTuner(const float& val, NormalisableRange<float> gestureRange, RangedAudioParameter& param, float paramMax,
                     const String unit, bool show)
-    :   Tuner (unit), parameter (param), parameterMax (paramMax)
+    :   Tuner (unit, Colour (0xffec6565)), parameter (param), parameterMax (paramMax)
 {
     createSlider();
     createLabels();

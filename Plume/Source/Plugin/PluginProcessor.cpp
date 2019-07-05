@@ -437,7 +437,7 @@ void PlumeProcessor::initializeParameters()
                         defVal = 400.0f;
                         break;
 			        case vibrato_thresh:
-                        range = NormalisableRange<float> (0.0f, 300.0f, 1.0f);
+                        range = NormalisableRange<float> (0.0f, 500.0f, 1.0f);
                         defVal = 40.0f;
                         break;
                     case vibrato_intensity:

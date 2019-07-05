@@ -12,12 +12,12 @@
 
 
 OneRangeTuner::OneRangeTuner(const float& val, NormalisableRange<float> gestRange,
-                RangedAudioParameter& rangeL, RangedAudioParameter& rangeH, const Range<float> paramMax,
-                const String unit, bool show, TunerStyle style)
+                             RangedAudioParameter& rangeL, RangedAudioParameter& rangeH, const Range<float> paramMax,
+                             const String unit, TunerStyle style)
     : Tuner (unit),
-        value (val), gestureRange (gestRange),
-        rangeLow (rangeL), rangeHigh (rangeH), parameterMax (paramMax),
-        tunerStyle (style)
+      value (val), gestureRange (gestRange),
+      rangeLow (rangeL), rangeHigh (rangeH), parameterMax (paramMax),
+      tunerStyle (style)
 {
     setLookAndFeel (&oneRangeTunerLookAndFeel);
     setStyle (style);
@@ -387,8 +387,8 @@ void OneRangeTuner::createSliders()
     
 void OneRangeTuner::createLabels()
 {
-    Tuner::addAndMakeVisible (rangeLabelMin = new Label ("Min Label", TRANS (String(int(getRangeLow())) + valueUnit)));
-    Tuner::addAndMakeVisible (rangeLabelMax = new Label ("Max Label", TRANS (String(int(getRangeHigh())) + valueUnit)));
+    addAndMakeVisible (rangeLabelMin = new Label ("Min Label", TRANS (String(int(getRangeLow())) + valueUnit)));
+    addAndMakeVisible (rangeLabelMax = new Label ("Max Label", TRANS (String(int(getRangeHigh())) + valueUnit)));
 
     auto setLabelSettings = [this] (Label& label)
     {
@@ -537,7 +537,7 @@ void OneRangeTuner::drawTunerSliderBackground (Graphics& g)
     auto highAngle = startAngle
                         + (highSlider->getValue() - lowSlider->getMinimum()) / lowSlider->getRange().getLength()
                                                                            * (endAngle - startAngle);
-    auto lineW = 7.0f;
+    auto lineW = jmin (8.0f, sliderRadius * 0.5f);
     auto arcRadius = sliderRadius - lineW * 0.5f;
 
     Path backgroundArc;
@@ -577,7 +577,7 @@ void OneRangeTuner::drawTunerSliderBackground (Graphics& g)
                                  sliderCentre.y + arcRadius * std::sin (angle - MathConstants<float>::halfPi));
 
         g.setColour (fill.withAlpha (0.6f));
-        g.fillEllipse (juce::Rectangle<float> (25, 25).withCentre (thumbPoint));
+        g.fillEllipse (juce::Rectangle<float> (25.0f, 25.0f).withCentre (thumbPoint));
     }
 }
 

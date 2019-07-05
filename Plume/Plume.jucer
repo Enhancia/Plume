@@ -203,6 +203,10 @@
                   file="Source/Ui/Gesture/SettingsTabs/RetractableMapAndMidiPanel.h"/>
           </GROUP>
           <GROUP id="{027C4BCF-8809-483D-C6DA-16DDB0E6F69A}" name="Tuner">
+            <FILE id="ZZPCLJ" name="VibratoTestTuner.cpp" compile="1" resource="0"
+                  file="Source/Ui/Gesture/Tuner/VibratoTestTuner.cpp"/>
+            <FILE id="REZ9Li" name="VibratoTestTuner.h" compile="0" resource="0"
+                  file="Source/Ui/Gesture/Tuner/VibratoTestTuner.h"/>
             <FILE id="jL9Xko" name="TestTuner.cpp" compile="1" resource="0" file="Source/Ui/Gesture/Tuner/TestTuner.cpp"/>
             <FILE id="f9pkkW" name="TestTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/TestTuner.h"/>
             <FILE id="B0V3Qw" name="Tuner.cpp" compile="1" resource="0" file="Source/Ui/Gesture/Tuner/Tuner.cpp"/>

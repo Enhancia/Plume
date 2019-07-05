@@ -29,7 +29,7 @@ public:
     //==============================================================================
     OneRangeTuner(const float& val, NormalisableRange<float> gestureRange,
                   RangedAudioParameter& rangeL, RangedAudioParameter& rangeH, const Range<float> paramMax,
-                  const String unit = "", bool show = true, TunerStyle style = wave);
+                  const String unit = "", TunerStyle style = wave);
     ~OneRangeTuner();
     
     //==============================================================================

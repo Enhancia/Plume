@@ -23,8 +23,7 @@ public:
     TwoRangeTuner(const float& val, const NormalisableRange<float> gestureRange,
                   RangedAudioParameter& rangeLL, RangedAudioParameter& rangeLH,
                   RangedAudioParameter& rangeRL, RangedAudioParameter& rangeRH,
-                  const Range<float> paramMax,
-                  const String unit = "", bool show = true);
+                  const Range<float> paramMax, const String unit = "");
     ~TwoRangeTuner();
     
     //==============================================================================
