@@ -53,11 +53,22 @@ void VibratoTuner::paint (Graphics& g)
 
 	drawValueCursor (g);
 	drawIntensityCursor (g);
+
+	g.setColour (Colour (0xa0505050));
+	g.setFont (PLUME::font::plumeFontLight.withHeight (14.0f));
+	g.drawText ("THRESHOLD", thresholdSlider->getBounds().withSizeKeepingCentre (100, 50)
+														 .withY (thresholdSlider->getBounds().getBottom()),
+							 Justification::centredTop);
+
+	g.drawText ("GAIN", gainSlider->getBounds().withSizeKeepingCentre (100, 50)
+											   .withY (thresholdSlider->getBounds().getBottom()),
+						Justification::centredTop);
 }
 
 void VibratoTuner::resized()
 {
-	auto area = getLocalBounds().reduced (30);
+	auto area = getLocalBounds().reduced (getLocalBounds().getWidth()/5,
+										  getLocalBounds().getHeight()/5);
 
 	gainSlider->setBounds (area.removeFromRight (area.getWidth()*2 / 3));
 	thresholdSlider->setBounds (area.withSizeKeepingCentre (area.getWidth(), (gainSlider->getHeight() / 2) + 10));
