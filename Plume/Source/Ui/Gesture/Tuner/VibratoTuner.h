@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    VibratoTestTuner.h
+    VibratoTuner.h
     Created: 4 Jul 2019 1:44:31pm
     Author:  Enhancia Dev
 
@@ -15,14 +15,14 @@
 #include "Ui/LookAndFeel/PlumeLookAndFeel.h"
 #include "Gesture/Vibrato.h"
 
-class VibratoTestTuner:    public Tuner,
-                           private Slider::Listener,
-                           protected Label::Listener
+class VibratoTuner:    public Tuner,
+                       private Slider::Listener,
+                       private Label::Listener
 {
 public:
     //==============================================================================
-    VibratoTestTuner (Vibrato& vib);
-    ~VibratoTestTuner();
+    VibratoTuner (Vibrato& vib);
+    ~VibratoTuner();
     
     //==============================================================================
     void paint (Graphics& g) override;
@@ -41,7 +41,7 @@ public:
     
 private:
     //==============================================================================
-	VibratoTestTuner (const float& val, NormalisableRange<float> gestRange,
+	VibratoTuner (const float& val, NormalisableRange<float> gestRange,
 					  const float& vibratoIntensity, float maxIntens,
     				  RangedAudioParameter& gain, const Range<float> gainMax,
     				  RangedAudioParameter& thresh, const Range<float> threshMax);
@@ -88,5 +88,5 @@ private:
     ScopedPointer<Label> thresholdLabel;
     
     PLUME::UI::TestTunerLookAndFeel vibratoTunerLookAndFeel;
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VibratoTestTuner)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VibratoTuner)
 };
