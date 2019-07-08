@@ -23,6 +23,7 @@ OneRangeTuner::OneRangeTuner(const float& val, NormalisableRange<float> gestRang
     setStyle (style);
     createSliders();
     createLabels();
+    createButtons();
 }
 
 OneRangeTuner::~OneRangeTuner()
@@ -47,6 +48,7 @@ void OneRangeTuner::resized()
     // Sets bounds and changes the slider and labels position
     sliderBounds = getLocalBounds().reduced (30);
     resizeSliders();
+    resizeButtons();
 
     updateLabelBounds (rangeLabelMin);
     updateLabelBounds (rangeLabelMax);
@@ -84,6 +86,17 @@ void OneRangeTuner::resizeSliders()
 
     lowSlider->setBounds (adjustedBounds);
     highSlider->setBounds (adjustedBounds);
+}
+
+void OneRangeTuner::resizeButtons()
+{
+    using namespace PLUME::UI;
+
+    auto buttonsArea = getLocalBounds().reduced (0, 2*MARGIN)
+									   .withLeft (getLocalBounds().getRight() - 80);
+
+    maxAngleButton->setBounds (buttonsArea.removeFromTop (40).reduced (MARGIN/2));
+    minAngleButton->setBounds (buttonsArea.removeFromTop (40).reduced (MARGIN/2));
 }
     
 void OneRangeTuner::updateComponents()
@@ -230,6 +243,19 @@ void OneRangeTuner::sliderValueChanged (Slider* sldr)
             updateLabelBounds (rangeLabelMin);
             rangeLabelMin->setText (String (float (sldr->getValue())) + valueUnit, dontSendNotification);
         }
+    }
+}
+
+void OneRangeTuner::buttonClicked (Button* bttn)
+{
+    if (bttn == minAngleButton)
+    {
+        lowSlider->setValue (gestureRange.convertFrom0to1 (value), sendNotification);
+    }
+
+    else if (bttn == maxAngleButton)
+    {
+        highSlider->setValue (gestureRange.convertFrom0to1 (value), sendNotification);
     }
 }
 
@@ -408,6 +434,25 @@ void OneRangeTuner::createLabels()
 
     setLabelSettings (*rangeLabelMin);
     setLabelSettings (*rangeLabelMax);
+}
+
+void OneRangeTuner::createButtons()
+{
+    addAndMakeVisible (minAngleButton = new TextButton ("Min Angle Button"));
+    addAndMakeVisible (maxAngleButton = new TextButton ("Max Angle Button"));
+
+    auto setButtonSettings = [this] (TextButton& button)
+    {
+        button.setColour (TextButton::buttonColourId , Colour (0xff505050));
+        button.setColour (TextButton::buttonOnColourId , tunerColour);
+        button.setColour (TextButton::textColourOffId , Colour (0xffffffff));
+        button.setColour (TextButton::textColourOnId , Colour (0xffffffff));
+        button.setButtonText (&button == minAngleButton ? "MIN ANGLE" : "MAX ANGLE");
+        button.addListener (this);
+    };
+
+    setButtonSettings (*minAngleButton);
+    setButtonSettings (*maxAngleButton);
 }
     
 void OneRangeTuner::setRangeLow (float val)

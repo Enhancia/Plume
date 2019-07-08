@@ -16,7 +16,8 @@
 
 class TwoRangeTuner:    public Tuner,
                         private Slider::Listener,
-                        private Label::Listener
+                        private Label::Listener,
+                        private Button::Listener
 {
 public:
     //==============================================================================
@@ -37,6 +38,7 @@ public:
     void labelTextChanged (Label* lbl) override;
     void editorHidden (Label* lbl, TextEditor& ted) override;
     void sliderValueChanged (Slider* sldr) override;
+    void buttonClicked (Button* bttn) override;
     
     //==============================================================================
     void mouseDown (const MouseEvent& e) override;
@@ -52,6 +54,8 @@ private:
     void createSliders();
     void resizeSliders();
     void createLabels();
+    void createButtons();
+    void resizeButtons();
     
     //==============================================================================
     void setRangeLeftLow (float value);
@@ -112,6 +116,11 @@ private:
     ScopedPointer<Label> rangeLabelMaxLeft;
     ScopedPointer<Label> rangeLabelMinRight;
     ScopedPointer<Label> rangeLabelMaxRight;
+
+    ScopedPointer<TextButton> minLeftAngleButton;
+    ScopedPointer<TextButton> maxLeftAngleButton;
+    ScopedPointer<TextButton> minRightAngleButton;
+    ScopedPointer<TextButton> maxRightAngleButton;
     
     //==============================================================================
     DraggableObject objectBeingDragged = none;

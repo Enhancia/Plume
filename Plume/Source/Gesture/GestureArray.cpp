@@ -36,7 +36,7 @@ void GestureArray::initializeGestures()
 void GestureArray::process (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 {
     // adds midi to buffer and updates parameters
-    addGestureMidiToBuffer(midiMessages, plumeBuffer);
+    addGestureMidiToBuffer (midiMessages, plumeBuffer);
     updateAllMappedParameters();
 }
 
@@ -56,7 +56,7 @@ void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages, MidiBuffer&
         }
         
         // Adds pitch midi
-        addMergedPitchMessage(midiMessages, plumeBuffer);
+        addMergedPitchMessage (midiMessages, plumeBuffer);
     }
     
     else
@@ -93,7 +93,7 @@ void GestureArray::updateAllValues()
     Array<float> rawData;
     
     // Gets the rawData in the array, and calls updateValue for each gesture
-    if (dataReader.getRawDataAsFloatArray(rawData))
+    if (dataReader.getRawDataAsFloatArray (rawData))
     {
         ScopedLock gestlock (gestureArrayLock);
     
@@ -117,7 +117,7 @@ Gesture* GestureArray::getGesture (const String nameToSearch)
     // Browses every gesture to compare their name with nameToSearch
     for (auto* g : gestures)
     {
-        if (g->getName().compare(nameToSearch) == 0)
+        if (g->getName().compare (nameToSearch) == 0)
         {
             return g;
         }

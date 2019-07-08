@@ -24,6 +24,7 @@ TwoRangeTuner::TwoRangeTuner(const float& val, const NormalisableRange<float> ge
     setAngles (MathConstants<float>::pi*5/3, MathConstants<float>::pi*7/3);
     createSliders();
     createLabels();
+    createButtons();
 }
 
 TwoRangeTuner::~TwoRangeTuner()
@@ -50,6 +51,7 @@ void TwoRangeTuner::resized()
     // Sets bounds and changes the slider and labels position
     sliderBounds = getLocalBounds().reduced (30);
     resizeSliders();
+    resizeButtons();
 
     updateLabelBounds (rangeLabelMinLeft);
     updateLabelBounds (rangeLabelMaxLeft);
@@ -75,6 +77,21 @@ void TwoRangeTuner::resizeSliders()
     leftHighSlider->setBounds (adjustedBounds);
     rightLowSlider->setBounds (adjustedBounds);
     rightHighSlider->setBounds (adjustedBounds);
+}
+
+void TwoRangeTuner::resizeButtons()
+{
+    using namespace PLUME::UI;
+
+    auto buttonsAreaLeft = getLocalBounds().reduced (0, 2*MARGIN)
+                                           .withRight (getLocalBounds().getX() + 80);
+    auto buttonsAreaRight = getLocalBounds().reduced (0, 2*MARGIN)
+                                            .withLeft (getLocalBounds().getRight() - 80);
+
+    maxLeftAngleButton->setBounds (buttonsAreaLeft.removeFromTop (40).reduced (MARGIN/2));
+    minLeftAngleButton->setBounds (buttonsAreaLeft.removeFromTop (40).reduced (MARGIN/2));
+    maxRightAngleButton->setBounds (buttonsAreaRight.removeFromTop (40).reduced (MARGIN/2));
+    minRightAngleButton->setBounds (buttonsAreaRight.removeFromTop (40).reduced (MARGIN/2));
 }
 
 void TwoRangeTuner::updateComponents()
@@ -310,6 +327,40 @@ void TwoRangeTuner::sliderValueChanged (Slider* sldr)
 	}
 }
 
+void TwoRangeTuner::buttonClicked (Button* bttn)
+{
+    if (bttn == minLeftAngleButton)
+    {
+        if (gestureRange.convertFrom0to1 (value) > getRangeRightLow())
+        {
+            leftLowSlider->setValue (getRangeRightLow(), sendNotification);
+        }
+        else
+        {
+            leftLowSlider->setValue (gestureRange.convertFrom0to1 (value), sendNotification);
+        }
+    }
+    else if (bttn == maxLeftAngleButton)
+    {
+        leftHighSlider->setValue (gestureRange.convertFrom0to1 (value), sendNotification);
+    }
+     if (bttn == minRightAngleButton)
+    {
+        rightLowSlider->setValue (gestureRange.convertFrom0to1 (value), sendNotification);
+    }
+    else if (bttn == maxRightAngleButton)
+    {
+        if (gestureRange.convertFrom0to1 (value) < getRangeLeftHigh())
+        {
+            rightHighSlider->setValue (getRangeLeftHigh(), sendNotification);
+        }
+        else
+        {
+            rightHighSlider->setValue (gestureRange.convertFrom0to1 (value), sendNotification);
+        }
+    }
+}
+
 void TwoRangeTuner::mouseDown (const MouseEvent& e)
 {
     if (e.mods.isLeftButtonDown())
@@ -521,6 +572,30 @@ void TwoRangeTuner::createLabels()
     setLabelSettings (*rangeLabelMaxLeft);
     setLabelSettings (*rangeLabelMinRight);
     setLabelSettings (*rangeLabelMaxRight);
+}
+
+void TwoRangeTuner::createButtons()
+{
+    addAndMakeVisible (minLeftAngleButton = new TextButton ("MinLeft Angle Button"));
+    addAndMakeVisible (maxLeftAngleButton = new TextButton ("MaxLeft Angle Button"));
+    addAndMakeVisible (minRightAngleButton = new TextButton ("MinRight Angle Button"));
+    addAndMakeVisible (maxRightAngleButton = new TextButton ("MaxRight Angle Button"));
+
+    auto setButtonSettings = [this] (TextButton& button)
+    {
+        button.setColour (TextButton::buttonColourId , Colour (0xff505050));
+        button.setColour (TextButton::buttonOnColourId , tunerColour);
+        button.setColour (TextButton::textColourOffId , Colour (0xffffffff));
+        button.setColour (TextButton::textColourOnId , Colour (0xffffffff));
+        button.setButtonText (&button == minLeftAngleButton || &button == minRightAngleButton ? "MIN ANGLE"
+                                                                                              : "MAX ANGLE");
+        button.addListener (this);
+    };
+
+    setButtonSettings (*minLeftAngleButton);
+    setButtonSettings (*maxLeftAngleButton);
+    setButtonSettings (*minRightAngleButton);
+    setButtonSettings (*maxRightAngleButton);
 }
     
 void TwoRangeTuner::setRangeLeftLow (float val)
