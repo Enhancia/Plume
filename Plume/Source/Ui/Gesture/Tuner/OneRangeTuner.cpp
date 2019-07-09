@@ -93,10 +93,10 @@ void OneRangeTuner::resizeButtons()
     using namespace PLUME::UI;
 
     auto buttonsArea = getLocalBounds().reduced (0, 2*MARGIN)
-									   .withLeft (getLocalBounds().getRight() - 80);
+									   .withLeft (getLocalBounds().getRight() - 70);
 
-    maxAngleButton->setBounds (buttonsArea.removeFromTop (40).reduced (MARGIN/2));
-    minAngleButton->setBounds (buttonsArea.removeFromTop (40).reduced (MARGIN/2));
+    maxAngleButton->setBounds (buttonsArea.removeFromTop (35).reduced (MARGIN/2));
+    minAngleButton->setBounds (buttonsArea.removeFromTop (35).reduced (MARGIN/2));
 }
     
 void OneRangeTuner::updateComponents()
