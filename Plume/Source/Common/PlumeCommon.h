@@ -57,7 +57,7 @@ namespace PLUME
         extern bool ANIMATE_UI_FLAG;
         
         const float VIBRATO_DISPLAY_MAX  = 500.0f;
-        const float VIBRATO_THRESH_DISPLAY_MAX = 300.0f;
+        const float VIBRATO_THRESH_DISPLAY_MAX = 500.0f;
     
         const float PITCHBEND_DISPLAY_MIN = -90.0f;
         const float PITCHBEND_DISPLAY_MAX =  90.0f;

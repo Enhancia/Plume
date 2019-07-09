@@ -16,15 +16,15 @@
 
 class TwoRangeTuner:    public Tuner,
                         private Slider::Listener,
-                        private Label::Listener
+                        private Label::Listener,
+                        private Button::Listener
 {
 public:
     //==============================================================================
     TwoRangeTuner(const float& val, const NormalisableRange<float> gestureRange,
                   RangedAudioParameter& rangeLL, RangedAudioParameter& rangeLH,
                   RangedAudioParameter& rangeRL, RangedAudioParameter& rangeRH,
-                  const Range<float> paramMax,
-                  const String unit = "", bool show = true);
+                  const Range<float> paramMax, const String unit = "");
     ~TwoRangeTuner();
     
     //==============================================================================
@@ -32,15 +32,32 @@ public:
     void resized() override;
     
     void updateComponents() override;
+    void updateDisplay() override;
     
     //==============================================================================
     void labelTextChanged (Label* lbl) override;
+    void editorHidden (Label* lbl, TextEditor& ted) override;
     void sliderValueChanged (Slider* sldr) override;
+    void buttonClicked (Button* bttn) override;
     
+    //==============================================================================
+    void mouseDown (const MouseEvent& e) override;
+    void mouseDrag (const MouseEvent& e) override;
+    void mouseUp (const MouseEvent& e) override;
+    MouseCursor getMouseCursor() override;
+
+    //==============================================================================
+    void setAngles (float startAngle, float endAngle);
+
 private:
+    //==============================================================================
     void createSliders();
+    void resizeSliders();
     void createLabels();
+    void createButtons();
+    void resizeButtons();
     
+    //==============================================================================
     void setRangeLeftLow (float value);
     void setRangeLeftHigh (float value);
     void setRangeRightLow (float value);
@@ -52,6 +69,37 @@ private:
     float getRangeRightHigh();
     
     //==============================================================================
+    enum DraggableObject
+    {
+        none = -1,
+        leftLowThumb,
+        leftHighThumb,
+        rightLowThumb,
+        rightHighThumb,
+        middleAreaLeft,
+        middleAreaRight
+    };
+
+    double getAngleFromMouseEventRadians (const MouseEvent& e);
+    double getThumbAngleRadians (const DraggableObject thumb);
+
+    DraggableObject getObjectToDrag (const MouseEvent& e);
+    void handleSingleClick (const MouseEvent& e);
+    void handleDoubleClick (const MouseEvent& e);
+
+    void drawTunerSliderBackground (Graphics& g);
+    void updateLabelBounds (Label* labelToUpdate);
+
+    float getValueAngle();
+    void drawValueCursor (Graphics& g);
+    void drawLineFromSliderCentre (Graphics& g, float angleRadian);
+    void drawThumbsAndToleranceLines (Graphics& g);
+    
+    //==============================================================================
+    const float& value;
+    const NormalisableRange<float> gestureRange;
+    
+    //==============================================================================
     RangedAudioParameter& rangeLeftLow;
     RangedAudioParameter& rangeLeftHigh;
     RangedAudioParameter& rangeRightLow;
@@ -59,16 +107,33 @@ private:
     const Range<float> parameterMax;
     
     //==============================================================================
-    ScopedPointer<Slider> rangeSliderLeft;
-    ScopedPointer<Slider> rangeSliderRight;
+    ScopedPointer<Slider> leftLowSlider;
+    ScopedPointer<Slider> leftHighSlider;
+    ScopedPointer<Slider> rightLowSlider;
+    ScopedPointer<Slider> rightHighSlider;
+    
     ScopedPointer<Label> rangeLabelMinLeft;
     ScopedPointer<Label> rangeLabelMaxLeft;
     ScopedPointer<Label> rangeLabelMinRight;
     ScopedPointer<Label> rangeLabelMaxRight;
+
+    ScopedPointer<TextButton> minLeftAngleButton;
+    ScopedPointer<TextButton> maxLeftAngleButton;
+    ScopedPointer<TextButton> minRightAngleButton;
+    ScopedPointer<TextButton> maxRightAngleButton;
     
     //==============================================================================
-    PLUME::UI::TwoRangeTunerLookAndFeel leftLookAndFeel;
-    PLUME::UI::TwoRangeTunerLookAndFeel rightLookAndFeel;
+    DraggableObject objectBeingDragged = none;
+    float previousCursorAngle = value;
+
+    juce::Rectangle<int> sliderBounds;
+    float sliderRadius;
+    Point<int> sliderCentre;
+    float startAngle;
+    float endAngle;
+
+    //==============================================================================
+    PLUME::UI::OneRangeTunerLookAndFeel slidersLookAndFeel;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TwoRangeTuner)
 };

@@ -28,6 +28,7 @@ Gesture::Gesture (String gestName, int gestType, int gestId, const NormalisableR
     setGestureValue (defaultValue);
     setMidiLow (defaultMidiRange.getStart(), false);
     setMidiHigh (defaultMidiRange.getEnd(), false);
+    setGeneratesMidi (false);
 	setCc (defaultCc);
 }
 

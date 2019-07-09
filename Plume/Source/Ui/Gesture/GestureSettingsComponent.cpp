@@ -45,6 +45,7 @@ void GestureSettingsComponent::update()
 
 	retractablePanel->update();
     descriptionPanel->update();
+    gestTuner->updateComponents();
 }
 
 //==============================================================================
@@ -111,8 +112,12 @@ void GestureSettingsComponent::resized()
                                                             getHeight()*2/5 - HEADER_HEIGHT)
                                      .reduced (MARGIN, 0));
 
-    gestTuner->setBounds (area.withSizeKeepingCentre (jmin (getWidth() - 2*MARGIN, 300), 
-                                                      jmin (getHeight()*6/10 - 6*MARGIN, 100)));
+    area.removeFromBottom (2*MARGIN);
+
+    //gestTuner->setBounds (area.withSizeKeepingCentre (200, 200));
+    //gestTuner->setBounds (area.withSizeKeepingCentre (jmin (getWidth() + MARGIN, area.getHeight() + MARGIN),
+    //                                                  jmin (getWidth() + MARGIN, area.getHeight() + MARGIN)));
+    gestTuner->setBounds (area);
 
 
     if (gesture.type != Gesture::pitchBend && gesture.type != Gesture::vibrato)

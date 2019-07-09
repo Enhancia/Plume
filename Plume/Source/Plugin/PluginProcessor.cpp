@@ -437,7 +437,7 @@ void PlumeProcessor::initializeParameters()
                         defVal = 400.0f;
                         break;
 			        case vibrato_thresh:
-                        range = NormalisableRange<float> (0.0f, 300.0f, 1.0f);
+                        range = NormalisableRange<float> (0.0f, 500.0f, 1.0f);
                         defVal = 40.0f;
                         break;
                     case vibrato_intensity:
@@ -445,19 +445,19 @@ void PlumeProcessor::initializeParameters()
                         defVal = 0.0f;
                         break;
 			        case bend_leftLow:
-                        range = NormalisableRange<float> (-90.0f, 0.0f, 1.0f);
+                        range = NormalisableRange<float> (-90.0f, 90.0f, 1.0f);
                         defVal = -50.0f;
                         break;
 			        case bend_leftHigh:
-                        range = NormalisableRange<float> (-90.0f, 0.0f, 1.0f);
+                        range = NormalisableRange<float> (-90.0f, 90.0f, 1.0f);
                         defVal = -20.0f;
                         break;
 			        case bend_rightLow:
-                        range = NormalisableRange<float> (0.0f, 90.0f, 1.0f);
+                        range = NormalisableRange<float> (-90.0f, 90.0f, 1.0f);
                         defVal = 30.0f;
                         break;
 			        case bend_rightHigh:
-                        range = NormalisableRange<float> (0.0f, 90.0f, 1.0f);
+                        range = NormalisableRange<float> (-90.0f, 90.0f, 1.0f);
                         defVal = 60.0f;
                         break;
 			        case roll_low:

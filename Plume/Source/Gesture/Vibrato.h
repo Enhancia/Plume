@@ -37,6 +37,7 @@ public:
     
     //==============================================================================
     void setIntensityValue (float newVal);
+    float& getIntensityReference();
     void updateValue (const Array<float> rawData) override;
     
     //==============================================================================
@@ -48,7 +49,7 @@ public:
 	RangedAudioParameter& intensity; /**< Current intensity of the vibrato. The effect is triggered if this is above the threshold parameter*/
     
 private:
-    //float intensity = 0.0f; /**< Value that will be checked to trigger the vibrato if higher than the treshold */
+    float* intensityRef; /**< Value that will be checked to trigger the vibrato if higher than the treshold */
     
     // Booleans that represent the state of the vibrato
     bool send = false; /**< \brief Boolean to know if the gesture should send midi */
