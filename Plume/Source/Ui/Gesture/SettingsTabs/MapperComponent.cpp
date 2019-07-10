@@ -40,7 +40,7 @@ void MapperComponent::paint (Graphics& g)
 
 void MapperComponent::resized()
 {
-    resizeArray (getLocalBounds().reduced (PLUME::UI::MARGIN), NUM_COLUMNS, NUM_ROWS);
+    resizeArray (getLocalBounds().withTrimmedTop (PLUME::UI::MARGIN), NUM_COLUMNS, NUM_ROWS);
 	//repaint();
 }
 
@@ -133,8 +133,8 @@ void MapperComponent::addAndMakeArrayVisible()
 
 void MapperComponent::resizeArray (juce::Rectangle<int> bounds, const int numColumns, const int numRows)
 {
-    int marginX = bounds.getWidth()/12;
-    int marginY = bounds.getHeight()/8;
+    int marginX = PLUME::UI::MARGIN;
+    int marginY = PLUME::UI::MARGIN;
 
     int paramCompWidth = (bounds.getWidth() - marginX * (numColumns - 1))/numColumns;
     int paramCompHeight = (bounds.getHeight() - marginY * (numRows - 1))/numRows;
@@ -180,7 +180,7 @@ void MapperBanner::paint (Graphics& g)
     */
     
 	paintParameterSlotDisplay(g, getLocalBounds().withSizeKeepingCentre (90, getHeight()),
-                                 2, 3, 8);
+                                 1, 6, 8);
 }
 
 void MapperBanner::resized()

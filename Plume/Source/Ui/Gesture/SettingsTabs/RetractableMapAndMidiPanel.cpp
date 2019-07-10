@@ -12,7 +12,8 @@
 #include "RetractableMapAndMidiPanel.h"
 
 //==============================================================================
-RetractableMapAndMidiPanel::RetractableMapAndMidiPanel (Gesture& gest, GestureArray& gestArr, PluginWrapper& wrap)
+RetractableMapAndMidiPanel::RetractableMapAndMidiPanel (Gesture& gest, GestureArray& gestArr,
+														PluginWrapper& wrap, Colour gestureColour)
     : gesture (gest), gestureArray (gestArr), wrapper (wrap)
 {
 	addAndMakeVisible (parametersBanner = new MapperBanner (gesture, gestureArray, wrapper));
@@ -107,10 +108,6 @@ void RetractableMapAndMidiPanel::resized()
 	resized (midiRetractable);
 
 	auto bannerArea = getLocalBounds().removeFromTop (bannerHeight);
-	hideBodyButton->setBounds (bannerArea.removeFromBottom (bannerHeight/2)
-								         .removeFromRight (getWidth()/4)
-								         .reduced (20, 2));
-	createHideBodyButtonPath();
 }
 
 void RetractableMapAndMidiPanel::resized (Retractable& retractableToResize)
@@ -118,7 +115,7 @@ void RetractableMapAndMidiPanel::resized (Retractable& retractableToResize)
 	auto area = getLocalBounds();
 
 	retractableToResize.banner->setBounds (area.removeFromTop (bannerHeight));
-	if (!retracted) retractableToResize.body->setBounds (area.reduced (PLUME::UI::MARGIN));
+	if (!retracted) retractableToResize.body->setBounds (area);
 }
 
 void RetractableMapAndMidiPanel::buttonClicked (Button* bttn)

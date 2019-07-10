@@ -55,7 +55,7 @@ private:
     
     //==============================================================================
     bool allowDisplayUpdate = true;
-    const int NUM_ROWS = 2, NUM_COLUMNS = 3;
+    const int NUM_ROWS = 1, NUM_COLUMNS = 6;
     
     //==============================================================================
     OwnedArray<MappedParameterComponent> paramCompArray;
