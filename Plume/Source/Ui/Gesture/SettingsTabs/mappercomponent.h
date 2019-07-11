@@ -26,7 +26,8 @@ class MapperComponent    : public Component
 {
 public:
     //==============================================================================
-    MapperComponent (Gesture& gest, GestureArray& gestArr, PluginWrapper& wrap);
+    MapperComponent (Gesture& gest, GestureArray& gestArr,
+                     PluginWrapper& wrap);
     ~MapperComponent();
     
     //==============================================================================

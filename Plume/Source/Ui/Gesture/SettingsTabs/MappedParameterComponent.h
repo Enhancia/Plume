@@ -33,7 +33,7 @@ class MappedParameterComponent    : public Component,
 public:
     //==============================================================================
     MappedParameterComponent (Gesture& gest, Gesture::MappedParameter& mappedParam,
-                              const int id, Colour paramCompColour = Colour (0xff902020));
+                              const int id);
     ~MappedParameterComponent();
 
     //==============================================================================
@@ -47,6 +47,7 @@ public:
 
     //==============================================================================
     void mouseDown (const MouseEvent& e) override;
+    void mouseDrag (const MouseEvent& e) override;
     void mouseUp (const MouseEvent& e) override;
 
     //==============================================================================
@@ -55,23 +56,38 @@ public:
     
 private:
     //==============================================================================
-	void createLabels();
-    void setLabelBounds (Label& labelToResize);
-    void createSlider();
-    
+    enum DraggableObject
+    {
+        none = 0,
+
+        lowThumb,
+        highThumb,
+        middleArea
+    };
+
     //==============================================================================
-    void drawCursor (Graphics&);
+	void createLabels();
+    void createSliders();
+
+    //==============================================================================
+    int getThumbY (DraggableObject thumb);
+    void setLabelBounds (Label& labelToResize);
+
+    //==============================================================================
+    DraggableObject getObjectToDrag (const MouseEvent& e);
+    void drawCursor (Graphics& g);
+    void drawSliderBackground (Graphics& g);
     
     //==============================================================================
     Gesture& gesture;
     Gesture::MappedParameter& mappedParameter;
     const int paramId;
-    int thumbBeingDragged = -1;
+    DraggableObject objectBeingDragged = none;
     float lastValue = -1.0f;
     
     //==============================================================================
     bool allowDisplayUpdate = true;
-    const Colour highlightColour = Colour (0xff902020);
+    const Colour highlightColour;
 
     //==============================================================================
     ScopedPointer<ImageButton> closeButton;
@@ -79,7 +95,8 @@ private:
     ScopedPointer<Label> valueLabel;
     ScopedPointer<Label> rangeLabelMin;
     ScopedPointer<Label> rangeLabelMax;
-    ScopedPointer<Slider> rangeSlider;
+    ScopedPointer<Slider> lowSlider;
+    ScopedPointer<Slider> highSlider;
 
     PLUME::UI::TestTunerLookAndFeel sliderLookAndFeel;
     

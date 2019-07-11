@@ -36,6 +36,9 @@ public:
 	virtual void updateDisplay() {}
 	virtual void updateComponents() = 0;
 
+    //==============================================================================
+    Colour getColour() { return tunerColour; }
+
 protected:
     Colour tunerColour;
     const String valueUnit;

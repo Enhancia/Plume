@@ -14,7 +14,7 @@ VibratoTuner::VibratoTuner (const float& val, NormalisableRange<float> gestRange
 						    const float& vibratoIntensity, float maxIntens,
     				        RangedAudioParameter& vibGain, const Range<float> gainMax,
     				        RangedAudioParameter& thresh, const Range<float> threshMax)
-    : Tuner ("", Colour (0xffec6565)),
+    : Tuner ("", getPlumeColour (vibratoHighlight)),
       value (val), gestureRange (gestRange),
       intensity (vibratoIntensity), maxIntensity (maxIntens),
       gain (vibGain), parameterMaxGain (gainMax),

@@ -335,6 +335,23 @@ public:
                newGesturePanel)
      */
     static String getGestureTypeDescription (int gestureType);
+
+    /**
+       \brief  Returns the highlight colour corresponding to the gesture's type.
+
+               Call this method to return a specific gesture type description.
+               This can be used by the interface to draw the gesture's panels
+     */
+    Colour getHighlightColour() const;
+
+    /**
+       \brief  Returns the highlight colour corresponding to a specified gesture type.
+
+               Call this method to return a specific gesture type colour.
+               This can be used by the interface to draw the gesture's panels.
+     */
+    static Colour getHighlightColour (int gestureType);
+
     /**
      *  \brief Method to know if the gesture currently creates a pitchWheel midi message.
      *

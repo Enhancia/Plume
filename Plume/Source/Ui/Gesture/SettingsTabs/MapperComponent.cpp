@@ -40,7 +40,7 @@ void MapperComponent::paint (Graphics& g)
 
 void MapperComponent::resized()
 {
-    resizeArray (getLocalBounds().withTrimmedTop (PLUME::UI::MARGIN), NUM_COLUMNS, NUM_ROWS);
+    resizeArray (getLocalBounds(), NUM_COLUMNS, NUM_ROWS);
 	//repaint();
 }
 
@@ -157,7 +157,10 @@ MapperBanner::MapperBanner (Gesture& gest, GestureArray& gestArr, PluginWrapper&
     
     // map button
     addAndMakeVisible (mapButton = new TextButton ("Map Button"));
-    mapButton->setButtonText ("Map");
+    mapButton->setButtonText ("MAP");
+    mapButton->setColour (TextButton::buttonColourId, gesture.getHighlightColour());
+    mapButton->setColour (TextButton::buttonOnColourId, gesture.getHighlightColour()
+                                                               .interpolatedWith (Colour (0xffffffff), 0.4f));
     mapButton->addListener (this);
 }
 
@@ -169,18 +172,9 @@ MapperBanner::~MapperBanner()
 
 void MapperBanner::paint (Graphics& g)
 {
-    /*
-    g.setColour (Colour (0xff202020));
-    g.setFont (PLUME::font::plumeFont.withHeight(13));
-    g.drawText (String ("Parameters : ") + String (gesture.getParameterArray().size())
-                                         + String ("/")
-                                         + String (PLUME::MAX_PARAMETER),
-                        getLocalBounds().withSizeKeepingCentre (getWidth()/2, getHeight()),
-                        Justification::centred);
-    */
-    
-	paintParameterSlotDisplay(g, getLocalBounds().withSizeKeepingCentre (90, getHeight()),
-                                 1, 6, 8);
+	paintParameterSlotDisplay(g, getLocalBounds().withTrimmedLeft (mapButton->getWidth() + PLUME::UI::MARGIN)
+                                                 .withTrimmedRight (getWidth()/4 + PLUME::UI::MARGIN),
+                                 1, 6, 10);
 }
 
 void MapperBanner::resized()
@@ -202,7 +196,9 @@ void MapperBanner::buttonClicked (Button* bttn)
             gestureArray.cancelMapMode();
             gesture.mapModeOn = true;
             gestureArray.mapModeOn = true;
-            mapButton->setColour (TextButton::buttonColourId, PLUME::UI::currentTheme.getColour(PLUME::colour::detailPanelActiveMapping));
+            mapButton->setColour (TextButton::buttonColourId,
+                                  gesture.getHighlightColour().interpolatedWith (Colour (0xffffffff),
+                                                                                 0.4f));
             
             wrapper.createWrapperEditor (findParentComponentOfClass<AudioProcessorEditor> ());
         }
@@ -212,7 +208,7 @@ void MapperBanner::buttonClicked (Button* bttn)
         {
             gestureArray.cancelMapMode();
             mapButton->setColour (TextButton::buttonColourId,
-                                  getLookAndFeel().findColour (TextButton::buttonColourId));
+                                  gesture.getHighlightColour());
         }
     }
 }
@@ -222,8 +218,9 @@ void MapperBanner::updateComponents()
     using namespace PLUME::colour;
 
     mapButton->setColour (TextButton::buttonColourId,
-                          gesture.mapModeOn ? PLUME::UI::currentTheme.getColour (detailPanelActiveMapping)
-                                            : getLookAndFeel().findColour (TextButton::buttonColourId));
+                          gesture.mapModeOn ? gesture.getHighlightColour()
+                                                     .interpolatedWith (Colour (0xffffffff), 0.4f)
+                                            : gesture.getHighlightColour());
     repaint();
 }
 
@@ -231,7 +228,7 @@ void MapperBanner::updateComponents()
 void MapperBanner::paintParameterSlotDisplay  (Graphics& g, juce::Rectangle<int> area,
                                                             const int numRows,
                                                             const int numColumns,
-                                                            const int margin)
+                                                            const int sideLength)
 {
     /*  Hitting this assert means you're trying to paint this object with a number of
         parameters that doesn't match the actual maximum number of parameters allowed
@@ -248,21 +245,21 @@ void MapperBanner::paintParameterSlotDisplay  (Graphics& g, juce::Rectangle<int>
 
         for (int column=0; column < numColumns; column++)
         {
-            int slotSide = jmin (rowHeight - margin, columnWidth - margin);
+            int slotSide = jmin (sideLength, rowHeight - 8, columnWidth - 8);
             auto slotArea = columnArea.removeFromLeft (columnWidth)
                                       .withSizeKeepingCentre (slotSide, slotSide);
 
             g.setColour ((row*numColumns) + column < gesture.getParameterArray().size() ?
-                            //PLUME::UI::currentTheme.getColour (PLUME::colour::detailPanelActiveMapping) :
-                            Colour (0xffffffff) :
+                            gesture.getHighlightColour() :
                             Colour (0x60202020));
-            g.fillRect (slotArea);
+            g.fillRoundedRectangle (slotArea.toFloat(), 2.0f);
 
+            /*
             if ((row*numColumns) + column < gesture.getParameterArray().size())
             {
                 g.setColour (Colour (0x60202020));
                 g.drawRect (slotArea, 1.5f);
-            }
+            }*/
         }
     }
 }

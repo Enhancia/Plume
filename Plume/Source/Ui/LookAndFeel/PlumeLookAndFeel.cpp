@@ -551,10 +551,11 @@ void TestTunerLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int widt
 
         if (isTwoVal || isThreeVal)
         {
-            if (slider.getThumbBeingDragged() != -1)
+            if (slider.getThumbBeingDragged() != -1 &&
+                slider.findColour (Slider::trackColourId) != Colour (0x00000000))
             {
-                g.setColour(slider.findColour (Slider::trackColourId).withAlpha (0.6f));
-                g.fillEllipse(juce::Rectangle<float> (25.0f, 25.0f)
+                g.setColour (slider.findColour (Slider::trackColourId).withAlpha (0.6f));
+                g.fillEllipse (juce::Rectangle<float> (25.0f, 25.0f)
                                   .withCentre (slider.getThumbBeingDragged() == 1 ? minPoint
                                                                                   : maxPoint));
             }

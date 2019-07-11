@@ -64,7 +64,7 @@ enum PlumeColourID
             basePanelMainText,
             basePanelSubText,
                 
-        // gesture detail window
+            // gesture detail window
             detailPanelBackground,
             detailPanelHighlightedBackground,
             detailPanelMainText,
@@ -73,6 +73,13 @@ enum PlumeColourID
             detailPanelHighlightedSubText,
             detailPanelSubComponentsOutline,
             detailPanelActiveMapping,
+
+            // gesture colours
+            vibratoHighlight,
+            pitchBendHighlight,
+            tiltHighlight,
+            rollHighlight,
+            waveHighlight,
             
     // Top Panel
         topPanelBackground,
@@ -88,8 +95,8 @@ class PlumeTheme
 public:
     enum ThemeId
     {
-	plumeDefault = 0,
-	red
+	   plumeDefault = 0,
+	   red
     };
     
     template <typename... Items>

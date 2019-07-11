@@ -139,17 +139,17 @@ void OneRangeTuner::setStyle (TunerStyle newStyle)
     {
         case wave:
             setAngles (0.0f, MathConstants<float>::pi);
-            tunerColour = Colour (0xff7c80de);
+            tunerColour = getPlumeColour (waveHighlight);
             break;
 
         case tilt:
             setAngles (0.0f, MathConstants<float>::pi*4/10);
-            tunerColour = Colour (0xfff3a536);
+            tunerColour = getPlumeColour (tiltHighlight);
             break;
 
         case roll:
             setAngles (MathConstants<float>::pi*5/3, MathConstants<float>::pi*7/3);
-            tunerColour = Colour (0xffa255f3);
+            tunerColour = getPlumeColour (rollHighlight);
             break;
     }
 }

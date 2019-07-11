@@ -63,15 +63,13 @@ void GestureSettingsComponent::paint (Graphics& g)
     auto area = getLocalBounds();
     g.setColour (Colours::white);
 
-    auto retractableArea = area.removeFromBottom (retractablePanel->getBounds().expanded (MARGIN).getHeight() + 2*MARGIN);
-    retractableArea.setTop (retractableArea.getY() + 2*MARGIN);
-    //if (retractablePanel->isRetracted()) retractableArea.setHeight (retractablePanel->bannerHeight + 2*MARGIN);
+    g.fillRoundedRectangle (area.removeFromBottom (retractablePanel->getHeight()).toFloat(), 3.0f);
+    g.fillRoundedRectangle (area.withTrimmedBottom (MARGIN).toFloat(), 3.0f);
 
-    g.fillRoundedRectangle (area.toFloat(), 3.0f);
-    g.fillRoundedRectangle (retractableArea.toFloat(), 3.0f);
-
-    area.reduce (MARGIN, MARGIN);
-    auto headerArea = area.removeFromTop (this->HEADER_HEIGHT);
+    auto headerArea = getLocalBounds().removeFromTop (this->HEADER_HEIGHT);
+    g.setGradientFill (grad);
+    g.drawHorizontalLine (headerArea.getBottom(),
+                              float(area.getX() + 2*MARGIN), float(area.getWidth() - 2*MARGIN));
 
     //Gesture Type Text
     g.setColour (Colour(0xff626262));
@@ -86,37 +84,20 @@ void GestureSettingsComponent::paint (Graphics& g)
     g.drawText (gesture.getName(),
                 headerArea.removeFromLeft (getWidth()/2).reduced (MARGIN, 0),
                 Justification::centred, false);
-
-    g.setGradientFill (grad);
-
-    g.drawHorizontalLine (area.removeFromTop (getHeight()*6/10).getY(),
-                              float(area.getX() + 2*MARGIN), float(area.getWidth() - 2*MARGIN));
-
-    //g.drawHorizontalLine (area.getY(),
-    //                      float(area.getX() + 2*MARGIN), float(area.getWidth() - 2*MARGIN));
 }
 
 void GestureSettingsComponent::resized()
 {
     using namespace PLUME::UI;
 
-    auto area = getLocalBounds().reduced (MARGIN);
-    auto headerArea = area.removeFromTop (HEADER_HEIGHT);
+    auto area = getLocalBounds();
+    auto headerArea = area.removeFromTop (HEADER_HEIGHT).reduced (MARGIN);
 
     muteToggle->setBounds (headerArea.removeFromRight (getWidth()/4)
-                                      .withTrimmedRight (30)
-                                      .reduced (0.5*MARGIN, MARGIN));
+                                      .withTrimmedRight (30));
 
-    retractablePanel->setBounds (area.removeFromBottom (retractablePanel->isRetracted() ? 
-                                                            retractablePanel->bannerHeight :
-                                                            getHeight()*2/5 - HEADER_HEIGHT)
-                                     .reduced (MARGIN, 0));
-
-    area.removeFromBottom (2*MARGIN);
-
-    //gestTuner->setBounds (area.withSizeKeepingCentre (200, 200));
-    //gestTuner->setBounds (area.withSizeKeepingCentre (jmin (getWidth() + MARGIN, area.getHeight() + MARGIN),
-    //                                                  jmin (getWidth() + MARGIN, area.getHeight() + MARGIN)));
+    retractablePanel->setBounds (area.removeFromBottom (getHeight()*2/5 - HEADER_HEIGHT));
+    area.removeFromBottom (MARGIN);
     gestTuner->setBounds (area);
 
 
@@ -246,7 +227,8 @@ void GestureSettingsComponent::createToggles()
 void GestureSettingsComponent::createPanels()
 {
     addAndMakeVisible (descriptionPanel = new DescriptionPanel (gesture));
-    addAndMakeVisible (retractablePanel = new RetractableMapAndMidiPanel (gesture, gestureArray, wrapper));
+    addAndMakeVisible (retractablePanel = new RetractableMapAndMidiPanel (gesture, gestureArray,
+																		  wrapper, gestTuner->getColour()));
 	showAppropriatePanel();
 }
 

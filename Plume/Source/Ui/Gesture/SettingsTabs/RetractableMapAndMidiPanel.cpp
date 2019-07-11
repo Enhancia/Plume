@@ -91,7 +91,7 @@ void RetractableMapAndMidiPanel::paint (Graphics& g)
     grad.addColour (0.5, Colour (0x50323232));
 
     auto area = getLocalBounds();
-    area.removeFromTop (bannerHeight + MARGIN);
+    area.removeFromTop (bannerHeight);
 
     g.setGradientFill (grad);
 
@@ -144,6 +144,7 @@ void RetractableMapAndMidiPanel::changeListenerCallback(ChangeBroadcaster* sourc
     {
         parametersBody->updateParamCompArray();
         parametersBody->resized();
+        wrapper.clearWrapperEditor();
     }
     
     // If the editor is closed with map mode still on
