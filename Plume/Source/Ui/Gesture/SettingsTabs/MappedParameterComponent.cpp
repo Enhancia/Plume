@@ -12,8 +12,9 @@
 
 //==============================================================================
 MappedParameterComponent::MappedParameterComponent (Gesture& gest, Gesture::MappedParameter& mappedParam,
-                                                    const int id)
-    : gesture (gest), mappedParameter (mappedParam), paramId (id), highlightColour (gest.getHighlightColour())
+                                                    PluginWrapper& wrap, int id)
+    : gesture (gest), mappedParameter (mappedParam), wrapper (wrap),
+      paramId (id), highlightColour (gest.getHighlightColour())
 {
     TRACE_IN;
     // Creates the close button
@@ -29,11 +30,12 @@ MappedParameterComponent::MappedParameterComponent (Gesture& gest, Gesture::Mapp
     // Creates the reverse button
     Image reverse = ImageFileFormat::loadFrom (PlumeData::reverse_png, PlumeData::reverse_pngSize);
     
-    addAndMakeVisible (reverseButton = new ImageButton ("Reverse Button"));
-    reverseButton->setImages (false, true, true,
-							  reverse, 1.0f, Colour (0x00000000),
-							  reverse, 0.5f, Colour (0xff323232),
-							  reverse, 1.0f, Colour (0xff4d94d9));
+    addAndMakeVisible (reverseButton = new TextButton ("Reverse Button"));
+    reverseButton->setButtonText ("R");
+    reverseButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
+    reverseButton->setColour (TextButton::buttonOnColourId, highlightColour);
+    reverseButton->setColour (TextButton::textColourOnId , Colour (0xffffffff));
+    reverseButton->setColour (TextButton::textColourOffId , Colour (0xffffffff));
 	reverseButton->setToggleState (mappedParameter.reversed, dontSendNotification);
     reverseButton->setClickingTogglesState (true);
 	reverseButton->setState (Button::buttonNormal);
@@ -54,7 +56,7 @@ MappedParameterComponent::~MappedParameterComponent()
 
     closeButton = nullptr;
     reverseButton = nullptr;
-    valueLabel = nullptr;
+    paramNameLabel = nullptr;
     rangeLabelMin = nullptr;
     rangeLabelMax = nullptr;
 }
@@ -63,17 +65,9 @@ MappedParameterComponent::~MappedParameterComponent()
 void MappedParameterComponent::paint (Graphics& g)
 { 
     if (!allowDisplayUpdate) return;
-    
-    g.setColour (Colours::black);
-    g.setFont (PLUME::font::plumeFont.withHeight (11.0f));
 
-    g.drawFittedText (mappedParameter.parameter.getName (20),
-                      getLocalBounds().withHeight (closeButton->getHeight())
-                                      .withSizeKeepingCentre (getWidth()*3/4, closeButton->getHeight()),
-                      Justification::centred, 1);
-
-    drawSliderBackground (g);
 	drawCursor (g);
+    drawSliderBackground (g);
 }
 
 void MappedParameterComponent::resized()
@@ -83,12 +77,15 @@ void MappedParameterComponent::resized()
 
     closeButton->setBounds (topArea.removeFromRight (getWidth()/6));
 
-    //valueLabel->setBounds (area.removeFromTop (getHeight()/4). reduced (getWidth()/8, 0));
+    paramNameLabel->setBounds (topArea);
 
     reverseButton->setBounds (area.removeFromBottom (area.getHeight()/6)
-                                  .withSizeKeepingCentre (15, 15));
+                                  .withSizeKeepingCentre (18, 18));
     lowSlider->setBounds (area);
+    lowSlider->setMouseDragSensitivity (area.getHeight());
+
     highSlider->setBounds (area);
+    highSlider->setMouseDragSensitivity (area.getHeight());
 
     setLabelBounds (*rangeLabelMin);
     setLabelBounds (*rangeLabelMax);
@@ -192,6 +189,58 @@ void MappedParameterComponent::sliderValueChanged (Slider* sldr)
 
 void MappedParameterComponent::mouseDown (const MouseEvent& e)
 {
+	DBG("Click");
+    if (e.eventComponent == paramNameLabel)
+    {
+        DBG ("Label Click");
+        handleLabelClick (e);
+    }
+    else
+    {
+        handleSliderClick (e);
+    }
+}
+
+
+void MappedParameterComponent::handleLabelClick (const MouseEvent& e)
+{
+    if (e.mods.isLeftButtonDown())
+    {
+        PopupMenu parameterListMenu;
+
+        parameterListMenu.addItem (1, "None");
+        parameterListMenu.addSeparator();
+
+        DBG ("1st Index : " << wrapper.getWrapperProcessor().getParameters()[0]->getParameterIndex());
+        DBG ("last Index : " << wrapper.getWrapperProcessor().getParameters()[wrapper.getWrapperProcessor().getParameters()
+                                                                                                           .size()-1]
+                                    ->getParameterIndex());
+
+		for (auto* param : wrapper.getWrapperProcessor().getParameters())
+		{
+            parameterListMenu.addItem (param->getParameterIndex() + 2, param->getName (20));
+		}
+
+        parameterListMenu.showMenuAsync (PopupMenu::Options().withParentComponent (getParentComponent())
+                                                             .withMinimumWidth (getWidth() - 4)
+                                                             .withMaximumNumColumns (1)
+                                                             .withPreferredPopupDirection
+                                                                 (PopupMenu::Options
+                                                                           ::PopupDirection
+                                                                           ::downwards)
+                                                             //.withTargetScreenArea (getBounds()),
+                                                             .withTargetComponent (this),
+                                         ModalCallbackFunction::forComponent (parameterMenuCallback, this));
+    }
+}
+
+void MappedParameterComponent::parameterMenuCallback (int result, MappedParameterComponent* mpc)
+{
+    DBG ("Result : " << result);
+}
+
+void MappedParameterComponent::handleSliderClick (const MouseEvent& e)
+{
     if (e.mods.isLeftButtonDown())
     {
         objectBeingDragged = getObjectToDrag (e);
@@ -217,6 +266,9 @@ void MappedParameterComponent::mouseDown (const MouseEvent& e)
                 
                 lowSlider->setSliderSnapsToMousePosition (false);
                 highSlider->setSliderSnapsToMousePosition (false);
+                
+                lowSlider->mouseDown (e.getEventRelativeTo (lowSlider));
+                highSlider->mouseDown (e.getEventRelativeTo (highSlider));
             }
 
             repaint();
@@ -225,11 +277,13 @@ void MappedParameterComponent::mouseDown (const MouseEvent& e)
         {
             if (objectBeingDragged == lowThumb)
             {
+                rangeLabelMin->setVisible (true);
                 rangeLabelMin->showEditor();
             }
 
             else if (objectBeingDragged == highThumb)
             {
+                rangeLabelMax->setVisible (true);
                 rangeLabelMax->showEditor();
             }
         }
@@ -238,6 +292,8 @@ void MappedParameterComponent::mouseDown (const MouseEvent& e)
 
 void MappedParameterComponent::mouseDrag (const MouseEvent& e)
 {
+    if (!e.mods.isLeftButtonDown() || e.getNumberOfClicks() > 1) return;
+
     if (objectBeingDragged == lowThumb)
     {
         lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider));
@@ -257,33 +313,37 @@ void MappedParameterComponent::mouseDrag (const MouseEvent& e)
 
 void MappedParameterComponent::mouseUp (const MouseEvent& e)
 {
-    if (objectBeingDragged != none)
+
+    if (e.mods.isLeftButtonDown() && e.getNumberOfClicks() == 1)
     {
-        if (objectBeingDragged == lowThumb)
+        if (objectBeingDragged != none)
         {
-            lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider));
-            rangeLabelMin->setVisible (false);
+            if (objectBeingDragged == lowThumb)
+            {
+                lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider));
+                rangeLabelMin->setVisible (false);
+            }
+
+            else if (objectBeingDragged == highThumb)
+            {
+                highSlider->mouseDrag (e.getEventRelativeTo (highSlider));
+                rangeLabelMax->setVisible (false);
+            }
+
+            else if (objectBeingDragged == middleArea)
+            {
+                lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider));
+                highSlider->mouseDrag (e.getEventRelativeTo (highSlider));
+                lowSlider->setSliderSnapsToMousePosition (true);
+                highSlider->setSliderSnapsToMousePosition (true);
+
+                rangeLabelMin->setVisible (false);
+                rangeLabelMax->setVisible (false);
+            }
+
+            objectBeingDragged = none;
+            repaint();
         }
-
-        else if (objectBeingDragged == highThumb)
-        {
-            highSlider->mouseDrag (e.getEventRelativeTo (highSlider));
-            rangeLabelMax->setVisible (false);
-        }
-
-        else if (objectBeingDragged == middleArea)
-        {
-            lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider));
-            highSlider->mouseDrag (e.getEventRelativeTo (highSlider));
-            lowSlider->setSliderSnapsToMousePosition (true);
-            highSlider->setSliderSnapsToMousePosition (true);
-
-            rangeLabelMin->setVisible (false);
-            rangeLabelMax->setVisible (false);
-        }
-
-        objectBeingDragged = none;
-        repaint();
     }
 }
 
@@ -296,8 +356,6 @@ void MappedParameterComponent::updateDisplay()
 {
     if (allowDisplayUpdate)
     {
-        valueLabel->setText (String (mappedParameter.parameter.getValue(), 2), dontSendNotification);
-
         if (gesture.getValueForMappedParameter (mappedParameter.range, mappedParameter.reversed))
         {
             repaint (lowSlider->getBounds().withX (lowSlider->getBounds().getCentreX() - 13)
@@ -310,12 +368,13 @@ void MappedParameterComponent::updateDisplay()
 void MappedParameterComponent::createLabels()
 {
     //=== Value label ===
-    addAndMakeVisible (valueLabel = new Label ("Value Label", String (mappedParameter.parameter.getValue(), 2)));
-    valueLabel->setEditable (false, false, false);
-    valueLabel->setFont (Font (PLUME::UI::font, 11.0f, Font::plain));
-    valueLabel->setColour (Label::textColourId, Colour (0xff000000));
-    valueLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
-    valueLabel->setJustificationType (Justification::centredBottom);
+    addAndMakeVisible (paramNameLabel = new Label ("Value Label", mappedParameter.parameter.getName (20)));
+    paramNameLabel->setEditable (false, false, false);
+    paramNameLabel->setFont (Font (PLUME::UI::font, 11.0f, Font::plain));
+    paramNameLabel->setColour (Label::textColourId, Colour (0xff000000));
+    paramNameLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
+    paramNameLabel->setJustificationType (Justification::centredLeft);
+    paramNameLabel->addMouseListener (this, false);
     
     //=== range Control labels ===
     addAndMakeVisible (rangeLabelMin = new Label ("Min Label", String (mappedParameter.range.getStart(), 1)));
@@ -327,6 +386,10 @@ void MappedParameterComponent::createLabels()
     rangeLabelMin->setFont (Font (PLUME::UI::font, 8.0f, Font::plain));
     rangeLabelMin->setColour (Label::textColourId, highlightColour);
     rangeLabelMin->setColour (Label::backgroundColourId, Colour (0x00000000));
+    rangeLabelMin->setColour (TextEditor::textColourId, highlightColour);
+    rangeLabelMin->setColour (TextEditor::highlightColourId, highlightColour.withAlpha (0.2f));
+    rangeLabelMin->setColour (TextEditor::highlightedTextColourId, highlightColour);
+    rangeLabelMin->setColour (CaretComponent::caretColourId, highlightColour.withAlpha (0.2f));
     rangeLabelMin->setJustificationType (Justification::centred);
     rangeLabelMin->setVisible (false);
     
@@ -336,6 +399,10 @@ void MappedParameterComponent::createLabels()
     rangeLabelMax->setFont (Font (PLUME::UI::font, 8.0f, Font::plain));
     rangeLabelMax->setColour (Label::textColourId, highlightColour);
     rangeLabelMax->setColour (Label::backgroundColourId, Colour (0x00000000));
+    rangeLabelMax->setColour (TextEditor::textColourId, highlightColour);
+    rangeLabelMax->setColour (TextEditor::highlightColourId, highlightColour.withAlpha (0.2f));
+    rangeLabelMax->setColour (TextEditor::highlightedTextColourId, highlightColour);
+    rangeLabelMax->setColour (CaretComponent::caretColourId, highlightColour.withAlpha (0.2f));
     rangeLabelMax->setJustificationType (Justification::centred);
     rangeLabelMax->setVisible (false);
     
@@ -349,12 +416,12 @@ void MappedParameterComponent::setLabelBounds (Label& labelToResize)
     if (&labelToResize == rangeLabelMin)
     {
         rangeLabelMin->setCentrePosition (lowSlider->getBounds().getCentreX() + 15,
-                                          getThumbY (lowThumb));
+                                          (int) getThumbY (lowThumb));
     }
     else if (&labelToResize == rangeLabelMax)
     {
         rangeLabelMax->setCentrePosition (highSlider->getBounds().getCentreX() + 15,
-                                          getThumbY (highThumb));
+                                          (int) getThumbY (highThumb));
     }
 }
 
@@ -381,18 +448,18 @@ void MappedParameterComponent::createSliders()
 }
 
 //==============================================================================
-int MappedParameterComponent::getThumbY (MappedParameterComponent::DraggableObject thumb)
+float MappedParameterComponent::getThumbY (MappedParameterComponent::DraggableObject thumb)
 {
     if (thumb == lowThumb)
     {
-        return lowSlider->getY() + 10 + (lowSlider->getHeight() - 20) *
-                                          (1 - lowSlider->getValue());
+        return lowSlider->getY() + 11.5f + (lowSlider->getHeight() - 23.0f) *
+                                          (1.0f - lowSlider->getValue());
     }
 
     if (thumb == highThumb)
     {
-        return highSlider->getY() + 10 + (highSlider->getHeight() - 20) *
-                                          (1 - highSlider->getValue());
+        return highSlider->getY() + 11.5f + (highSlider->getHeight() - 23.0f) *
+                                          (1.0f - highSlider->getValue());
     }
 
     return -1;
@@ -406,12 +473,12 @@ MappedParameterComponent::DraggableObject MappedParameterComponent::getObjectToD
     if (e.mods.isShiftDown())
         return middleArea;
 
-    const int tolerance = (getThumbY (lowThumb) - getThumbY (highThumb))/5;
+    const float tolerance = (getThumbY (lowThumb) - getThumbY (highThumb))/5.0f;
 
-    if (e.y <= getThumbY (highThumb) + tolerance)
+    if ((float) e.y <= getThumbY (highThumb) + tolerance)
         return highThumb;
     
-    if (e.y < getThumbY (lowThumb) - tolerance)
+    if ((float) e.y < getThumbY (lowThumb) - tolerance)
         return middleArea;
 
     return lowThumb;
@@ -422,16 +489,20 @@ MappedParameterComponent::DraggableObject MappedParameterComponent::getObjectToD
 void MappedParameterComponent::drawCursor (Graphics& g)
 {
     Path cursorPath;
-    int cursorY = lowSlider->getY() + 10 
-                                    + (lowSlider->getHeight() - 20) *
-                                         (1 - gesture.getValueForMappedParameter (mappedParameter.range,
-                                                                                  mappedParameter.reversed));
+    float cursorY = lowSlider->getY() + 11.5f +
+                        (lowSlider->getHeight() - 23.0f) *
+                        (1.0f - gesture.getValueForMappedParameter (mappedParameter.range,
+                                                                    mappedParameter.reversed));
 
-    cursorPath.startNewSubPath (lowSlider->getBounds().getCentreX() - 6, cursorY);
-	cursorPath.lineTo(lowSlider->getBounds().getCentreX() - 12, cursorY);
+    Point<float> cursorPoint = {lowSlider->getBounds().getCentreX() - 9.0f,
+                                cursorY};
+
+    cursorPath.addTriangle ({cursorPoint.x - 3.0f, cursorPoint.y - 3.0f},
+                            {cursorPoint.x + 3.0f, cursorPoint.y       },
+                            {cursorPoint.x - 3.0f, cursorPoint.y + 3.0f});
 
     g.setColour (highlightColour);
-    g.strokePath (cursorPath, PathStrokeType (1.0f));
+    g.fillPath (cursorPath);
 }
 
 
@@ -442,12 +513,10 @@ void MappedParameterComponent::drawSliderBackground (Graphics& g)
                                                   .toFloat(),
                             3.0f);
 
-    g.drawRect (getLocalBounds());
-
-    Point<float> startPoint (lowSlider->getBounds().getCentreX(),
+    Point<float> startPoint (lowSlider->getX() + lowSlider->getWidth() * 0.5f,
                              getThumbY (lowThumb));
 
-    Point<float> endPoint (lowSlider->getBounds().getCentreX(),
+    Point<float> endPoint (lowSlider->getX() + lowSlider->getWidth() * 0.5f,
                            getThumbY (highThumb));
 
     Path valueTrack;

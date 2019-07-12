@@ -13,6 +13,7 @@
 #include "../../../../JuceLibraryCode/JuceHeader.h"
 #include "Common/PlumeCommon.h"
 #include "Gesture/Gesture.h"
+#include "Wrapper/PluginWrapper.h"
 
 #ifndef W 
 #define W Component::getWidth()
@@ -33,7 +34,7 @@ class MappedParameterComponent    : public Component,
 public:
     //==============================================================================
     MappedParameterComponent (Gesture& gest, Gesture::MappedParameter& mappedParam,
-                              const int id);
+                              PluginWrapper& wrap, const int id);
     ~MappedParameterComponent();
 
     //==============================================================================
@@ -70,17 +71,25 @@ private:
     void createSliders();
 
     //==============================================================================
-    int getThumbY (DraggableObject thumb);
+    float getThumbY (DraggableObject thumb);
     void setLabelBounds (Label& labelToResize);
 
     //==============================================================================
+    void handleLabelClick (const MouseEvent& e);
+    static void parameterMenuCallback (int result, MappedParameterComponent* mpc);
+
+    void handleSliderClick (const MouseEvent& e);
     DraggableObject getObjectToDrag (const MouseEvent& e);
+
+    //==============================================================================
     void drawCursor (Graphics& g);
     void drawSliderBackground (Graphics& g);
     
     //==============================================================================
     Gesture& gesture;
+    PluginWrapper& wrapper;
     Gesture::MappedParameter& mappedParameter;
+
     const int paramId;
     DraggableObject objectBeingDragged = none;
     float lastValue = -1.0f;
@@ -91,8 +100,8 @@ private:
 
     //==============================================================================
     ScopedPointer<ImageButton> closeButton;
-    ScopedPointer<ImageButton> reverseButton;
-    ScopedPointer<Label> valueLabel;
+    ScopedPointer<TextButton> reverseButton;
+    ScopedPointer<Label> paramNameLabel;
     ScopedPointer<Label> rangeLabelMin;
     ScopedPointer<Label> rangeLabelMax;
     ScopedPointer<Slider> lowSlider;

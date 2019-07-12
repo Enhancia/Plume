@@ -72,7 +72,7 @@ void MapperComponent::initializeParamCompArray()
     // adds a MappedParameterComponent for each parameter of the gesture, and makes them visible.
     for (auto* gestureParam : gesture.getParameterArray())
     {
-        paramCompArray.add (new MappedParameterComponent (gesture, *gestureParam, i++));
+        paramCompArray.add (new MappedParameterComponent (gesture, *gestureParam, wrapper, i++));
         addAndMakeVisible (paramCompArray.getLast());
     }
 }
@@ -87,7 +87,7 @@ void MapperComponent::updateParamCompArray()
         // Adds every new parameter as a parameterComp at the end of the array
         for (int i=paramCompArray.size(); i<gesture.getParameterArray().size(); i++)
         {
-            paramCompArray.add (new MappedParameterComponent (gesture, *gesture.getParameterArray()[i], i));
+            paramCompArray.add (new MappedParameterComponent (gesture, *gesture.getParameterArray()[i], wrapper, i));
             addAndMakeVisible (paramCompArray.getLast());
         }
     }
@@ -104,14 +104,14 @@ void MapperComponent::updateParamCompArray()
             {
                 if (&(paramCompArray[i]->getMappedParameter()) != gestureParam)
                 {
-                    paramCompArray.set (i, new MappedParameterComponent (gesture, *gestureParam, i));
+                    paramCompArray.set (i, new MappedParameterComponent (gesture, *gestureParam, wrapper, i));
                     addAndMakeVisible (paramCompArray[i]);
                     shouldCheckIfUpdateIsNecessary = false;
                 }
             }
             else
             {
-                paramCompArray.set (i, new MappedParameterComponent (gesture, *gestureParam, i));
+                paramCompArray.set (i, new MappedParameterComponent (gesture, *gestureParam, wrapper, i));
                 addAndMakeVisible (paramCompArray[i]);
             }
 
