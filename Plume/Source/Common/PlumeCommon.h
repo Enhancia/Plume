@@ -27,6 +27,7 @@
 // Preprocessor expressions
 #define TRACE_IN  Logger::writeToLog ("[+] Entering: " + String(__FUNCTION__) + "\n")
 #define TRACE_OUT Logger::writeToLog ("[-]  Leaving: " + String(__FUNCTION__) + "\n")
+#define getPlumeColour(a) (PLUME::UI::currentTheme.getColour (PLUME::colour::a))
 
 namespace PLUME
 {

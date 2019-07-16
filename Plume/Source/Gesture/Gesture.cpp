@@ -317,13 +317,13 @@ String Gesture::getGestureTypeDescription (int gestureType)
     switch (gestureType)
     {
         case (int) Gesture::vibrato:
-            return "Quickly move your finger sideways on a back and forth motion "
-                   "to create a sine-shaped modulation.\n";
+            return "Quickly move your finger back and forth "
+                   "to change the pitch in a sine shape.\n";
             break;
             
         case (int) Gesture::pitchBend:
-            return "Lean your hand to either side to change the pitch of your note "
-                   "or modulate an effect.\n";
+            return "Lean your hand to either side "
+                   "to change the pitch of your note\n";
             break;
             
         case (int) Gesture::tilt:
@@ -335,11 +335,35 @@ String Gesture::getGestureTypeDescription (int gestureType)
             break;
             
         case (int) Gesture::roll:
-            return "Rotate your hand on the forearm axis to modulate your sound.\n";
+            return "Rotate your hand sideways to modulate your sound.\n";
             break;
         
         default:
             return "-";
+    }
+}
+
+Colour Gesture::getHighlightColour() const
+{
+    return getHighlightColour (type);
+}
+
+Colour Gesture::getHighlightColour (int gestureType)
+{
+    switch (gestureType)
+    {
+        case (int) Gesture::tilt:
+            return getPlumeColour (tiltHighlight);
+        case (int) Gesture::roll:
+            return getPlumeColour (rollHighlight);
+        case (int) Gesture::wave:
+            return getPlumeColour (waveHighlight);
+        case (int) Gesture::vibrato:
+            return getPlumeColour (vibratoHighlight);
+        case (int) Gesture::pitchBend:
+            return getPlumeColour (pitchBendHighlight);
+        default:
+            return Colour (0xffffffff);
     }
 }
 
@@ -372,7 +396,7 @@ void Gesture::addParameter (AudioProcessorParameter& param, Range<float> r, bool
     sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
 }
 
-void Gesture::deleteParameter(int paramId)
+void Gesture::deleteParameter (int paramId)
 {
     TRACE_IN;
     ScopedLock paramlock (parameterArrayLock);
@@ -380,6 +404,18 @@ void Gesture::deleteParameter(int paramId)
     parameterArray.remove (paramId);
     
     if (parameterArray.isEmpty()) mapped = false;
+    
+    sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
+}
+
+void Gesture::replaceParameter (int paramId,
+                                AudioProcessorParameter& param,
+                                Range<float> r, bool rev)
+{
+    TRACE_IN;
+    ScopedLock paramlock (parameterArrayLock);
+    
+    parameterArray.set (paramId, new MappedParameter (param, r, rev));
     
     sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
 }

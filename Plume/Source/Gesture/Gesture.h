@@ -335,6 +335,23 @@ public:
                newGesturePanel)
      */
     static String getGestureTypeDescription (int gestureType);
+
+    /**
+       \brief  Returns the highlight colour corresponding to the gesture's type.
+
+               Call this method to return a specific gesture type description.
+               This can be used by the interface to draw the gesture's panels
+     */
+    Colour getHighlightColour() const;
+
+    /**
+       \brief  Returns the highlight colour corresponding to a specified gesture type.
+
+               Call this method to return a specific gesture type colour.
+               This can be used by the interface to draw the gesture's panels.
+     */
+    static Colour getHighlightColour (int gestureType);
+
     /**
      *  \brief Method to know if the gesture currently creates a pitchWheel midi message.
      *
@@ -347,12 +364,20 @@ public:
     /**
      *  \brief Creates a new MappedParameter.
      */
-    void addParameter (AudioProcessorParameter& param, Range<float> r = Range<float> (0.0f, 1.0f), bool rev = false);
+    void addParameter (AudioProcessorParameter& param,
+                       Range<float> r = Range<float> (0.0f, 1.0f), bool rev = false);
     
     /**
      *  \brief Deletes a MappedParameter.
      */
     void deleteParameter(int paramId);
+
+    /**
+     *  \brief Replaces a MappedParameter with a new one.
+     */
+    void replaceParameter (int paramIdToReplace,
+                           AudioProcessorParameter& param,
+                           Range<float> r = Range<float> (0.0f, 1.0f), bool rev = false);
     
     /**
      *  \brief Deletes all MappedParameter in the array.

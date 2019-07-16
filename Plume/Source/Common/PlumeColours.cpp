@@ -97,6 +97,13 @@ PlumeTheme PlumeTheme::createDefaultTheme()
                          0xff000000, //detailPanelSubComponentsOutline
                          0xff7c80de, //detailPanelActiveMapping ( old 0xff943cb0 )
                          
+                         // gesture colours
+                         0xffec6565, //vibratoHighlight
+                         0xff1fcaa8, //pitchBendHighlight
+                         0xfff3a536, //tiltHighlight
+                         0xffa255f3, //rollHighlight
+                         0xff7c80de, //waveHighlight
+                         
                          // Top Panels
                          0xff494949, //topPanelBackground
                          0xc0000000, //topPanelTransparentArea

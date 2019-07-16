@@ -506,6 +506,19 @@ void TestTunerLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int widt
         Path valueTrack;
         Point<float> minPoint, maxPoint, thumbPoint;
 
+        if (isTwoVal || isThreeVal)
+        {
+            minPoint = { slider.isHorizontal() ? minSliderPos : width * 0.5f,
+                         slider.isHorizontal() ? height * 0.5f : minSliderPos };
+
+            if (isThreeVal)
+                thumbPoint = { slider.isHorizontal() ? sliderPos : width * 0.5f,
+                               slider.isHorizontal() ? height * 0.5f : sliderPos };
+
+            maxPoint = { slider.isHorizontal() ? maxSliderPos : width * 0.5f,
+                         slider.isHorizontal() ? height * 0.5f : maxSliderPos };
+        }
+        else
         {
             auto kx = slider.isHorizontal() ? sliderPos : (x + width * 0.5f);
             auto ky = slider.isHorizontal() ? (y + height * 0.5f) : sliderPos;
@@ -525,7 +538,8 @@ void TestTunerLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int widt
 
         if (! isTwoVal)
         {
-			if (slider.getThumbBeingDragged() != -1)
+			if (slider.getThumbBeingDragged() != -1 &&
+                slider.findColour (Slider::trackColourId) != Colour (0x00000000))
 			{
 				g.setColour(slider.findColour (Slider::trackColourId).withAlpha (0.6f));
 				g.fillEllipse(juce::Rectangle<float> (25.0f, 25.0f).withCentre (maxPoint));
@@ -534,7 +548,24 @@ void TestTunerLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int widt
             g.setColour (slider.findColour (Slider::thumbColourId));
             g.fillEllipse (juce::Rectangle<float> (static_cast<float> (thumbWidth),
                                                    static_cast<float> (thumbWidth)).withCentre (maxPoint));
+        }
 
+        if (isTwoVal || isThreeVal)
+        {
+            if (slider.getThumbBeingDragged() != -1 &&
+                slider.findColour (Slider::trackColourId) != Colour (0x00000000))
+            {
+                g.setColour (slider.findColour (Slider::trackColourId).withAlpha (0.6f));
+                g.fillEllipse (juce::Rectangle<float> (25.0f, 25.0f)
+                                  .withCentre (slider.getThumbBeingDragged() == 1 ? minPoint
+                                                                                  : maxPoint));
+            }
+
+            g.setColour (slider.findColour (Slider::thumbColourId));
+            g.fillEllipse (juce::Rectangle<float> (static_cast<float> (thumbWidth),
+                                                   static_cast<float> (thumbWidth)).withCentre (maxPoint));
+            g.fillEllipse (juce::Rectangle<float> (static_cast<float> (thumbWidth),
+                                                   static_cast<float> (thumbWidth)).withCentre (minPoint));
         }
     }
 }

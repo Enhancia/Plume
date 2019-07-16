@@ -241,10 +241,12 @@ void HeaderComponent::buttonClicked (Button* bttn)
         pluginListMenu.showMenuAsync (PopupMenu::Options().withParentComponent (getParentComponent())
                                                           .withMinimumWidth (100)
                                                           .withMaximumNumColumns (3)
-                                                          .withPreferredPopupDirection (PopupMenu::
-                                                                                        Options::
-                                                                                        PopupDirection::downwards)
-                                                          .withTargetComponent (pluginListButton),
+                                                          .withPreferredPopupDirection
+                                                              (PopupMenu::Options::PopupDirection::downwards)
+                                                          .withTargetScreenArea
+                                                              (juce::Rectangle<int> (getScreenX() + getWidth()-2,
+                                                                                     getScreenY() + getHeight(),
+                                                                                     1, 1)),
                                       ModalCallbackFunction::forComponent (pluginMenuCallback, this));
     }
 
