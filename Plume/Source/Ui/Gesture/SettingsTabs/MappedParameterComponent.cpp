@@ -11,9 +11,9 @@
 #include "MappedParameterComponent.h"
 
 //==============================================================================
-MappedParameterComponent::MappedParameterComponent (Gesture& gest, Gesture::MappedParameter& mappedParam,
-                                                    PluginWrapper& wrap, int id)
-    : gesture (gest), mappedParameter (mappedParam), wrapper (wrap),
+MappedParameterComponent::MappedParameterComponent (Gesture& gest,  GestureArray& gestArr, PluginWrapper& wrap,
+                                                    Gesture::MappedParameter& mappedParam, int id)
+    : gesture (gest), gestureArray (gestArr), mappedParameter (mappedParam), wrapper (wrap),
       paramId (id), highlightColour (gest.getHighlightColour())
 {
     TRACE_IN;
@@ -75,11 +75,11 @@ void MappedParameterComponent::resized()
     auto area = getLocalBounds();
     auto topArea = area.removeFromTop (area.getHeight()/6);
 
-    closeButton->setBounds (topArea.removeFromRight (getWidth()/6));
+    //closeButton->setBounds (topArea.removeFromRight (getWidth()/6));
 
     paramNameLabel->setBounds (topArea);
 
-    reverseButton->setBounds (area.removeFromBottom (area.getHeight()/6)
+    reverseButton->setBounds (area.removeFromBottom (jmax (20, getHeight()/6))
                                   .withSizeKeepingCentre (18, 18));
     lowSlider->setBounds (area);
     lowSlider->setMouseDragSensitivity (area.getHeight());
@@ -133,9 +133,11 @@ void MappedParameterComponent::labelTextChanged (Label* lbl)
         
         // Normal case
         {
-            mappedParameter.range.setStart(val);
+            mappedParameter.range.setStart (val);
             lbl->setText (String (mappedParameter.range.getStart(), 1), dontSendNotification);
             lowSlider->setValue (val, dontSendNotification);
+            setLabelBounds (*rangeLabelMin);
+            rangeLabelMin->setVisible (false);
         }
     }
     else if (lbl == rangeLabelMax)
@@ -147,60 +149,97 @@ void MappedParameterComponent::labelTextChanged (Label* lbl)
         {
 			mappedParameter.range.setEnd (val);
             lbl->setText (String (mappedParameter.range.getEnd(), 1), dontSendNotification);
-            lowSlider->setValue (val, dontSendNotification);
+            highSlider->setValue (val, dontSendNotification);
+            setLabelBounds (*rangeLabelMax);
+            rangeLabelMax->setVisible (false);
         }
     }
+}
+
+
+void MappedParameterComponent::editorHidden (Label* lbl, TextEditor&)
+{
+    lbl->setVisible (false);
 }
 
 void MappedParameterComponent::sliderValueChanged (Slider* sldr)
 {
     if (sldr == lowSlider)
     {
-        mappedParameter.range.setStart ((float) lowSlider->getValue());
-        rangeLabelMin->setText (String (lowSlider->getValue()), dontSendNotification);
+        mappedParameter.range.setStart (float (lowSlider->getValue()));
+        rangeLabelMin->setText (String (lowSlider->getValue(), 1), dontSendNotification);
         setLabelBounds (*rangeLabelMin);
 
         // in case the other thumb is dragged along..
-        if (mappedParameter.range.getStart() > mappedParameter.range.getEnd())
+        if (float (highSlider->getValue()) != mappedParameter.range.getEnd())
         {
-            mappedParameter.range.setEnd (float (lowSlider->getValue()));
             highSlider->setValue (double (mappedParameter.range.getEnd()), dontSendNotification);
             setLabelBounds (*rangeLabelMax);
-            rangeLabelMax->setText (String (highSlider->getValue()), dontSendNotification);
+            rangeLabelMax->setText (String (highSlider->getValue(), 1), dontSendNotification);
         }
     }
 
     else if (sldr == highSlider)
     {
-        mappedParameter.range.setEnd ((float) highSlider->getValue());
-		rangeLabelMax->setText (String (highSlider->getValue()), dontSendNotification);
+        mappedParameter.range.setEnd (float (highSlider->getValue()));
+		rangeLabelMax->setText (String (highSlider->getValue(), 1), dontSendNotification);
         setLabelBounds (*rangeLabelMax);
 
         // in case the other thumb is dragged along..
-        if (mappedParameter.range.getStart() > mappedParameter.range.getEnd())
+        if (float (lowSlider->getValue()) != mappedParameter.range.getStart())
         {
-            mappedParameter.range.setStart (float (highSlider->getValue()));
             lowSlider->setValue (double (mappedParameter.range.getStart()), dontSendNotification);
             setLabelBounds (*rangeLabelMin);
-            rangeLabelMin->setText (String (lowSlider->getValue()), dontSendNotification);
+            rangeLabelMin->setText (String (lowSlider->getValue(), 1), dontSendNotification);
         }
+    }
+}
+void MappedParameterComponent::mouseEnter (const MouseEvent& e)
+{
+    if (e.eventComponent == paramNameLabel)
+    {
+        paramNameLabel->setColour (Label::textColourId, Colour (0x80000000));
+    }
+}
+
+void MappedParameterComponent::mouseExit (const MouseEvent& e)
+{
+    if (e.eventComponent == paramNameLabel)
+    {
+        paramNameLabel->setColour (Label::textColourId, Colour (0xff000000));
     }
 }
 
 void MappedParameterComponent::mouseDown (const MouseEvent& e)
 {
-	DBG("Click");
-    if (e.eventComponent == paramNameLabel)
+    if (e.mods.isPopupMenu())
     {
-        DBG ("Label Click");
+        PopupMenu rightClickMenu;
+
+        rightClickMenu.addItem (1, "Delete");
+
+        rightClickMenu.showMenuAsync (PopupMenu::Options().withParentComponent (getParentComponent())
+                                                          .withMinimumWidth (getWidth() - 4)
+                                                          .withMaximumNumColumns (1)
+                                                          .withStandardItemHeight (16)
+                                                          .withPreferredPopupDirection
+                                                              (PopupMenu::Options
+                                                                        ::PopupDirection
+                                                                        ::downwards),
+                                                          //.withTargetComponent (this),
+                                         ModalCallbackFunction::forComponent (rightClickMenuCallback, this));
+    }
+    
+    else if (e.eventComponent == paramNameLabel)
+    {
         handleLabelClick (e);
     }
-    else
+    
+    else if (e.x >= getWidth()/4 && e.x <= getWidth()*3/4)
     {
         handleSliderClick (e);
     }
 }
-
 
 void MappedParameterComponent::handleLabelClick (const MouseEvent& e)
 {
@@ -211,32 +250,71 @@ void MappedParameterComponent::handleLabelClick (const MouseEvent& e)
         parameterListMenu.addItem (1, "None");
         parameterListMenu.addSeparator();
 
-        DBG ("1st Index : " << wrapper.getWrapperProcessor().getParameters()[0]->getParameterIndex());
-        DBG ("last Index : " << wrapper.getWrapperProcessor().getParameters()[wrapper.getWrapperProcessor().getParameters()
-                                                                                                           .size()-1]
-                                    ->getParameterIndex());
-
 		for (auto* param : wrapper.getWrapperProcessor().getParameters())
 		{
-            parameterListMenu.addItem (param->getParameterIndex() + 2, param->getName (20));
+            parameterListMenu.addItem (param->getParameterIndex() + 2,
+                                       param->getName (20),
+                                       !gestureArray.parameterIsMapped (param->getParameterIndex()));
 		}
 
         parameterListMenu.showMenuAsync (PopupMenu::Options().withParentComponent (getParentComponent())
                                                              .withMinimumWidth (getWidth() - 4)
                                                              .withMaximumNumColumns (1)
+                                                             .withStandardItemHeight (16)
                                                              .withPreferredPopupDirection
                                                                  (PopupMenu::Options
                                                                            ::PopupDirection
                                                                            ::downwards)
-                                                             //.withTargetScreenArea (getBounds()),
-                                                             .withTargetComponent (this),
+                                                             .withTargetScreenArea (juce::Rectangle<int> (getScreenX(),
+                                                                                                          getScreenY()+10,
+                                                                                                          getWidth(), getHeight())),
+                                                             //.withTargetComponent (this),
                                          ModalCallbackFunction::forComponent (parameterMenuCallback, this));
     }
 }
 
 void MappedParameterComponent::parameterMenuCallback (int result, MappedParameterComponent* mpc)
 {
-    DBG ("Result : " << result);
+	mpc->handleMenuResult (result, true);
+}
+
+void MappedParameterComponent::rightClickMenuCallback (int result, MappedParameterComponent* mpc)
+{
+    mpc->handleMenuResult (result, false);
+}
+
+void MappedParameterComponent::handleMenuResult (const int result, const bool isParameterMenu)
+{
+    if (isParameterMenu)
+    {
+        if (result == 0)
+        {
+            paramNameLabel->setColour (Label::textColourId, Colour (0xff000000));
+        }
+
+        else if (result == 1)
+        {
+            gesture.deleteParameter (paramId);
+        }
+
+        else if (result < wrapper.getWrapperProcessor().getParameters().size() + 2)
+        {
+            AudioProcessorParameter& newParam = *wrapper.getWrapperProcessor().getParameters()[result-2];
+
+            if (!gestureArray.parameterIsMapped (newParam.getParameterIndex()))
+            {
+                allowDisplayUpdate = false;
+
+                gesture.replaceParameter (paramId, newParam,
+                                          mappedParameter.range, mappedParameter.reversed);
+            }
+        }
+    }
+
+    else if (result == 1)
+    {
+        gesture.deleteParameter (paramId);
+    }
 }
 
 void MappedParameterComponent::handleSliderClick (const MouseEvent& e)
@@ -277,14 +355,18 @@ void MappedParameterComponent::handleSliderClick (const MouseEvent& e)
         {
             if (objectBeingDragged == lowThumb)
             {
+                objectBeingDragged = none;
                 rangeLabelMin->setVisible (true);
                 rangeLabelMin->showEditor();
+                repaint();
             }
 
             else if (objectBeingDragged == highThumb)
             {
+                objectBeingDragged = none;
                 rangeLabelMax->setVisible (true);
                 rangeLabelMax->showEditor();
+                repaint();
             }
         }
     }
@@ -292,7 +374,11 @@ void MappedParameterComponent::handleSliderClick (const MouseEvent& e)
 
 void MappedParameterComponent::mouseDrag (const MouseEvent& e)
 {
-    if (!e.mods.isLeftButtonDown() || e.getNumberOfClicks() > 1) return;
+    if (!e.mods.isLeftButtonDown() || e.getNumberOfClicks() > 1)
+    {
+        objectBeingDragged = none;
+        return;
+    }
 
     if (objectBeingDragged == lowThumb)
     {
@@ -313,7 +399,6 @@ void MappedParameterComponent::mouseDrag (const MouseEvent& e)
 
 void MappedParameterComponent::mouseUp (const MouseEvent& e)
 {
-
     if (e.mods.isLeftButtonDown() && e.getNumberOfClicks() == 1)
     {
         if (objectBeingDragged != none)
@@ -382,10 +467,11 @@ void MappedParameterComponent::createLabels()
     
     // LabelMin style
     rangeLabelMin->setEditable (true, false, false);
-    rangeLabelMin->setSize (30, 20);
-    rangeLabelMin->setFont (Font (PLUME::UI::font, 8.0f, Font::plain));
+    rangeLabelMin->setSize (30, 30);
+    rangeLabelMin->setFont (Font (PLUME::UI::font, 11.0f, Font::plain));
     rangeLabelMin->setColour (Label::textColourId, highlightColour);
     rangeLabelMin->setColour (Label::backgroundColourId, Colour (0x00000000));
+    rangeLabelMin->setColour (Label::textWhenEditingColourId, highlightColour);
     rangeLabelMin->setColour (TextEditor::textColourId, highlightColour);
     rangeLabelMin->setColour (TextEditor::highlightColourId, highlightColour.withAlpha (0.2f));
     rangeLabelMin->setColour (TextEditor::highlightedTextColourId, highlightColour);
@@ -395,10 +481,11 @@ void MappedParameterComponent::createLabels()
     
     // LabelMax style
     rangeLabelMax->setEditable (true, false, false);
-    rangeLabelMax->setSize (30, 20);
-    rangeLabelMax->setFont (Font (PLUME::UI::font, 8.0f, Font::plain));
+    rangeLabelMax->setSize (30, 30);
+    rangeLabelMax->setFont (Font (PLUME::UI::font, 11.0f, Font::plain));
     rangeLabelMax->setColour (Label::textColourId, highlightColour);
     rangeLabelMax->setColour (Label::backgroundColourId, Colour (0x00000000));
+    rangeLabelMax->setColour (Label::textWhenEditingColourId, highlightColour);
     rangeLabelMax->setColour (TextEditor::textColourId, highlightColour);
     rangeLabelMax->setColour (TextEditor::highlightColourId, highlightColour.withAlpha (0.2f));
     rangeLabelMax->setColour (TextEditor::highlightedTextColourId, highlightColour);
@@ -415,12 +502,12 @@ void MappedParameterComponent::setLabelBounds (Label& labelToResize)
 {
     if (&labelToResize == rangeLabelMin)
     {
-        rangeLabelMin->setCentrePosition (lowSlider->getBounds().getCentreX() + 15,
+        rangeLabelMin->setCentrePosition (lowSlider->getBounds().getCentreX() + 16,
                                           (int) getThumbY (lowThumb));
     }
     else if (&labelToResize == rangeLabelMax)
     {
-        rangeLabelMax->setCentrePosition (highSlider->getBounds().getCentreX() + 15,
+        rangeLabelMax->setCentrePosition (highSlider->getBounds().getCentreX() + 16,
                                           (int) getThumbY (highThumb));
     }
 }

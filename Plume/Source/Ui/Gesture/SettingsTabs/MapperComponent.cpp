@@ -72,7 +72,7 @@ void MapperComponent::initializeParamCompArray()
     // adds a MappedParameterComponent for each parameter of the gesture, and makes them visible.
     for (auto* gestureParam : gesture.getParameterArray())
     {
-        paramCompArray.add (new MappedParameterComponent (gesture, *gestureParam, wrapper, i++));
+        paramCompArray.add (new MappedParameterComponent (gesture, gestureArray, wrapper, *gestureParam, i++));
         addAndMakeVisible (paramCompArray.getLast());
     }
 }
@@ -87,11 +87,12 @@ void MapperComponent::updateParamCompArray()
         // Adds every new parameter as a parameterComp at the end of the array
         for (int i=paramCompArray.size(); i<gesture.getParameterArray().size(); i++)
         {
-            paramCompArray.add (new MappedParameterComponent (gesture, *gesture.getParameterArray()[i], wrapper, i));
+            paramCompArray.add (new MappedParameterComponent (gesture, gestureArray, wrapper,
+                                                              *gesture.getParameterArray()[i], i));
             addAndMakeVisible (paramCompArray.getLast());
         }
     }
-    else if (paramCompArray.size() > gesture.getParameterArray().size()) // Parameters were removed
+    else if (paramCompArray.size() >= gesture.getParameterArray().size()) // Parameters were removed
     {
         int i = 0;
         bool shouldCheckIfUpdateIsNecessary = true;
@@ -104,14 +105,18 @@ void MapperComponent::updateParamCompArray()
             {
                 if (&(paramCompArray[i]->getMappedParameter()) != gestureParam)
                 {
-                    paramCompArray.set (i, new MappedParameterComponent (gesture, *gestureParam, wrapper, i));
+                    paramCompArray.set (i, new MappedParameterComponent (gesture, gestureArray, wrapper,
+                                                                         *gestureParam, i));
                     addAndMakeVisible (paramCompArray[i]);
-                    shouldCheckIfUpdateIsNecessary = false;
+
+                    if (paramCompArray.size() != gesture.getParameterArray().size())
+                        shouldCheckIfUpdateIsNecessary = false;
                 }
             }
             else
             {
-                paramCompArray.set (i, new MappedParameterComponent (gesture, *gestureParam, wrapper, i));
+                paramCompArray.set (i, new MappedParameterComponent (gesture, gestureArray, wrapper,
+                                                                     *gestureParam, i));
                 addAndMakeVisible (paramCompArray[i]);
             }
 

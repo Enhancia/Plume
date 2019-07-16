@@ -12,7 +12,7 @@
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
 #include "Common/PlumeCommon.h"
-#include "Gesture/Gesture.h"
+#include "Gesture/GestureArray.h"
 #include "Wrapper/PluginWrapper.h"
 
 #ifndef W 
@@ -33,8 +33,8 @@ class MappedParameterComponent    : public Component,
 {
 public:
     //==============================================================================
-    MappedParameterComponent (Gesture& gest, Gesture::MappedParameter& mappedParam,
-                              PluginWrapper& wrap, const int id);
+    MappedParameterComponent (Gesture& gest,  GestureArray& gestArr, PluginWrapper& wrap,
+                              Gesture::MappedParameter& mappedParam, int id);
     ~MappedParameterComponent();
 
     //==============================================================================
@@ -44,16 +44,21 @@ public:
     //==============================================================================
     void buttonClicked (Button* bttn) override;
     void labelTextChanged (Label* lbl) override;
+    void editorHidden (Label* lbl, TextEditor& ted) override;
     void sliderValueChanged (Slider* sldr) override;
 
     //==============================================================================
     void mouseDown (const MouseEvent& e) override;
     void mouseDrag (const MouseEvent& e) override;
     void mouseUp (const MouseEvent& e) override;
+    void mouseEnter (const MouseEvent& e) override;
+    void mouseExit (const MouseEvent& e) override;
 
     //==============================================================================
     Gesture::MappedParameter& getMappedParameter();
     void updateDisplay();
+
+    void handleMenuResult (const int result, const bool isParameterMenu);
     
 private:
     //==============================================================================
@@ -77,6 +82,7 @@ private:
     //==============================================================================
     void handleLabelClick (const MouseEvent& e);
     static void parameterMenuCallback (int result, MappedParameterComponent* mpc);
+    static void rightClickMenuCallback (int result, MappedParameterComponent* mpc);
 
     void handleSliderClick (const MouseEvent& e);
     DraggableObject getObjectToDrag (const MouseEvent& e);
@@ -87,6 +93,7 @@ private:
     
     //==============================================================================
     Gesture& gesture;
+    GestureArray& gestureArray;
     PluginWrapper& wrapper;
     Gesture::MappedParameter& mappedParameter;
 

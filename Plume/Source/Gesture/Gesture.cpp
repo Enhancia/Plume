@@ -396,7 +396,7 @@ void Gesture::addParameter (AudioProcessorParameter& param, Range<float> r, bool
     sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
 }
 
-void Gesture::deleteParameter(int paramId)
+void Gesture::deleteParameter (int paramId)
 {
     TRACE_IN;
     ScopedLock paramlock (parameterArrayLock);
@@ -404,6 +404,18 @@ void Gesture::deleteParameter(int paramId)
     parameterArray.remove (paramId);
     
     if (parameterArray.isEmpty()) mapped = false;
+    
+    sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
+}
+
+void Gesture::replaceParameter (int paramId,
+                                AudioProcessorParameter& param,
+                                Range<float> r, bool rev)
+{
+    TRACE_IN;
+    ScopedLock paramlock (parameterArrayLock);
+    
+    parameterArray.set (paramId, new MappedParameter (param, r, rev));
     
     sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
 }

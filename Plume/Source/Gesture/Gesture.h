@@ -364,12 +364,20 @@ public:
     /**
      *  \brief Creates a new MappedParameter.
      */
-    void addParameter (AudioProcessorParameter& param, Range<float> r = Range<float> (0.0f, 1.0f), bool rev = false);
+    void addParameter (AudioProcessorParameter& param,
+                       Range<float> r = Range<float> (0.0f, 1.0f), bool rev = false);
     
     /**
      *  \brief Deletes a MappedParameter.
      */
     void deleteParameter(int paramId);
+
+    /**
+     *  \brief Replaces a MappedParameter with a new one.
+     */
+    void replaceParameter (int paramIdToReplace,
+                           AudioProcessorParameter& param,
+                           Range<float> r = Range<float> (0.0f, 1.0f), bool rev = false);
     
     /**
      *  \brief Deletes all MappedParameter in the array.

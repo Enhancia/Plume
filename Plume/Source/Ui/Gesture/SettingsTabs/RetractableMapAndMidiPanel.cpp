@@ -144,7 +144,12 @@ void RetractableMapAndMidiPanel::changeListenerCallback(ChangeBroadcaster* sourc
     {
         parametersBody->updateParamCompArray();
         parametersBody->resized();
-        wrapper.clearWrapperEditor();
+
+        if (gesture.mapModeOn)
+        {
+        	wrapper.clearWrapperEditor();
+            gestureArray.cancelMapMode();
+        }
     }
     
     // If the editor is closed with map mode still on
