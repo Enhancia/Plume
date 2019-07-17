@@ -256,7 +256,7 @@ void MapperBanner::paintParameterSlotDisplay  (Graphics& g, juce::Rectangle<int>
 
             g.setColour ((row*numColumns) + column < gesture.getParameterArray().size() ?
                             gesture.getHighlightColour() :
-                            Colour (0x60202020));
+                            getPlumeColour (plumeBackground));
             g.fillRoundedRectangle (slotArea.toFloat(), 2.0f);
 
             /*

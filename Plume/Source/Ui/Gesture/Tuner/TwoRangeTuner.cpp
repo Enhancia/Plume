@@ -554,7 +554,7 @@ void TwoRangeTuner::createLabels()
     auto setLabelSettings = [this] (Label& label)
     {
         label.setEditable (true, false, false);
-        label.setFont (Font (PLUME::UI::font, 13.0f, Font::plain));
+        label.setFont (PLUME::font::plumeFont.withHeight (13.0f));
         label.setJustificationType (Justification::centred);
         label.setColour (Label::textColourId, tunerColour);
         label.setColour (Label::textWhenEditingColourId, tunerColour);
@@ -583,10 +583,10 @@ void TwoRangeTuner::createButtons()
 
     auto setButtonSettings = [this] (TextButton& button)
     {
-        button.setColour (TextButton::buttonColourId , Colour (0xff505050));
+        button.setColour (TextButton::buttonColourId , getPlumeColour (tunerButtonFill));
         button.setColour (TextButton::buttonOnColourId , tunerColour);
-        button.setColour (TextButton::textColourOffId , Colour (0xffffffff));
-        button.setColour (TextButton::textColourOnId , Colour (0xffffffff));
+        button.setColour (TextButton::textColourOffId , getPlumeColour (detailPanelMainText));
+        button.setColour (TextButton::textColourOnId , getPlumeColour (detailPanelMainText));
         button.setButtonText (&button == minLeftAngleButton || &button == minRightAngleButton ? "MIN ANGLE"
                                                                                               : "MAX ANGLE");
         button.addListener (this);
@@ -784,7 +784,7 @@ TwoRangeTuner::DraggableObject TwoRangeTuner::getObjectToDrag (const MouseEvent&
 
 void TwoRangeTuner::drawTunerSliderBackground (Graphics& g)
 {
-    auto outline = Colour (0xff505050);
+    auto outline = getPlumeColour (tunerSliderBackground);
     auto fillLeft    = objectBeingDragged == middleAreaLeft ? tunerColour.interpolatedWith (Colour (0xffffffff), 0.8f)
                                                             : tunerColour;
 

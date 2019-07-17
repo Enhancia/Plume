@@ -53,37 +53,64 @@ void GestureSettingsComponent::paint (Graphics& g)
 {
     using namespace PLUME::UI;
 
-    //Gradient for horizontal lines
-    auto grad = ColourGradient::horizontal (Colour (0x10323232),
-                                            float(MARGIN), 
-                                            Colour (0x10323232),
-                                            float(getWidth() - MARGIN));
-    grad.addColour (0.5, Colour (0x50323232));
-    
-    auto area = getLocalBounds();
-    g.setColour (Colours::white);
+    // Enhancia Text
 
-    g.fillRoundedRectangle (area.removeFromBottom (retractablePanel->getHeight()).toFloat(), 3.0f);
-    g.fillRoundedRectangle (area.withTrimmedBottom (MARGIN).toFloat(), 3.0f);
+    // Background
+    paintBackground (g);
 
+    // HeaderText
     auto headerArea = getLocalBounds().removeFromTop (this->HEADER_HEIGHT);
-    g.setGradientFill (grad);
-    g.drawHorizontalLine (headerArea.getBottom(),
-                              float(area.getX() + 2*MARGIN), float(area.getWidth() - 2*MARGIN));
 
-    //Gesture Type Text
-    g.setColour (Colour(0xff626262));
-    g.setFont (PLUME::font::plumeFont.withHeight (13.0f));
-    g.drawText (gesture.getTypeString (true),
-                headerArea.removeFromLeft (getWidth()/4).reduced (MARGIN, 0),
-                Justification::centred, false);
+    //Advanced Settings text
+    g.setColour (getPlumeColour (detailPanelSubText));
+    g.setFont (PLUME::font::plumeFont.withHeight (10.0f));
+    g.drawText ("ADVANCED PANEL",
+                headerArea.removeFromLeft (getWidth()/3).reduced (MARGIN),
+                Justification::bottomLeft, false);
 
     // Gesture Name text
-    g.setColour (Colour(0xff323232));                    
+    g.setColour (getPlumeColour (detailPanelMainText));                    
     g.setFont (PLUME::font::plumeFontBold.withHeight (15.0f));
-    g.drawText (gesture.getName(),
-                headerArea.removeFromLeft (getWidth()/2).reduced (MARGIN, 0),
+    g.drawText (gesture.getName().toUpperCase(),
+                headerArea.removeFromLeft (getWidth()/3).reduced (MARGIN, 0),
                 Justification::centred, false);
+}
+
+void GestureSettingsComponent::paintBackground (Graphics& g)
+{
+    using namespace PLUME::UI;
+    auto area = getLocalBounds().withBottom (retractablePanel->getBottom());
+
+    // MidiMap Background
+    g.setColour (getPlumeColour (midiMapBodyBackground));
+    g.fillRoundedRectangle (area.withTop (retractablePanel->getY()).toFloat(), 10.0f);
+
+    // Tuner backGround
+    g.setColour (getPlumeColour (tunerBackground));
+    g.fillRoundedRectangle (area.withBottom (retractablePanel->getY() + retractablePanel->bannerHeight)
+                                .toFloat(),
+                            10.0f);
+
+    g.saveState();
+
+    //Header Fill
+    g.reduceClipRegion (0, 0, getWidth(), 30);
+    g.setColour (getPlumeColour (detailPanelHeaderFill));
+    g.fillRoundedRectangle (area.withBottom (retractablePanel->getY() + retractablePanel->bannerHeight)
+                                .toFloat(),
+                            10.0f);
+
+    g.restoreState();
+    g.saveState();
+
+    //MidiMap banner fill
+    g.reduceClipRegion (0, retractablePanel->getY(), getWidth(), retractablePanel->bannerHeight);
+    g.setColour (getPlumeColour (midiMapBannerBackground));
+    g.fillRoundedRectangle (area.withBottom (retractablePanel->getY() + retractablePanel->bannerHeight)
+                                .toFloat(),
+                            10.0f);
+
+    g.restoreState();
 }
 
 void GestureSettingsComponent::resized()
@@ -96,7 +123,7 @@ void GestureSettingsComponent::resized()
     muteToggle->setBounds (headerArea.removeFromRight (getWidth()/4)
                                       .withTrimmedRight (30));
 
-    retractablePanel->setBounds (area.removeFromBottom (getHeight()*2/5 - HEADER_HEIGHT));
+    retractablePanel->setBounds (area.removeFromBottom (getHeight()/2 - HEADER_HEIGHT));
     area.removeFromBottom (MARGIN);
     gestTuner->setBounds (area);
 
@@ -104,8 +131,8 @@ void GestureSettingsComponent::resized()
     if (gesture.type != Gesture::pitchBend && gesture.type != Gesture::vibrato)
     {
         midiParameterToggle->setBounds (retractablePanel->getBounds()
-                                            .withHeight (retractablePanel->bannerHeight/2)
-                                            .withLeft (area.getWidth()*3/4)
+                                            .withHeight (retractablePanel->bannerHeight)
+                                            .withLeft (getWidth()*3/4)
                                             .withSizeKeepingCentre (area.getWidth()/4 - MARGIN,
                                                                     retractablePanel->bannerHeight/2));
     }

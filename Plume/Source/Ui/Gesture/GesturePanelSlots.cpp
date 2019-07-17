@@ -157,7 +157,7 @@ void GestureComponent::createLabel()
     gestureNameLabel->setEditable (false, false, false);
     gestureNameLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
     gestureNameLabel->setColour (Label::textColourId, getPlumeColour (basePanelMainText));
-    gestureNameLabel->setFont (PLUME::font::plumeFontBold.withHeight (16.0f));
+    gestureNameLabel->setFont (PLUME::font::plumeFontBold.withHeight (15.0f));
     gestureNameLabel->setJustificationType (Justification::centred);
     gestureNameLabel->setInterceptsMouseClicks (false, false);
     gestureNameLabel->addListener (this);
@@ -216,7 +216,7 @@ void EmptyGestureSlotComponent::paint (Graphics& g)
 		g.drawRoundedRectangle(getLocalBounds().reduced (1.0f).toFloat(), 10.0f, 3.0f);
     }
 
-    else if (highlighted)
+    else //if (highlighted)
     {
         PathStrokeType outlineStroke (1.0f, PathStrokeType::mitered, PathStrokeType::butt);
         Path dashedOutline;

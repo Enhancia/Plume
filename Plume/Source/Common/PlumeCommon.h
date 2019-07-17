@@ -53,8 +53,6 @@ namespace PLUME
         // Display settings
         const int FRAMERATE = 60;
         
-        static String font = "Tw Cen MT";
-        
         extern bool ANIMATE_UI_FLAG;
         
         const float VIBRATO_DISPLAY_MAX  = 500.0f;

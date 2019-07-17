@@ -54,6 +54,9 @@ public:
     
 private:
     //==============================================================================
+    void paintBackground (Graphics&);
+
+    //==============================================================================
     void createTuner();
     void createToggles();
     void createPanels();

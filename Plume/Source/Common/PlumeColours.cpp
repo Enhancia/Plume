@@ -355,7 +355,7 @@ PlumeTheme PlumeTheme::createTestTheme()
                          0xff282b35, //detailPanelBackground
                          0xff363c4e, //detailPanelHeaderFill
                          0xffffffff, //detailPanelMainText
-                         0xff3b3f4b, //detailPanelSubText
+                         0xff4a5063, //detailPanelSubText
                          0xff22252e, //detailPanelButtonFill
  
                          // Tuner Panel

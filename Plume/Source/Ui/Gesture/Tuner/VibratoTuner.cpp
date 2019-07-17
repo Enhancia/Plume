@@ -54,7 +54,7 @@ void VibratoTuner::paint (Graphics& g)
 	drawValueCursor (g);
 	drawIntensityCursor (g);
 
-	g.setColour (Colour (0xa0505050));
+	g.setColour (getPlumeColour (tunerSliderBackground));
 	g.setFont (PLUME::font::plumeFontLight.withHeight (14.0f));
 	g.drawText ("THRESHOLD", thresholdSlider->getBounds().withSizeKeepingCentre (100, 50)
 														 .withY (thresholdSlider->getBounds().getBottom()),
@@ -241,7 +241,7 @@ void VibratoTuner::createSliders()
     //gainSlider->setRotaryParameters (MathConstants<float>::pi*5/3, MathConstants<float>::pi*7/3, true);
     gainSlider->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
     gainSlider->setColour (Slider::rotarySliderFillColourId, tunerColour);
-    gainSlider->setColour (Slider::rotarySliderOutlineColourId, Colour (0xff505050));
+    gainSlider->setColour (Slider::rotarySliderOutlineColourId, getPlumeColour (tunerSliderBackground));
     gainSlider->setRange (double (parameterMaxGain.getStart()), double (parameterMaxGain.getEnd()), 1.0);
     gainSlider->setValue (double (getGain()));
     gainSlider->addListener (this);
@@ -250,7 +250,7 @@ void VibratoTuner::createSliders()
     // ThreshSliderParameters
 	thresholdSlider->setSliderStyle(Slider::LinearVertical);
     thresholdSlider->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
-    thresholdSlider->setColour (Slider::backgroundColourId, Colour (0xff505050));
+    thresholdSlider->setColour (Slider::backgroundColourId, getPlumeColour (tunerSliderBackground));
     thresholdSlider->setColour (Slider::trackColourId, tunerColour);
     //setThresholdSliderColour();
     thresholdSlider->setRange (double (parameterMaxThreshold.getStart()), double (parameterMaxThreshold.getEnd()), 1.0);
@@ -269,7 +269,7 @@ void VibratoTuner::createLabels()
     auto setLabelSettings = [this] (Label& label)
     {
         label.setEditable (false, false, false);
-        label.setFont (Font (PLUME::UI::font, 13.0f, Font::plain));
+        label.setFont (PLUME::font::plumeFont.withHeight (13.0f));
         label.setJustificationType (Justification::centred);
         label.setColour (Label::textColourId, tunerColour);
         label.setColour (Label::textWhenEditingColourId, tunerColour);
@@ -349,7 +349,7 @@ void VibratoTuner::drawValueCursor (Graphics& g)
 	Point<int> cursorPoint = {gainSlider->getBounds().getCentreX() + offset,
 							  gainSlider->getBounds().getCentreY()};
 
-    g.setColour ((intensity < getThreshold()) ? Colour (0x80808080) : tunerColour);
+    g.setColour ((intensity < getThreshold()) ? getPlumeColour (tunerSliderBackground) : tunerColour);
     g.fillEllipse (juce::Rectangle<float> (5.0f, 5.0f).withCentre (cursorPoint.toFloat()));
 }
 
@@ -372,14 +372,15 @@ void VibratoTuner::drawIntensityCursor (Graphics& g)
                             {cursorPoint.x + 3.0f, cursorPoint.y       },
                             {cursorPoint.x - 3.0f, cursorPoint.y + 3.0f});
 
-    g.setColour ((intensity < getThreshold()) ? Colour (0x80808080) : tunerColour);
+    g.setColour ((intensity < getThreshold()) ? getPlumeColour (tunerSliderBackground) : tunerColour);
     g.fillPath (cursorPath);
 }
 
 void VibratoTuner::setThresholdSliderColour()
 {
-	thresholdSlider->setColour(Slider::trackColourId, (intensity < getThreshold()) ? Colour (0x80808080)
-			                       								                   : tunerColour);
+	thresholdSlider->setColour (Slider::trackColourId,
+							    (intensity < getThreshold()) ? getPlumeColour (tunerSliderBackground)
+			                       							 : tunerColour);
 }
 
 void VibratoTuner::computeSmoothIntensity (float smoothnessRamp)

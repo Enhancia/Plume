@@ -193,7 +193,7 @@ void MidiModeComponent::createLabels()
     // CC label
     addAndMakeVisible (ccLabel = new Label ("CC Label", TRANS (String(gesture.getCc()))));
     ccLabel->setEditable ((midiTypeBox->getSelectedId() == Gesture::controlChange), false, false);
-    ccLabel->setFont (Font (PLUME::UI::font, 13.0f, Font::plain));
+    ccLabel->setFont (PLUME::font::plumeFont.withHeight (13.0f));
     ccLabel->setJustificationType (Justification::centred);
     
     // cc Label is visible & editable only if "CC" is selected
@@ -208,12 +208,12 @@ void MidiModeComponent::createLabels()
     
     // LabelMin style
     rangeLabelMin->setEditable (true, false, false);
-    rangeLabelMin->setFont (Font (PLUME::UI::font, 11.0f, Font::plain));
+    rangeLabelMin->setFont (PLUME::font::plumeFont.withHeight (11.0f));
     rangeLabelMin->setJustificationType (Justification::centred);
     
     // LabelMax style
     rangeLabelMax->setEditable (true, false, false);
-    rangeLabelMax->setFont (Font (PLUME::UI::font, 11.0f, Font::plain));
+    rangeLabelMax->setFont (PLUME::font::plumeFont.withHeight (11.0f));
     rangeLabelMax->setJustificationType (Justification::centred);
     
     
@@ -232,16 +232,16 @@ MidiBanner::~MidiBanner()
 }
 void MidiBanner::paint (Graphics& g)
 {
-    g.setColour (Colour (0xff202020));
-
     String midiString = (gesture.midiType == Gesture::controlChange ?
     				    	"CC " + String (gesture.getCc()) :
     						(gesture.midiType == Gesture::pitch ? "Pitch" : "Unknown" ));
 
+    g.setColour (getPlumeColour (detailPanelSubText));
     g.setFont (PLUME::font::plumeFont.withHeight(15));
 	g.drawText ("MIDI", getLocalBounds().withWidth (getWidth()/4),
                             Justification::centred);
 
+    g.setColour (getPlumeColour (detailPanelMainText));
     g.setFont (PLUME::font::plumeFontBold.withHeight(13));
     g.drawText (midiString, getLocalBounds().withSizeKeepingCentre (getWidth()/2, getHeight()),
                             Justification::centred);

@@ -81,25 +81,6 @@ void RetractableMapAndMidiPanel::updateDisplay()
 
 void RetractableMapAndMidiPanel::paint (Graphics& g)
 {
-	using namespace PLUME::UI;
-
-	//Gradient for horizontal lines
-    auto grad = ColourGradient::horizontal (Colour (0x10323232),
-                                            float(MARGIN), 
-                                            Colour (0x10323232),
-                                            float(getWidth() - MARGIN));
-    grad.addColour (0.5, Colour (0x50323232));
-
-    auto area = getLocalBounds();
-    area.removeFromTop (bannerHeight);
-
-    g.setGradientFill (grad);
-
-    if (!retracted)
-    {
-    	g.drawHorizontalLine (area.getY(), float(area.getX() + 2*MARGIN),
-    									   float(area.getWidth() - 2*MARGIN));
-	}
 }
 
 void RetractableMapAndMidiPanel::resized()

@@ -393,13 +393,13 @@ void TestTuner::createLabels()
 
     // LabelMin style
     rangeLabelMin->setEditable (true, false, false);
-    rangeLabelMin->setFont (Font (PLUME::UI::font, 13.0f, Font::plain));
+    rangeLabelMin->setFont (PLUME::font::plumeFont.withHeight (13.0f));
     rangeLabelMin->setJustificationType (Justification::centred);
     rangeLabelMin->setSize (30, 20);
         
     // LabelMax style
     rangeLabelMax->setEditable (true, false, false);
-    rangeLabelMax->setFont (Font (PLUME::UI::font, 13.0f, Font::plain));
+    rangeLabelMax->setFont (PLUME::font::plumeFont.withHeight (13.0f));
     rangeLabelMax->setJustificationType (Justification::centred);
     rangeLabelMax->setSize (30, 20);
         
