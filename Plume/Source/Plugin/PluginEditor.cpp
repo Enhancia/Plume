@@ -121,15 +121,16 @@ PlumeEditor::~PlumeEditor()
 void PlumeEditor::paint (Graphics& g)
 {
     // Background
-    g.fillAll (Colour (0xff101717));
+    g.fillAll (getPlumeColour (plumeBackground));
 
+    /*
     g.drawImage (backgroundImage, getLocalBounds().withTrimmedTop (sideBarButton->getHeight())
                                                   .withTrimmedLeft (sideBarButton->getToggleState() ? 0
 																		: sideBar->getWidth())
                                                   .toFloat(),
                                   RectanglePlacement::xLeft +
                                   RectanglePlacement::yTop  +
-                                  RectanglePlacement::doNotResize);
+                                  RectanglePlacement::doNotResize);*/
 }
 
 void PlumeEditor::resized()

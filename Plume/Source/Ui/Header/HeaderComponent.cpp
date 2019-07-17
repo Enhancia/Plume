@@ -24,7 +24,7 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc, Component& newPrst)  : p
     pluginNameLabel->setJustificationType (Justification::centred);
     pluginNameLabel->setEditable (false, false, false);
     pluginNameLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
-    pluginNameLabel->setColour (Label::textColourId, PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText));
+    pluginNameLabel->setColour (Label::textColourId, getPlumeColour (headerText));
     pluginNameLabel->addMouseListener (this, false);
     
     // Preset Name
@@ -33,7 +33,7 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc, Component& newPrst)  : p
     presetNameLabel->setJustificationType (Justification::centred);
     presetNameLabel->setEditable (false, false, false);
     presetNameLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
-    presetNameLabel->setColour (Label::textColourId, PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText));
+    presetNameLabel->setColour (Label::textColourId, getPlumeColour (headerText));
     
     // Plugin List Button
     Path arrow;
@@ -46,7 +46,7 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc, Component& newPrst)  : p
 		                                                   Colour(0x00000000),
 		                                                   Colour(0x00000000)));
 	pluginListButton->setShape (arrow, false, true, false);
-	pluginListButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 2.0f);
+	pluginListButton->setOutline (getPlumeColour (headerText), 2.0f);
 	pluginListButton->addMouseListener (this, false);
 	pluginListButton->addListener (this);
 
@@ -59,7 +59,7 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc, Component& newPrst)  : p
                                                            //Colour(PLUME::UI::currentTheme.getColour(PLUME::colour::headerHighlightedText)),
                                                            //Colour(PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText))));
     savePresetButton->setShape (PLUME::path::createFlatSavePath(), false, true, false);
-    savePresetButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 1.5f);
+    savePresetButton->setOutline (getPlumeColour (headerText), 1.5f);
     savePresetButton->addMouseListener (this, false);
     savePresetButton->addListener (this);
     
@@ -96,14 +96,15 @@ void HeaderComponent::paint (Graphics& g)
 {
     using namespace PLUME::UI;
     
-    g.fillAll (currentTheme.getColour(PLUME::colour::headerBackground));
+    g.setColour (getPlumeColour (headerBackground));
+    g.fillRoundedRectangle (getLocalBounds().reduced (MARGIN_SMALL).toFloat(), 15.0f);
     
     //Gradient for horizontal lines
-    auto grad = ColourGradient::vertical (currentTheme.getColour(PLUME::colour::headerSeparatorTop),
+    auto grad = ColourGradient::vertical (Colour (0xffa5a5a5),
                                           float(MARGIN), 
-                                          currentTheme.getColour(PLUME::colour::headerSeparatorBottom),
+                                          Colour (0xffe1e1e1),
                                           float(getHeight() - MARGIN));
-    grad.addColour (0.8, currentTheme.getColour(PLUME::colour::headerSeparatorBottom));
+    grad.addColour (0.8, Colour (0xffe1e1e1));
     g.setGradientFill (grad);
     
     auto area = getLocalBounds();
@@ -156,7 +157,7 @@ void HeaderComponent::resized()
         
         savePresetButton->setBounds (presetArea.removeFromRight (HEADER_HEIGHT).reduced (0, MARGIN*3/2));
         presetNameLabel->setBounds (presetArea.withTrimmedLeft (HEADER_HEIGHT)
-                                              .reduced (0, MARGIN));
+                                              .reduced (0, MARGIN_SMALL));
     }
 
     // Plugin Area
@@ -164,7 +165,7 @@ void HeaderComponent::resized()
         //area.removeFromLeft (MARGIN); // Space before separator
         pluginListButton->setBounds (area.removeFromRight (getHeight()).reduced (MARGIN*3/2, MARGIN));
     
-        pluginNameLabel->setBounds (area.withTrimmedLeft (HEADER_HEIGHT).reduced (0, MARGIN));
+        pluginNameLabel->setBounds (area.withTrimmedLeft (HEADER_HEIGHT).reduced (0, MARGIN_SMALL));
     }
 }
 
@@ -189,17 +190,17 @@ void HeaderComponent::mouseEnter (const MouseEvent &event)
     if (event.eventComponent == pluginNameLabel && processor.getWrapper().isWrapping())
 	{
         pluginNameLabel->setColour (Label::textColourId,
-                                    PLUME::UI::currentTheme.getColour (PLUME::colour::headerHighlightedText));
+                                    getPlumeColour (headerText).withAlpha (0.5f));
 	}
 	
 	else if (event.eventComponent == pluginListButton)
 	{
-        pluginListButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerHighlightedText), 2.0f);
+        pluginListButton->setOutline (getPlumeColour (headerText).withAlpha (0.5f), 2.0f);
 	}
 
     if (event.eventComponent == savePresetButton)
     {
-        savePresetButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerHighlightedText), 1.7f);
+        savePresetButton->setOutline (getPlumeColour (headerText).withAlpha (0.5f), 1.7f);
     }
 }
 
@@ -208,17 +209,17 @@ void HeaderComponent::mouseExit (const MouseEvent &event)
     if (event.eventComponent == pluginNameLabel)
 	{
         pluginNameLabel->setColour (Label::textColourId,
-                                    PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText));
+                                    getPlumeColour (headerText));
 	}
 	
 	else if (event.eventComponent == pluginListButton)
 	{
-        pluginListButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 2.0f);
+        pluginListButton->setOutline (getPlumeColour (headerText), 2.0f);
 	}
 
     if (event.eventComponent == savePresetButton)
     {
-        savePresetButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 1.7f);
+        savePresetButton->setOutline (getPlumeColour (headerText), 1.7f);
     }
 }
 
@@ -228,11 +229,11 @@ void HeaderComponent::buttonClicked (Button* bttn)
     {
         if (shapeBttn == pluginListButton)
         {
-            shapeBttn->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 2.0f);
+            shapeBttn->setOutline (getPlumeColour (headerText), 2.0f);
         }
         else if (shapeBttn == savePresetButton)
         {
-            shapeBttn->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 1.7f);
+            shapeBttn->setOutline (getPlumeColour (headerText), 1.7f);
         }
     }
 
@@ -269,7 +270,7 @@ void HeaderComponent::handlePluginChoice (int chosenId)
     if (chosenId == 0)
     {   
         // resets the button colour if no choice was made
-        pluginListButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 2.0f);
+        pluginListButton->setOutline (getPlumeColour (headerText), 2.0f);
     }
     else
     {

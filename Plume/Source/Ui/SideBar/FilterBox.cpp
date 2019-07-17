@@ -20,7 +20,7 @@ FilterBox::FilterBox (const String& componentName, PlumeProcessor& p)  : ListBox
     setRowHeight (16);
     
     auto& scrollBar = getVerticalScrollBar();
-    scrollBar.setColour (ScrollBar::thumbColourId, PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxScrollBar));
+    scrollBar.setColour (ScrollBar::thumbColourId, getPlumeColour (presetsBoxScrollBar));
 }
 
 FilterBox::~FilterBox()
@@ -53,11 +53,11 @@ void FilterBox::paintOverChildren (Graphics& g)
         using namespace PLUME::UI;
     
         //Gradient for the box's outline
-        auto gradOut = ColourGradient::horizontal (currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
+        auto gradOut = ColourGradient::horizontal (Colour (0x10ffffff),
                                                    float(MARGIN), 
-                                                   currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
+                                                   Colour (0x10ffffff),
                                                    float(getWidth() - MARGIN));
-        gradOut.addColour (0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
+        gradOut.addColour (0.5, Colour (0x50ffffff));
 
         g.setGradientFill (gradOut);
         g.drawRect (getLocalBounds(), getOutlineThickness());
@@ -76,14 +76,14 @@ void FilterBox::paintListBoxItem (int rowNumber, Graphics& g, int width, int hei
     using namespace PLUME;
     
     // Background
-    g.setColour (rowIsSelected ? UI::currentTheme.getColour (colour::presetsBoxHighlightedBackground)
-                               : UI::currentTheme.getColour (colour::presetsBoxBackground));
+    g.setColour (rowIsSelected ? getPlumeColour (presetsBoxRowBackgroundHighlighted)
+                               : getPlumeColour (presetsBoxRowBackground));
                               
     g.fillRect (1, 1, width-2, height-2);
    
     // Text
-    g.setColour (rowIsSelected ? UI::currentTheme.getColour (colour::presetsBoxHighlightedText)
-                               : UI::currentTheme.getColour (colour::presetsBoxStandartText));
+    g.setColour (rowIsSelected ? getPlumeColour (presetsBoxRowTextHighlighted)
+                               : getPlumeColour (presetsBoxRowText));
                                
     g.setFont (PLUME::font::plumeFont.withHeight (jmin (PLUME::font::SIDEBAR_LABEL_FONT_H, 
                                                         float (height*5)/6)));

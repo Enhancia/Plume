@@ -17,7 +17,7 @@ namespace PLUME
         bool ANIMATE_UI_FLAG = false;
         
 		using namespace PLUME::colour;
-		PlumeTheme currentTheme = PlumeTheme::createPlumeTheme (PlumeTheme::plumeDefault);
+		PlumeTheme currentTheme = PlumeTheme::createPlumeTheme (PlumeTheme::test);
     }
     
     namespace font
@@ -83,7 +83,7 @@ namespace PLUME
                             else if ((windowPosPtr->flags >> 6 & 1) == 1) // Flag SWP_SHOWWINDOW (bit 6) is active
                             {
                                 using namespace PLUME;
-                                if (ComponentPeer* peer = globalPointers.getWrappedEditorPeer(cwpStructPtr->hwnd))
+                                if (ComponentPeer* peer = globalPointers.getWrappedEditorPeer (cwpStructPtr->hwnd))
                                 {
                                     peer->setMinimised (false);
                                 }

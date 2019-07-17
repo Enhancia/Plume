@@ -10,6 +10,7 @@
 
 #pragma once
 #include "../JuceLibraryCode/JuceHeader.h"
+#define getPlumeColour(x) (PLUME::UI::currentTheme.getColour (PLUME::colour::x))
 
 namespace PLUME
 {
@@ -18,74 +19,88 @@ namespace colour
     
 enum PlumeColourID
 {
+    // General
+    plumeBackground =0,
+
     // SideBar
         // General
-        sideBarBackground=0,
+        sideBarBackground,
+        sideBarObjectFillBackground,
+        sideBarObjectFill,
         sideBarMainText,
         sideBarSubText,
-        sideBarSeparatorOut,
-        sideBarSeparatorIn,
         sideBarButtonFill,
-		sideBarButtonFillHighlighted,
-		sideBarButtonFillClicked,
             
         // Presets
         presetsBoxBackground,
-        presetsBoxStandartText,
-        presetsBoxHighlightedBackground,
-        presetsBoxHighlightedText,
-        presetsBoxOutlineTop,
-        presetsBoxOutlineBottom,
+        presetsBoxRowBackground,
+        presetsBoxRowBackgroundHighlighted,
+        presetsBoxRowText,
+        presetsBoxRowTextHighlighted,
         presetsBoxScrollBar,
             
-        // InfoPanel
+        // Info Panel
         infoPanelBackground,
+        infoPanelIcon,
         infoPanelMainText,
         infoPanelSubText,
             
     // Header
         // General
         headerBackground,
-        headerSeparatorTop,
-        headerSeparatorBottom,
-                
-        // Components
-        headerStandartText,
-        headerHighlightedText,
+        headerText,
+        headerButtonStroke,
+
+       // Preset Display
+        presetDisplayArrowsBackground,
+        presetDisplayBackground,
+        presetDisplayButtonStroke,
             
     // Gesture Panel
         // Gesture Base Panel
-            // General
+            //General
             basePanelBackground,
-            basePanelGestureBackground,
-            basePanelGestureOutline,
-            basePanelGestureHighlightedBackground,
-            basePanelGestureHighlightedOutline,
+            basePanelHeaderFill,
+            basePanelIcon,
             basePanelMainText,
             basePanelSubText,
+            basePanelButtonFill,
+
+            //Empty Slot
+            emptySlotOutline,
+            emptySlotBackground,
                 
-            // gesture detail window
+        // Gesture Detail Panel
+            // General
             detailPanelBackground,
-            detailPanelHighlightedBackground,
+            detailPanelHeaderFill,
             detailPanelMainText,
             detailPanelSubText,
-            detailPanelHighlightedMainText,
-            detailPanelHighlightedSubText,
-            detailPanelSubComponentsOutline,
-            detailPanelActiveMapping,
+            detailPanelButtonFill,
 
-            // gesture colours
-            vibratoHighlight,
-            pitchBendHighlight,
-            tiltHighlight,
-            rollHighlight,
-            waveHighlight,
+            // Tuner Panel
+            tunerBackground,
+            tunerSliderBackground,
+            tunerSliderThumb,
+            tunerButtonFill,
+
+            // Midi&Map Panel
+            midiMapBannerBackground,
+            midiMapBodyBackground,
+            midiMapSliderBackground,
+
+        // Gesture Colours
+        vibratoHighlight,
+        pitchBendHighlight,
+        tiltHighlight,
+        rollHighlight,
+        waveHighlight,
             
     // Top Panel
-        topPanelBackground,
-        topPanelTransparentArea,
-        topPanelMainText,
-        topPanelSubText,
+    topPanelBackground,
+    topPanelTransparentArea,
+    topPanelMainText,
+    topPanelSubText,
     
     numColours
 };
@@ -96,7 +111,8 @@ public:
     enum ThemeId
     {
 	   plumeDefault = 0,
-	   red
+	   red,
+       test
     };
     
     template <typename... Items>
@@ -125,6 +141,7 @@ private:
     
     static PlumeTheme createDefaultTheme();
     static PlumeTheme createRedTheme();
+    static PlumeTheme createTestTheme();
     
     // Any new theme can be created here using a new private static method...
     // make sure you add the theme name to the "ThemeId" enum, and create a switch case in "createPlumeTheme()"!

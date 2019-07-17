@@ -27,7 +27,6 @@
 // Preprocessor expressions
 #define TRACE_IN  Logger::writeToLog ("[+] Entering: " + String(__FUNCTION__) + "\n")
 #define TRACE_OUT Logger::writeToLog ("[-]  Leaving: " + String(__FUNCTION__) + "\n")
-#define getPlumeColour(a) (PLUME::UI::currentTheme.getColour (PLUME::colour::a))
 
 namespace PLUME
 {
@@ -42,6 +41,7 @@ namespace PLUME
     
         // Display panels values
         const int MARGIN = 8;
+        const int MARGIN_SMALL = 4;
         const int SIDEBAR_WIDTH = 200;
         const int INFO_HEIGHT = 60;
         const int PRESET_BUTTONS_HEIGHT = 20;
@@ -202,11 +202,6 @@ namespace PLUME
 		extern const Path createMagnifyingGlassPath();
         extern const Path createFloppyDiskPath();
         extern const Path createFlatSavePath();
-        
-        //static Path gearPath = createGearPath();
-        //static Path pianoPath = createPianoPath();
-        //static Path folderPath = createFolderPath();
-        //static Path magnifyingGlassPath = createMagnifyingGlassPath();
     }
 
   #if JUCE_WINDOWS

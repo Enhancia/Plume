@@ -39,8 +39,8 @@ void PlumeLookAndFeel::setColours()
     setColour (CaretComponent::caretColourId, Colour (0xffffffff));
 
 	// Slider
-	setColour (Slider::thumbColourId, Colour (UI::currentTheme[colour::PlumeColourID::basePanelGestureHighlightedBackground]));
-	setColour (Slider::trackColourId, Colour (UI::currentTheme[colour::PlumeColourID::basePanelGestureHighlightedBackground]));
+	setColour (Slider::thumbColourId, getPlumeColour (tunerSliderThumb));
+	setColour (Slider::trackColourId, getPlumeColour (tunerSliderBackground));
 	setColour (Slider::backgroundColourId, Colour (0xff101010));
 
 	// TextButton

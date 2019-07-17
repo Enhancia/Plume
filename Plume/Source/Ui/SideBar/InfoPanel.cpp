@@ -41,11 +41,11 @@ void InfoPanel::paint (Graphics& g)
     g.fillAll (Colour (0x05000000));
 
     //Gradient for the box's outline
-    auto gradOut = ColourGradient::horizontal (currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
+    auto gradOut = ColourGradient::horizontal (Colour (0x10ffffff),
                                                float(MARGIN), 
-                                               currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
+                                               Colour (0x10ffffff),
                                                float(getWidth() - MARGIN));
-    gradOut.addColour (0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
+    gradOut.addColour (0.5, Colour (0x50ffffff));
 
     g.setGradientFill (gradOut);
 
@@ -59,7 +59,7 @@ void InfoPanel::paint (Graphics& g)
     p.lineTo (getWidth()/2.0f + float(2*MARGIN), 0.0f);
     g.strokePath (p, PathStrokeType (1.0f));
 
-    g.setColour (currentTheme.getColour (PLUME::colour::sideBarMainText));
+    g.setColour (getPlumeColour (sideBarMainText));
     g.setFont (PLUME::font::plumeFont.withHeight (9.0f));
 }
 
@@ -84,7 +84,7 @@ void InfoPanel::mouseMove (const MouseEvent& event)
             if (alerted)
             {
                 alerted = false;
-                textEditor->applyColourToAllText (PLUME::UI::currentTheme.getColour (PLUME::colour::sideBarMainText), true);
+                textEditor->applyColourToAllText (getPlumeColour (sideBarMainText), true);
             }
 
             textEditor->setText (plumeComp->getInfoString(), false);

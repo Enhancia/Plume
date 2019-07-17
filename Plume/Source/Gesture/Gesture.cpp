@@ -352,18 +352,13 @@ Colour Gesture::getHighlightColour (int gestureType)
 {
     switch (gestureType)
     {
-        case (int) Gesture::tilt:
-            return getPlumeColour (tiltHighlight);
-        case (int) Gesture::roll:
-            return getPlumeColour (rollHighlight);
-        case (int) Gesture::wave:
-            return getPlumeColour (waveHighlight);
-        case (int) Gesture::vibrato:
-            return getPlumeColour (vibratoHighlight);
-        case (int) Gesture::pitchBend:
-            return getPlumeColour (pitchBendHighlight);
-        default:
-            return Colour (0xffffffff);
+        case (int) Gesture::tilt:      return getPlumeColour (tiltHighlight);
+        case (int) Gesture::roll:      return getPlumeColour (rollHighlight);
+        case (int) Gesture::wave:      return getPlumeColour (waveHighlight);
+        case (int) Gesture::vibrato:   return getPlumeColour (vibratoHighlight);
+        case (int) Gesture::pitchBend: return getPlumeColour (pitchBendHighlight);
+        
+        default: return Colour (0xffffffff);
     }
 }
 

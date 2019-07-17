@@ -18,15 +18,9 @@ TypeToggleComponent::TypeToggleComponent (PlumeProcessor& p) : processor (p)
     for (int i=-1; i<PlumePreset::numTypes; i++)
     {
         String text;
-
-        //toggles.add (new TextButton ("toggle"+String(i)));
         
         switch (i)
         {
-            //case PlumePreset::defaultPreset:     toggles.getLast()->setButtonText ("Factory");   break;
-            //case PlumePreset::userPreset:        toggles.getLast()->setButtonText ("User");      break;
-            //case PlumePreset::communityPreset:   toggles.getLast()->setButtonText ("Community"); break;
-            //default:                             toggles.getLast()->setButtonText ("All");
 
             case PlumePreset::defaultPreset:     text = "Factory";   break;
             case PlumePreset::userPreset:        text = "User";      break;
@@ -34,10 +28,10 @@ TypeToggleComponent::TypeToggleComponent (PlumeProcessor& p) : processor (p)
             default:                             text = "All";
         }
         
-        toggles.add (new Toggle (i, text, PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxHighlightedBackground),
-                                          PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxHighlightedText),
-                                          PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxBackground),
-                                          PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxStandartText)));
+        toggles.add (new Toggle (i, text, getPlumeColour (presetsBoxRowBackgroundHighlighted),
+                                          getPlumeColour (presetsBoxRowTextHighlighted),
+                                          getPlumeColour (presetsBoxRowBackground),
+                                          getPlumeColour (presetsBoxRowText)));
 
         addChildAndSetID (toggles.getLast(), String(i));
         toggles.getLast()->addMouseListener (this, false);
@@ -78,11 +72,11 @@ void TypeToggleComponent::paintOverChildren (Graphics& g)
 	using namespace PLUME::UI;
 
     //Gradient for the box's outline
-    auto gradOut = ColourGradient::horizontal (currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
+    auto gradOut = ColourGradient::horizontal (Colour (0x10ffffff),
                                                float(MARGIN), 
-                                               currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
+                                               Colour (0x10ffffff),
                                                float(getWidth() - MARGIN));
-    gradOut.addColour (0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
+    gradOut.addColour (0.5, Colour (0x50ffffff));
     g.setGradientFill (gradOut);
 
     // Outline

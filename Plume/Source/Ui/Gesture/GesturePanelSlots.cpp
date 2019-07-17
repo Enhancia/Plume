@@ -23,6 +23,7 @@ GestureComponent::GestureComponent (Gesture& gest, const bool& dragModeReference
 {
     createLabel();
 }
+
 GestureComponent::~GestureComponent()
 {
     gestureNameLabel->removeListener (this);
@@ -36,60 +37,63 @@ const String GestureComponent::getInfoString()
            " | Mode : " + (gesture.generatesMidi() ? "MIDI\n" : "Parameters\n")
            + "\n" + gesture.getDescription();
 }
+
 void GestureComponent::update()
 {
-    gestureNameLabel->setText (gesture.getName(), dontSendNotification);
+    gestureNameLabel->setText (gesture.getName().toUpperCase(), dontSendNotification);
 }
 
 void GestureComponent::paint (Graphics& g)
 {
-    if (selected)
+    if (!selected && highlighted)
     {
-        g.setColour (Colours::white.withAlpha (0.9f));
-    }
-    else
-    {
-        g.setColour (highlighted ? Colours::white.withAlpha (0.8f) : Colours::white.withAlpha (0.6f));
+        g.beginTransparencyLayer (0.5f);
     }
 
-    g.fillRoundedRectangle (getLocalBounds().toFloat(), 3.0f);
+    // BackGround + Header Fill
+    g.setColour (getPlumeColour (basePanelBackground));
+    g.fillRoundedRectangle (getLocalBounds().toFloat(), 10.0f);
 
+    g.saveState();
+    g.reduceClipRegion (0, 0, getWidth(), 30);
+    g.setColour (getPlumeColour (basePanelHeaderFill));
+    g.fillRoundedRectangle (getLocalBounds().toFloat(), 10.0f);
+    g.restoreState();
+
+    // Outline
     if (dragMode && draggedGesture != id && draggedOverSlot == id)
     {
         g.setColour (Colour (0xff6065e0));
-        g.drawRoundedRectangle (getLocalBounds().reduced (1.5f).toFloat(), 3.0f, 3.0f);
+        g.drawRoundedRectangle (getLocalBounds().reduced (1.0f).toFloat(), 10.0f, 3.0f);
+    }
+    else if (selected)
+    {
+        g.setColour (gesture.getHighlightColour());
+        g.drawRoundedRectangle (getLocalBounds().reduced (1.0f).toFloat(), 10.0f, 1.0f);
     }
 
-    auto nameAndTypeArea = getLocalBounds().withHeight(30);
+    // Text
+    auto stateArea = getLocalBounds().withTop (getHeight()-25)
+                                     .withLeft (getWidth()/2)
+                                     .withTrimmedRight (PLUME::UI::MARGIN);
 
-    g.setColour (Colours::black.withAlpha (0.6f));
-    g.setFont (PLUME::font::plumeFontLight.withHeight (13.0f));
-    g.drawText (gesture.getTypeString (true), nameAndTypeArea.removeFromLeft (getWidth()/4)
-                                                             .withTrimmedLeft (PLUME::UI::MARGIN),
-                Justification::centredLeft, true);
-
-    nameAndTypeArea.removeFromLeft(getWidth()/2); // gesture Name Label
-
-    auto stateArea = nameAndTypeArea.withHeight (getHeight())
-                                    .withTrimmedRight (PLUME::UI::MARGIN);
-
-    g.setFont (PLUME::font::plumeFontLight.withHeight (13.0f));
-    g.setColour (Colours::black.withAlpha (0.6f));
-
-    g.drawText (gesture.isActive() ? "On" : "Muted",
-                stateArea.removeFromTop (stateArea.getHeight()/2),
-                Justification::centredRight, true);
+    g.setFont (PLUME::font::plumeFontLight.withHeight (12.0f));
+    g.setColour (getPlumeColour (basePanelSubText));
     
-    g.drawText (gesture.generatesMidi() ? "MIDI" : "Param",
+    g.drawText (gesture.generatesMidi() ? "MIDI MODE" : "PARAM MODE",
                 stateArea,
                 Justification::centredRight, true);
-    
+
+    if (!selected && highlighted)
+    {
+        g.endTransparencyLayer();
+    }
 }
+
 void GestureComponent::resized()
 {
     gestureNameLabel->setBounds (getLocalBounds().withHeight (30)
-                                                .withTrimmedLeft (getWidth()/4)
-                                                .withWidth (getWidth()/2));
+                                                 .withSizeKeepingCentre (getWidth()*2/3, 25));
 }
 void GestureComponent::editorShown (Label* lbl, TextEditor& ted)
 {
@@ -149,11 +153,11 @@ void GestureComponent::startNameEntry()
 
 void GestureComponent::createLabel()
 {
-    addAndMakeVisible (gestureNameLabel = new Label ("gestureNameLabel", gesture.getName()));
+    addAndMakeVisible (gestureNameLabel = new Label ("gestureNameLabel", gesture.getName().toUpperCase()));
     gestureNameLabel->setEditable (false, false, false);
     gestureNameLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
-    gestureNameLabel->setColour (Label::textColourId, Colour (0xff000000));
-    gestureNameLabel->setFont (PLUME::font::plumeFontBold.withHeight (15.0f));
+    gestureNameLabel->setColour (Label::textColourId, getPlumeColour (basePanelMainText));
+    gestureNameLabel->setFont (PLUME::font::plumeFontBold.withHeight (16.0f));
     gestureNameLabel->setJustificationType (Justification::centred);
     gestureNameLabel->setInterceptsMouseClicks (false, false);
     gestureNameLabel->addListener (this);
@@ -185,20 +189,43 @@ void EmptyGestureSlotComponent::update()
 
 void EmptyGestureSlotComponent::paint (Graphics& g)
 {
+    Path outline, plusIcon;
+
+    outline.addRoundedRectangle (getLocalBounds().reduced (1.0f), 10.0f);
+
+    plusIcon.startNewSubPath ({getWidth()/2.0f - 10.0f, getHeight()/2.0f});
+    plusIcon.lineTo          ({getWidth()/2.0f + 10.0f, getHeight()/2.0f});
+    plusIcon.startNewSubPath ({getWidth()/2.0f, getHeight()/2.0f - 10.0f});
+    plusIcon.lineTo          ({getWidth()/2.0f, getHeight()/2.0f + 10.0f});
+
+    if (highlighted)
+    {
+        g.setColour (getPlumeColour (emptySlotBackground));
+        g.fillRoundedRectangle (getLocalBounds().toFloat(), 10.0f);
+    }
+
+    g.setColour (getPlumeColour (emptySlotOutline));
+
+    // Plus Icon
+    g.strokePath (plusIcon, {3.0f, PathStrokeType::mitered, PathStrokeType::rounded});
+
+    // Outline
     if (dragMode && draggedGesture != id && draggedOverSlot == id)
     {
 		g.setColour (Colour (0xff6065e0));
-		g.drawRoundedRectangle(getLocalBounds().reduced (1.5f).toFloat(), 3.0f, 3.0f);
+		g.drawRoundedRectangle(getLocalBounds().reduced (1.0f).toFloat(), 10.0f, 3.0f);
     }
-    
-    g.setColour (highlighted ? Colours::white.withAlpha (0.4f) : Colours::white.withAlpha (0.1f));
-    g.fillEllipse (getLocalBounds().withSizeKeepingCentre (20, 20).toFloat());
 
-    if (highlighted) g.drawRoundedRectangle (getLocalBounds().reduced(1).toFloat(), 3.0f, 1.0f);
+    else if (highlighted)
+    {
+        PathStrokeType outlineStroke (1.0f, PathStrokeType::mitered, PathStrokeType::butt);
+        Path dashedOutline;
+		const float dashLengths[] = {10.0f, 10.0f};
 
-    g.setColour (Colours::black);
-    g.setFont (PLUME::font::plumeFontBold.withHeight (30.0f));
-    g.drawText ("+", getLocalBounds(), Justification::centred, true);
+        outlineStroke.createDashedStroke (dashedOutline, outline, dashLengths, 2);
+
+        g.fillPath (dashedOutline);
+    }
 }
 
 void EmptyGestureSlotComponent::resized()

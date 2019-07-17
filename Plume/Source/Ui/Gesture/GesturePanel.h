@@ -61,7 +61,8 @@ public:
 
     //==============================================================================
     void initialiseGestureSlots();
-    void resizeSlotsAndTrimAreaAccordingly (juce::Rectangle<int>& area, int margin = PLUME::UI::MARGIN);
+    void resizeSlotsAndTrimAreaAccordingly (juce::Rectangle<int>& area, int marginX = PLUME::UI::MARGIN,
+                                                                        int marginY = PLUME::UI::MARGIN);
     void removeGestureAndGestureComponent (int gestureId);
     bool hasSelectedGesture();
     void renameGestureInSlot (int slotNumber);

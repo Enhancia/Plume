@@ -87,13 +87,13 @@ void GesturePanel::resized()
     using namespace PLUME::UI;
 
     auto area = getLocalBounds();
-    resizeSlotsAndTrimAreaAccordingly (area, MARGIN);
+    resizeSlotsAndTrimAreaAccordingly (area, MARGIN, MARGIN_SMALL);
     
     if (settingsVisible)
     {
-        gestureSettings->setBounds (area.reduced (MARGIN)); //.removeFromRight (jmax (getWidth()/2, getWidth() - SIDEBAR_WIDTH*3/2)));
-        closeButton->setBounds (juce::Rectangle<int> (30, 30).withX (gestureSettings->getRight() - MARGIN - 30)
-                                                             .withY (gestureSettings->getY() + MARGIN)
+        gestureSettings->setBounds (area.reduced (MARGIN, MARGIN_SMALL));
+        closeButton->setBounds (juce::Rectangle<int> (25, 25).withX (gestureSettings->getRight() - MARGIN - 25)
+                                                             .withY (gestureSettings->getY() + MARGIN_SMALL)
                                                              .reduced (7));
     }
 }
@@ -266,7 +266,7 @@ void GesturePanel::initialiseGestureSlots()
     }
 }
 
-void GesturePanel::resizeSlotsAndTrimAreaAccordingly (juce::Rectangle<int>& area, int margin)
+void GesturePanel::resizeSlotsAndTrimAreaAccordingly (juce::Rectangle<int>& area, int marginX, int marginY)
 {
     using namespace PLUME::UI;
     if (PLUME::NUM_GEST == 0 || gestureSlots.size() == 0) return;
@@ -291,8 +291,10 @@ void GesturePanel::resizeSlotsAndTrimAreaAccordingly (juce::Rectangle<int>& area
     // sets bounds depending on the value in the array
     for (int i=0; i<gestureSlots.size(); i++)
     {
-        gestureSlots[i]->setBounds (i < numRows ? column1.removeFromTop (slotHeight).reduced (margin)
-                                                : column2.removeFromTop (slotHeight).reduced (margin));
+        gestureSlots[i]->setBounds (i < numRows ? column1.removeFromTop (slotHeight)
+														 .reduced (marginX, marginY)
+                                                : column2.removeFromTop (slotHeight)
+														 .reduced (marginX, marginY));
     }
 }
 

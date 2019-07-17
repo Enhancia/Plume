@@ -16,8 +16,7 @@ PresetSearchBar::PresetSearchBar (PlumeProcessor& proc) : processor (proc), sear
 {
     addAndMakeVisible (searchLabel);
     searchLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
-    searchLabel->setColour (Label::textColourId, PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxStandartText)
-                                                                 .withAlpha (0.6f));
+    searchLabel->setColour (Label::textColourId, getPlumeColour (presetsBoxRowText).withAlpha (0.6f));
     searchLabel->setFont (PLUME::font::plumeFont.withHeight (PLUME::font::SIDEBAR_LABEL_FONT_H));
     searchLabel->setColour (Label::outlineWhenEditingColourId, Colour (0x00000000));
     searchLabel->setEditable (true, false, false);
@@ -66,11 +65,11 @@ void PresetSearchBar::paint (Graphics& g)
     */
     
     //Gradient for the bar's outline
-    auto gradOut = ColourGradient::horizontal (currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
+    auto gradOut = ColourGradient::horizontal (Colour (0x10ffffff),
                                                float(MARGIN), 
-                                               currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
+                                               Colour (0x10ffffff),
                                                float(getWidth() - MARGIN));
-    gradOut.addColour (0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
+    gradOut.addColour (0.5, Colour (0x50ffffff));
 
     g.setGradientFill (gradOut);
     g.drawRoundedRectangle (0.0f, 0.0f, float(getWidth()), jmin (float(getHeight()), 30.0f), 10.0f, 1.0f);

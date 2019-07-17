@@ -49,11 +49,11 @@ void NewGesturePanel::paint (Graphics& g)
     g.fillRect (panelArea);
     
     // panel outline
-    auto gradOut = ColourGradient::horizontal (currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
+    auto gradOut = ColourGradient::horizontal (Colour (0x10ffffff),
                                                float(panelArea.getX()), 
-                                               currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
+                                               Colour (0x10ffffff),
                                                float(panelArea.getRight()));
-    gradOut.addColour (0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
+    gradOut.addColour (0.5, Colour (0x50ffffff));
 
     g.setGradientFill (gradOut);
     g.drawRect (panelArea);
@@ -283,15 +283,21 @@ void NewGesturePanel::GestureTypeSelector::update()
 
 void NewGesturePanel::GestureTypeSelector::paint (Graphics& g)
 {
-	g.setColour (PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText));
-	g.drawRoundedRectangle (getLocalBounds().reduced (2).toFloat(), 2.0f, 1.0f);
-
 	if (highlighted)
 	{
-		g.setColour (PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText)
-											.withAlpha (0.1f));
+		// Fill
+		g.setColour (Gesture::getHighlightColour (gestureType).withAlpha (0.15f));
 
 		g.fillRoundedRectangle (getLocalBounds().reduced (2).toFloat(), 2.0f);
+
+		// Outline
+		g.setColour (Gesture::getHighlightColour (gestureType));
+		g.drawRoundedRectangle (getLocalBounds().reduced (2).toFloat(), 2.0f, 1.0f);
+	}
+	else
+	{
+		g.setColour (getPlumeColour (topPanelMainText));
+		g.drawRoundedRectangle (getLocalBounds().reduced (2).toFloat(), 2.0f, 1.0f);
 	}
 
 	g.setColour (PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText));

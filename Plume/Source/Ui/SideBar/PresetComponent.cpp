@@ -28,11 +28,9 @@ PresetComponent::PresetComponent (PlumeProcessor& p)  : processor (p)
     pluginSelectBox->setJustificationType (Justification::centredLeft);
     pluginSelectBox->setColour (ComboBox::outlineColourId, Colour (0x00000000));
     pluginSelectBox->setColour (ComboBox::textColourId,
-                                PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxStandartText)
-                                                       .withAlpha (0.6f));
+                                getPlumeColour (presetsBoxRowText).withAlpha (0.6f));
     pluginSelectBox->setColour (ComboBox::arrowColourId,
-                                PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxStandartText)
-                                                       .withAlpha (0.6f));
+                                getPlumeColour (presetsBoxRowText).withAlpha (0.6f));
                                 
     pluginSelectBox->setColour (ComboBox::backgroundColourId, Colour (0x30000000));
         
@@ -70,11 +68,11 @@ void PresetComponent::paintOverChildren (Graphics& g)
     using namespace PLUME::UI;
     
     //Gradient for the box's outline
-    auto gradOut = ColourGradient::horizontal (currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
+    auto gradOut = ColourGradient::horizontal (Colour (0x10ffffff),
                                                float(MARGIN), 
-                                               currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
+                                               Colour (0x10ffffff),
                                                float(getWidth() - MARGIN));
-    gradOut.addColour (0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
+    gradOut.addColour (0.5, Colour (0x50ffffff));
     g.setGradientFill (gradOut);
     
     
