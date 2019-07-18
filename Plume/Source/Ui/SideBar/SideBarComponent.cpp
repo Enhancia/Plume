@@ -25,7 +25,7 @@ SideBarComponent::SideBarComponent (PlumeProcessor& proc, Component& optsPanel)
 		                                                getPlumeColour (sideBarButtonFill).interpolatedWith (Colour (0xff0000ff),
 														                                                     0.5f)
 																						  .withAlpha (0.7f)));
-    optionsButton->setShape (PLUME::path::createOptionsPath(), false, true, false);
+    optionsButton->setShape (PLUME::path::createPath (PLUME::path::options), false, true, false);
     optionsButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFill), 1.5f);
     optionsButton->addMouseListener (this, false);
 	optionsButton->addListener (this);

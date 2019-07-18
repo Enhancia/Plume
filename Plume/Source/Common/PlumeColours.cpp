@@ -129,6 +129,7 @@ PlumeTheme PlumeTheme::createDefaultTheme()
                          0xff505050, //midiMapSliderBackground
  
                     // Gesture Colours
+                         0xff808080, //mutedHighlight
                          0xffec6565, //vibratoHighlight
                          0xff1fcaa8, //pitchBendHighlight
                          0xfff3a536, //tiltHighlight
@@ -195,6 +196,7 @@ PlumeTheme PlumeTheme::createDefaultTheme()
                          0xff7c80de, //detailPanelActiveMapping ( old 0xff943cb0 )
                          
                          // gesture colours
+                         0xff808080, //mutedHighlight
                          0xffec6565, //vibratoHighlight
                          0xff1fcaa8, //pitchBendHighlight
                          0xfff3a536, //tiltHighlight
@@ -282,6 +284,7 @@ PlumeTheme PlumeTheme::createRedTheme()
                          0xff505050, //midiMapSliderBackground
  
                     // Gesture Colours
+                         0xff808080, //mutedHighlight
                          0xffe04040, //vibratoHighlight
                          0xffe04040, //pitchBendHighlight
                          0xffe04040, //tiltHighlight
@@ -370,6 +373,7 @@ PlumeTheme PlumeTheme::createTestTheme()
                          0xff323643, //midiMapSliderBackground
  
                       // Gesture Colours
+                         0xff808080, //mutedHighlight
                          0xffec6565, //vibratoHighlight
                          0xff1fcaa8, //pitchBendHighlight
                          0xfff3a536, //tiltHighlight

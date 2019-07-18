@@ -92,9 +92,10 @@ void GesturePanel::resized()
     if (settingsVisible)
     {
         gestureSettings->setBounds (area.reduced (MARGIN, MARGIN_SMALL));
-        closeButton->setBounds (juce::Rectangle<int> (25, 25).withX (gestureSettings->getRight() - MARGIN - 25)
-                                                             .withY (gestureSettings->getY() + MARGIN_SMALL)
-                                                             .reduced (7));
+        /*
+        closeButton->setBounds (gestureSettings->getBounds().withLeft (gestureSettings->getRight() - MARGIN - 30)
+                                                            .withBottom (gestureSettings->getY() + 30)
+                                                            .reduced (5));*/
     }
 }
 
@@ -455,7 +456,7 @@ void GesturePanel::selectGestureExclusive (GestureComponent& gestureComponentToS
     }
 
     gestureSettings.reset (new GestureSettingsComponent (gestureComponentToSelect.getGesture(),
-                                                         gestureArray, wrapper));
+                                                         gestureArray, wrapper, *closeButton));
     selectedGesture = gestureComponentToSelect.id;
     setSettingsVisible (true);
 }
@@ -576,19 +577,24 @@ void GesturePanel::setSettingsVisible (bool shouldBeVisible)
 
 void GesturePanel::createAndAddCloseButton()
 {
-    addAndMakeVisible (closeButton = new ShapeButton ("Close Settings Button", Colour(0x00000000),
-                                                                               Colour(0x00000000),
-                                                                               Colour(0x00000000)),
+    addAndMakeVisible (closeButton = new PlumeShapeButton ("Close Settings Button",
+                                                                getPlumeColour (plumeBackground),
+                                                                Colour (0x00000000),
+                                                                Colour (0x00000000),
+                                                                Colour (0x00000000),
+                                                                Colour (0xffffffff),
+                                                                Colour (0xa0ffffff),
+                                                                Colour (0xff8080ff)),
                       -1);
 
     Path p;
     p.startNewSubPath (0, 0);
-    p.lineTo (3*PLUME::UI::MARGIN, 3*PLUME::UI::MARGIN);
-    p.startNewSubPath (0, 3*PLUME::UI::MARGIN);
-    p.lineTo (3*PLUME::UI::MARGIN, 0);
+    p.lineTo (PLUME::UI::MARGIN_SMALL, PLUME::UI::MARGIN_SMALL);
+    p.startNewSubPath (0, PLUME::UI::MARGIN_SMALL);
+    p.lineTo (PLUME::UI::MARGIN_SMALL, 0);
 
     closeButton->setShape (p, false, true, false);
-    closeButton->setOutline (Colour (0xff101010), 1.0f);
+    closeButton->setOutline (getPlumeColour (detailPanelMainText), 1.5f);
     closeButton->addMouseListener (this, false);
     closeButton->addListener (this);
 }

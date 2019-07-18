@@ -22,12 +22,14 @@ GestureComponent::GestureComponent (Gesture& gest, const bool& dragModeReference
                       draggedOverSlot (draggedOverSlotReference)
 {
     createLabel();
+    createButton();
 }
 
 GestureComponent::~GestureComponent()
 {
     gestureNameLabel->removeListener (this);
     gestureNameLabel = nullptr;
+    muteButton = nullptr;
 }
 
 const String GestureComponent::getInfoString()
@@ -92,8 +94,11 @@ void GestureComponent::paint (Graphics& g)
 
 void GestureComponent::resized()
 {
-    gestureNameLabel->setBounds (getLocalBounds().withHeight (30)
-                                                 .withSizeKeepingCentre (getWidth()*2/3, 25));
+    auto headerArea = getLocalBounds().removeFromTop (30);
+
+    gestureNameLabel->setBounds (headerArea.withSizeKeepingCentre (getWidth()*2/3, 25));
+    muteButton->setBounds (headerArea.removeFromRight (30 + PLUME::UI::MARGIN)
+                                     .withSizeKeepingCentre (18, 18));
 }
 void GestureComponent::editorShown (Label* lbl, TextEditor& ted)
 {
@@ -161,6 +166,27 @@ void GestureComponent::createLabel()
     gestureNameLabel->setJustificationType (Justification::centred);
     gestureNameLabel->setInterceptsMouseClicks (false, false);
     gestureNameLabel->addListener (this);
+}
+
+void GestureComponent::createButton()
+{
+    addAndMakeVisible (muteButton = new PlumeShapeButton ("Mute Button",
+                                                          getPlumeColour (plumeBackground),
+                                                          Colour (0),
+                                                          Colour (0),
+                                                          Colour (0),
+                                                          gesture.getHighlightColour(),
+                                                          gesture.getHighlightColour().withAlpha (0.5f),
+                                                          Colour (0x60ffffff)));
+
+    muteButton->setShape (PLUME::path::createPath (PLUME::path::onOff), false, true, false);
+    muteButton->setToggleState (gesture.isActive(), dontSendNotification);
+    muteButton->setClickingTogglesState (true);
+    muteButton->onStateChange = [this] ()
+    { 
+        gesture.setActive (muteButton->getToggleState());
+        getParentComponent()->repaint();
+    };
 }
 
 //==============================================================================

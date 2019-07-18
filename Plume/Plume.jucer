@@ -77,6 +77,10 @@
                 file="Source/Ui/LookAndFeel/PlumeLookAndFeel.h"/>
         </GROUP>
         <GROUP id="{4CA36361-EB23-BED0-3C51-3F19F9BE9F00}" name="Common">
+          <FILE id="wIBhgr" name="PlumeShapeButton.cpp" compile="1" resource="0"
+                file="Source/Ui/Common/PlumeShapeButton.cpp"/>
+          <FILE id="UpesGY" name="PlumeShapeButton.h" compile="0" resource="0"
+                file="Source/Ui/Common/PlumeShapeButton.h"/>
           <FILE id="lhj2tX" name="TabbedPanelComponent.cpp" compile="1" resource="0"
                 file="Source/Ui/Common/TabbedPanelComponent.cpp"/>
           <FILE id="cwIDnw" name="TabbedPanelComponent.h" compile="0" resource="0"

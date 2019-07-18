@@ -58,7 +58,7 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc, Component& newPrst)  : p
                                                            //Colour(PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText)),
                                                            //Colour(PLUME::UI::currentTheme.getColour(PLUME::colour::headerHighlightedText)),
                                                            //Colour(PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText))));
-    savePresetButton->setShape (PLUME::path::createFlatSavePath(), false, true, false);
+    savePresetButton->setShape (PLUME::path::createPath (PLUME::path::flatSave), false, true, false);
     savePresetButton->setOutline (getPlumeColour (headerText), 1.5f);
     savePresetButton->addMouseListener (this, false);
     savePresetButton->addListener (this);
@@ -114,7 +114,7 @@ void HeaderComponent::paint (Graphics& g)
         auto presetArea = area.removeFromLeft (area.getWidth()/3 + 2*MARGIN);
 
         // Preset folder drawing
-        Path p = PLUME::path::createFolderPath();
+        Path p = PLUME::path::createPath (PLUME::path::folder);
 	    p.scaleToFit (float(presetArea.getX()) + MARGIN, 0.0f, float(getHeight()-2*MARGIN), float(getHeight()), true);
         g.fillPath (p);
         presetArea.removeFromLeft (HEADER_HEIGHT);
@@ -136,7 +136,7 @@ void HeaderComponent::paint (Graphics& g)
         area.removeFromRight (getHeight()); // space for the plugin list arrow
     
         // Plugin piano drawing
-	    Path p = PLUME::path::createPianoPath();
+	    Path p = PLUME::path::createPath (PLUME::path::piano);
 	    p.scaleToFit (float(area.getX() + MARGIN), 0.0f, float(getHeight()-2*MARGIN), float(getHeight()), true);
         g.fillPath (p);
     

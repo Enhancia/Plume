@@ -23,14 +23,19 @@ public:
     enum DualToggleStyle
     {
         oneStateVisible =0,
-        twoStatesVisible
+        twoStatesVisible,
+        toggle,
+        toggleWithTopText
     };
 
     //==============================================================================
     DualTextToggle() = default;
-    DualTextToggle (String falseStateText, String trueStateText);
     DualTextToggle (String falseStateText, String trueStateText,
-                    Colour falseStateColour, Colour trueStateColour);
+                    DualToggleStyle initialStyle = oneStateVisible);
+
+    DualTextToggle (String falseStateText, String trueStateText,
+                    Colour falseStateColour, Colour trueStateColour,
+                    DualToggleStyle initialStyle = oneStateVisible);
     ~DualTextToggle();
 
     //==============================================================================
@@ -61,6 +66,8 @@ private:
     void paintStateInAreaWithAlpha (Graphics& g, bool stateToPaint,
                                                  juce::Rectangle <int> areaToPaint,
                                                  float alpha =1.0f);
+    void paintToggle (Graphics& g, juce::Rectangle<int> areaToPaint);
+    void paintToggleWithTopText (Graphics&);
 
     //==============================================================================
     bool state = false;

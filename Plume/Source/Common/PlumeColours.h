@@ -90,6 +90,7 @@ enum PlumeColourID
             midiMapSliderBackground,
 
         // Gesture Colours
+        mutedHighlight,
         vibratoHighlight,
         pitchBendHighlight,
         tiltHighlight,

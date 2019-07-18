@@ -97,7 +97,7 @@ private:
 
     OwnedArray<PlumeComponent> gestureSlots;
     ScopedPointer<GestureSettingsComponent> gestureSettings;
-    ScopedPointer<ShapeButton> closeButton;
+    ScopedPointer<PlumeShapeButton> closeButton;
 
     //==============================================================================
     int selectedGesture = -1;

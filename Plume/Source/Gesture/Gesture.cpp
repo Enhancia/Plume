@@ -345,7 +345,9 @@ String Gesture::getGestureTypeDescription (int gestureType)
 
 Colour Gesture::getHighlightColour() const
 {
-    return getHighlightColour (type);
+	if (isActive()) return getHighlightColour (type);
+
+	return getPlumeColour (mutedHighlight);
 }
 
 Colour Gesture::getHighlightColour (int gestureType)

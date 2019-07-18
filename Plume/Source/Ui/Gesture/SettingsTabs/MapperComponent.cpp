@@ -178,8 +178,8 @@ MapperBanner::~MapperBanner()
 void MapperBanner::paint (Graphics& g)
 {
 	paintParameterSlotDisplay(g, getLocalBounds().withTrimmedLeft (mapButton->getWidth() + PLUME::UI::MARGIN)
-                                                 .withTrimmedRight (getWidth()/4 + PLUME::UI::MARGIN),
-                                 1, 6, 10);
+                                                 .withTrimmedRight (50),
+                                 1, 6, 12);
 }
 
 void MapperBanner::resized()
@@ -257,7 +257,7 @@ void MapperBanner::paintParameterSlotDisplay  (Graphics& g, juce::Rectangle<int>
             g.setColour ((row*numColumns) + column < gesture.getParameterArray().size() ?
                             gesture.getHighlightColour() :
                             getPlumeColour (plumeBackground));
-            g.fillRoundedRectangle (slotArea.toFloat(), 2.0f);
+            g.fillRoundedRectangle (slotArea.toFloat(), sideLength / 3.5f);
 
             /*
             if ((row*numColumns) + column < gesture.getParameterArray().size())

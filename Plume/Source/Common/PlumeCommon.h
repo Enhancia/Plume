@@ -23,6 +23,7 @@
 #include "Ui/Common/PlumeComponent.h"
 #include "Ui/Common/PlumeProgressBar.h"
 #include "Ui/Common/DualTextToggle.h"
+#include "Ui/Common/PlumeShapeButton.h"
 
 // Preprocessor expressions
 #define TRACE_IN  Logger::writeToLog ("[+] Entering: " + String(__FUNCTION__) + "\n")
@@ -190,16 +191,22 @@ namespace PLUME
     
     namespace path
     {
-		extern const Path createGearPath();
-		extern const Path createPianoPath();
-        extern const Path createBurgerPath();
-        extern const Path createShortBurgerPath();
-        extern const Path createShortOptionsPath();
-        extern const Path createOptionsPath();
-		extern const Path createFolderPath();
-		extern const Path createMagnifyingGlassPath();
-        extern const Path createFloppyDiskPath();
-        extern const Path createFlatSavePath();
+		enum PathId
+		{
+			gear = 0,
+			piano,
+			burger,
+			burgerShort,
+			options,
+			optionsShort,
+			folder,
+			magnifyingGlass,
+			floppyDisk,
+			flatSave,
+			onOff
+		};
+
+        extern const Path createPath (PathId pathToCreate);
     }
 
   #if JUCE_WINDOWS
