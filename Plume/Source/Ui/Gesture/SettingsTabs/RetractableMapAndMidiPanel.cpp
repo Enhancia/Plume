@@ -63,10 +63,12 @@ void RetractableMapAndMidiPanel::update()
 {
 	if (panelMode == parameterMode)
 	{
+		parametersBanner->updateComponents();
 		parametersBody->updateComponents();
 	}
 	else if (panelMode == midiMode)
 	{
+		midiBanner->repaint();
 		midiBody->updateComponents();
 	}
 }

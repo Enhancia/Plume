@@ -18,7 +18,7 @@
 //==============================================================================
 /*
 */
-class Tuner    : public Component
+class Tuner    : public PlumeComponent
 {
 public:
     //==============================================================================
@@ -27,6 +27,15 @@ public:
     {}
 
 	~Tuner() {}
+
+    //==============================================================================
+    virtual const String getInfoString() override 
+    {
+        return "Gesture sensitivity Tuner: \n\n"
+               "- Use the sliders to tweak the gesture's behaviour.\n";
+    }
+
+    virtual void update() {}
 
     //==============================================================================
 	virtual void paint(Graphics& g) override {}
@@ -38,6 +47,7 @@ public:
 
     //==============================================================================
     Colour getColour() { return tunerColour; }
+    virtual void setColour (const Colour newColour) { tunerColour = newColour; }
 
 protected:
     Colour tunerColour;

@@ -34,7 +34,9 @@ Gesture::Gesture (String gestName, int gestType, int gestId, const NormalisableR
 
 Gesture::~Gesture()
 {
+    dispatchPendingMessages();
     removeAllChangeListeners();
+
     clearAllParameters();
 }
 
@@ -417,14 +419,14 @@ void Gesture::replaceParameter (int paramId,
     sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
 }
 
-void Gesture::clearAllParameters()
+void Gesture::clearAllParameters (bool sendNotification)
 {
     TRACE_IN;
     ScopedLock paramlock (parameterArrayLock);
     
 	mapped = false;
     parameterArray.clear();
-    sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
+    if (sendNotification) sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
 }
 
 int Gesture::getNumParameters() const

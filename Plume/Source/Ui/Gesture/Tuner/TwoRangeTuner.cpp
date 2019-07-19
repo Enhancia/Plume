@@ -144,6 +144,28 @@ void TwoRangeTuner::updateDisplay()
         repaint();
     }
 }
+
+void TwoRangeTuner::setColour (const Colour newColour)
+{
+    Tuner::setColour (newColour);
+
+    auto setLabelColours = [this] (Label& label)
+    {
+        label.setColour (Label::textColourId, tunerColour);
+        label.setColour (Label::textWhenEditingColourId, tunerColour);
+        label.setColour (TextEditor::textColourId, tunerColour);
+        label.setColour (TextEditor::highlightColourId, tunerColour.withAlpha (0.2f));
+        label.setColour (TextEditor::highlightedTextColourId, tunerColour);
+        label.setColour (CaretComponent::caretColourId, tunerColour.withAlpha (0.2f));
+    };
+
+    setLabelColours (*rangeLabelMinLeft);
+    setLabelColours (*rangeLabelMaxLeft);
+    setLabelColours (*rangeLabelMinRight);
+    setLabelColours (*rangeLabelMaxRight);
+
+    repaint();
+}
     
 //==============================================================================
 void TwoRangeTuner::labelTextChanged (Label* lbl)

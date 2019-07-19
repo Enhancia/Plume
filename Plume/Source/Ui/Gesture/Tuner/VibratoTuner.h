@@ -38,6 +38,8 @@ public:
     //==============================================================================
     void mouseDown (const MouseEvent& e) override;
     void mouseUp (const MouseEvent& e) override;
+
+    void setColour (const Colour newColour) override;
     
 private:
     //==============================================================================

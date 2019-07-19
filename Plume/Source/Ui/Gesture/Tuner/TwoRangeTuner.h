@@ -33,6 +33,8 @@ public:
     
     void updateComponents() override;
     void updateDisplay() override;
+
+    void setColour (const Colour newColour) override;
     
     //==============================================================================
     void labelTextChanged (Label* lbl) override;

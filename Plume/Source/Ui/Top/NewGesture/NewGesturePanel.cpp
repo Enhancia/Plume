@@ -29,24 +29,32 @@ void NewGesturePanel::paint (Graphics& g)
 {
 	using namespace PLUME::UI;
     
-    ColourGradient gradFill (currentTheme.getColour (PLUME::colour::topPanelBackground)
-                                         .overlaidWith (Colour (0x10000000)),
-                             float (panelArea.getCentreX()),
-                             float (panelArea.getBottom()),
-                             currentTheme.getColour (PLUME::colour::topPanelBackground),
-                             float (panelArea.getCentreX()),
-                             float (panelArea.getY()),
-                             true);
-    gradFill.addColour (0.7, currentTheme.getColour (PLUME::colour::topPanelBackground)
-                                         .overlaidWith (Colour (0x10000000)));
 
     // transparent area
-    g.setColour (currentTheme.getColour (PLUME::colour::topPanelTransparentArea));
+    auto gradTransp = ColourGradient::vertical (Colour (0x00000000),
+                                                0.0f, 
+                                                Colour (0x00000000),
+                                                float(getHeight()));
+    gradTransp.addColour (0.05, getPlumeColour (topPanelTransparentArea));
+    gradTransp.addColour (0.95, getPlumeColour (topPanelTransparentArea));
+
+    g.setGradientFill (gradTransp);
     g.fillRect (getLocalBounds());
     
     // panel area
+    ColourGradient gradFill (getPlumeColour (topPanelBackground)
+                                         .overlaidWith (Colour (0x10000000)),
+                             float (panelArea.getCentreX()),
+                             float (panelArea.getBottom()),
+                             getPlumeColour (topPanelBackground),
+                             float (panelArea.getCentreX()),
+                             float (panelArea.getY()),
+                             true);
+    gradFill.addColour (0.7, getPlumeColour (topPanelBackground)
+                                         .overlaidWith (Colour (0x10000000)));
+
     g.setGradientFill (gradFill);
-    g.fillRect (panelArea);
+    g.fillRoundedRectangle (panelArea.toFloat(), 10.0f);
     
     // panel outline
     auto gradOut = ColourGradient::horizontal (Colour (0x10ffffff),
@@ -56,7 +64,7 @@ void NewGesturePanel::paint (Graphics& g)
     gradOut.addColour (0.5, Colour (0x50ffffff));
 
     g.setGradientFill (gradOut);
-    g.drawRect (panelArea);
+    g.drawRoundedRectangle (panelArea.toFloat(), 10.0f, 1.0f);
 }
 
 void NewGesturePanel::resized()

@@ -13,7 +13,6 @@
 #include "../../../../JuceLibraryCode/JuceHeader.h"
 
 #include "Ui/Gesture/Tuner/Tuner.h"
-#include "Ui/Gesture/Tuner/SymmetricalTuner.h"
 #include "Ui/Gesture/Tuner/TwoRangeTuner.h"
 #include "Ui/Gesture/Tuner/OneRangeTuner.h"
 #include "Ui/Gesture/Tuner/VibratoTuner.h"

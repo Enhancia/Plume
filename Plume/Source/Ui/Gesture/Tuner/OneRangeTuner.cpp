@@ -130,6 +130,26 @@ void OneRangeTuner::updateDisplay()
         repaint();
     }
 }
+
+void OneRangeTuner::setColour (const Colour newColour)
+{
+    Tuner::setColour (newColour);
+
+    auto setLabelColours = [this] (Label& label)
+    {
+        label.setColour (Label::textColourId, tunerColour);
+        label.setColour (Label::textWhenEditingColourId, tunerColour);
+        label.setColour (TextEditor::textColourId, tunerColour);
+        label.setColour (TextEditor::highlightColourId, tunerColour.withAlpha (0.2f));
+        label.setColour (TextEditor::highlightedTextColourId, tunerColour);
+        label.setColour (CaretComponent::caretColourId, tunerColour.withAlpha (0.2f));
+    };
+
+    setLabelColours (*rangeLabelMin);
+    setLabelColours (*rangeLabelMax);
+
+    repaint();
+}
     
 void OneRangeTuner::setStyle (TunerStyle newStyle)
 {

@@ -19,6 +19,8 @@ GestureSettingsComponent::GestureSettingsComponent (Gesture& gest, GestureArray&
                               wrapper (wrap), closeButton (closeBttn), gestureId (gest.id)
 {
     TRACE_IN;
+    setComponentID ("Gesture Settings");
+
     createTuner();
     createPanels();
     createToggles();
@@ -47,7 +49,10 @@ void GestureSettingsComponent::update()
 
 	retractablePanel->update();
     descriptionPanel->update();
+    gestTuner->setColour (gesture.getHighlightColour());
     gestTuner->updateComponents();
+    muteButton->setToggleState (gesture.isActive(), dontSendNotification);
+    midiParameterToggle->setToggleState (gesture.generatesMidi());
 }
 
 //==============================================================================
@@ -67,7 +72,7 @@ void GestureSettingsComponent::paint (Graphics& g)
     g.setColour (getPlumeColour (detailPanelSubText));
     g.setFont (PLUME::font::plumeFont.withHeight (10.0f));
     g.drawText ("ADVANCED PANEL",
-                headerArea.removeFromLeft (getWidth()/3).reduced (MARGIN),
+                headerArea.removeFromLeft (getWidth()/3).reduced (MARGIN, MARGIN_SMALL),
                 Justification::bottomLeft, false);
 
     // Gesture Name text
@@ -146,15 +151,6 @@ void GestureSettingsComponent::resized()
 //==============================================================================
 void GestureSettingsComponent::buttonClicked (Button*)
 {
-	// Sets all subcomponents active/inactive depending of the button state
-	
-	//gesture.setActive (onOffButton->getToggleState()); // Sets gesture active or inactive.
-	//gestureArray.checkPitchMerging();
-	
-	//onOffButton->setState(onOffButton->getState() ? Button::buttonNormal:
-	//												Button::buttonDown);
-													
-	//repaint(); // repaints to get the inactive/active appearance
 }
     
 
@@ -229,6 +225,8 @@ void GestureSettingsComponent::createTuner()
     {
         DBG ("Unknown Gesture type. No tuner was created.");
     }
+
+    gestTuner->setColour (gesture.getHighlightColour());
 }
 
 void GestureSettingsComponent::createToggles()
@@ -239,35 +237,29 @@ void GestureSettingsComponent::createToggles()
     midiParameterToggle->setStyle (DualTextToggle::toggleWithTopText);
     midiParameterToggle->setToggleState (gesture.generatesMidi());
     midiParameterToggle->onStateChange = [this] ()
-    { 
+    {
         gesture.setGeneratesMidi (midiParameterToggle->getToggleState());
         showAppropriatePanel();
         getParentComponent()->repaint();
     };
-    
-    
+
     addAndMakeVisible (muteButton = new PlumeShapeButton ("Mute Button",
                                                           getPlumeColour (plumeBackground),
-                                                          Colour (0),
-                                                          Colour (0),
-                                                          Colour (0),
-                                                          gesture.getHighlightColour(),
-                                                          gesture.getHighlightColour().withAlpha (0.5f),
-                                                          Colour (0x60ffffff)));
+                                                          getPlumeColour (mutedHighlight),
+                                                          Gesture::getHighlightColour (gesture.type)));
 
     muteButton->setShape (PLUME::path::createPath (PLUME::path::onOff), false, true, false);
     muteButton->setToggleState (gesture.isActive(), dontSendNotification);
     muteButton->setClickingTogglesState (true);
-    muteButton->onStateChange = [this] ()
-    { 
+    muteButton->onClick = [this] ()
+    {
         gesture.setActive (muteButton->getToggleState());
-        getParentComponent()->repaint();
+        closeButton.setToggleState (gesture.isActive(), dontSendNotification);
     };
 
-    closeButton.setStrokeColours (gesture.getHighlightColour(),
-                                  gesture.getHighlightColour().withAlpha (0.5f),
-                                  gesture.getHighlightColour().withAlpha (0.7f));
-
+    closeButton.setStrokeOffAndOnColours (getPlumeColour (mutedHighlight),
+                                          Gesture::getHighlightColour(gesture.type));
+    closeButton.setToggleState (gesture.isActive(), dontSendNotification);
 }
 
 void GestureSettingsComponent::createPanels()

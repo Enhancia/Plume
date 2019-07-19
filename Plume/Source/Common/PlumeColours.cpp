@@ -107,7 +107,7 @@ PlumeTheme PlumeTheme::createDefaultTheme()
  
                          //Empty Slot
                          0xff000000, //emptySlotOutline
-                         0x00000000, //emptySlotBackground
+                         0x07ffffff, //emptySlotBackground
                              
                       // Gesture Detail Panel
                          // General
@@ -144,77 +144,11 @@ PlumeTheme PlumeTheme::createDefaultTheme()
                        }));
 }
 
-/* OLD
-// SideBar
-                         0xff323232, //sideBarBackground
-                         0xffffffff, //sideBarMainText
-                         0xffffffff, //sideBarSubText
-                         0x10ffffff, //sideBarSeparatorOut
-                         0x50ffffff, //sideBarSeparatorIn
-                         0xffffffff, //sideBarButtonFill
-                         0xaaffffff, //sideBarButtonFillHighlighted
-                         0xaaaaaaff, //sideBarButtonFillClicked
-            
-                         // Preset Box
-                         0x00000000, //presetsBoxBackground
-                         0xbbffffff, //presetsBoxStandartText
-                         0x40ffffff, //presetsBoxHighlightedBackground
-                         0xff000000, //presetsBoxHighlightedText
-                         0x10ffffff, //presetsBoxOutlineTop
-                         0x30ffffff, //presetsBoxOutlineBottom
-                         0xbbffffff, //presetsBoxScrollBar
-            
-                         // Info Panel
-                         0xff606060, //infoPanelBackground
-                         0xffffffff, //infoPanelMainText
-                         0xffffffff, //infoPanelSubText
-            
-                         // Header
-                         0xfff8f8f8, //headerBackground
-                         0xffa5a5a5, //headerSeparatorTop
-                         0xffe1e1e1, //headerSeparatorBottom
-                         0xff393939, //headerStandartText
-                         0xaa393939, //headerHighlightedText
-            
-                         // Gesture Base Panel
-                         0xffd0d0d0, //basePanelBackground
-                         0xff606060, //basePanelGestureBackground
-                         0xff000000, //basePanelGestureOutline
-                         0xffa0a0a0, //basePanelGestureHighlightedBackground
-                         0xff000000, //basePanelGestureHighlightedOutline
-                         0xffffffff, //basePanelMainText
-                         0xffffffff, //basePanelSubText
-                
-                         // Gesture detail window
-                         0xffa0a0a0, //detailPanelBackground
-                         0xfff0f0f0, //detailPanelHighlightedBackground
-                         0xffffffff, //detailPanelMainText
-                         0xffffffff, //detailPanelSubText
-                         0xffffffff, //detailPanelHighlightedMainText
-                         0xffffffff, //detailPanelHighlightedSubText
-                         0xff000000, //detailPanelSubComponentsOutline
-                         0xff7c80de, //detailPanelActiveMapping ( old 0xff943cb0 )
-                         
-                         // gesture colours
-                         0xff808080, //mutedHighlight
-                         0xffec6565, //vibratoHighlight
-                         0xff1fcaa8, //pitchBendHighlight
-                         0xfff3a536, //tiltHighlight
-                         0xffa255f3, //rollHighlight
-                         0xff7c80de, //waveHighlight
-                         
-                         // Top Panels
-                         0xff494949, //topPanelBackground
-                         0xc0000000, //topPanelTransparentArea
-                         0xffffffff, //topPanelMainText
-                         0x50ffffff  //topPanelSubText
-*/
-
 PlumeTheme PlumeTheme::createRedTheme()
 {
     return (PlumeTheme({ 
                     // General
-                         0xff500000, //plumeBackground
+                         0xff401010, //plumeBackground
  
                     // SideBar
                          // General
@@ -262,7 +196,7 @@ PlumeTheme PlumeTheme::createRedTheme()
  
                          //Empty Slot
                          0xff000000, //emptySlotOutline
-                         0x00000000, //emptySlotBackground
+                         0x07ffffff, //emptySlotBackground
                              
                       // Gesture Detail Panel
                          // General
@@ -351,7 +285,7 @@ PlumeTheme PlumeTheme::createTestTheme()
  
                          //Empty Slot
                          0xff464b5e, //emptySlotOutline
-                         0xff22252e, //emptySlotBackground
+                         0x07ffffff, //emptySlotBackground
                              
                       // Gesture Detail Panel
                          // General
@@ -381,8 +315,8 @@ PlumeTheme PlumeTheme::createTestTheme()
                          0xff7c80de, //waveHighlight
  
                     // Top Panel
-                         0xff494949, //topPanelBackground
-                         0xc0000000, //topPanelTransparentArea
+                         0xff363c4e, //topPanelBackground
+                         0xc0000005, //topPanelTransparentArea
                          0xffffffff, //topPanelMainText
                          0x50ffffff //topPanelSubText
                        }));

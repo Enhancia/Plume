@@ -72,6 +72,9 @@ void GesturePanel::update()
     {
         gestureSettings->update();
         gestureSettings->updateMappedParameters();
+
+        closeButton->setToggleState (gestureArray.getGesture (selectedGesture)->isActive(),
+                                     dontSendNotification);
     }
 
     startTimerHz (freq);
@@ -220,7 +223,6 @@ void GesturePanel::handleLeftClickUp (const MouseEvent& event)
 
 void GesturePanel::handleLeftClickDrag (const MouseEvent& event)
 {
-    
 }
 
 bool GesturePanel::keyPressed (const KeyPress &key)
@@ -579,13 +581,10 @@ void GesturePanel::createAndAddCloseButton()
 {
     addAndMakeVisible (closeButton = new PlumeShapeButton ("Close Settings Button",
                                                                 getPlumeColour (plumeBackground),
-                                                                Colour (0x00000000),
-                                                                Colour (0x00000000),
-                                                                Colour (0x00000000),
-                                                                Colour (0xffffffff),
-                                                                Colour (0xa0ffffff),
-                                                                Colour (0xff8080ff)),
+                                                                Colour (0xff00ff00),
+                                                                Colour (0xffff0000)),
                       -1);
+    closeButton->setComponentID ("Close Button");
 
     Path p;
     p.startNewSubPath (0, 0);
@@ -594,8 +593,7 @@ void GesturePanel::createAndAddCloseButton()
     p.lineTo (PLUME::UI::MARGIN_SMALL, 0);
 
     closeButton->setShape (p, false, true, false);
-    closeButton->setOutline (getPlumeColour (detailPanelMainText), 1.5f);
-    closeButton->addMouseListener (this, false);
+    closeButton->setToggleState (true, dontSendNotification);
     closeButton->addListener (this);
 }
 

@@ -66,7 +66,8 @@ void MappedParameterComponent::paint (Graphics& g)
 { 
     if (!allowDisplayUpdate) return;
 
-	drawCursor (g);
+	if (gesture.isActive()) drawCursor (g);
+    
     drawSliderBackground (g);
 }
 
@@ -447,6 +448,26 @@ void MappedParameterComponent::updateDisplay()
                                            .withWidth (8));
         }
     }
+}
+
+void MappedParameterComponent::updateHighlightColour()
+{
+    highlightColour = gesture.getHighlightColour();
+
+    auto updateLabelColours = [this] (Label& label)
+    {
+        label.setColour (Label::textColourId, highlightColour);
+        label.setColour (Label::textWhenEditingColourId, highlightColour);
+        label.setColour (TextEditor::textColourId, highlightColour);
+        label.setColour (TextEditor::highlightColourId, highlightColour.withAlpha (0.2f));
+        label.setColour (TextEditor::highlightedTextColourId, highlightColour);
+        label.setColour (CaretComponent::caretColourId, highlightColour.withAlpha (0.2f));
+    };
+
+    updateLabelColours (*rangeLabelMin);
+    updateLabelColours (*rangeLabelMax);
+
+    repaint();
 }
 
 //==============================================================================

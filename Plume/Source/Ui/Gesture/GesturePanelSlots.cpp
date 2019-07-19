@@ -42,7 +42,8 @@ const String GestureComponent::getInfoString()
 
 void GestureComponent::update()
 {
-    gestureNameLabel->setText (gesture.getName().toUpperCase(), dontSendNotification);
+    gestureNameLabel->setText (gesture.getName().toUpperCase(), sendNotification);
+    muteButton->setToggleState (gesture.isActive(), sendNotification);
 }
 
 void GestureComponent::paint (Graphics& g)
@@ -125,7 +126,6 @@ void GestureComponent::mouseExit (const MouseEvent &event)
 }
 void GestureComponent::mouseDrag (const MouseEvent &event)
 {
-    DBG ("Mouse Drag : gesture Comp : id " << id);
 }
 
 Gesture& GestureComponent::getGesture()
@@ -172,20 +172,24 @@ void GestureComponent::createButton()
 {
     addAndMakeVisible (muteButton = new PlumeShapeButton ("Mute Button",
                                                           getPlumeColour (plumeBackground),
-                                                          Colour (0),
-                                                          Colour (0),
-                                                          Colour (0),
-                                                          gesture.getHighlightColour(),
-                                                          gesture.getHighlightColour().withAlpha (0.5f),
-                                                          Colour (0x60ffffff)));
+                                                          getPlumeColour (mutedHighlight),
+                                                          Gesture::getHighlightColour (gesture.type)));
 
     muteButton->setShape (PLUME::path::createPath (PLUME::path::onOff), false, true, false);
     muteButton->setToggleState (gesture.isActive(), dontSendNotification);
     muteButton->setClickingTogglesState (true);
-    muteButton->onStateChange = [this] ()
+    muteButton->onClick = [this] ()
     { 
         gesture.setActive (muteButton->getToggleState());
-        getParentComponent()->repaint();
+        
+        if (selected)
+        {
+            if (auto* closeButton = dynamic_cast<Button*> (getParentComponent()
+    														  ->findChildWithID ("Close Button")))
+    			closeButton->setToggleState (gesture.isActive(), dontSendNotification);
+        }
+
+        repaint();
     };
 }
 
@@ -270,5 +274,4 @@ void EmptyGestureSlotComponent::mouseExit (const MouseEvent &event)
 }
 void EmptyGestureSlotComponent::mouseDrag (const MouseEvent &event)
 {
-    DBG ("Mouse Drag : empty slot Comp : id " << id);
 }

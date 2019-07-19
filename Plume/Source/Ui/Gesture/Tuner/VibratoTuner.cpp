@@ -46,11 +46,6 @@ VibratoTuner::~VibratoTuner()
 //==============================================================================
 void VibratoTuner::paint (Graphics& g)
 {
-	/*
-	g.setColour (Colour (0xff505050));
-	g.drawRect (gainSlider->getBounds(), 1.0f);
-	g.drawRect (thresholdSlider->getBounds(), 1.0f);*/
-
 	drawValueCursor (g);
 	drawIntensityCursor (g);
 
@@ -231,6 +226,27 @@ void VibratoTuner::mouseUp (const MouseEvent& e)
 	}
 }
 
+void VibratoTuner::setColour (const Colour newColour)
+{
+	Tuner::setColour (newColour);
+
+    gainSlider->setColour (Slider::rotarySliderFillColourId, tunerColour);
+    thresholdSlider->setColour (Slider::trackColourId, tunerColour);
+
+    auto setLabelColours = [this] (Label& label)
+    {
+        label.setColour (Label::textColourId, tunerColour);
+        label.setColour (Label::textWhenEditingColourId, tunerColour);
+        label.setColour (TextEditor::textColourId, tunerColour);
+        label.setColour (TextEditor::highlightColourId, tunerColour.withAlpha (0.2f));
+        label.setColour (TextEditor::highlightedTextColourId, tunerColour);
+        label.setColour (CaretComponent::caretColourId, tunerColour.withAlpha (0.2f));
+    };
+
+    setLabelColours (*gainLabel);
+    setLabelColours (*thresholdLabel);
+}
+
 void VibratoTuner::createSliders()
 {
     addAndMakeVisible (gainSlider = new Slider ("Gain Slider"));
@@ -355,11 +371,6 @@ void VibratoTuner::drawValueCursor (Graphics& g)
 
 void VibratoTuner::drawIntensityCursor (Graphics& g)
 {
-	if (lastIntensity < getThreshold() != intensity < getThreshold())
-	{
-		//setThresholdSliderColour();
-	}
-
 	lastIntensity = intensity;
 
     Point<float> cursorPoint (thresholdSlider->getBounds().getCentreX() - 10,

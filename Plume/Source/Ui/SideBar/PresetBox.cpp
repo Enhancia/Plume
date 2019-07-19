@@ -319,10 +319,11 @@ void PresetBox::setPreset (const int row)
         MemoryBlock presetData;
         AudioProcessor::copyXmlToBinary (*presetXml, presetData);
             
-        // Calls the plugin's setStateInformation method to load the preset
 	    prepareGesturePanelToPresetChange();
-       //Time::waitForMillisecondCounter(Time::getMillisecondCounter() + 10);
+        processor.getWrapper().removeAllChangeListeners();
+        //Time::waitForMillisecondCounter(Time::getMillisecondCounter() + 10);
 
+        // Calls the plugin's setStateInformation method to load the preset
         processor.setStateInformation (presetData.getData(), int (presetData.getSize()));
         presetXml->deleteAllChildElements(); // frees the memory
     }

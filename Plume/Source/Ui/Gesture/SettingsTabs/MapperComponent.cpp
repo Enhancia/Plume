@@ -41,13 +41,15 @@ void MapperComponent::paint (Graphics& g)
 void MapperComponent::resized()
 {
     resizeArray (getLocalBounds(), NUM_COLUMNS, NUM_ROWS);
-	//repaint();
 }
 
 //==============================================================================
 void MapperComponent::updateDisplay()
 {
-    if (paramCompArray.isEmpty()) return;
+    if (paramCompArray.isEmpty())
+    {
+        return;
+    }
     
     if (PLUME::UI::ANIMATE_UI_FLAG)
     {
@@ -60,6 +62,12 @@ void MapperComponent::updateDisplay()
 
 void MapperComponent::updateComponents()
 {
+    ScopedLock paramComplock (paramCompArrayLock);
+
+    for (auto* comp : paramCompArray)
+    {
+        comp->updateHighlightColour();
+    }
 }
 
 void MapperComponent::initializeParamCompArray()
@@ -75,6 +83,8 @@ void MapperComponent::initializeParamCompArray()
         paramCompArray.add (new MappedParameterComponent (gesture, gestureArray, wrapper, *gestureParam, i++));
         addAndMakeVisible (paramCompArray.getLast());
     }
+
+    resized();
 }
 
 void MapperComponent::updateParamCompArray()
@@ -124,8 +134,13 @@ void MapperComponent::updateParamCompArray()
         }
 
         // Trims outdated parameterComponents
-        paramCompArray.removeLast (paramCompArray.size() - gesture.getParameterArray().size());
+        if (paramCompArray.size() > gesture.getParameterArray().size())
+        {
+            paramCompArray.removeLast (paramCompArray.size() - gesture.getParameterArray().size());
+        }
     }
+
+    resized();
 }
 
 void MapperComponent::addAndMakeArrayVisible()
@@ -258,13 +273,6 @@ void MapperBanner::paintParameterSlotDisplay  (Graphics& g, juce::Rectangle<int>
                             gesture.getHighlightColour() :
                             getPlumeColour (plumeBackground));
             g.fillRoundedRectangle (slotArea.toFloat(), sideLength / 3.5f);
-
-            /*
-            if ((row*numColumns) + column < gesture.getParameterArray().size())
-            {
-                g.setColour (Colour (0x60202020));
-                g.drawRect (slotArea, 1.5f);
-            }*/
         }
     }
 }

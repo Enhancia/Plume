@@ -69,7 +69,7 @@ namespace PLUME
     				{
     					if (auto* windowPosPtr = reinterpret_cast<WINDOWPOS*> (cwpStructPtr->lParam))
     					{
-    						DBG ("flags: 0x" << String::toHexString (windowPosPtr->flags));
+    						//DBG ("flags: 0x" << String::toHexString (windowPosPtr->flags));
 
                             if ((windowPosPtr->flags >> 7 & 1) == 1) // Flag SWP_HIDEWINDOW (bit 7) is active
                             {

@@ -39,8 +39,6 @@ public:
     void updateComponents();
     void initializeParamCompArray();
     void updateParamCompArray();
-    void addAndMakeArrayVisible();
-    void resizeArray (juce::Rectangle<int> bounds, const int numColumns, const int numRows);
     
     //==============================================================================
     bool mapModeOn;
@@ -57,6 +55,9 @@ private:
     //==============================================================================
     bool allowDisplayUpdate = true;
     const int NUM_ROWS = 1, NUM_COLUMNS = 6;
+    
+    void addAndMakeArrayVisible();
+    void resizeArray (juce::Rectangle<int> bounds, const int numColumns, const int numRows);
     
     //==============================================================================
     OwnedArray<MappedParameterComponent> paramCompArray;
