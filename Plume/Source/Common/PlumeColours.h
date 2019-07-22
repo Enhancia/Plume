@@ -51,6 +51,9 @@ enum PlumeColourID
         headerText,
         headerButtonStroke,
 
+       // Plugin Display
+        pluginDisplayBackground,
+
        // Preset Display
         presetDisplayArrowsBackground,
         presetDisplayBackground,

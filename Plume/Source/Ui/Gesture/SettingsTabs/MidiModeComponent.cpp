@@ -41,10 +41,11 @@ MidiModeComponent::~MidiModeComponent()
 //==============================================================================
 void MidiModeComponent::paint (Graphics& g)
 {
-    auto area = getLocalBounds().reduced (PLUME::UI::MARGIN);
-    area.removeFromRight (area.getWidth()*2/3);
+    auto area = getLocalBounds().reduced (PLUME::UI::MARGIN)
+                                .withTrimmedLeft (PLUME::UI::MARGIN);
+    area.removeFromRight (getWidth()*2/3);
 
-    g.setColour (Colours::black);
+    g.setColour (getPlumeColour (detailPanelSubText));
     g.setFont (PLUME::font::plumeFont.withHeight (13.0f));
 
     g.drawText ("MIDI Type:",
@@ -175,7 +176,9 @@ void MidiModeComponent::createComboBox()
     
     // ComboBox look
     midiTypeBox->setJustificationType (Justification::centred);
-    midiTypeBox->setColour (ComboBox::outlineColourId, Colour (0xff000000));
+    midiTypeBox->setColour (ComboBox::outlineColourId, getPlumeColour (detailPanelSubText));
+    midiTypeBox->setColour (ComboBox::textColourId, getPlumeColour (detailPanelMainText));
+    midiTypeBox->setColour (ComboBox::arrowColourId, getPlumeColour (detailPanelSubText));
 
     if (gesture.type == Gesture::vibrato || gesture.type == Gesture::pitchBend)
     {
@@ -195,6 +198,10 @@ void MidiModeComponent::createLabels()
     ccLabel->setEditable ((midiTypeBox->getSelectedId() == Gesture::controlChange), false, false);
     ccLabel->setFont (PLUME::font::plumeFont.withHeight (13.0f));
     ccLabel->setJustificationType (Justification::centred);
+
+    ccLabel->setColour (Label::backgroundColourId , Colour (0));
+    ccLabel->setColour (Label::textColourId, getPlumeColour (detailPanelMainText));
+    ccLabel->setColour (Label::outlineColourId, getPlumeColour (detailPanelSubText));
     
     // cc Label is visible & editable only if "CC" is selected
     ccLabel->setEditable (midiTypeBox->getSelectedId() == Gesture::controlChange, false, false);
@@ -203,6 +210,7 @@ void MidiModeComponent::createLabels()
     ccLabel->addListener (this);
     
     //=== range Control labels ===
+
     addAndMakeVisible (rangeLabelMin = new Label ("Min Label", TRANS (String (gesture.midiLow.getValue(), 2))));
     addAndMakeVisible (rangeLabelMax = new Label ("Max Label", TRANS (String (gesture.midiHigh.getValue(), 2))));
     
@@ -210,11 +218,17 @@ void MidiModeComponent::createLabels()
     rangeLabelMin->setEditable (true, false, false);
     rangeLabelMin->setFont (PLUME::font::plumeFont.withHeight (11.0f));
     rangeLabelMin->setJustificationType (Justification::centred);
+    rangeLabelMin->setColour (Label::backgroundColourId , Colour (0));
+    rangeLabelMin->setColour (Label::textColourId, getPlumeColour (detailPanelMainText));
+    rangeLabelMin->setColour (Label::outlineColourId, getPlumeColour (detailPanelSubText));
     
     // LabelMax style
     rangeLabelMax->setEditable (true, false, false);
     rangeLabelMax->setFont (PLUME::font::plumeFont.withHeight (11.0f));
     rangeLabelMax->setJustificationType (Justification::centred);
+    rangeLabelMax->setColour (Label::backgroundColourId , Colour (0));
+    rangeLabelMax->setColour (Label::textColourId, getPlumeColour (detailPanelMainText));
+    rangeLabelMax->setColour (Label::outlineColourId, getPlumeColour (detailPanelSubText));
     
     
     rangeLabelMin->addListener (this);

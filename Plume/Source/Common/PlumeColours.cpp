@@ -90,6 +90,9 @@ PlumeTheme PlumeTheme::createDefaultTheme()
                          0xff393939, //headerText
                          0xff393939, //headerButtonStroke
  
+                         // Plugin Display
+                         0xff424656, //pluginDisplayBackground
+
                          // Preset Display
                          0xff000000, //presetDisplayArrowsBackground
                          0xff000000, //presetDisplayBackground
@@ -179,6 +182,9 @@ PlumeTheme PlumeTheme::createRedTheme()
                          0xff532323, //headerText
                          0xff532323, //headerButtonStroke
  
+                         // Plugin Display
+                         0xff424656, //pluginDisplayBackground
+                         
                          // Preset Display
                          0xff532323, //presetDisplayArrowsBackground
                          0xff927575, //presetDisplayBackground
@@ -268,6 +274,9 @@ PlumeTheme PlumeTheme::createTestTheme()
                          0xffffffff, //headerText
                          0xffffffff, //headerButtonStroke 
  
+                         // Plugin Display
+                         0xff424656, //pluginDisplayBackground
+                         
                          // Preset Display
                          0xff495063, //presetDisplayArrowsBackground
                          0xff252835, //presetDisplayBackground

@@ -19,7 +19,7 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc, Component& newPrst)  : p
     setComponentID ("header");
     
     // Plugin Name
-    addAndMakeVisible (pluginNameLabel = new Label ("Plugin Name Label", processor.getWrapper().getWrappedPluginInfoString()));
+    addAndMakeVisible (pluginNameLabel = new Label ("Plugin Name Label", processor.getWrapper().getWrappedPluginName()));
     pluginNameLabel->setFont (PLUME::font::plumeFont.withHeight (PLUME::font::HEADER_LABEL_FONT_H));
     pluginNameLabel->setJustificationType (Justification::centred);
     pluginNameLabel->setEditable (false, false, false);
@@ -41,26 +41,18 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc, Component& newPrst)  : p
     arrow.lineTo (PLUME::UI::HEADER_HEIGHT/2, PLUME::UI::HEADER_HEIGHT - PLUME::UI::MARGIN);
     arrow.lineTo (PLUME::UI::HEADER_HEIGHT - PLUME::UI::MARGIN, 2*PLUME::UI::MARGIN);
     
-    addAndMakeVisible (pluginListButton = new ShapeButton ("Plugin List Button",
-                                                           Colour(0x00000000),
-		                                                   Colour(0x00000000),
-		                                                   Colour(0x00000000)));
-	pluginListButton->setShape (arrow, false, true, false);
-	pluginListButton->setOutline (getPlumeColour (headerText), 2.0f);
-	pluginListButton->addMouseListener (this, false);
+    addAndMakeVisible (pluginListButton = new PlumeShapeButton ("Plugin List Button",
+                                                                Colour(0x00000000),
+                                                                getPlumeColour (headerButtonStroke)));
+	pluginListButton->setShape (arrow, false, false, false);
 	pluginListButton->addListener (this);
 
     // Save Preset Button
-    addAndMakeVisible (savePresetButton = new ShapeButton ("Save Preset Button",
-                                                           Colour(0x00000000),
-                                                           Colour(0x00000000),
-                                                           Colour(0x00000000)));
-                                                           //Colour(PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText)),
-                                                           //Colour(PLUME::UI::currentTheme.getColour(PLUME::colour::headerHighlightedText)),
-                                                           //Colour(PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText))));
+    addAndMakeVisible (savePresetButton = new PlumeShapeButton ("Save Preset Button",
+                                                                Colour(0x00000000),
+                                                                getPlumeColour (headerButtonStroke)));
+
     savePresetButton->setShape (PLUME::path::createPath (PLUME::path::flatSave), false, true, false);
-    savePresetButton->setOutline (getPlumeColour (headerText), 1.5f);
-    savePresetButton->addMouseListener (this, false);
     savePresetButton->addListener (this);
     
 	// Plugin List menu
@@ -86,7 +78,7 @@ const String HeaderComponent::getInfoString()
 
 void HeaderComponent::update()
 {
-    pluginNameLabel->setText (processor.getWrapper().getWrappedPluginInfoString(), dontSendNotification);
+    pluginNameLabel->setText (processor.getWrapper().getWrappedPluginName(), dontSendNotification);
     presetNameLabel->setText (processor.getPresetHandler().getCurrentPresetName(), dontSendNotification);
     createPluginMenu (KnownPluginList::sortByManufacturer);
 }
@@ -96,53 +88,28 @@ void HeaderComponent::paint (Graphics& g)
 {
     using namespace PLUME::UI;
     
+    // Background
     g.setColour (getPlumeColour (headerBackground));
     g.fillRoundedRectangle (getLocalBounds().reduced (MARGIN_SMALL).toFloat(), 15.0f);
-    
-    //Gradient for horizontal lines
-    auto grad = ColourGradient::vertical (Colour (0xffa5a5a5),
-                                          float(MARGIN), 
-                                          Colour (0xffe1e1e1),
-                                          float(getHeight() - MARGIN));
-    grad.addColour (0.8, Colour (0xffe1e1e1));
-    g.setGradientFill (grad);
-    
-    auto area = getLocalBounds();
 
-    // Preset area
-    {
-        auto presetArea = area.removeFromLeft (area.getWidth()/3 + 2*MARGIN);
+    g.setColour (getPlumeColour (presetDisplayBackground));
 
-        // Preset folder drawing
-        Path p = PLUME::path::createPath (PLUME::path::folder);
-	    p.scaleToFit (float(presetArea.getX()) + MARGIN, 0.0f, float(getHeight()-2*MARGIN), float(getHeight()), true);
-        g.fillPath (p);
-        presetArea.removeFromLeft (HEADER_HEIGHT);
-    
-        // Save button
-        presetArea.removeFromRight (HEADER_HEIGHT);
+    // Preset Name Area
+    g.fillRoundedRectangle (presetNameLabel->getBounds().reduced (0, 6)
+                                                        .withLeft (savePresetButton->getX())
+                                                        .toFloat(),
+                            presetNameLabel->getHeight()/3.0f);
 
-        // Preset label Outline
-        g.drawRoundedRectangle (presetArea.reduced (0, MARGIN).toFloat(), 3, 1);
-    }
+    // Plugin Name Area
+    g.reduceClipRegion (getLocalBounds().withLeft (pluginNameLabel->getX()));
+    g.setColour (getPlumeColour (pluginDisplayBackground));
 
-    // Separator
-    g.drawVerticalLine (area.getX(),
-                        float(MARGIN),
-                        float(getHeight() - MARGIN));
-    
-    // Plugin Area
-    {
-        area.removeFromRight (getHeight()); // space for the plugin list arrow
-    
-        // Plugin piano drawing
-	    Path p = PLUME::path::createPath (PLUME::path::piano);
-	    p.scaleToFit (float(area.getX() + MARGIN), 0.0f, float(getHeight()-2*MARGIN), float(getHeight()), true);
-        g.fillPath (p);
-    
-        // Plugin label Outline
-        g.drawRoundedRectangle (area.withLeft (area.getX() + getHeight()).reduced (0, MARGIN).toFloat(), 3, 1);
-    }           
+    g.fillRoundedRectangle (getLocalBounds().reduced (MARGIN_SMALL).toFloat(), 15.0f);
+
+    /*
+    g.fillRoundedRectangle (pluginNameLabel->getBounds().reduced (0, 6)
+                                                        .toFloat(),
+                            pluginNameLabel->getHeight()/3.0f);*/
 }
 
 void HeaderComponent::resized()
@@ -151,22 +118,23 @@ void HeaderComponent::resized()
     
     auto area = getLocalBounds();
 
-    // Preset Area
-    {
-        auto presetArea = area.removeFromLeft (area.getWidth()/3 + 2*MARGIN);
-        
-        savePresetButton->setBounds (presetArea.removeFromRight (HEADER_HEIGHT).reduced (0, MARGIN*3/2));
-        presetNameLabel->setBounds (presetArea.withTrimmedLeft (HEADER_HEIGHT)
-                                              .reduced (0, MARGIN_SMALL));
-    }
-
     // Plugin Area
     {
-        //area.removeFromLeft (MARGIN); // Space before separator
-        pluginListButton->setBounds (area.removeFromRight (getHeight()).reduced (MARGIN*3/2, MARGIN));
+        auto pluginArea = area.removeFromRight (getWidth()/4);
+
+        pluginListButton->setBounds (pluginArea.removeFromRight (getHeight()).reduced (MARGIN));
     
-        pluginNameLabel->setBounds (area.withTrimmedLeft (HEADER_HEIGHT).reduced (0, MARGIN_SMALL));
+        pluginNameLabel->setBounds (pluginArea.reduced (0, MARGIN_SMALL));
     }
+
+    // Preset Area
+    {
+        auto presetArea = getLocalBounds().withSizeKeepingCentre (200, area.getHeight());
+        
+        savePresetButton->setBounds (presetArea.removeFromLeft (HEADER_HEIGHT).reduced (MARGIN_SMALL));
+        presetNameLabel->setBounds (presetArea.reduced (0, MARGIN_SMALL));
+    }
+
 }
 
 //==============================================================================
@@ -192,16 +160,6 @@ void HeaderComponent::mouseEnter (const MouseEvent &event)
         pluginNameLabel->setColour (Label::textColourId,
                                     getPlumeColour (headerText).withAlpha (0.5f));
 	}
-	
-	else if (event.eventComponent == pluginListButton)
-	{
-        pluginListButton->setOutline (getPlumeColour (headerText).withAlpha (0.5f), 2.0f);
-	}
-
-    if (event.eventComponent == savePresetButton)
-    {
-        savePresetButton->setOutline (getPlumeColour (headerText).withAlpha (0.5f), 1.7f);
-    }
 }
 
 void HeaderComponent::mouseExit (const MouseEvent &event)
@@ -211,16 +169,6 @@ void HeaderComponent::mouseExit (const MouseEvent &event)
         pluginNameLabel->setColour (Label::textColourId,
                                     getPlumeColour (headerText));
 	}
-	
-	else if (event.eventComponent == pluginListButton)
-	{
-        pluginListButton->setOutline (getPlumeColour (headerText), 2.0f);
-	}
-
-    if (event.eventComponent == savePresetButton)
-    {
-        savePresetButton->setOutline (getPlumeColour (headerText), 1.7f);
-    }
 }
 
 void HeaderComponent::buttonClicked (Button* bttn) 
@@ -229,11 +177,11 @@ void HeaderComponent::buttonClicked (Button* bttn)
     {
         if (shapeBttn == pluginListButton)
         {
-            shapeBttn->setOutline (getPlumeColour (headerText), 2.0f);
+            //shapeBttn->setOutline (getPlumeColour (headerText), 2.0f);
         }
         else if (shapeBttn == savePresetButton)
         {
-            shapeBttn->setOutline (getPlumeColour (headerText), 1.7f);
+            //shapeBttn->setOutline (getPlumeColour (headerText), 1.7f);
         }
     }
 
@@ -280,7 +228,7 @@ void HeaderComponent::handlePluginChoice (int chosenId)
 
         if (processor.getWrapper().wrapPlugin (chosenId))
         {
-            pluginNameLabel->setText (processor.getWrapper().getWrappedPluginInfoString(), dontSendNotification);
+            pluginNameLabel->setText (processor.getWrapper().getWrappedPluginName(), dontSendNotification);
 
             // Creates the wrapper editor object as a child of the editor
             createPluginWindow();
