@@ -52,7 +52,9 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc, Component& newPrst)  : p
                                                                 Colour(0x00000000),
                                                                 getPlumeColour (headerButtonStroke)));
 
-    savePresetButton->setShape (PLUME::path::createPath (PLUME::path::flatSave), false, true, false);
+
+    savePresetButton->setShape (PLUME::path::createPath (PLUME::path::floppyDisk), false, true, false);
+    savePresetButton->setPaintMode (PlumeShapeButton::fill);
     savePresetButton->addListener (this);
     
 	// Plugin List menu
@@ -131,7 +133,7 @@ void HeaderComponent::resized()
     {
         auto presetArea = getLocalBounds().withSizeKeepingCentre (200, area.getHeight());
         
-        savePresetButton->setBounds (presetArea.removeFromLeft (HEADER_HEIGHT).reduced (MARGIN_SMALL));
+        savePresetButton->setBounds (presetArea.removeFromLeft (HEADER_HEIGHT).reduced (MARGIN));
         presetNameLabel->setBounds (presetArea.reduced (0, MARGIN_SMALL));
     }
 

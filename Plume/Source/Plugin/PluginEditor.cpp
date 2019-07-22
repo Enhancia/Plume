@@ -122,15 +122,6 @@ void PlumeEditor::paint (Graphics& g)
 {
     // Background
     g.fillAll (getPlumeColour (plumeBackground));
-
-    /*
-    g.drawImage (backgroundImage, getLocalBounds().withTrimmedTop (sideBarButton->getHeight())
-                                                  .withTrimmedLeft (sideBarButton->getToggleState() ? 0
-																		: sideBar->getWidth())
-                                                  .toFloat(),
-                                  RectanglePlacement::xLeft +
-                                  RectanglePlacement::yTop  +
-                                  RectanglePlacement::doNotResize);*/
 }
 
 void PlumeEditor::resized()
@@ -147,7 +138,7 @@ void PlumeEditor::resized()
 
 	if (!sideBarButton->getToggleState())
 	{
-		sideBar->setBounds(area.removeFromLeft(SIDEBAR_WIDTH));
+		sideBar->setBounds(area.removeFromLeft (SIDEBAR_WIDTH));
 	}
 
     sideBarButton->setBounds (area.withWidth (HEADER_HEIGHT/2)

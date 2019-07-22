@@ -56,7 +56,7 @@ private:
     
     PopupMenu pluginListMenu;
     ScopedPointer<ShapeButton> pluginListButton;
-    ScopedPointer<ShapeButton> savePresetButton;
+    ScopedPointer<PlumeShapeButton> savePresetButton;
     ScopedPointer<Label> pluginNameLabel;
     ScopedPointer<Label> presetNameLabel;
     

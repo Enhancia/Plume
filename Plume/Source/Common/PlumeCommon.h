@@ -43,7 +43,7 @@ namespace PLUME
         // Display panels values
         const int MARGIN = 8;
         const int MARGIN_SMALL = 4;
-        const int SIDEBAR_WIDTH = 200;
+        const int SIDEBAR_WIDTH = 220;
         const int INFO_HEIGHT = 60;
         const int PRESET_BUTTONS_HEIGHT = 20;
         const int HEADER_HEIGHT = 40;
@@ -203,7 +203,8 @@ namespace PLUME
 			magnifyingGlass,
 			floppyDisk,
 			flatSave,
-			onOff
+			onOff,
+            info
 		};
 
         extern const Path createPath (PathId pathToCreate);

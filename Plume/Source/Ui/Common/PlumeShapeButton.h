@@ -16,6 +16,7 @@
 class PlumeShapeButton	: public ShapeButton
 {
 public:
+    //==============================================================================
 	PlumeShapeButton (const String &name, Colour backgroundColour,
 					  Colour normalOffColour, Colour overOffColour, Colour downOffColour,
 					  Colour normalOnColour, Colour overOnColour, Colour downOnColour);
@@ -30,10 +31,14 @@ public:
 
 	~PlumeShapeButton();
 
+    //==============================================================================
 	void resized() override;
 	void paintButton (Graphics&, bool, bool) override;
+
+    //==============================================================================
 	void setBackgroundColour (const Colour newColour);
 
+    //==============================================================================
 	void setStrokeColours (const Colour newStrokeNormalColour,
 						   const Colour newStrokeOverColour,
 						   const Colour newStrokeDownColour);
@@ -52,8 +57,22 @@ public:
 	void setStrokeOffAndOnColours (const Colour newStrokeOffColour,
 						           const Colour newStrokeOnColour);
 
+    //==============================================================================
+    enum PaintMode
+    {
+    	stroke =0,
+    	fill,
+    	fillAndStroke
+    };
+
+    void setPaintMode (const PaintMode newPaintMode);
+
+
+
 private:
 	Colour backgroundFill;
+	
+	PaintMode paintMode = stroke;
 	Colour pathStrokeOffNormal, pathStrokeOffOver, pathStrokeOffDown;
 	Colour pathStrokeOnNormal, pathStrokeOnOver, pathStrokeOnDown;
 

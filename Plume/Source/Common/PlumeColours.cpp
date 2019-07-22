@@ -266,7 +266,7 @@ PlumeTheme PlumeTheme::createTestTheme()
                          0xff2d303d, //infoPanelBackground
                          0xff1f222b, //infoPanelIcon
                          0xffffffff, //infoPanelMainText
-                         0xff3b3f4b, //infoPanelSubText
+                         0x70ffffff, //infoPanelSubText
  
                     // Header
                          // General

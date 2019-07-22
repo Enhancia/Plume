@@ -21,7 +21,7 @@ class InfoPanel    : public Component,
 {
 public:
     //==============================================================================
-    InfoPanel();
+    InfoPanel (Button& hideButton);
     ~InfoPanel();
 
     //==============================================================================
@@ -36,6 +36,7 @@ private:
     //==============================================================================
     bool alerted = false;
     ScopedPointer<TextEditor> textEditor;
+    Button& hideInfoButton;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (InfoPanel)
