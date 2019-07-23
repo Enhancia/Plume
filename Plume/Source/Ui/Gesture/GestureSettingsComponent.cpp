@@ -233,9 +233,11 @@ void GestureSettingsComponent::createToggles()
 {
     addAndMakeVisible (midiParameterToggle = new DualTextToggle ("MIDI", "MIDI",
                                                                  getPlumeColour (plumeBackground),
-                                                                 Colour (0xe0ffffff)));
+                                                                 gesture.getHighlightColour()));
     midiParameterToggle->setStyle (DualTextToggle::toggleWithTopText);
     midiParameterToggle->setToggleState (gesture.generatesMidi());
+    midiParameterToggle->setStateUndependentTextColour (getPlumeColour (detailPanelMainText));
+    midiParameterToggle->setToggleThumbColour (getPlumeColour (tunerSliderBackground));
     midiParameterToggle->onStateChange = [this] ()
     {
         gesture.setGeneratesMidi (midiParameterToggle->getToggleState());

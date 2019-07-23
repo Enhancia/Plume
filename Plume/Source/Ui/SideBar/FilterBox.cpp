@@ -21,6 +21,7 @@ FilterBox::FilterBox (const String& componentName, PlumeProcessor& p)  : ListBox
     
     auto& scrollBar = getVerticalScrollBar();
     scrollBar.setColour (ScrollBar::thumbColourId, getPlumeColour (presetsBoxScrollBar));
+    getViewport()->setScrollBarThickness (8);
 }
 
 FilterBox::~FilterBox()
@@ -29,39 +30,18 @@ FilterBox::~FilterBox()
 
 void FilterBox::paint (Graphics& g)
 {
-    ListBox::paint (g);
-    
-    using namespace PLUME::UI;
-    
-    //Gradient for the box's inside
-    auto gradIn = ColourGradient::vertical (Colour (0x30000000),
-                                            0.0f, 
-                                            Colour (0x25000000),
-                                            float(getHeight()));
-                                          
-    gradIn.addColour (0.6, Colour (0x00000000));
-    gradIn.addColour (0.8, Colour (0x20000000));
-    
-    g.setGradientFill (gradIn);
-    g.fillRect (1, 1, getWidth()-2, getHeight()-2);
+    if (getViewport()->canScrollVertically())
+    {
+        g.excludeClipRegion (juce::Rectangle<int> (getViewport()->getScrollBarThickness()/2 - 1, getHeight())
+                                .withX (getWidth() - getViewport()->getScrollBarThickness()));
+    }
+
+    g.setColour (getPlumeColour (presetsBoxBackground));
+    g.fillRect (getLocalBounds().reduced (1, 0));
 }
 
 void FilterBox::paintOverChildren (Graphics& g)
 {
-    if (getOutlineThickness() > 0)
-    {
-        using namespace PLUME::UI;
-    
-        //Gradient for the box's outline
-        auto gradOut = ColourGradient::horizontal (Colour (0x10ffffff),
-                                                   float(MARGIN), 
-                                                   Colour (0x10ffffff),
-                                                   float(getWidth() - MARGIN));
-        gradOut.addColour (0.5, Colour (0x50ffffff));
-
-        g.setGradientFill (gradOut);
-        g.drawRect (getLocalBounds(), getOutlineThickness());
-    }
 }
 
 //==============================================================================
@@ -79,8 +59,11 @@ void FilterBox::paintListBoxItem (int rowNumber, Graphics& g, int width, int hei
     g.setColour (rowIsSelected ? getPlumeColour (presetsBoxRowBackgroundHighlighted)
                                : getPlumeColour (presetsBoxRowBackground));
                               
-    g.fillRect (1, 1, width-2, height-2);
-   
+    g.fillRoundedRectangle (float (UI::MARGIN_SMALL), 1.0f,
+                            float (width - 2*UI::MARGIN_SMALL),
+                            height - 2.0f,
+                            height/2.0f);
+
     // Text
     g.setColour (rowIsSelected ? getPlumeColour (presetsBoxRowTextHighlighted)
                                : getPlumeColour (presetsBoxRowText));
@@ -90,7 +73,7 @@ void FilterBox::paintListBoxItem (int rowNumber, Graphics& g, int width, int hei
 
     String text = rowNumber == 0 ? "All" : PlumePreset::getFilterTypeString (rowNumber - 1);
 
-    g.drawText (text, PLUME::UI::MARGIN, 0, width, height,
+    g.drawText (text, PLUME::UI::MARGIN*2, 0, width, height,
                 Justification::centredLeft, true);
 }
 

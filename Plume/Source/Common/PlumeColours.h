@@ -38,6 +38,9 @@ enum PlumeColourID
         presetsBoxRowText,
         presetsBoxRowTextHighlighted,
         presetsBoxScrollBar,
+        presetTypeToggleSelected,
+        presetTypeToggleUnselected,
+        presetsSearchBarFill,
             
         // Info Panel
         infoPanelBackground,

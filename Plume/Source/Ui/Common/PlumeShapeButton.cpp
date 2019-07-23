@@ -58,7 +58,7 @@ PlumeShapeButton::~PlumeShapeButton()
 void PlumeShapeButton::resized()
 {
 	ShapeButton::resized();
-	setBorderSize (BorderSize<int> (jmin (getHeight(), getWidth())/4));
+	if (usePlumeBorders) setBorderSize (BorderSize<int> (jmin (getHeight(), getWidth())/4));
 }
 
 void PlumeShapeButton::paintButton (Graphics& g, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown)
@@ -90,6 +90,20 @@ void PlumeShapeButton::paintButton (Graphics& g, bool shouldDrawButtonAsHighligh
 	// Draws Regular Shape Button on top
 	g.reduceClipRegion (buttonShape);
 	ShapeButton::paintButton (g, shouldDrawButtonAsHighlighted, shouldDrawButtonAsDown);
+}
+
+void PlumeShapeButton::setBorderSize (BorderSize<int> newBorders)
+{
+	usePlumeBorders = false;
+
+	ShapeButton::setBorderSize (newBorders);
+	resized();
+}
+
+void PlumeShapeButton::resetBorderSize()
+{
+	usePlumeBorders = true;
+	resized();
 }
 
 void PlumeShapeButton::setBackgroundColour (const Colour newColour)

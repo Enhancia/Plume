@@ -28,9 +28,9 @@ TypeToggleComponent::TypeToggleComponent (PlumeProcessor& p) : processor (p)
             default:                             text = "All";
         }
         
-        toggles.add (new Toggle (i, text, getPlumeColour (presetsBoxRowBackgroundHighlighted),
+        toggles.add (new Toggle (i, text, getPlumeColour (presetTypeToggleSelected),
                                           getPlumeColour (presetsBoxRowTextHighlighted),
-                                          getPlumeColour (presetsBoxRowBackground),
+                                          getPlumeColour (presetTypeToggleUnselected),
                                           getPlumeColour (presetsBoxRowText)));
 
         addChildAndSetID (toggles.getLast(), String(i));
@@ -54,50 +54,10 @@ TypeToggleComponent::~TypeToggleComponent()
 
 void TypeToggleComponent::paint (Graphics& g)
 {
-    using namespace PLUME::UI;
-    
-    // Fills the component's inside
-    auto gradIn = ColourGradient::vertical (Colour (0x30000000),
-                                            0.0f, 
-                                            Colour (0x20000000),
-                                            float(getHeight()));
-                                          
-    gradIn.addColour (0.2, Colour (0x15000000));
-    g.setGradientFill (gradIn);
-    g.fillRect (1, 1, getWidth()-2, getHeight()-2);
 }
 
 void TypeToggleComponent::paintOverChildren (Graphics& g)
 {
-	using namespace PLUME::UI;
-
-    //Gradient for the box's outline
-    auto gradOut = ColourGradient::horizontal (Colour (0x10ffffff),
-                                               float(MARGIN), 
-                                               Colour (0x10ffffff),
-                                               float(getWidth() - MARGIN));
-    gradOut.addColour (0.5, Colour (0x50ffffff));
-    g.setGradientFill (gradOut);
-
-    // Outline
-    g.drawRect (getLocalBounds());
-
-    // Separators
-    {
-        ScopedLock tglock (togglesLock);
-    
-        auto area = getLocalBounds();
-        int buttonW = getWidth()/PlumePreset::numTypes;
-
-        for (int i=0; i<=PlumePreset::numTypes; i++)
-        {
-            if (i != PlumePreset::numTypes)
-            {
-                area.removeFromLeft (buttonW);
-                g.drawVerticalLine (area.getX(), 1.0f, float(getHeight())-1.0f);
-            }
-        }
-    }
 }
 
 void TypeToggleComponent::resized()
@@ -170,16 +130,17 @@ TypeToggleComponent::Toggle::~Toggle()
         
 void TypeToggleComponent::Toggle::paint (Graphics& g)
 {
-    g.fillAll (state ? backgroundOnColour : backgroundOffColour);
+    g.setColour (state ? backgroundOnColour : backgroundOffColour);
+    g.fillRect (getLocalBounds().withTop (getLocalBounds().getBottom() - 3));
 
     g.setColour (state ? textOnColour : textOffColour);
-    g.setFont (PLUME::font::plumeFont.withHeight (PLUME::font::SIDEBAR_LABEL_FONT_H));
-    g.drawText (text, getLocalBounds(), Justification::centred);
+    g.setFont (PLUME::font::plumeFontBold.withHeight (PLUME::font::SIDEBAR_LABEL_FONT_H + 2.0f));
+    g.drawText (text, getLocalBounds().reduced (0, PLUME::UI::MARGIN), Justification::centredBottom);
 
     // Highlight for mouse over
     if (!state && highlighted)
     {    
-        g.fillAll (backgroundOnColour.withAlpha (0.1f));
+        g.fillAll (Colours::white.withAlpha (0.05f));
     }
 }
 

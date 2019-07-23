@@ -38,6 +38,7 @@ SideBarComponent::SideBarComponent (PlumeProcessor& proc, Component& optsPanel)
     hideInfoButton->setOutline (Colour (0x50ffffff), 1.0f);
     hideInfoButton->setToggleState (infoHidden, dontSendNotification); // side bar visible at first
     hideInfoButton->setClickingTogglesState (true);
+    hideInfoButton->setBorderSize (BorderSize<int> (2));
     createHideInfoButtonPath();
     hideInfoButton->addMouseListener (this, false);
     hideInfoButton->addListener (this);
@@ -79,61 +80,44 @@ void SideBarComponent::paint (Graphics& g)
                                             .toFloat(),
                             10.0f);
     
-    //Gradient for horizontal lines
-    auto grad = ColourGradient::horizontal (Colour (0x10ffffff),
-                                            float(MARGIN), 
-                                            Colour (0x10ffffff),
-                                            float(getWidth() - MARGIN));
-    grad.addColour (0.5, Colour (0x10ffffff));
-
-    
     auto area = getLocalBounds();
     
     // Plume. text
     g.setColour (currentTheme.getColour(PLUME::colour::sideBarMainText));
-    g.setFont (PLUME::font::plumeFontBold.withHeight (25.0f));
+    g.setFont (PLUME::font::plumeFontBold.withHeight (24.0f));
     g.drawText ("Plume.", area.removeFromTop (HEADER_HEIGHT).reduced (MARGIN),
                 Justification::centredRight, true);
-
-	g.setGradientFill (grad);
-	g.drawHorizontalLine (area.getY(), float(MARGIN), float(getWidth() - MARGIN));
-    
-	area.removeFromTop (MARGIN/2); // Extra space
-    
-    if (hideInfoButton->getToggleState()) // Lines that represents hidden infoPanel
-    {
-        g.drawHorizontalLine (getHeight() - 2*MARGIN, float(MARGIN), getWidth()/2.0f - float(2*MARGIN));
-        g.drawHorizontalLine (getHeight() - 2*MARGIN, getWidth()/2.0f + float(2*MARGIN), float(getWidth() - MARGIN));
-    }
 }
 
 void SideBarComponent::resized()
 {
     using namespace PLUME::UI;
     
-    auto area = getLocalBounds();
+    auto area = getLocalBounds().withTrimmedLeft (MARGIN_SMALL);
     
     // Buttons
     auto buttonsArea = area.removeFromTop (HEADER_HEIGHT).removeFromLeft (SIDEBAR_WIDTH/3);
-    
     optionsButton->setBounds (buttonsArea.removeFromLeft (buttonsArea.getWidth()/2).reduced (MARGIN));
     
     // Presets
 	area.removeFromTop (MARGIN);
+
     if (!hideInfoButton->getToggleState())
     {
         infoPanel->setBounds (area.removeFromBottom (120).reduced (MARGIN));
-        hideInfoButton->setBounds (getWidth()/2 - 2*MARGIN, infoPanel->getY() + 2*MARGIN,
-                                   4*MARGIN, MARGIN);
+        hideInfoButton->setBounds (infoPanel->getBounds().withTrimmedTop (2*MARGIN)
+                                                         .withSize (10, 10)
+                                                         .withX (infoPanel->getBounds().getCentreX() - 5));
     }
     else 
     {
         infoPanel->setBounds (area.removeFromBottom (30 + 2*MARGIN).reduced (MARGIN));
-        hideInfoButton->setBounds (getWidth()/2 - 2*MARGIN, infoPanel->getY() + MARGIN,
-                                   4*MARGIN, MARGIN);
+        hideInfoButton->setBounds (infoPanel->getBounds().withTrimmedTop (MARGIN)
+                                                         .withSize (10, 10)
+                                                         .withX (infoPanel->getBounds().getCentreX() - 5));
     }
 
-    presetComponent->setBounds (area.reduced (2*MARGIN, MARGIN));
+    presetComponent->setBounds (area.reduced (MARGIN, 0));
 }
 
 void SideBarComponent::buttonClicked (Button* bttn)

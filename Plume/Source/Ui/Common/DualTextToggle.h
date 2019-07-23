@@ -54,8 +54,10 @@ public:
     //==============================================================================
     void setFalseStatetext (String textToSet);
     void setTrueStatetext (String textToSet);
-    void setFalseStateColour (Colour coulourToSet);
-    void setTrueStateColour (Colour coulourToSet);
+    void setFalseStateColour (const Colour coulourToSet);
+    void setTrueStateColour (const Colour coulourToSet);
+    void setStateUndependentTextColour (const Colour textColourToSet);
+    void setToggleThumbColour (const Colour thumbColourToSet);
 
     std::function<void()> onStateChange = nullptr;
 
@@ -74,6 +76,7 @@ private:
     DualToggleStyle style = oneStateVisible;
     String stateFalseText = String(), stateTrueText = String();
     Colour stateFalseColour = Colour (0xf4f412), stateTrueColour = Colour (0x369ad5);
+    Colour textColour = Colour (0), thumbColour = Colour (0);
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DualTextToggle)

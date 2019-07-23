@@ -77,6 +77,9 @@ PlumeTheme PlumeTheme::createDefaultTheme()
                          0xbbffffff, //presetsBoxRowText
                          0xff000000, //presetsBoxRowTextHighlighted
                          0xbbffffff, //presetsBoxScrollBar
+                         0xbbffffff, //presetTypeToggleSelected
+                         0xbbffffff, //presetTypeToggleUnselected
+                         0xff393c4e, //presetsSearchBarFill
  
                          // Info Panel
                          0xff606060, //infoPanelBackground
@@ -168,7 +171,14 @@ PlumeTheme PlumeTheme::createRedTheme()
                          0x40ffffff, //presetsBoxRowBackgroundHighlighted
                          0xbbffffff, //presetsBoxRowText
                          0xff441818, //presetsBoxRowTextHighlighted
+                         0xbbffffff, //presetTypeToggleSelected
+                         0xbbffffff, //presetTypeToggleUnselected
                          0xbbcb4747, //presetsBoxScrollBar
+
+                         0xff441818, //presetTypeToggleBackgroundLine
+                         0xbbcb4747, //presetTypeToggleUnselected
+                         0xff441818, //presetTypeToggleSelected
+                         0xff393c4e, //presetsSearchBarFill
  
                          // Info Panel
                          0xff606060, //infoPanelBackground
@@ -261,6 +271,9 @@ PlumeTheme PlumeTheme::createTestTheme()
                          0xffffffff, //presetsBoxRowText
                          0xffffffff, //presetsBoxRowTextHighlighted
                          0xfff8f8f9, //presetsBoxScrollBar
+                         0xfff3a536, //presetTypeToggleSelected
+                         0xff3b3f4b, //presetTypeToggleUnselected
+                         0xff393c4e, //presetsSearchBarFill
  
                          // Info Panel
                          0xff2d303d, //infoPanelBackground

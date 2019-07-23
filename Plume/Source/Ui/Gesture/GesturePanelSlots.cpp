@@ -237,7 +237,7 @@ void EmptyGestureSlotComponent::paint (Graphics& g)
     g.setColour (getPlumeColour (emptySlotOutline));
 
     // Plus Icon
-    g.strokePath (plusIcon, {3.0f, PathStrokeType::mitered, PathStrokeType::rounded});
+    g.strokePath (plusIcon, {2.0f, PathStrokeType::mitered, PathStrokeType::rounded});
 
     // Outline
     if (dragMode && draggedGesture != id && draggedOverSlot == id)
@@ -250,7 +250,7 @@ void EmptyGestureSlotComponent::paint (Graphics& g)
     {
         PathStrokeType outlineStroke (1.0f, PathStrokeType::mitered, PathStrokeType::butt);
         Path dashedOutline;
-		const float dashLengths[] = {10.0f, 10.0f};
+		const float dashLengths[] = {5.0f, 5.0f};
 
         outlineStroke.createDashedStroke (dashedOutline, outline, dashLengths, 2);
 

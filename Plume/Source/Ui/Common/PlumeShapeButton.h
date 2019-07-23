@@ -34,6 +34,8 @@ public:
     //==============================================================================
 	void resized() override;
 	void paintButton (Graphics&, bool, bool) override;
+	void setBorderSize (BorderSize<int>);
+	void resetBorderSize();
 
     //==============================================================================
 	void setBackgroundColour (const Colour newColour);
@@ -75,6 +77,7 @@ private:
 	PaintMode paintMode = stroke;
 	Colour pathStrokeOffNormal, pathStrokeOffOver, pathStrokeOffDown;
 	Colour pathStrokeOnNormal, pathStrokeOnOver, pathStrokeOnDown;
+	bool usePlumeBorders = true;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeShapeButton)
 };
