@@ -26,6 +26,10 @@ GesturePanel::GesturePanel (GestureArray& gestArray, PluginWrapper& wrap,
     setComponentID ("gesturePanel");
     setWantsKeyboardFocus (true);
 
+    shadowEffect.setShadowProperties ({Colour (0x50000000), PLUME::UI::MARGIN,
+                                      {0, 0}});
+    //setComponentEffect (&shadowEffect);
+
     initialiseGestureSlots();
     createAndAddCloseButton();
 
@@ -35,6 +39,7 @@ GesturePanel::GesturePanel (GestureArray& gestArray, PluginWrapper& wrap,
 GesturePanel::~GesturePanel()
 {
     TRACE_IN;
+    //setComponentEffect (nullptr);
     stopTimer();
     unselectCurrentGesture();
     newGesturePanel.hidePanel (true);
@@ -459,6 +464,7 @@ void GesturePanel::selectGestureExclusive (GestureComponent& gestureComponentToS
 
     gestureSettings.reset (new GestureSettingsComponent (gestureComponentToSelect.getGesture(),
                                                          gestureArray, wrapper, *closeButton));
+
     selectedGesture = gestureComponentToSelect.id;
     setSettingsVisible (true);
 }
@@ -641,7 +647,7 @@ void GesturePanel::parameterChanged (const String& parameterID, float)
             {
                 if (gestureSettings->getGestureId() == gestureId)
                 {
-                    gestureSettings->update();
+                    gestureSettings->update (parameterID.substring(1, parameterID.length()-1));
                 }
             }
         }

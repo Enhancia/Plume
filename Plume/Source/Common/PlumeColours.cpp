@@ -319,7 +319,7 @@ PlumeTheme PlumeTheme::createTestTheme()
  
                          // Tuner Panel
                          0xff282b35, //tunerBackground
-                         0xff4a5062, //tunerSliderBackground
+                         0x404a5062, //tunerSliderBackground
                          0xffffffff, //tunerSliderThumb
                          0xff424656, //tunerButtonFill
  

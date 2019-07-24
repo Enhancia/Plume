@@ -28,7 +28,6 @@ public:
     //ListBox methods
     
     void paint (Graphics& g) override;
-    void resized() override;
     void paintOverChildren (Graphics& g) override;
     
     //==============================================================================

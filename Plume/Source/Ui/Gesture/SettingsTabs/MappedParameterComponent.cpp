@@ -442,8 +442,12 @@ void MappedParameterComponent::updateDisplay()
 {
     if (allowDisplayUpdate)
     {
-        if (gesture.getValueForMappedParameter (mappedParameter.range, mappedParameter.reversed))
+        if (gesture.getValueForMappedParameter (mappedParameter.range, mappedParameter.reversed)
+                != lastValue)
         {
+            lastValue = gesture.getValueForMappedParameter (mappedParameter.range,
+                                                            mappedParameter.reversed);
+            
             repaint (lowSlider->getBounds().withX (lowSlider->getBounds().getCentreX() - 13)
                                            .withWidth (8));
         }

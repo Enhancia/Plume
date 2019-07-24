@@ -55,6 +55,22 @@ void GestureSettingsComponent::update()
     midiParameterToggle->setToggleState (gesture.generatesMidi());
 }
 
+
+void GestureSettingsComponent::update (const String& parameterThatChanged)
+{
+    if (disabled) return;
+
+    if (parameterThatChanged.startsWith ("_midi"))
+    {
+        midiParameterToggle->setToggleState (gesture.generatesMidi());
+        retractablePanel->update();
+    }
+    else if (parameterThatChanged.compare ("_on") == 0)
+    {
+        update();
+    }
+}
+
 //==============================================================================
 void GestureSettingsComponent::paint (Graphics& g)
 {
@@ -97,6 +113,14 @@ void GestureSettingsComponent::paintBackground (Graphics& g)
     g.fillRoundedRectangle (area.withBottom (retractablePanel->getY() + retractablePanel->bannerHeight)
                                 .toFloat(),
                             10.0f);
+
+    Path tile;
+    tile.addEllipse (0, 0, 2, 2);
+
+    PLUME::UI::paintTiledPath (g, tile,
+                               area.withBottom (retractablePanel->getY() + retractablePanel->bannerHeight)
+                                   .toFloat(),
+                               15.0f, 15.0f, getPlumeColour (midiMapBodyBackground), Colour (0), 0.0f);
 
     g.saveState();
 

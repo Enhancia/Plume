@@ -48,11 +48,6 @@ void GestureComponent::update()
 
 void GestureComponent::paint (Graphics& g)
 {
-    if (!selected && highlighted)
-    {
-        g.beginTransparencyLayer (0.5f);
-    }
-
     // BackGround + Header Fill
     g.setColour (getPlumeColour (basePanelBackground));
     g.fillRoundedRectangle (getLocalBounds().toFloat(), 10.0f);
@@ -89,7 +84,8 @@ void GestureComponent::paint (Graphics& g)
 
     if (!selected && highlighted)
     {
-        g.endTransparencyLayer();
+        g.setColour (Colours::white.withAlpha (0.05f));
+        g.fillRoundedRectangle (getLocalBounds().toFloat(), 10.0f);
     }
 }
 

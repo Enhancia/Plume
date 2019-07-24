@@ -75,6 +75,10 @@ namespace PLUME
         // Theme
         using namespace PLUME::colour;
         extern PlumeTheme currentTheme;
+
+        extern void paintTiledPath (Graphics&, Path&, juce::Rectangle<float>,
+                                    const float, const float,
+                                    const Colour, const Colour, const float);
     }
     
     namespace font

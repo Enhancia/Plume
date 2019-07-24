@@ -55,12 +55,6 @@ void PresetBox::paintOverChildren (Graphics& g)
 {
 }
 
-void PresetBox::resized()
-{
-    ListBox::resized();
-    DBG ("Scroll bar t h i c c : " <<  getViewport()->getScrollBarThickness());
-}
-
 //==============================================================================
 int PresetBox::getNumRows()
 {

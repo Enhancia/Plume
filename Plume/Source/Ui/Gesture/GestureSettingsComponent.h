@@ -36,6 +36,7 @@ public:
     // PlumeComponent
     const String getInfoString() override;
     void update() override;
+    void update (const String& parameterThatChanged);
     
     //==============================================================================
     // PlumeComponent
@@ -85,6 +86,3 @@ private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GestureSettingsComponent)
 };
-    
-    
-    
