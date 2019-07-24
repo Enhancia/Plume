@@ -56,6 +56,10 @@ private:
     //==============================================================================
     void createLabel();
     void createButton();
+    void paintParameterSlotDisplay (Graphics& g, juce::Rectangle<int> area,
+                                                 const int numRows,
+                                                 const int numColumns,
+                                                 const int margin = 0);
 
     //==============================================================================
     Gesture& gesture;

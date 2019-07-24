@@ -44,6 +44,7 @@ void GestureComponent::update()
 {
     gestureNameLabel->setText (gesture.getName().toUpperCase(), sendNotification);
     muteButton->setToggleState (gesture.isActive(), sendNotification);
+    repaint();
 }
 
 void GestureComponent::paint (Graphics& g)
@@ -71,16 +72,22 @@ void GestureComponent::paint (Graphics& g)
     }
 
     // Text
-    auto stateArea = getLocalBounds().withTop (getHeight()-25)
-                                     .withLeft (getWidth()/2)
-                                     .withTrimmedRight (PLUME::UI::MARGIN);
+    auto stateArea = getLocalBounds().withTop (getHeight() - 25)
+                                     .reduced (PLUME::UI::MARGIN*3, PLUME::UI::MARGIN_SMALL);
 
     g.setFont (PLUME::font::plumeFontLight.withHeight (12.0f));
     g.setColour (getPlumeColour (basePanelSubText));
     
-    g.drawText (gesture.generatesMidi() ? "MIDI MODE" : "PARAM MODE",
-                stateArea,
-                Justification::centredRight, true);
+    if (gesture.generatesMidi())
+    {
+        g.drawText (gesture.midiType == Gesture::pitch ? "Pitch" : ("CC " + gesture.getCc()),
+                    stateArea, Justification::centred, true);
+    }
+    else
+    {
+        paintParameterSlotDisplay (g, stateArea, 1, 6, PLUME::UI::MARGIN);
+    }
+    
 
     if (!selected && highlighted)
     {
@@ -187,6 +194,38 @@ void GestureComponent::createButton()
 
         repaint();
     };
+}
+
+void GestureComponent::paintParameterSlotDisplay  (Graphics& g, juce::Rectangle<int> area,
+                                                            const int numRows,
+                                                            const int numColumns,
+                                                            const int sideLength)
+{
+    /*  Hitting this assert means you're trying to paint this object with a number of
+        parameters that doesn't match the actual maximum number of parameters allowed
+        for a gesture.
+    */
+    jassert (numRows * numColumns == PLUME::MAX_PARAMETER);
+
+    int rowHeight = area.getHeight()/numRows;
+    int columnWidth = area.getWidth()/numColumns;
+
+    for (int row=0; row < numRows; row++)
+    {
+        auto columnArea = area.removeFromTop (rowHeight);
+
+        for (int column=0; column < numColumns; column++)
+        {
+            int slotSide = jmin (sideLength, rowHeight - 8, columnWidth - 8);
+            auto slotArea = columnArea.removeFromLeft (columnWidth)
+                                      .withSizeKeepingCentre (slotSide, slotSide);
+
+            g.setColour ((row*numColumns) + column < gesture.getParameterArray().size() ?
+                            gesture.getHighlightColour() :
+                            getPlumeColour (plumeBackground));
+            g.fillRoundedRectangle (slotArea.toFloat(), sideLength / 3.5f);
+        }
+    }
 }
 
 //==============================================================================
