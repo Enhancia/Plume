@@ -13,13 +13,15 @@
 //==============================================================================
 // Gesture Component
 
-GestureComponent::GestureComponent (Gesture& gest, const bool& dragModeReference,
-                                                   const int& draggedGestureReference,
-                                                   const int& draggedOverSlotReference)
-    : gesture (gest), id (gest.id),
-                      dragMode (dragModeReference),
-                      draggedGesture (draggedGestureReference),
-                      draggedOverSlot (draggedOverSlotReference)
+GestureComponent::GestureComponent (Gesture& gest, GestureArray& gestArray,
+                                    const bool& dragModeReference,
+                                    const int& draggedGestureReference,
+                                    const int& draggedOverSlotReference)
+    : gesture (gest), gestureArray (gestArray),
+      id (gest.id),
+      dragMode (dragModeReference),
+      draggedGesture (draggedGestureReference),
+      draggedOverSlot (draggedOverSlotReference)
 {
     createLabel();
     createButton();
@@ -62,7 +64,7 @@ void GestureComponent::paint (Graphics& g)
     // Outline
     if (dragMode && draggedGesture != id && draggedOverSlot == id)
     {
-        g.setColour (Colour (0xff6065e0));
+        g.setColour (gestureArray.getGesture (draggedGesture)->getHighlightColour());
         g.drawRoundedRectangle (getLocalBounds().reduced (1.0f).toFloat(), 10.0f, 3.0f);
     }
     else if (selected)
@@ -71,16 +73,19 @@ void GestureComponent::paint (Graphics& g)
         g.drawRoundedRectangle (getLocalBounds().reduced (1.0f).toFloat(), 10.0f, 1.0f);
     }
 
-    // Text
-    auto stateArea = getLocalBounds().withTop (getHeight() - 25)
-                                     .reduced (PLUME::UI::MARGIN*3, PLUME::UI::MARGIN_SMALL);
+    auto area = getLocalBounds().withTrimmedTop (30);
+
+    // Bottom display
+    auto stateArea = area.removeFromBottom (25)
+                         .reduced (PLUME::UI::MARGIN*3, PLUME::UI::MARGIN_SMALL);
 
     g.setFont (PLUME::font::plumeFontLight.withHeight (12.0f));
     g.setColour (getPlumeColour (basePanelSubText));
     
     if (gesture.generatesMidi())
     {
-        g.drawText (gesture.midiType == Gesture::pitch ? "Pitch" : ("CC " + gesture.getCc()),
+        g.drawText (gesture.midiType == Gesture::pitch ? "Pitch MIDI"
+                                                       : "CC " + String (gesture.getCc()) + " MIDI",
                     stateArea, Justification::centred, true);
     }
     else
@@ -88,7 +93,10 @@ void GestureComponent::paint (Graphics& g)
         paintParameterSlotDisplay (g, stateArea, 1, 6, PLUME::UI::MARGIN);
     }
     
+    // Gesture Image
+    drawGesturePath (g, area);
 
+    // Highlight
     if (!selected && highlighted)
     {
         g.setColour (Colours::white.withAlpha (0.05f));
@@ -228,14 +236,71 @@ void GestureComponent::paintParameterSlotDisplay  (Graphics& g, juce::Rectangle<
     }
 }
 
+void GestureComponent::drawGesturePath (Graphics& g, juce::Rectangle<int> area)
+{
+    g.setColour (Colour (0xfff3f3f3));
+
+    // Icon Fill
+    Path iconFill;
+
+    if (gesture.type == Gesture::tilt) iconFill = PLUME::path::createPath (PLUME::path::handTilt);
+    else if (gesture.type == Gesture::roll) iconFill = PLUME::path::createPath (PLUME::path::handRoll);
+    else iconFill = PLUME::path::createPath (PLUME::path::handFingerDown);
+
+    auto areaFloat = (gesture.type == Gesture::tilt || gesture.type == Gesture::roll)
+                          ? area.reduced (area.getWidth()/8, area.getHeight()/4).toFloat()
+                          : area.reduced (area.getWidth()/4, area.getHeight()/8).toFloat();
+
+	iconFill.scaleToFit (areaFloat.getX(), areaFloat.getY(),
+                         areaFloat.getWidth(), areaFloat.getHeight(), true);
+
+    g.fillPath (iconFill);
+
+    // Icon stroke
+    /*
+    Path iconStroke;
+
+    if (gesture.type == Gesture::tilt)
+    {
+        iconStroke = PLUME::path::createPath (PLUME::path::tiltArrow);
+        areaFloat = areaFloat.withTrimmedLeft (areaFloat.getWidth()*2/3)
+                             .withTrimmedBottom (areaFloat.getHeight()/2);
+    }
+    else if (gesture.type == Gesture::roll)
+    {
+        iconStroke = PLUME::path::createPath (PLUME::path::rollArrow);
+        areaFloat = areaFloat.withTrimmedRight (areaFloat.getWidth()/2)
+                             .withTrimmedBottom (areaFloat.getHeight()/2);
+    }
+    else if (gesture.type == Gesture::pitchBend)
+    {
+        iconStroke = PLUME::path::createPath (PLUME::path::pitchBendArrow);
+        areaFloat = areaFloat.withTrimmedTop (areaFloat.getHeight()*2/3)
+                             .translated (areaFloat.getWidth()/12, 0);
+    }
+    else if (gesture.type == Gesture::vibrato)
+    {
+        iconStroke = PLUME::path::createPath (PLUME::path::vibratoRipple);
+        areaFloat = areaFloat.withTrimmedTop (areaFloat.getHeight()*2/3)
+                             .translated (areaFloat.getWidth()/12, 0);
+    }
+    else return;
+
+    iconStroke.scaleToFit (areaFloat.getX(), areaFloat.getY(),
+                           areaFloat.getWidth(), areaFloat.getHeight(), true);
+    g.strokePath (iconStroke, PathStrokeType (1.0f));*/
+}
+
 //==============================================================================
 // Gesture Slot 
 
 EmptyGestureSlotComponent::EmptyGestureSlotComponent (const int slotId,
+                                                      GestureArray& gestArray,
                                                       const bool& dragModeReference,
                                                       const int& draggedGestureReference,
                                                       const int& draggedOverSlotReference)
-    : id (slotId), dragMode (dragModeReference),
+    : id (slotId), gestureArray (gestArray),
+                   dragMode (dragModeReference),
                    draggedGesture (draggedGestureReference),
                    draggedOverSlot (draggedOverSlotReference)
 {
@@ -269,20 +334,30 @@ void EmptyGestureSlotComponent::paint (Graphics& g)
         g.fillRoundedRectangle (getLocalBounds().toFloat(), 10.0f);
     }
 
-    g.setColour (getPlumeColour (emptySlotOutline));
+
+    if (dragMode && draggedGesture != id && draggedOverSlot == id)
+    {
+        g.setColour (gestureArray.getGesture (draggedGesture)->getHighlightColour());
+    }
+    else
+    {
+        g.setColour (getPlumeColour (emptySlotOutline));
+    }
 
     // Plus Icon
     g.strokePath (plusIcon, {2.0f, PathStrokeType::mitered, PathStrokeType::rounded});
 
+    
     // Outline
     if (dragMode && draggedGesture != id && draggedOverSlot == id)
     {
-		g.setColour (Colour (0xff6065e0));
+        g.setColour (gestureArray.getGesture (draggedGesture)->getHighlightColour());
 		g.drawRoundedRectangle(getLocalBounds().reduced (1.0f).toFloat(), 10.0f, 3.0f);
     }
 
     else //if (highlighted)
     {
+        g.setColour (getPlumeColour (emptySlotOutline));
         PathStrokeType outlineStroke (1.0f, PathStrokeType::mitered, PathStrokeType::butt);
         Path dashedOutline;
 		const float dashLengths[] = {5.0f, 5.0f};

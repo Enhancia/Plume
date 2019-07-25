@@ -42,6 +42,7 @@ public:
     //==============================================================================
     // Component
     void paint (Graphics&) override;
+    void paintOverChildren (Graphics&) override;
     void resized() override;
     
     //==============================================================================

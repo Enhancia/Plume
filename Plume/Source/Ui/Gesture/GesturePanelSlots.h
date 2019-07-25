@@ -19,7 +19,8 @@ class GestureComponent : public PlumeComponent,
 {
 public:
     //==============================================================================
-    GestureComponent (Gesture& gest, const bool& dragModeReference,
+    GestureComponent (Gesture& gest, GestureArray& gestArray,
+                                     const bool& dragModeReference,
                                      const int& draggedGestureReference,
                                      const int& draggedOverSlotReference);
     ~GestureComponent();
@@ -60,9 +61,11 @@ private:
                                                  const int numRows,
                                                  const int numColumns,
                                                  const int margin = 0);
+    void drawGesturePath (Graphics& g, juce::Rectangle<int> area);
 
     //==============================================================================
     Gesture& gesture;
+    GestureArray& gestureArray;
     ScopedPointer<Label> gestureNameLabel;
     ScopedPointer<PlumeShapeButton> muteButton;
     
@@ -81,7 +84,8 @@ class EmptyGestureSlotComponent : public PlumeComponent
 {
 public:
     //==============================================================================
-    EmptyGestureSlotComponent (const int slotId, const bool& dragModeReference,
+    EmptyGestureSlotComponent (const int slotId, GestureArray& gestArray,
+                                                 const bool& dragModeReference,
                                                  const int& draggedGestureReference,
                                                  const int& draggedOverSlotReference);
     ~EmptyGestureSlotComponent();
@@ -105,6 +109,7 @@ private:
     //==============================================================================
     bool highlighted = false;
     
+    GestureArray& gestureArray;
     const bool& dragMode;
     const int& draggedGesture;
     const int& draggedOverSlot;

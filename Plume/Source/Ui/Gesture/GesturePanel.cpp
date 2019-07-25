@@ -90,6 +90,21 @@ void GesturePanel::paint (Graphics& g)
 {
 }
 
+void GesturePanel::paintOverChildren (Graphics& g)
+{
+    /* TODO paint the component snapshot during a drag.
+       Get a snapshot of the component being dragged (might wanna cache it so it is not 
+       recalculated for every repaint), and display it centred at the current mouse position.
+    if (dragMode)
+    {
+        Image gestureComponentImage;
+        // here get the image
+
+        //g.drawImage (gestureComponentImage, Rectangle_that_is_the_size_of_the_image);
+    }
+    */
+}
+
 void GesturePanel::resized()
 {
     using namespace PLUME::UI;
@@ -186,6 +201,13 @@ void GesturePanel::mouseDrag (const MouseEvent& event)
 
 			if (formerDraggedOverId != -1 && formerDraggedOverId != draggedOverSlotId)
 				gestureSlots[formerDraggedOverId]->repaint();
+
+            /* TODO repaint here for the component snapshot.
+               For optimal smoothness, get the last coordinates here, and repaint around
+               both the current and last mouse position, in a square that is the size
+               of the snapshot.
+            //repaint();
+            */
         }
     }
 }
@@ -257,14 +279,14 @@ void GesturePanel::initialiseGestureSlots()
     {
         if (Gesture* gestureToCreateComponentFor = gestureArray.getGesture (i))
         {
-            gestureSlots.add (new GestureComponent (*gestureToCreateComponentFor, dragMode,
-                                                                                  draggedGestureComponentId,
-                                                                                  draggedOverSlotId));
+            gestureSlots.add (new GestureComponent (*gestureToCreateComponentFor, gestureArray,
+                                                    dragMode, draggedGestureComponentId, draggedOverSlotId));
             addParameterListenerForGestureId (i);
         }
         else
         {
-            gestureSlots.add (new EmptyGestureSlotComponent (i, dragMode,
+            gestureSlots.add (new EmptyGestureSlotComponent (i, gestureArray,
+                                                                dragMode,
                                                                 draggedGestureComponentId,
                                                                 draggedOverSlotId));
         }
@@ -314,7 +336,8 @@ void GesturePanel::updateSlotIfNeeded (int slotToCheck)
         if (gestureArray.getGesture (slotToCheck) == nullptr)
         {
             removeParameterListenerForGestureId (slotToCheck);
-            gestureSlots.set (slotToCheck, new EmptyGestureSlotComponent (slotToCheck, 
+            gestureSlots.set (slotToCheck, new EmptyGestureSlotComponent (slotToCheck,
+                                                                          gestureArray,
                                                                           dragMode,
                                                                           draggedGestureComponentId,
                                                                           draggedOverSlotId),
@@ -334,6 +357,7 @@ void GesturePanel::updateSlotIfNeeded (int slotToCheck)
             addParameterListenerForGestureId (slotToCheck);
 
             gestureSlots.set (slotToCheck, new GestureComponent (*gestureThatWasCreated,
+                                                                 gestureArray,
                                                                  dragMode,
                                                                  draggedGestureComponentId,
                                                                  draggedOverSlotId),
@@ -382,10 +406,12 @@ void GesturePanel::swapGestures (int firstId, int secondId)
     }
 
     // Deletes GestureComponents for the 2 slots
-    gestureSlots.set (firstId, new EmptyGestureSlotComponent (firstId, dragMode,
+    gestureSlots.set (firstId, new EmptyGestureSlotComponent (firstId, gestureArray,
+                                                                       dragMode,
                                                                        draggedGestureComponentId,
                                                                        draggedOverSlotId), true);
-    gestureSlots.set (secondId, new EmptyGestureSlotComponent (secondId, dragMode,
+    gestureSlots.set (secondId, new EmptyGestureSlotComponent (secondId, gestureArray,
+                                                                         dragMode,
                                                                          draggedGestureComponentId,
                                                                          draggedOverSlotId), true);
 
@@ -647,7 +673,7 @@ void GesturePanel::parameterChanged (const String& parameterID, float)
             {
                 if (gestureSettings->getGestureId() == gestureId)
                 {
-                    gestureSettings->update (parameterID.substring(1, parameterID.length()-1));
+                    gestureSettings->update (parameterID.substring (1, parameterID.length()));
                 }
             }
         }

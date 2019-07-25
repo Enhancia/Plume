@@ -35,6 +35,7 @@ PresetSearchBar::PresetSearchBar (PlumeProcessor& proc) : processor (proc), sear
 	
 	cancelButton->setShape (p, false, true, false);
     cancelButton->setBorderSize (BorderSize<int> (0));
+    cancelButton->setVisible (false);
 	cancelButton->addListener (this);
 }
 
@@ -97,6 +98,8 @@ void PresetSearchBar::buttonClicked (Button*)
 			    presetBox->updateContent();
 		    }
 	    }
+
+        cancelButton->setVisible (false);
     }
 }
 
@@ -106,6 +109,7 @@ void PresetSearchBar::labelTextChanged (Label* lbl)
     if (lbl->getText().isEmpty())
     {
         lbl->setText ("Search...", dontSendNotification);
+        cancelButton->setVisible (false);
     }
 }
 
@@ -128,6 +132,11 @@ void PresetSearchBar::editorHidden (Label*, TextEditor& ed)
 
 void PresetSearchBar::textEditorTextChanged (TextEditor&)
 {
+    if (!searchLabel->getText (true).isEmpty())
+    {
+        cancelButton->setVisible (true);
+    }
+
     processor.getPresetHandler().setNameSearchSetting (searchLabel->getText (true));
     
     // updates the interface

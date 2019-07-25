@@ -209,7 +209,15 @@ namespace PLUME
 			floppyDisk,
 			flatSave,
 			onOff,
-            info
+            info,
+            handFingerDown,
+            handTilt,
+            handRoll,
+            vibratoRipple,
+            tiltArrow,
+            pitchBendArrow,
+            rollArrow,
+            waveIcon
 		};
 
         extern const Path createPath (PathId pathToCreate);

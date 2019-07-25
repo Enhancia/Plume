@@ -59,6 +59,7 @@ void GestureSettingsComponent::update()
 void GestureSettingsComponent::update (const String& parameterThatChanged)
 {
     if (disabled) return;
+    DBG ("GSC update with parameter : " << parameterThatChanged);
 
     if (parameterThatChanged.startsWith ("_midi"))
     {

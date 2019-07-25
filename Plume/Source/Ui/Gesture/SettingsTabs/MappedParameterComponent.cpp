@@ -471,6 +471,8 @@ void MappedParameterComponent::updateHighlightColour()
     updateLabelColours (*rangeLabelMin);
     updateLabelColours (*rangeLabelMax);
 
+    reverseButton->setColour (TextButton::buttonOnColourId, highlightColour);
+
     repaint();
 }
 

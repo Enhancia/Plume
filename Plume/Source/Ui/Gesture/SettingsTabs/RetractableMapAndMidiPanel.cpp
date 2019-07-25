@@ -133,6 +133,8 @@ void RetractableMapAndMidiPanel::changeListenerCallback(ChangeBroadcaster* sourc
         	wrapper.clearWrapperEditor();
             gestureArray.cancelMapMode();
         }
+
+        getParentComponent()->repaint();
     }
     
     // If the editor is closed with map mode still on
