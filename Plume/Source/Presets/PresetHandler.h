@@ -85,6 +85,13 @@ public:
      * \returns The name of the preset file which is currently used.
      */
     String getCurrentPresetName();
+
+    /**
+     * \brief Getter for the id of the preset currently in use.
+     *
+     * \returns The id for the preset which is currently used, relative to the list of searched presets.
+     */
+    int getCurrentPresetIdInSearchList();
     
     /**
      * \brief Getter for the total number of presets.

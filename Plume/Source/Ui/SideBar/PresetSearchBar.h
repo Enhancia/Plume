@@ -41,7 +41,7 @@ public:
 private:
     //==============================================================================
     ScopedPointer<Label> searchLabel;
-    ScopedPointer<ShapeButton> cancelButton;
+    ScopedPointer<PlumeShapeButton> cancelButton;
     
     //==============================================================================
     PlumeProcessor& processor;

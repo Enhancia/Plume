@@ -46,7 +46,12 @@ NewPresetPanel::~NewPresetPanel()
 void NewPresetPanel::paint (Graphics& g)
 {
     using namespace PLUME::UI;
+
+    // transparent area
+    g.setColour (getPlumeColour (topPanelTransparentArea));
+    g.fillRect (getBounds());
     
+    // panel area
     ColourGradient gradFill (currentTheme.getColour (PLUME::colour::topPanelBackground)
                                          .overlaidWith (Colour (0x10000000)),
                              float (panelArea.getCentreX()),
@@ -58,23 +63,18 @@ void NewPresetPanel::paint (Graphics& g)
     gradFill.addColour (0.7, currentTheme.getColour (PLUME::colour::topPanelBackground)
                                          .overlaidWith (Colour (0x10000000)));
 
-    // transparent area
-    g.setColour (currentTheme.getColour (PLUME::colour::topPanelTransparentArea));
-    g.fillRect (getBounds());
-    
-    // panel area
     g.setGradientFill (gradFill);
-    g.fillRect (panelArea);
+    g.fillRoundedRectangle (panelArea.toFloat(), 10.0f);
     
     // panel outline
-    auto gradOut = ColourGradient::horizontal (currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
+    auto gradOut = ColourGradient::horizontal (Colour (0x10ffffff),
                                                float(panelArea.getX()), 
-                                               currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
+                                               Colour (0x10ffffff),
                                                float(panelArea.getRight()));
-    gradOut.addColour (0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
+    gradOut.addColour (0.5, Colour (0x50ffffff));
 
     g.setGradientFill (gradOut);
-    g.drawRect (panelArea);
+    g.drawRoundedRectangle (panelArea.toFloat(), 10.0f, 1.0f);
     
     auto textArea = panelArea.reduced (MARGIN).removeFromLeft (panelArea.reduced (MARGIN).getWidth()/3)
                                               .reduced (MARGIN, 0);

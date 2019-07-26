@@ -29,34 +29,42 @@ void NewGesturePanel::paint (Graphics& g)
 {
 	using namespace PLUME::UI;
     
-    ColourGradient gradFill (currentTheme.getColour (PLUME::colour::topPanelBackground)
-                                         .overlaidWith (Colour (0x10000000)),
-                             float (panelArea.getCentreX()),
-                             float (panelArea.getBottom()),
-                             currentTheme.getColour (PLUME::colour::topPanelBackground),
-                             float (panelArea.getCentreX()),
-                             float (panelArea.getY()),
-                             true);
-    gradFill.addColour (0.7, currentTheme.getColour (PLUME::colour::topPanelBackground)
-                                         .overlaidWith (Colour (0x10000000)));
 
     // transparent area
-    g.setColour (currentTheme.getColour (PLUME::colour::topPanelTransparentArea));
+    auto gradTransp = ColourGradient::vertical (Colour (0x00000000),
+                                                0.0f, 
+                                                Colour (0x00000000),
+                                                float(getHeight()));
+    gradTransp.addColour (0.05, getPlumeColour (topPanelTransparentArea));
+    gradTransp.addColour (0.95, getPlumeColour (topPanelTransparentArea));
+
+    g.setGradientFill (gradTransp);
     g.fillRect (getLocalBounds());
     
     // panel area
+    ColourGradient gradFill (getPlumeColour (topPanelBackground)
+                                         .overlaidWith (Colour (0x10000000)),
+                             float (panelArea.getCentreX()),
+                             float (panelArea.getBottom()),
+                             getPlumeColour (topPanelBackground),
+                             float (panelArea.getCentreX()),
+                             float (panelArea.getY()),
+                             true);
+    gradFill.addColour (0.7, getPlumeColour (topPanelBackground)
+                                         .overlaidWith (Colour (0x10000000)));
+
     g.setGradientFill (gradFill);
-    g.fillRect (panelArea);
+    g.fillRoundedRectangle (panelArea.toFloat(), 10.0f);
     
     // panel outline
-    auto gradOut = ColourGradient::horizontal (currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
+    auto gradOut = ColourGradient::horizontal (Colour (0x10ffffff),
                                                float(panelArea.getX()), 
-                                               currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
+                                               Colour (0x10ffffff),
                                                float(panelArea.getRight()));
-    gradOut.addColour (0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
+    gradOut.addColour (0.5, Colour (0x50ffffff));
 
     g.setGradientFill (gradOut);
-    g.drawRect (panelArea);
+    g.drawRoundedRectangle (panelArea.toFloat(), 10.0f, 1.0f);
 }
 
 void NewGesturePanel::resized()
@@ -283,20 +291,25 @@ void NewGesturePanel::GestureTypeSelector::update()
 
 void NewGesturePanel::GestureTypeSelector::paint (Graphics& g)
 {
-	g.setColour (PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText));
-	g.drawRoundedRectangle (getLocalBounds().reduced (2).toFloat(), 2.0f, 1.0f);
-
 	if (highlighted)
 	{
-		g.setColour (PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText)
-											.withAlpha (0.1f));
+		// Fill
+		g.setColour (Gesture::getHighlightColour (gestureType).withAlpha (0.15f));
+		g.fillRoundedRectangle (getLocalBounds().reduced (2).toFloat(), 10.0f);
 
-		g.fillRoundedRectangle (getLocalBounds().reduced (2).toFloat(), 2.0f);
+/*
+		// Outline
+		g.setColour (Gesture::getHighlightColour (gestureType));
+		g.drawRoundedRectangle (getLocalBounds().reduced (2).toFloat(), 10.0f, 1.0f);*/
+	}
+	else
+	{
+		g.setColour (getPlumeColour (basePanelBackground));
+		g.fillRoundedRectangle (getLocalBounds().reduced (2).toFloat(), 10.0f);
 	}
 
 	g.setColour (PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText));
-	g.setFont (PLUME::font::plumeFontLight.withHeight (15.0f));
-	g.drawText (Gesture::getTypeString (gestureType, true), getLocalBounds(), Justification::centred, false);
+	drawGesturePath (g, getLocalBounds().reduced (PLUME::UI::MARGIN));
 }
 void NewGesturePanel::GestureTypeSelector::resized()
 {
@@ -320,4 +333,59 @@ void NewGesturePanel::GestureTypeSelector::setHighlighted (bool shouldBeHighligh
 		highlighted = shouldBeHighlighted;
 		repaint();
 	}
+}
+
+void NewGesturePanel::GestureTypeSelector::drawGesturePath (Graphics& g, juce::Rectangle<int> area)
+{
+    g.setColour (Colour (0xfff3f3f3));
+
+    // Icon Fill
+    Path iconFill;
+
+    if (gestureType == (int) Gesture::tilt) iconFill = PLUME::path::createPath (PLUME::path::handTilt);
+    else if (gestureType == (int) Gesture::roll) iconFill = PLUME::path::createPath (PLUME::path::handRoll);
+    else iconFill = PLUME::path::createPath (PLUME::path::handFingerDown);
+
+    auto areaFloat = (gestureType == (int) Gesture::tilt || gestureType == (int) Gesture::roll)
+                          ? area.reduced (area.getWidth()/8, area.getHeight()/4).toFloat()
+                          : area.reduced (area.getWidth()/4, area.getHeight()/8).toFloat();
+
+	iconFill.scaleToFit (areaFloat.getX(), areaFloat.getY(),
+                         areaFloat.getWidth(), areaFloat.getHeight(), true);
+
+    g.fillPath (iconFill);
+
+    // Icon stroke
+    /*
+    Path iconStroke;
+
+    if (gesture.type == Gesture::tilt)
+    {
+        iconStroke = PLUME::path::createPath (PLUME::path::tiltArrow);
+        areaFloat = areaFloat.withTrimmedLeft (areaFloat.getWidth()*2/3)
+                             .withTrimmedBottom (areaFloat.getHeight()/2);
+    }
+    else if (gesture.type == Gesture::roll)
+    {
+        iconStroke = PLUME::path::createPath (PLUME::path::rollArrow);
+        areaFloat = areaFloat.withTrimmedRight (areaFloat.getWidth()/2)
+                             .withTrimmedBottom (areaFloat.getHeight()/2);
+    }
+    else if (gesture.type == Gesture::pitchBend)
+    {
+        iconStroke = PLUME::path::createPath (PLUME::path::pitchBendArrow);
+        areaFloat = areaFloat.withTrimmedTop (areaFloat.getHeight()*2/3)
+                             .translated (areaFloat.getWidth()/12, 0);
+    }
+    else if (gesture.type == Gesture::vibrato)
+    {
+        iconStroke = PLUME::path::createPath (PLUME::path::vibratoRipple);
+        areaFloat = areaFloat.withTrimmedTop (areaFloat.getHeight()*2/3)
+                             .translated (areaFloat.getWidth()/12, 0);
+    }
+    else return;
+
+    iconStroke.scaleToFit (areaFloat.getX(), areaFloat.getY(),
+                           areaFloat.getWidth(), areaFloat.getHeight(), true);
+    g.strokePath (iconStroke, PathStrokeType (1.0f));*/
 }

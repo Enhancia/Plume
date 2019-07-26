@@ -32,10 +32,10 @@ MappedParameterComponent::MappedParameterComponent (Gesture& gest,  GestureArray
     
     addAndMakeVisible (reverseButton = new TextButton ("Reverse Button"));
     reverseButton->setButtonText ("R");
-    reverseButton->setColour (TextButton::buttonColourId, Colour (0xff505050));
+    reverseButton->setColour (TextButton::buttonColourId, getPlumeColour (midiMapSliderBackground));
     reverseButton->setColour (TextButton::buttonOnColourId, highlightColour);
-    reverseButton->setColour (TextButton::textColourOnId , Colour (0xffffffff));
-    reverseButton->setColour (TextButton::textColourOffId , Colour (0xffffffff));
+    reverseButton->setColour (TextButton::textColourOnId , getPlumeColour (detailPanelMainText));
+    reverseButton->setColour (TextButton::textColourOffId , getPlumeColour (detailPanelMainText));
 	reverseButton->setToggleState (mappedParameter.reversed, dontSendNotification);
     reverseButton->setClickingTogglesState (true);
 	reverseButton->setState (Button::buttonNormal);
@@ -66,7 +66,8 @@ void MappedParameterComponent::paint (Graphics& g)
 { 
     if (!allowDisplayUpdate) return;
 
-	drawCursor (g);
+	if (gesture.isActive()) drawCursor (g);
+    
     drawSliderBackground (g);
 }
 
@@ -198,7 +199,7 @@ void MappedParameterComponent::mouseEnter (const MouseEvent& e)
 {
     if (e.eventComponent == paramNameLabel)
     {
-        paramNameLabel->setColour (Label::textColourId, Colour (0x80000000));
+        paramNameLabel->setColour (Label::textColourId, getPlumeColour (detailPanelMainText).withAlpha (0.5f));
     }
 }
 
@@ -206,7 +207,7 @@ void MappedParameterComponent::mouseExit (const MouseEvent& e)
 {
     if (e.eventComponent == paramNameLabel)
     {
-        paramNameLabel->setColour (Label::textColourId, Colour (0xff000000));
+        paramNameLabel->setColour (Label::textColourId, getPlumeColour (detailPanelMainText));
     }
 }
 
@@ -289,7 +290,7 @@ void MappedParameterComponent::handleMenuResult (const int result, const bool is
     {
         if (result == 0)
         {
-            paramNameLabel->setColour (Label::textColourId, Colour (0xff000000));
+            paramNameLabel->setColour (Label::textColourId, getPlumeColour (detailPanelMainText));
         }
 
         else if (result == 1)
@@ -441,12 +442,38 @@ void MappedParameterComponent::updateDisplay()
 {
     if (allowDisplayUpdate)
     {
-        if (gesture.getValueForMappedParameter (mappedParameter.range, mappedParameter.reversed))
+        if (gesture.getValueForMappedParameter (mappedParameter.range, mappedParameter.reversed)
+                != lastValue)
         {
+            lastValue = gesture.getValueForMappedParameter (mappedParameter.range,
+                                                            mappedParameter.reversed);
+            
             repaint (lowSlider->getBounds().withX (lowSlider->getBounds().getCentreX() - 13)
                                            .withWidth (8));
         }
     }
+}
+
+void MappedParameterComponent::updateHighlightColour()
+{
+    highlightColour = gesture.getHighlightColour();
+
+    auto updateLabelColours = [this] (Label& label)
+    {
+        label.setColour (Label::textColourId, highlightColour);
+        label.setColour (Label::textWhenEditingColourId, highlightColour);
+        label.setColour (TextEditor::textColourId, highlightColour);
+        label.setColour (TextEditor::highlightColourId, highlightColour.withAlpha (0.2f));
+        label.setColour (TextEditor::highlightedTextColourId, highlightColour);
+        label.setColour (CaretComponent::caretColourId, highlightColour.withAlpha (0.2f));
+    };
+
+    updateLabelColours (*rangeLabelMin);
+    updateLabelColours (*rangeLabelMax);
+
+    reverseButton->setColour (TextButton::buttonOnColourId, highlightColour);
+
+    repaint();
 }
 
 //==============================================================================
@@ -455,8 +482,8 @@ void MappedParameterComponent::createLabels()
     //=== Value label ===
     addAndMakeVisible (paramNameLabel = new Label ("Value Label", mappedParameter.parameter.getName (20)));
     paramNameLabel->setEditable (false, false, false);
-    paramNameLabel->setFont (Font (PLUME::UI::font, 11.0f, Font::plain));
-    paramNameLabel->setColour (Label::textColourId, Colour (0xff000000));
+    paramNameLabel->setFont (PLUME::font::plumeFont.withHeight (11.0f));
+    paramNameLabel->setColour (Label::textColourId, getPlumeColour (detailPanelMainText));
     paramNameLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
     paramNameLabel->setJustificationType (Justification::centredLeft);
     paramNameLabel->addMouseListener (this, false);
@@ -468,7 +495,7 @@ void MappedParameterComponent::createLabels()
     // LabelMin style
     rangeLabelMin->setEditable (true, false, false);
     rangeLabelMin->setSize (30, 30);
-    rangeLabelMin->setFont (Font (PLUME::UI::font, 11.0f, Font::plain));
+    rangeLabelMin->setFont (PLUME::font::plumeFont.withHeight (11.0f));
     rangeLabelMin->setColour (Label::textColourId, highlightColour);
     rangeLabelMin->setColour (Label::backgroundColourId, Colour (0x00000000));
     rangeLabelMin->setColour (Label::textWhenEditingColourId, highlightColour);
@@ -482,7 +509,7 @@ void MappedParameterComponent::createLabels()
     // LabelMax style
     rangeLabelMax->setEditable (true, false, false);
     rangeLabelMax->setSize (30, 30);
-    rangeLabelMax->setFont (Font (PLUME::UI::font, 11.0f, Font::plain));
+    rangeLabelMax->setFont (PLUME::font::plumeFont.withHeight (11.0f));
     rangeLabelMax->setColour (Label::textColourId, highlightColour);
     rangeLabelMax->setColour (Label::backgroundColourId, Colour (0x00000000));
     rangeLabelMax->setColour (Label::textWhenEditingColourId, highlightColour);
@@ -595,7 +622,7 @@ void MappedParameterComponent::drawCursor (Graphics& g)
 
 void MappedParameterComponent::drawSliderBackground (Graphics& g)
 {
-    g.setColour (Colour (0xff505050));
+    g.setColour (getPlumeColour (midiMapSliderBackground));
     g.fillRoundedRectangle (lowSlider->getBounds().withSizeKeepingCentre (12, lowSlider->getHeight() - 10)
                                                   .toFloat(),
                             3.0f);

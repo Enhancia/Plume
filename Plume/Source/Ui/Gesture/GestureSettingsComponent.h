@@ -28,13 +28,15 @@ class GestureSettingsComponent : public PlumeComponent,
 {
 public:
     //==============================================================================
-    GestureSettingsComponent (Gesture& gest, GestureArray& gestArray, PluginWrapper& wrap);
+    GestureSettingsComponent (Gesture& gest, GestureArray& gestArray, PluginWrapper& wrap,
+                              PlumeShapeButton& closeButton);
     ~GestureSettingsComponent();
 
     //==============================================================================
     // PlumeComponent
     const String getInfoString() override;
     void update() override;
+    void update (const String& parameterThatChanged);
     
     //==============================================================================
     // PlumeComponent
@@ -54,6 +56,9 @@ public:
     
 private:
     //==============================================================================
+    void paintBackground (Graphics&);
+
+    //==============================================================================
     void createTuner();
     void createToggles();
     void createPanels();
@@ -68,18 +73,16 @@ private:
     const int gestureId;
     GestureArray& gestureArray;
     PluginWrapper& wrapper;
-    const int HEADER_HEIGHT = 35;
+    const int HEADER_HEIGHT = 30;
 
     ScopedPointer<Tuner> gestTuner;
     ScopedPointer<MapperComponent> gestMapper;
     ScopedPointer<DualTextToggle> midiParameterToggle;
-    ScopedPointer<DualTextToggle> muteToggle;
+    ScopedPointer<PlumeShapeButton> muteButton;
     ScopedPointer<RetractableMapAndMidiPanel> retractablePanel;
     ScopedPointer<DescriptionPanel> descriptionPanel;
+    PlumeShapeButton& closeButton;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GestureSettingsComponent)
 };
-    
-    
-    

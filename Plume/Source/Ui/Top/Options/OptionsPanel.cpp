@@ -65,17 +65,17 @@ void OptionsPanel::paint (Graphics& g)
     // options panel area
     g.setGradientFill (gradFill);
     //g.setColour (UI::currentTheme.getColour (colour::topPanelBackground));
-    g.fillRect (optionsArea);
+    g.fillRoundedRectangle (optionsArea.toFloat(), 10.0f);
     
     // options panel outline
-    auto gradOut = ColourGradient::horizontal (UI::currentTheme.getColour(colour::sideBarSeparatorOut),
+    auto gradOut = ColourGradient::horizontal (Colour (0x10ffffff),
                                                float(optionsArea.getX()), 
-                                               UI::currentTheme.getColour(colour::sideBarSeparatorOut),
+                                               Colour (0x10ffffff),
                                                float(optionsArea.getRight()));
-    gradOut.addColour (0.5, UI::currentTheme.getColour(colour::sideBarSeparatorIn));
+    gradOut.addColour (0.5, Colour (0x50ffffff));
 
     g.setGradientFill (gradOut);
-    g.drawRect (optionsArea);
+    g.drawRoundedRectangle (optionsArea.toFloat(), 10.0f, 1.0f);
 }
 
 void OptionsPanel::resized()

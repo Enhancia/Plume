@@ -57,6 +57,7 @@ public:
     //==============================================================================
     Gesture::MappedParameter& getMappedParameter();
     void updateDisplay();
+    void updateHighlightColour();
 
     void handleMenuResult (const int result, const bool isParameterMenu);
     
@@ -103,7 +104,7 @@ private:
     
     //==============================================================================
     bool allowDisplayUpdate = true;
-    const Colour highlightColour;
+    Colour highlightColour;
 
     //==============================================================================
     ScopedPointer<ImageButton> closeButton;

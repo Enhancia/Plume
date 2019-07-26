@@ -23,11 +23,11 @@
 #include "Ui/Common/PlumeComponent.h"
 #include "Ui/Common/PlumeProgressBar.h"
 #include "Ui/Common/DualTextToggle.h"
+#include "Ui/Common/PlumeShapeButton.h"
 
 // Preprocessor expressions
 #define TRACE_IN  Logger::writeToLog ("[+] Entering: " + String(__FUNCTION__) + "\n")
 #define TRACE_OUT Logger::writeToLog ("[-]  Leaving: " + String(__FUNCTION__) + "\n")
-#define getPlumeColour(a) (PLUME::UI::currentTheme.getColour (PLUME::colour::a))
 
 namespace PLUME
 {
@@ -42,9 +42,11 @@ namespace PLUME
     
         // Display panels values
         const int MARGIN = 8;
-        const int SIDEBAR_WIDTH = 200;
+        const int MARGIN_SMALL = 4;
+        const int SIDEBAR_WIDTH = 220;
         const int INFO_HEIGHT = 60;
-        const int PRESET_BUTTONS_HEIGHT = 20;
+        const int PRESET_BUTTONS_HEIGHT = 30;
+        const int PRESET_SEARCHBAR_HEIGHT = 22;
         const int HEADER_HEIGHT = 40;
         const int GESTURE_DETAIL_WIDTH = 300;
         const int OPTIONS_HEIGHT = 30;
@@ -52,8 +54,6 @@ namespace PLUME
         
         // Display settings
         const int FRAMERATE = 60;
-        
-        static String font = "Tw Cen MT";
         
         extern bool ANIMATE_UI_FLAG;
         
@@ -75,6 +75,10 @@ namespace PLUME
         // Theme
         using namespace PLUME::colour;
         extern PlumeTheme currentTheme;
+
+        extern void paintTiledPath (Graphics&, Path&, juce::Rectangle<float>,
+                                    const float, const float,
+                                    const Colour, const Colour, const float);
     }
     
     namespace font
@@ -192,21 +196,31 @@ namespace PLUME
     
     namespace path
     {
-		extern const Path createGearPath();
-		extern const Path createPianoPath();
-        extern const Path createBurgerPath();
-        extern const Path createShortBurgerPath();
-        extern const Path createShortOptionsPath();
-        extern const Path createOptionsPath();
-		extern const Path createFolderPath();
-		extern const Path createMagnifyingGlassPath();
-        extern const Path createFloppyDiskPath();
-        extern const Path createFlatSavePath();
-        
-        //static Path gearPath = createGearPath();
-        //static Path pianoPath = createPianoPath();
-        //static Path folderPath = createFolderPath();
-        //static Path magnifyingGlassPath = createMagnifyingGlassPath();
+		enum PathId
+		{
+			gear = 0,
+			piano,
+			burger,
+			burgerShort,
+			options,
+			optionsShort,
+			folder,
+			magnifyingGlass,
+			floppyDisk,
+			flatSave,
+			onOff,
+            info,
+            handFingerDown,
+            handTilt,
+            handRoll,
+            vibratoRipple,
+            tiltArrow,
+            pitchBendArrow,
+            rollArrow,
+            waveIcon
+		};
+
+        extern const Path createPath (PathId pathToCreate);
     }
 
   #if JUCE_WINDOWS

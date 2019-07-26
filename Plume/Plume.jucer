@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" jucerVersion="5.4.3"
-              pluginFormats="buildAU,buildStandalone,buildVST" version="1.3.2"
+              pluginFormats="buildAU,buildStandalone,buildVST" version="1.4.0"
               companyName="Enhancia" buildVST="1" buildVST3="0" buildAU="1"
               buildAUv3="0" buildRTAS="0" buildAAX="0" enableIAA="0" pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
               pluginManufacturer="Enhancia" pluginName="Plume" pluginDesc="Enhancia's Plume. Wraps other plugins, provides customizable and mappable gestures to use with Neova."
@@ -77,6 +77,10 @@
                 file="Source/Ui/LookAndFeel/PlumeLookAndFeel.h"/>
         </GROUP>
         <GROUP id="{4CA36361-EB23-BED0-3C51-3F19F9BE9F00}" name="Common">
+          <FILE id="wIBhgr" name="PlumeShapeButton.cpp" compile="1" resource="0"
+                file="Source/Ui/Common/PlumeShapeButton.cpp"/>
+          <FILE id="UpesGY" name="PlumeShapeButton.h" compile="0" resource="0"
+                file="Source/Ui/Common/PlumeShapeButton.h"/>
           <FILE id="lhj2tX" name="TabbedPanelComponent.cpp" compile="1" resource="0"
                 file="Source/Ui/Common/TabbedPanelComponent.cpp"/>
           <FILE id="cwIDnw" name="TabbedPanelComponent.h" compile="0" resource="0"
@@ -208,13 +212,7 @@
             <FILE id="ZZPCLJ" name="VibratoTuner.cpp" compile="1" resource="0"
                   file="Source/Ui/Gesture/Tuner/VibratoTuner.cpp"/>
             <FILE id="REZ9Li" name="VibratoTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/VibratoTuner.h"/>
-            <FILE id="jL9Xko" name="TestTuner.cpp" compile="1" resource="0" file="Source/Ui/Gesture/Tuner/TestTuner.cpp"/>
-            <FILE id="f9pkkW" name="TestTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/TestTuner.h"/>
             <FILE id="M4nvbi" name="Tuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/Tuner.h"/>
-            <FILE id="QxoyET" name="SymmetricalTuner.cpp" compile="0" resource="0"
-                  file="Source/Ui/Gesture/Tuner/SymmetricalTuner.cpp"/>
-            <FILE id="WeeLEA" name="SymmetricalTuner.h" compile="0" resource="0"
-                  file="Source/Ui/Gesture/Tuner/SymmetricalTuner.h"/>
             <FILE id="Cp1JGI" name="OneRangeTuner.cpp" compile="1" resource="0"
                   file="Source/Ui/Gesture/Tuner/OneRangeTuner.cpp"/>
             <FILE id="lWYww1" name="OneRangeTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/OneRangeTuner.h"/>

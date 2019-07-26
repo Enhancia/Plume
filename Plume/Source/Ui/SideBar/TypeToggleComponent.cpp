@@ -18,15 +18,9 @@ TypeToggleComponent::TypeToggleComponent (PlumeProcessor& p) : processor (p)
     for (int i=-1; i<PlumePreset::numTypes; i++)
     {
         String text;
-
-        //toggles.add (new TextButton ("toggle"+String(i)));
         
         switch (i)
         {
-            //case PlumePreset::defaultPreset:     toggles.getLast()->setButtonText ("Factory");   break;
-            //case PlumePreset::userPreset:        toggles.getLast()->setButtonText ("User");      break;
-            //case PlumePreset::communityPreset:   toggles.getLast()->setButtonText ("Community"); break;
-            //default:                             toggles.getLast()->setButtonText ("All");
 
             case PlumePreset::defaultPreset:     text = "Factory";   break;
             case PlumePreset::userPreset:        text = "User";      break;
@@ -34,10 +28,10 @@ TypeToggleComponent::TypeToggleComponent (PlumeProcessor& p) : processor (p)
             default:                             text = "All";
         }
         
-        toggles.add (new Toggle (i, text, PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxHighlightedBackground),
-                                          PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxHighlightedText),
-                                          PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxBackground),
-                                          PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxStandartText)));
+        toggles.add (new Toggle (i, text, getPlumeColour (presetTypeToggleSelected),
+                                          getPlumeColour (presetsBoxRowTextHighlighted),
+                                          getPlumeColour (presetTypeToggleUnselected),
+                                          getPlumeColour (presetsBoxRowText)));
 
         addChildAndSetID (toggles.getLast(), String(i));
         toggles.getLast()->addMouseListener (this, false);
@@ -60,50 +54,10 @@ TypeToggleComponent::~TypeToggleComponent()
 
 void TypeToggleComponent::paint (Graphics& g)
 {
-    using namespace PLUME::UI;
-    
-    // Fills the component's inside
-    auto gradIn = ColourGradient::vertical (Colour (0x30000000),
-                                            0.0f, 
-                                            Colour (0x20000000),
-                                            float(getHeight()));
-                                          
-    gradIn.addColour (0.2, Colour (0x15000000));
-    g.setGradientFill (gradIn);
-    g.fillRect (1, 1, getWidth()-2, getHeight()-2);
 }
 
 void TypeToggleComponent::paintOverChildren (Graphics& g)
 {
-	using namespace PLUME::UI;
-
-    //Gradient for the box's outline
-    auto gradOut = ColourGradient::horizontal (currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
-                                               float(MARGIN), 
-                                               currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
-                                               float(getWidth() - MARGIN));
-    gradOut.addColour (0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
-    g.setGradientFill (gradOut);
-
-    // Outline
-    g.drawRect (getLocalBounds());
-
-    // Separators
-    {
-        ScopedLock tglock (togglesLock);
-    
-        auto area = getLocalBounds();
-        int buttonW = getWidth()/PlumePreset::numTypes;
-
-        for (int i=0; i<=PlumePreset::numTypes; i++)
-        {
-            if (i != PlumePreset::numTypes)
-            {
-                area.removeFromLeft (buttonW);
-                g.drawVerticalLine (area.getX(), 1.0f, float(getHeight())-1.0f);
-            }
-        }
-    }
 }
 
 void TypeToggleComponent::resized()
@@ -176,16 +130,17 @@ TypeToggleComponent::Toggle::~Toggle()
         
 void TypeToggleComponent::Toggle::paint (Graphics& g)
 {
-    g.fillAll (state ? backgroundOnColour : backgroundOffColour);
+    g.setColour (state ? backgroundOnColour : backgroundOffColour);
+    g.fillRect (getLocalBounds().withTop (getLocalBounds().getBottom() - 3));
 
     g.setColour (state ? textOnColour : textOffColour);
-    g.setFont (PLUME::font::plumeFont.withHeight (PLUME::font::SIDEBAR_LABEL_FONT_H));
-    g.drawText (text, getLocalBounds(), Justification::centred);
+    g.setFont (PLUME::font::plumeFontBold.withHeight (PLUME::font::SIDEBAR_LABEL_FONT_H + 2.0f));
+    g.drawText (text, getLocalBounds().reduced (0, PLUME::UI::MARGIN), Justification::centredBottom);
 
     // Highlight for mouse over
     if (!state && highlighted)
     {    
-        g.fillAll (backgroundOnColour.withAlpha (0.1f));
+        g.fillAll (Colours::white.withAlpha (0.05f));
     }
 }
 

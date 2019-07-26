@@ -382,7 +382,7 @@ public:
     /**
      *  \brief Deletes all MappedParameter in the array.
      */
-    void clearAllParameters();
+    void clearAllParameters (bool sendNotification = true);
 
     /**
      *  \brief Getter for the number of mapped parameters.

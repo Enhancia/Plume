@@ -25,20 +25,6 @@ PresetComponent::PresetComponent (PlumeProcessor& p)  : processor (p)
     addAndMakeVisible (pluginSelectBox = new ComboBox ("pluginSelectBox"));
     createComboBox();
     
-    pluginSelectBox->setJustificationType (Justification::centredLeft);
-    pluginSelectBox->setColour (ComboBox::outlineColourId, Colour (0x00000000));
-    pluginSelectBox->setColour (ComboBox::textColourId,
-                                PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxStandartText)
-                                                       .withAlpha (0.6f));
-    pluginSelectBox->setColour (ComboBox::arrowColourId,
-                                PLUME::UI::currentTheme.getColour (PLUME::colour::presetsBoxStandartText)
-                                                       .withAlpha (0.6f));
-                                
-    pluginSelectBox->setColour (ComboBox::backgroundColourId, Colour (0x30000000));
-        
-    pluginSelectBox->setTextWhenNothingSelected ("All Plugins");
-    pluginSelectBox->addListener (this);
-    
     // FilterBox
     addAndMakeVisible (filterBox = new FilterBox (TRANS ("filterBox"), processor));
     filterBox->updateContent();
@@ -61,32 +47,32 @@ PresetComponent::~PresetComponent()
 	searchBar = nullptr;
 }
 
-void PresetComponent::paint (Graphics&)
+void PresetComponent::paint (Graphics& g)
 {
+    using namespace PLUME::UI;
+    
+    auto area = getLocalBounds();
+    
+    // Top background
+    g.setColour (getPlumeColour (sideBarObjectFillBackground));
+
+    g.fillRoundedRectangle (getLocalBounds().withBottom (filterBox->getBounds().getBottom() + 1).toFloat(),
+                            8.0f);
+
+    // Bottom background
+    g.fillRoundedRectangle (getLocalBounds().withTop (presetBox->getBounds().getY() - 1).toFloat(),
+                            8.0f);
+    // SearchBarFill
+    g.saveState();
+    g.reduceClipRegion (searchBar->getBounds().expanded (MARGIN, MARGIN_SMALL));
+    g.setColour (getPlumeColour (sideBarObjectFill));
+    g.fillRoundedRectangle (getLocalBounds().withBottom (filterBox->getBounds().getBottom() + 1).toFloat(),
+                            8.0f);
+    g.restoreState();
 }
 
 void PresetComponent::paintOverChildren (Graphics& g)
 {
-    using namespace PLUME::UI;
-    
-    //Gradient for the box's outline
-    auto gradOut = ColourGradient::horizontal (currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
-                                               float(MARGIN), 
-                                               currentTheme.getColour(PLUME::colour::sideBarSeparatorOut),
-                                               float(getWidth() - MARGIN));
-    gradOut.addColour (0.5, currentTheme.getColour(PLUME::colour::sideBarSeparatorIn));
-    g.setGradientFill (gradOut);
-    
-    
-    // Draws some outlines
-    auto area = getLocalBounds();
-    
-    area.removeFromTop (PRESET_BUTTONS_HEIGHT + MARGIN); // Search Bar
-    area.removeFromTop (PRESET_BUTTONS_HEIGHT + MARGIN); // Type Toggle
-    area.removeFromTop (4*PRESET_BUTTONS_HEIGHT + MARGIN); // Filter Box
-    
-    // ComboBox
-	g.drawRect (area.removeFromTop (PRESET_BUTTONS_HEIGHT + MARGIN).withTrimmedBottom (MARGIN));
 }
 
 void PresetComponent::resized()
@@ -95,20 +81,19 @@ void PresetComponent::resized()
     
     auto area = getLocalBounds();
     
-    searchBar->setBounds (area.removeFromTop (PRESET_BUTTONS_HEIGHT + MARGIN)
-                              .withTrimmedBottom (MARGIN)); // Search Bar
-                              
-    typeToggle->setBounds (area.removeFromTop (PRESET_BUTTONS_HEIGHT + MARGIN)
-                               .withTrimmedBottom (MARGIN)); // Type toggle
+    typeToggle->setBounds (area.removeFromTop (PRESET_BUTTONS_HEIGHT)
+                               .reduced (2*MARGIN, 0));
+
+    searchBar->setBounds (area.removeFromTop (PRESET_SEARCHBAR_HEIGHT).reduced (MARGIN, MARGIN_SMALL));
     
-    // Filter Box
-    filterBox->setBounds (area.removeFromTop (4*PRESET_BUTTONS_HEIGHT + MARGIN)
-                              .withTrimmedBottom (MARGIN));
-                              
-    pluginSelectBox->setBounds (area.removeFromTop (PRESET_BUTTONS_HEIGHT + MARGIN)
-                                    .withTrimmedBottom (MARGIN)); // Plugin Filter comboBox
+    filterBox->setBounds (area.removeFromTop (80 + MARGIN)
+                              .withTrimmedBottom (MARGIN_SMALL)
+                              .reduced (MARGIN, 2));
     
-    presetBox->setBounds (area);
+    pluginSelectBox->setBounds (area.removeFromTop (20 + MARGIN_SMALL)
+                                    .withTrimmedBottom (MARGIN_SMALL)); // Plugin Filter comboBox
+    
+    presetBox->setBounds (area.reduced (MARGIN, 2));
 }
 
 //==============================================================================
@@ -122,8 +107,18 @@ const String PresetComponent::getInfoString()
 
 void PresetComponent::update()
 {
-    presetBox->deselectRow (presetBox->getLastRowSelected());
+    if (processor.getPresetHandler().getCurrentPresetIdInSearchList() != -1)
+    {
+        presetBox->selectRow (processor.getPresetHandler().getCurrentPresetIdInSearchList());
+    }
+    else
+    {
+        presetBox->deselectRow (presetBox->getLastRowSelected());
+    }
+
     presetBox->updateContent();
+
+
     createComboBox();
 }
 
@@ -163,6 +158,7 @@ void PresetComponent::addNewPreset()
 
 void PresetComponent::createComboBox()
 {
+    // Combo bex items
     pluginSelectBox->clear (dontSendNotification);
     pluginSelectBox->addItem ("All Plugins", 1);
     
@@ -174,4 +170,16 @@ void PresetComponent::createComboBox()
     }
     
     pluginSelectBox->setSelectedId (1, sendNotification);
+
+    // Combo box look
+    pluginSelectBox->setJustificationType (Justification::centredLeft);
+
+    pluginSelectBox->setColour (ComboBox::outlineColourId, Colour (0x00000000));
+    pluginSelectBox->setColour (ComboBox::textColourId,
+                                getPlumeColour (presetsBoxRowText).withAlpha (0.6f));
+    pluginSelectBox->setColour (ComboBox::arrowColourId,
+                                getPlumeColour (presetsBoxRowText).withAlpha (0.6f));
+    pluginSelectBox->setColour (ComboBox::backgroundColourId, getPlumeColour (sideBarObjectFillBackground));
+    pluginSelectBox->setTextWhenNothingSelected ("All Plugins");
+    pluginSelectBox->addListener (this);
 }

@@ -76,6 +76,19 @@ String PresetHandler::getCurrentPresetName()
     return currentPreset.isValid() ? currentPreset.getName() : "-"; //.replaceCharacter (' ', '_');
 }
 
+int PresetHandler::getCurrentPresetIdInSearchList()
+{
+    if (currentPreset.isValid())
+    {
+        for (int presetId=0; presetId < getNumSearchedPresets(); presetId++)
+        {
+            if (currentPreset == *searchedPresets[presetId]) return presetId;
+        }
+    }
+
+    return -1;
+}
+
 void PresetHandler::storePresets()
 {
     searchedPresets.clear();

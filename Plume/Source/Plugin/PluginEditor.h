@@ -136,9 +136,6 @@ private:
     //==============================================================================
     PLUME::UI::PlumeLookAndFeel plumeLookAndFeel;
     ScopedPointer<ResizableCornerComponent> resizableCorner;
-    
-    Image backgroundImage = ImageFileFormat::loadFrom (PlumeData::homePageEnhancia_jpg,
-                                                       PlumeData::homePageEnhancia_jpgSize);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeEditor)
 };

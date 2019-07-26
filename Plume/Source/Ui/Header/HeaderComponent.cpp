@@ -19,12 +19,12 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc, Component& newPrst)  : p
     setComponentID ("header");
     
     // Plugin Name
-    addAndMakeVisible (pluginNameLabel = new Label ("Plugin Name Label", processor.getWrapper().getWrappedPluginInfoString()));
+    addAndMakeVisible (pluginNameLabel = new Label ("Plugin Name Label", processor.getWrapper().getWrappedPluginName()));
     pluginNameLabel->setFont (PLUME::font::plumeFont.withHeight (PLUME::font::HEADER_LABEL_FONT_H));
     pluginNameLabel->setJustificationType (Justification::centred);
     pluginNameLabel->setEditable (false, false, false);
     pluginNameLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
-    pluginNameLabel->setColour (Label::textColourId, PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText));
+    pluginNameLabel->setColour (Label::textColourId, getPlumeColour (headerText));
     pluginNameLabel->addMouseListener (this, false);
     
     // Preset Name
@@ -33,35 +33,9 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc, Component& newPrst)  : p
     presetNameLabel->setJustificationType (Justification::centred);
     presetNameLabel->setEditable (false, false, false);
     presetNameLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
-    presetNameLabel->setColour (Label::textColourId, PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText));
+    presetNameLabel->setColour (Label::textColourId, getPlumeColour (headerText));
     
-    // Plugin List Button
-    Path arrow;
-    arrow.startNewSubPath (PLUME::UI::MARGIN, 2*PLUME::UI::MARGIN);
-    arrow.lineTo (PLUME::UI::HEADER_HEIGHT/2, PLUME::UI::HEADER_HEIGHT - PLUME::UI::MARGIN);
-    arrow.lineTo (PLUME::UI::HEADER_HEIGHT - PLUME::UI::MARGIN, 2*PLUME::UI::MARGIN);
-    
-    addAndMakeVisible (pluginListButton = new ShapeButton ("Plugin List Button",
-                                                           Colour(0x00000000),
-		                                                   Colour(0x00000000),
-		                                                   Colour(0x00000000)));
-	pluginListButton->setShape (arrow, false, true, false);
-	pluginListButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 2.0f);
-	pluginListButton->addMouseListener (this, false);
-	pluginListButton->addListener (this);
-
-    // Save Preset Button
-    addAndMakeVisible (savePresetButton = new ShapeButton ("Save Preset Button",
-                                                           Colour(0x00000000),
-                                                           Colour(0x00000000),
-                                                           Colour(0x00000000)));
-                                                           //Colour(PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText)),
-                                                           //Colour(PLUME::UI::currentTheme.getColour(PLUME::colour::headerHighlightedText)),
-                                                           //Colour(PLUME::UI::currentTheme.getColour(PLUME::colour::headerStandartText))));
-    savePresetButton->setShape (PLUME::path::createFlatSavePath(), false, true, false);
-    savePresetButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 1.5f);
-    savePresetButton->addMouseListener (this, false);
-    savePresetButton->addListener (this);
+    createButtons();
     
 	// Plugin List menu
     createPluginMenu (KnownPluginList::sortByManufacturer);
@@ -86,7 +60,7 @@ const String HeaderComponent::getInfoString()
 
 void HeaderComponent::update()
 {
-    pluginNameLabel->setText (processor.getWrapper().getWrappedPluginInfoString(), dontSendNotification);
+    pluginNameLabel->setText (processor.getWrapper().getWrappedPluginName(), dontSendNotification);
     presetNameLabel->setText (processor.getPresetHandler().getCurrentPresetName(), dontSendNotification);
     createPluginMenu (KnownPluginList::sortByManufacturer);
 }
@@ -96,52 +70,41 @@ void HeaderComponent::paint (Graphics& g)
 {
     using namespace PLUME::UI;
     
-    g.fillAll (currentTheme.getColour(PLUME::colour::headerBackground));
-    
-    //Gradient for horizontal lines
-    auto grad = ColourGradient::vertical (currentTheme.getColour(PLUME::colour::headerSeparatorTop),
-                                          float(MARGIN), 
-                                          currentTheme.getColour(PLUME::colour::headerSeparatorBottom),
-                                          float(getHeight() - MARGIN));
-    grad.addColour (0.8, currentTheme.getColour(PLUME::colour::headerSeparatorBottom));
-    g.setGradientFill (grad);
-    
-    auto area = getLocalBounds();
+    // Background
+    g.setColour (getPlumeColour (headerBackground));
+    g.fillRoundedRectangle (getLocalBounds().reduced (MARGIN_SMALL).toFloat(), 15.0f);
 
-    // Preset area
-    {
-        auto presetArea = area.removeFromLeft (area.getWidth()/3 + 2*MARGIN);
+    g.setColour (getPlumeColour (presetDisplayBackground));
 
-        // Preset folder drawing
-        Path p = PLUME::path::createFolderPath();
-	    p.scaleToFit (float(presetArea.getX()) + MARGIN, 0.0f, float(getHeight()-2*MARGIN), float(getHeight()), true);
-        g.fillPath (p);
-        presetArea.removeFromLeft (HEADER_HEIGHT);
-    
-        // Save button
-        presetArea.removeFromRight (HEADER_HEIGHT);
+    // Preset Name Area
+    g.fillRoundedRectangle (presetNameLabel->getBounds().reduced (0, 6)
+                                                        .withLeft (leftArrowButton->getX())
+                                                        .withRight (rightArrowButton->getX() +
+                                                                    rightArrowButton->getWidth())
+                                                        .toFloat(),
+                            presetNameLabel->getHeight()/3.0f);
 
-        // Preset label Outline
-        g.drawRoundedRectangle (presetArea.reduced (0, MARGIN).toFloat(), 3, 1);
-    }
+    // Arrow buttons background
+    g.saveState();
+    g.excludeClipRegion (juce::Rectangle<int> (1, getHeight())
+                             .withLeft (leftArrowButton->getBounds().getRight())
+                             .withRight (rightArrowButton->getBounds().getX()));
 
-    // Separator
-    g.drawVerticalLine (area.getX(),
-                        float(MARGIN),
-                        float(getHeight() - MARGIN));
-    
-    // Plugin Area
-    {
-        area.removeFromRight (getHeight()); // space for the plugin list arrow
-    
-        // Plugin piano drawing
-	    Path p = PLUME::path::createPianoPath();
-	    p.scaleToFit (float(area.getX() + MARGIN), 0.0f, float(getHeight()-2*MARGIN), float(getHeight()), true);
-        g.fillPath (p);
-    
-        // Plugin label Outline
-        g.drawRoundedRectangle (area.withLeft (area.getX() + getHeight()).reduced (0, MARGIN).toFloat(), 3, 1);
-    }           
+    g.setColour (getPlumeColour (presetDisplayArrowsBackground));
+    g.fillRoundedRectangle (presetNameLabel->getBounds().reduced (0, 6)
+                                                        .withLeft (leftArrowButton->getX())
+                                                        .withRight (rightArrowButton->getX() +
+                                                                    rightArrowButton->getWidth())
+                                                        .toFloat(),
+                            presetNameLabel->getHeight()/3.0f);
+
+    g.restoreState();
+
+    // Plugin Name Area
+    g.reduceClipRegion (getLocalBounds().withLeft (pluginNameLabel->getX()));
+    g.setColour (getPlumeColour (pluginDisplayBackground));
+
+    g.fillRoundedRectangle (getLocalBounds().reduced (MARGIN_SMALL).toFloat(), 15.0f);
 }
 
 void HeaderComponent::resized()
@@ -150,22 +113,25 @@ void HeaderComponent::resized()
     
     auto area = getLocalBounds();
 
-    // Preset Area
-    {
-        auto presetArea = area.removeFromLeft (area.getWidth()/3 + 2*MARGIN);
-        
-        savePresetButton->setBounds (presetArea.removeFromRight (HEADER_HEIGHT).reduced (0, MARGIN*3/2));
-        presetNameLabel->setBounds (presetArea.withTrimmedLeft (HEADER_HEIGHT)
-                                              .reduced (0, MARGIN));
-    }
-
     // Plugin Area
     {
-        //area.removeFromLeft (MARGIN); // Space before separator
-        pluginListButton->setBounds (area.removeFromRight (getHeight()).reduced (MARGIN*3/2, MARGIN));
+        auto pluginArea = area.removeFromRight (getWidth()/4);
+
+        pluginListButton->setBounds (pluginArea.removeFromRight (getHeight()).reduced (MARGIN));
     
-        pluginNameLabel->setBounds (area.withTrimmedLeft (HEADER_HEIGHT).reduced (0, MARGIN));
+        pluginNameLabel->setBounds (pluginArea.reduced (0, MARGIN_SMALL));
     }
+
+    // Preset Area
+    {
+        auto presetArea = getLocalBounds().withSizeKeepingCentre (250, area.getHeight());
+        
+        leftArrowButton->setBounds (presetArea.removeFromLeft (HEADER_HEIGHT).reduced (MARGIN));
+        rightArrowButton->setBounds (presetArea.removeFromRight (HEADER_HEIGHT).reduced (MARGIN));
+        presetNameLabel->setBounds (presetArea.reduced (0, MARGIN_SMALL));
+        savePresetButton->setBounds (presetArea.removeFromRight (20).reduced (0, MARGIN));
+    }
+
 }
 
 //==============================================================================
@@ -189,18 +155,8 @@ void HeaderComponent::mouseEnter (const MouseEvent &event)
     if (event.eventComponent == pluginNameLabel && processor.getWrapper().isWrapping())
 	{
         pluginNameLabel->setColour (Label::textColourId,
-                                    PLUME::UI::currentTheme.getColour (PLUME::colour::headerHighlightedText));
+                                    getPlumeColour (headerText).withAlpha (0.5f));
 	}
-	
-	else if (event.eventComponent == pluginListButton)
-	{
-        pluginListButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerHighlightedText), 2.0f);
-	}
-
-    if (event.eventComponent == savePresetButton)
-    {
-        savePresetButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerHighlightedText), 1.7f);
-    }
 }
 
 void HeaderComponent::mouseExit (const MouseEvent &event)
@@ -208,34 +164,12 @@ void HeaderComponent::mouseExit (const MouseEvent &event)
     if (event.eventComponent == pluginNameLabel)
 	{
         pluginNameLabel->setColour (Label::textColourId,
-                                    PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText));
+                                    getPlumeColour (headerText));
 	}
-	
-	else if (event.eventComponent == pluginListButton)
-	{
-        pluginListButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 2.0f);
-	}
-
-    if (event.eventComponent == savePresetButton)
-    {
-        savePresetButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 1.7f);
-    }
 }
 
 void HeaderComponent::buttonClicked (Button* bttn) 
 {
-    if (auto* shapeBttn = dynamic_cast<ShapeButton*> (bttn))
-    {
-        if (shapeBttn == pluginListButton)
-        {
-            shapeBttn->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 2.0f);
-        }
-        else if (shapeBttn == savePresetButton)
-        {
-            shapeBttn->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 1.7f);
-        }
-    }
-
     if (bttn == pluginListButton)
     {
         pluginListMenu.showMenuAsync (PopupMenu::Options().withParentComponent (getParentComponent())
@@ -249,10 +183,17 @@ void HeaderComponent::buttonClicked (Button* bttn)
                                                                                      1, 1)),
                                       ModalCallbackFunction::forComponent (pluginMenuCallback, this));
     }
-
-    if (bttn == savePresetButton)
+    else if (bttn == savePresetButton)
     {
         newPresetPanel.setVisible (true);
+    }
+    else if (bttn == leftArrowButton)
+    {
+        setPreviousPreset();
+    }
+    else if (bttn == rightArrowButton)
+    {
+        setNextPreset();
     }
 }
 
@@ -269,7 +210,7 @@ void HeaderComponent::handlePluginChoice (int chosenId)
     if (chosenId == 0)
     {   
         // resets the button colour if no choice was made
-        pluginListButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 2.0f);
+        pluginListButton->setOutline (getPlumeColour (headerText), 2.0f);
     }
     else
     {
@@ -279,7 +220,7 @@ void HeaderComponent::handlePluginChoice (int chosenId)
 
         if (processor.getWrapper().wrapPlugin (chosenId))
         {
-            pluginNameLabel->setText (processor.getWrapper().getWrappedPluginInfoString(), dontSendNotification);
+            pluginNameLabel->setText (processor.getWrapper().getWrappedPluginName(), dontSendNotification);
 
             // Creates the wrapper editor object as a child of the editor
             createPluginWindow();
@@ -294,11 +235,135 @@ void HeaderComponent::createPluginMenu (KnownPluginList::SortMethod sort)
     processor.getWrapper().addPluginsToMenu (pluginListMenu, sort);
 }
 
-
 void HeaderComponent::createPluginWindow()
 {
     if (auto* editor = getParentComponent())
     {
         processor.getWrapper().createWrapperEditor (editor);
+    }
+}
+
+void HeaderComponent::createButtons()
+{
+    // Plugin List Button
+    Path arrowDown;
+    arrowDown.startNewSubPath (PLUME::UI::MARGIN, 2*PLUME::UI::MARGIN);
+    arrowDown.lineTo (PLUME::UI::HEADER_HEIGHT/2, PLUME::UI::HEADER_HEIGHT - PLUME::UI::MARGIN);
+    arrowDown.lineTo (PLUME::UI::HEADER_HEIGHT - PLUME::UI::MARGIN, 2*PLUME::UI::MARGIN);
+    
+    addAndMakeVisible (pluginListButton = new PlumeShapeButton ("Plugin List Button",
+                                                                Colour(0x00000000),
+                                                                getPlumeColour (headerButtonStroke)));
+    pluginListButton->setShape (arrowDown, false, false, false);
+    pluginListButton->addListener (this);
+
+    // Save Preset Button
+    addAndMakeVisible (savePresetButton = new PlumeShapeButton ("Save Preset Button",
+                                                                Colour(0x00000000),
+                                                                getPlumeColour (headerButtonStroke)));
+
+
+    savePresetButton->setShape (PLUME::path::createPath (PLUME::path::floppyDisk), false, true, false);
+    savePresetButton->setPaintMode (PlumeShapeButton::fill);
+    savePresetButton->addListener (this);
+
+    // Preset Change buttons
+    Path arrowLeft;
+    arrowLeft.startNewSubPath (5.0f, 0.0f);
+    arrowLeft.lineTo (0.0f, 5.0f);
+    arrowLeft.lineTo (5.0f, 10.0f);
+
+    Path arrowRight;
+    arrowRight.startNewSubPath (0.0f, 0.0f);
+    arrowRight.lineTo (5.0f, 5.0f);
+    arrowRight.lineTo (0.0f, 10.0f);
+
+    addAndMakeVisible (leftArrowButton = new PlumeShapeButton ("Change Preset Left Button",
+                                                                Colour(0x00000000),
+                                                                getPlumeColour (headerButtonStroke)));
+
+
+    leftArrowButton->setShape (arrowLeft, false, true, false);
+    leftArrowButton->addListener (this);
+
+    addAndMakeVisible (rightArrowButton = new PlumeShapeButton ("Change Preset Right Button",
+                                                                Colour(0x00000000),
+                                                                getPlumeColour (headerButtonStroke)));
+
+
+    rightArrowButton->setShape (arrowRight, false, true, false);
+    rightArrowButton->addListener (this);
+}
+
+void HeaderComponent::setPreviousPreset()
+{
+    setPresetWithOffset (-1);
+}
+
+void HeaderComponent::setNextPreset()
+{
+    setPresetWithOffset (1);
+}
+
+void HeaderComponent::setPresetWithOffset (const int offset)
+{
+    if (offset == 0)
+    {
+        // Does nothing if the offset is 0 or negative...
+        jassertfalse;
+        return;
+    }
+
+    PresetHandler& presetHandler = processor.getPresetHandler();
+
+    // Invalid preset / no current preset / current preset not in search list
+    // Loads first or last preset in list
+    if (presetHandler.getCurrentPresetIdInSearchList() == -1 && presetHandler.getNumSearchedPresets() > 0)
+    {
+        if (offset < 0) prepareGesturePanelAndLoadPreset (presetHandler.getNumSearchedPresets() - 1);
+        else            prepareGesturePanelAndLoadPreset (0);
+    }
+
+    // Valid preset in search list. Loads preset depending on offset
+    else if (presetHandler.getNumSearchedPresets() > std::abs (offset))
+    {
+        int newPresetId = presetHandler.getCurrentPresetIdInSearchList() + offset;
+
+        if (newPresetId >= 0 && newPresetId < presetHandler.getNumSearchedPresets())
+        {
+            prepareGesturePanelAndLoadPreset (newPresetId);
+        }
+    }
+    
+}
+
+
+void HeaderComponent::prepareGesturePanelAndLoadPreset (const int presetId)
+{
+    // Prepares GesturePanel For Preset Change
+    if (GesturePanel* gesturePanel = dynamic_cast<GesturePanel*> ( getParentComponent()
+                                                                       ->findChildWithID("gesturePanel")))
+    {
+        gesturePanel->stopTimer();
+        gesturePanel->removeListenerForAllParameters();
+    }
+
+    // Sets Preset
+
+    // Gets the preset Xml and loads it using the processor
+    if (ScopedPointer<XmlElement> presetXml = processor.getPresetHandler().getPresetXmlToLoad (presetId))
+    {
+        MemoryBlock presetData;
+        AudioProcessor::copyXmlToBinary (*presetXml, presetData);
+
+        processor.getWrapper().removeAllChangeListeners();
+
+        // Calls the plugin's setStateInformation method to load the preset
+        processor.setStateInformation (presetData.getData(), int (presetData.getSize()));
+        presetXml->deleteAllChildElements(); // frees the memory
+    }
+    else // failed to get preset xml somehow
+    {
+        processor.getPresetHandler().resetPreset();
     }
 }

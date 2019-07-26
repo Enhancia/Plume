@@ -34,7 +34,9 @@ Gesture::Gesture (String gestName, int gestType, int gestId, const NormalisableR
 
 Gesture::~Gesture()
 {
+    dispatchPendingMessages();
     removeAllChangeListeners();
+
     clearAllParameters();
 }
 
@@ -345,25 +347,22 @@ String Gesture::getGestureTypeDescription (int gestureType)
 
 Colour Gesture::getHighlightColour() const
 {
-    return getHighlightColour (type);
+	if (isActive()) return getHighlightColour (type);
+
+	return getPlumeColour (mutedHighlight);
 }
 
 Colour Gesture::getHighlightColour (int gestureType)
 {
     switch (gestureType)
     {
-        case (int) Gesture::tilt:
-            return getPlumeColour (tiltHighlight);
-        case (int) Gesture::roll:
-            return getPlumeColour (rollHighlight);
-        case (int) Gesture::wave:
-            return getPlumeColour (waveHighlight);
-        case (int) Gesture::vibrato:
-            return getPlumeColour (vibratoHighlight);
-        case (int) Gesture::pitchBend:
-            return getPlumeColour (pitchBendHighlight);
-        default:
-            return Colour (0xffffffff);
+        case (int) Gesture::tilt:      return getPlumeColour (tiltHighlight);
+        case (int) Gesture::roll:      return getPlumeColour (rollHighlight);
+        case (int) Gesture::wave:      return getPlumeColour (waveHighlight);
+        case (int) Gesture::vibrato:   return getPlumeColour (vibratoHighlight);
+        case (int) Gesture::pitchBend: return getPlumeColour (pitchBendHighlight);
+        
+        default: return Colour (0xffffffff);
     }
 }
 
@@ -420,14 +419,14 @@ void Gesture::replaceParameter (int paramId,
     sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
 }
 
-void Gesture::clearAllParameters()
+void Gesture::clearAllParameters (bool sendNotification)
 {
     TRACE_IN;
     ScopedLock paramlock (parameterArrayLock);
     
 	mapped = false;
     parameterArray.clear();
-    sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
+    if (sendNotification) sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
 }
 
 int Gesture::getNumParameters() const

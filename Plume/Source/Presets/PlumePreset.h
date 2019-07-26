@@ -51,6 +51,7 @@ public:
 	~PlumePreset();
 
 	PlumePreset& operator= (const PlumePreset& other) noexcept;
+	bool operator== (const PlumePreset& other) noexcept;
 	//==============================================================================
 	static String getFilterTypeString (int filterTypeId);
 	static void addPresetInfoXml (XmlElement& presetXml, String author, String version,

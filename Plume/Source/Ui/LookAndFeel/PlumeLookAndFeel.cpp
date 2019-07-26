@@ -39,8 +39,8 @@ void PlumeLookAndFeel::setColours()
     setColour (CaretComponent::caretColourId, Colour (0xffffffff));
 
 	// Slider
-	setColour (Slider::thumbColourId, Colour (UI::currentTheme[colour::PlumeColourID::basePanelGestureHighlightedBackground]));
-	setColour (Slider::trackColourId, Colour (UI::currentTheme[colour::PlumeColourID::basePanelGestureHighlightedBackground]));
+	setColour (Slider::thumbColourId, getPlumeColour (tunerSliderThumb));
+	setColour (Slider::trackColourId, getPlumeColour (tunerSliderBackground));
 	setColour (Slider::backgroundColourId, Colour (0xff101010));
 
 	// TextButton
@@ -74,11 +74,38 @@ Font PlumeLookAndFeel::getComboBoxFont (ComboBox& cb)
 	return PLUME::font::plumeFont.withHeight (jmax (11.0f, jmin (14.0f, (cb.getHeight() * 6.0f) / 10.0f)));
 }
 
+int PlumeLookAndFeel::getDefaultScrollbarWidth()
+{
+    return 8;
+}
+
+void PlumeLookAndFeel::drawScrollbar (Graphics& g, ScrollBar& scrollbar,
+                                      int x, int y,
+                                      int width, int height,
+                                      bool isScrollbarVertical,
+                                      int thumbStartPosition, int thumbSize,
+                                      bool isMouseOver, bool isMouseDown)
+{
+    ignoreUnused (isMouseDown);
+
+    juce::Rectangle<int> thumbBounds;
+
+    if (isScrollbarVertical)
+        thumbBounds = { x + int (std::ceil (width/2.0f)), thumbStartPosition,
+                        int (std::floor (width/2.0f)),     thumbSize };
+    else
+        thumbBounds = { thumbStartPosition, y, thumbSize, height };
+
+    auto c = scrollbar.findColour (ScrollBar::ColourIds::thumbColourId);
+    g.setColour (isMouseOver ? c.brighter (0.25f) : c);
+    g.fillRect (thumbBounds.reduced (1).toFloat());
+}
+
 void PlumeLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int width, int height,
-                                       float sliderPos,
-                                       float minSliderPos,
-                                       float maxSliderPos,
-                                       const Slider::SliderStyle style, Slider& slider)
+                                         float sliderPos,
+                                         float minSliderPos,
+                                         float maxSliderPos,
+                                         const Slider::SliderStyle style, Slider& slider)
 {
     if (slider.isBar())
     {
