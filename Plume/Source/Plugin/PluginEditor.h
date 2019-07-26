@@ -11,15 +11,23 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "Ui/Wrapper/WrapperComponent.h"
-#include "Ui/Presets/PresetComponent.h"
-#include "Ui/Gesture/GesturePanel.h"
+#include "Common/PlumeCommon.h"
 
-//#define TRACE_IN  Logger::writeToLog ("[FNC] Entering function: " + __FUNCTION__);
-//#define TRACE_OUT Logger::writeToLog ("[FNC] Entering function: " + __FUNCTION__);
+#include "Ui/SideBar/SideBarComponent.h"
+#include "Ui/SideBar/PresetComponent.h"
+#include "Ui/SideBar/HideSideBarButton.h"
+#include "Ui/Header/HeaderComponent.h"
+#include "Ui/Gesture/GesturePanel.h"
+#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
+#include "Ui/Top/Options/OptionsPanel.h"
+#include "Ui/Top/NewPreset/NewPresetPanel.h"
+#include "Ui/Top/NewGesture/NewGesturePanel.h"
+
 //==============================================================================
 /**
 */
+
+class PresetComponent;
 
 /**
  *  \class PlumeEditor PluginEditor.h
@@ -30,7 +38,9 @@
  *  interface blocks: wrapper, presets, and gestures.
  */
 class PlumeEditor  : public AudioProcessorEditor,
-                     public ActionListener
+                     public ActionListener,
+                     public Button::Listener,
+                     public ComponentMovementWatcher
 {
 public:
     /**
@@ -53,10 +63,27 @@ public:
      */
     void paint (Graphics& g) override;
     /**
+     * \brief JUCE Components' paintOverChildren method to paint the plugin version.
+     */
+    //void paintOverChildren (Graphics& g) override;
+    /**
      * \brief JUCE Components' resized method.
      */
     void resized() override;
+
+    //==============================================================================
+    void mouseEnter (const MouseEvent &event) override;
+    void mouseExit (const MouseEvent &event) override;
     
+    //==============================================================================
+    void broughtToFront() override;
+    void minimisationStateChanged (bool) override;
+
+    //==============================================================================
+    void componentMovedOrResized (bool wasMoved, bool wasResized) override {}
+    void componentPeerChanged() override;
+    void componentVisibilityChanged() override {}
+
     //==============================================================================
     /**
      * \brief Callback to a change message sent by the processor.
@@ -64,7 +91,9 @@ public:
      * This method is called by the processor when it needs the interface to be fully updated.
      * It calls the method updateFullInterface. sets the right current wrapped plugin, preset and gestures.
      */
-    void actionListenerCallback(const String &message) override;
+    void actionListenerCallback (const String &message) override;
+    
+    void buttonClicked (Button* bttn) override;
     
     //==============================================================================
     PlumeProcessor& getProcessor();
@@ -78,11 +107,35 @@ public:
      */
     void updateFullInterface();
     
+    void setInterfaceUpdates (bool shouldUpdate);
+    
 private:
+    //==============================================================================
     PlumeProcessor& processor; /**< \brief Reference to Plume's processor object */
-    ScopedPointer<WrapperComponent> wrapperComp; /**< \brief Object allowing to choose a plugin to wrap and use with neova */
-    ScopedPointer<PresetComponent> presetComp; /**< \brief Object allowing to save or load presets, in the xml format */
     ScopedPointer<GesturePanel> gesturePanel; /**< \brief Object that handles the different gesture gui objects */
+    ScopedPointer<SideBarComponent> sideBar; /**< \brief Hideable SideBar object that displays the preset list, help, and buttons */
+    ScopedPointer<HeaderComponent> header; /**< \brief Header object that displays the preset, and the wrapping features */
+    ScopedPointer<HideSideBarButton> sideBarButton; /**< \brief Button that hides or shows the sidebar */
+    ScopedPointer<OptionsPanel> optionsPanel;
+    ScopedPointer<NewPresetPanel> newPresetPanel;
+    ScopedPointer<NewGesturePanel> newGesturePanel;
+    
+    
+    //==============================================================================
+    void createSideBarButtonPath(); //TODO mettre dans common avec les autres chemins
+
+    //==============================================================================
+  #if JUCE_WINDOWS
+    HHOOK plumeWindowHook;
+    void registerEditorHWND();
+
+    bool plumeHWNDIsSet = false;
+    HWND instanceHWND = NULL;
+  #endif
+    
+    //==============================================================================
+    PLUME::UI::PlumeLookAndFeel plumeLookAndFeel;
+    ScopedPointer<ResizableCornerComponent> resizableCorner;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeEditor)
 };

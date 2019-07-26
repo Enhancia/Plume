@@ -17,8 +17,13 @@ DataReader::DataReader(): InterprocessConnection (true, 0x6a6d626e)
     // Data initialization
     data = new StringArray (StringArray::fromTokens ("0 0 0 0 0 0 0", " ", String()));
     
-    // Pipe creation
-    createNewPipe (10);
+    #if JUCE_MAC
+        statutPipe = std::make_unique<StatutPipe> ();
+        statutPipe->addChangeListener(this);
+    #else
+        // Pipe creation
+        connectToExistingPipe();
+    #endif
     
     // Label creation
     addAndMakeVisible (connectedLabel = new Label ("connectedLabel", TRANS ("Disconnected")));
@@ -31,6 +36,9 @@ DataReader::~DataReader()
 {
     data = nullptr;
     connectedLabel = nullptr;
+  #if JUCE_MAC
+    statutPipe = nullptr;
+  #endif
 }
 
 //==============================================================================
@@ -44,19 +52,22 @@ void DataReader::resized()
 }
 
 //==============================================================================
-void DataReader::readData(String s)
+bool DataReader::readData (String s)
 {
 	auto strArr = StringArray::fromTokens(s, " ", String());
 
     // Checks for full lines
     if (strArr.size() == DATA_SIZE)
     {
-            // Splits the string into 7 separate ones
-            *data = strArr;
+        // Splits the string into 7 separate ones
+        *data = strArr;
+        return true;
     }
+    
+	return false;
 }
 
-const String DataReader::getRawData(int index)
+const String DataReader::getRawData (int index)
 {
     return (*data)[index];
 }
@@ -79,17 +90,28 @@ bool DataReader::getRawDataAsFloatArray(Array<float>& arrayToFill)
 }
 
 //==============================================================================
-bool DataReader::createNewPipe(int maxNumber)
+bool DataReader::connectToExistingPipe()
 {
-    for (int i=0; i<maxNumber; i++)
-    {
-        if (createPipe ("Serial Data Pipe " + String(i), 0, true) == true)
-        {
-            pipeNumber = i;
-            return true;
-        }
-    }
-    return false;
+	return connectToPipe ("mynamedpipe", -1);
+}
+
+bool DataReader::connectToExistingPipe(int
+                                        #if JUCE_MAC
+                                            nbPipe
+                                        #endif
+                                       )
+{
+    //only happens on MacOS
+  #if JUCE_MAC
+    //get current userID
+    uid_t currentUID;
+    SCDynamicStoreCopyConsoleUser(NULL, &currentUID, NULL);
+
+    //create namedpipe  with currentUID to enable multi user session
+    return connectToPipe("mynamedpipe" + String (currentUID) + String(nbPipe), -1);
+  #elif JUCE_WINDOWS
+	return false;
+  #endif
 }
 
 bool DataReader::isConnected()
@@ -102,6 +124,11 @@ void DataReader::connectionMade()
 {
     connected = true;
     
+    #if JUCE_MAC
+        String test = "Start";
+        sendMessage(MemoryBlock(test.toUTF8(), test.getNumBytesAsUTF8()));
+    #endif
+    
     connectedLabel->setColour (Label::textColourId, Colour (0xaa00ff00));
     connectedLabel->setText (TRANS ("<Connected>" /* : pipe " + String(pipeNumber)*/), dontSendNotification);
 }
@@ -110,15 +137,34 @@ void DataReader::connectionLost()
 {
     connected = false;
     
+    #if JUCE_MAC
+        String test = "Stop";
+        sendMessage(MemoryBlock(test.toUTF8(), test.getNumBytesAsUTF8()));
+    #endif
+    
     connectedLabel->setColour (Label::textColourId, Colour (0xaaff0000));
     connectedLabel->setText (TRANS ("Disconnected"), dontSendNotification);
 }
 
-void DataReader::messageReceived(const MemoryBlock &message)
+void DataReader::messageReceived (const MemoryBlock &message)
 {
     if (connected && message.getSize() != 0)
     {
-        readData(message.toString());
-        sendChangeMessage();
+        if (readData (message.toString()))
+        {
+            sendChangeMessage();
+        }
     }
+}
+
+
+void DataReader::changeListenerCallback (ChangeBroadcaster*)
+{
+    //only happens on MacOS
+  #if JUCE_MAC
+    int nbPipeToConnect = statutPipe->getPipeToConnect();
+    connectToExistingPipe(nbPipeToConnect);
+    statutPipe->disconnect();
+    statutPipe.reset();
+  #endif
 }

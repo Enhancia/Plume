@@ -11,7 +11,9 @@
 #pragma once
 
 #include "../../JuceLibraryCode/JuceHeader.h"
+#include "Common/PlumeCommon.h"
 #include "Wrapper/WrapperProcessor.h"
+
 
 //==============================================================================
 /**
@@ -19,23 +21,41 @@
  *
  *  \brief A desktop window containing the wrapped plugin's GUI.
  */
-class WrapperEditorWindow  : public DocumentWindow
+class WrapperEditorWindow  : public Component
 {
 public:
     //==============================================================================
-    WrapperEditorWindow (WrapperProcessor&);
+	WrapperEditorWindow (WrapperProcessor&, const Component* componentWindowToAttachTo =nullptr);
     ~WrapperEditorWindow();
 
     //==============================================================================
-    void closeButtonPressed() override ;
-    AudioProcessorEditor* createProcessorEditor (AudioProcessor& processor);
+    void paint (Graphics&) override;
+    void resized() override;
+    void childBoundsChanged(Component*) override;
+
+    //==============================================================================
+    void userTriedToCloseWindow() override;
+    /**
+     * \brief Called to indicate that this component's top level window was brought to front by the OS.
+     */
+    void broughtToFront() override;
     
+    //==============================================================================
+
     //==============================================================================
     WrapperProcessor& wrapperProcessor; /**< \brief Reference to the wrapper processor object linked to this editor */
     
 private:
     //==============================================================================
     float getDesktopScaleFactor() const override     { return 1.0f; }
+
+    //==============================================================================
+    AudioProcessorEditor* createProcessorEditor (AudioProcessor& processor);
+    void* findHostHandle();
+
+    SafePointer<AudioProcessorEditor> wrappedUi;
+    void* editorHandle;
+    Component& topLevelPlumeComponent;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WrapperEditorWindow)
 };

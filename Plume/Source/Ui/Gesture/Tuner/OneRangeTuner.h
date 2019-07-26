@@ -12,186 +12,123 @@
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
 #include "Ui/Gesture/Tuner/Tuner.h"
+#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
 
-#define W getWidth()
-#define H getHeight()
-
-class OneRangeTuner:    public Tuner,
-                        private Slider::Listener,
-                        private Label::Listener
+class OneRangeTuner:  public Tuner,
+                      private Slider::Listener,
+                      private Label::Listener,
+                      private Button::Listener
 {
 public:
-    //==============================================================================
-    OneRangeTuner(const float& val, const Range<float>& totRange, Range<float>& paramRange, const Range<float> paramMax,
-                  const String unit = "", bool show = true)
-        :   Tuner (val, totRange, unit, show), parameterRange (paramRange), parameterMax (paramMax)
+    enum TunerStyle
     {
-        createSlider();
-        createLabels();
-    }
+        tilt =0,
+        roll,
+        wave
+    };
 
-    ~OneRangeTuner()
-    {
-		rangeSlider = nullptr;
-		rangeLabelMin = nullptr;
-		rangeLabelMax = nullptr;
-    }
+    //==============================================================================
+    OneRangeTuner(const float& val, NormalisableRange<float> gestureRange,
+                  RangedAudioParameter& rangeL, RangedAudioParameter& rangeH, const Range<float> paramMax,
+                  const String unit = "", TunerStyle style = wave);
+    ~OneRangeTuner();
     
     //==============================================================================
-    void paint (Graphics& g) override
-    {
-		Tuner::paint(g); // Base class paint method
-		
-		// Sets the text style
-        Colour fillColour = Colour (0xffffffff);
-        g.setColour (fillColour);
-        g.setFont (Font (12.0f, Font::plain).withTypefaceStyle ("Regular"));
-        
-        // Writes the "min" text
-        int x = W*3/4,
-            y = 0,
-            width = W/4,
-            height = H/4;
-                
-        String text (TRANS("Min"));
-        g.drawText (text, x, y, width, height,
-                    Justification::centred, true);
-                    
-        // Writes the "max" text
-        y = H/2;
-                
-        text = String (TRANS("Max"));
-        g.drawText (text, x, y, width, height,
-                    Justification::centred, true);
-        
-    }
+    void paint (Graphics& g) override;
+    void resized() override;
+    
+    void updateComponents() override;
+    void updateDisplay() override;
 
-    void resized() override
-    {
-        Tuner::resized(); // Base class resized
-        
-        // Sets bounds and changes the slider and labels position
-        setBounds (Tuner::getBounds());
-        rangeSlider->setBounds (Tuner::sliderPlacement.getStart(), H/3 - 6, Tuner::sliderPlacement.getLength(), 15);
-        rangeLabelMin->setBounds (W*3/4+W/16, H/4, W/8, H/5);
-        rangeLabelMax->setBounds (W*3/4+W/16, H*3/4, W/8, H/5);
-        repaint();
-    }
+    void setColour (const Colour newColour) override;
     
     //==============================================================================
-    void labelTextChanged (Label* lbl) override
-    {
-        // checks that the string is numbers only (and unit)
-        if (lbl->getText().containsOnly ("-0123456789"+valueUnit) == false)
-        {
-            if (lbl == rangeLabelMin)       lbl->setText (String (int (parameterRange.getStart())) + valueUnit, dontSendNotification);
-            else if (lbl == rangeLabelMax)  lbl->setText (String (int (parameterRange.getEnd())) + valueUnit, dontSendNotification);
+    void labelTextChanged (Label* lbl) override;
+    void editorHidden (Label* lbl, TextEditor& ted) override;
+    void sliderValueChanged (Slider* sldr) override;
+    void buttonClicked (Button* bttn) override;
 
-            return;
-        }
-        
-        float val;
-        
-        // Gets the float value of the text 
-        if (valueUnit != "" &&
-            lbl->getText().endsWith(valueUnit)) val = lbl->getText().upToFirstOccurrenceOf(valueUnit, false, false).getFloatValue();
-        else                                    val = lbl->getText().getFloatValue();
-        
-        if (val < parameterMax.getStart())    val = parameterMax.getStart();
-        else if (val > parameterMax.getEnd()) val = parameterMax.getEnd();
-        
-        // Sets slider and labels accordingly
-        if (lbl == rangeLabelMin)
-        {
-            if ( val > parameterRange.getEnd()) val = parameterRange.getEnd();
-            
-            parameterRange.setStart (val);
-            rangeSlider->setMinValue (parameterRange.getStart(), dontSendNotification);
-            lbl->setText (String (int (parameterRange.getStart())) + valueUnit, dontSendNotification);
-        }
-        else if (lbl == rangeLabelMax)
-        {
-            if ( val < parameterRange.getStart()) val = parameterRange.getStart();
-            
-            parameterRange.setEnd (val);
-            rangeSlider->setMaxValue (parameterRange.getEnd(), dontSendNotification);
-            lbl->setText (String (int (parameterRange.getEnd())) + valueUnit, dontSendNotification);
-        }
-    }
-    
-    void sliderValueChanged (Slider* sldr) override
-    {
-        // min value changed
-		if (float (sldr->getMinValue()) != parameterRange.getStart())
-		{
-			parameterRange.setStart (float (sldr->getMinValue()));
-		    rangeLabelMin->setText (String (int (parameterRange.getStart())) + valueUnit, dontSendNotification);
-		}
+    //==============================================================================
+    void mouseDown (const MouseEvent& e) override;
+    void mouseDrag (const MouseEvent& e) override;
+    void mouseUp (const MouseEvent& e) override;
+    MouseCursor getMouseCursor() override;
 
-		// max value changed
-		else if (float (sldr->getMaxValue()) != parameterRange.getEnd())
-		{
-			parameterRange.setEnd (float (sldr->getMaxValue()));
-		    rangeLabelMax->setText (String (int (parameterRange.getEnd())) + valueUnit, dontSendNotification);
-		}
-        
-    }
+    //==============================================================================
+    void setStyle (TunerStyle newStyle);
+    void setAngles (float startAngle, float endAngle);
     
 private:
-    void createSlider()
-    {
-        Tuner::addAndMakeVisible (rangeSlider = new Slider ("Range Slider"));
-        
-        // Slider style
-        rangeSlider->setColour (Slider::thumbColourId, Colour (0xffe6e6e6));
-        rangeSlider->setColour (Slider::trackColourId, Colour (0xffb7b7b7));
-        rangeSlider->setColour (Slider::backgroundColourId, Colour (0xff101010));
-	    rangeSlider->setSliderStyle(Slider::TwoValueHorizontal);
-        rangeSlider->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
-	    
-        // Slider values
-        rangeSlider->setRange (double (parameterMax.getStart()), double (parameterMax.getEnd()), 1.0);
-        rangeSlider->setMinValue (double (parameterRange.getStart()), dontSendNotification);
-        rangeSlider->setMaxValue (double (parameterRange.getEnd()), dontSendNotification);
-        
-        rangeSlider->setBounds (Tuner::sliderPlacement.getStart(), H/3 - 7, Tuner::sliderPlacement.getLength(), 15);
-        rangeSlider->addListener (this);
-    }
-    
-    void createLabels()
-    {
-        Tuner::addAndMakeVisible (rangeLabelMin = new Label ("Min Label", TRANS (String(int(parameterRange.getStart())) + valueUnit)));
-        Tuner::addAndMakeVisible (rangeLabelMax = new Label ("Max Label", TRANS (String(int(parameterRange.getEnd())) + valueUnit)));
-        
-        // LabelMin style
-        rangeLabelMin->setEditable (true, false, false);
-        rangeLabelMin->setFont (Font (13.0f, Font::plain));
-        rangeLabelMin->setColour (Label::textColourId, Colour(0xffffffff));
-        rangeLabelMin->setColour (Label::backgroundColourId, Colour(0xff000000));
-        rangeLabelMin->setJustificationType (Justification::centred);
-        
-        // LabelMax style
-        rangeLabelMax->setEditable (true, false, false);
-        rangeLabelMax->setFont (Font (13.0f, Font::plain));
-        rangeLabelMax->setColour (Label::textColourId, Colour(0xffffffff));
-        rangeLabelMax->setColour (Label::backgroundColourId, Colour(0xff000000));
-        rangeLabelMax->setJustificationType (Justification::centred);
-        
-        // Labels settings
-        rangeLabelMin->setBounds (W*(3/4+1/16), H/4, W/8, H/4);
-        rangeLabelMin->addListener (this);
-        
-        rangeLabelMax->setBounds (W*(3/4+1/16), H*3/4, W/8, H/4);
-        rangeLabelMax->addListener (this);
-    }
+    //==============================================================================
+    void createSliders();
+    void resizeSliders();
+    void createLabels();
+    void createButtons();
+    void resizeButtons();
     
     //==============================================================================
-    Range<float>& parameterRange;
-    const Range<float> parameterMax;
+    void setRangeLow (float value);
+    void setRangeHigh (float value);
     
-    ScopedPointer<Slider> rangeSlider;
+    float getRangeLow();
+    float getRangeHigh();
+
+    //==============================================================================
+    enum DraggableObject
+    {
+        none = -1,
+        lowThumb,
+        highThumb,
+        middleArea
+    };
+
+    double getAngleFromMouseEventRadians (const MouseEvent& e);
+    double getThumbAngleRadians (const DraggableObject thumb);
+
+    DraggableObject getObjectToDrag (const MouseEvent& e);
+    void handleSingleClick (const MouseEvent& e);
+    void handleDoubleClick (const MouseEvent& e);
+
+
+    void drawTunerSliderBackground (Graphics& g);
+    void updateLabelBounds (Label* labelToUpdate);
+
+    float getValueAngle();
+    void drawValueCursor (Graphics& g);
+    void drawLineFromSliderCentre (Graphics&, float angleRadian);
+    void drawThumbsAndToleranceLines (Graphics& g);
+    
+    //==============================================================================
+    const float& value;
+    const NormalisableRange<float> gestureRange;
+
+    //==============================================================================
+    const Range<float> parameterMax;
+    RangedAudioParameter& rangeLow;
+    RangedAudioParameter& rangeHigh;
+    
+    ScopedPointer<Slider> lowSlider;
+    ScopedPointer<Slider> highSlider;
     ScopedPointer<Label> rangeLabelMin;
     ScopedPointer<Label> rangeLabelMax;
+    ScopedPointer<TextButton> minAngleButton;
+    ScopedPointer<TextButton> maxAngleButton;
     
+    //==============================================================================
+    TunerStyle tunerStyle;
+
+    DraggableObject objectBeingDragged = none;
+    float previousCursorAngle = value;
+
+    juce::Rectangle<int> sliderBounds;
+    float sliderRadius;
+    Point<int> sliderCentre;
+    float startAngle;
+    float endAngle;
+
+    //==============================================================================
+    PLUME::UI::OneRangeTunerLookAndFeel oneRangeTunerLookAndFeel;
+
+    //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OneRangeTuner)
 };

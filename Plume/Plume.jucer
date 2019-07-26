@@ -1,18 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" jucerVersion="5.3.1"
-              pluginFormats="buildVST,buildStandalone" version="1.1.1" companyName="Enhancia"
-              buildVST="1" buildVST3="0" buildAU="0" buildAUv3="0" buildRTAS="0"
-              buildAAX="0" enableIAA="0" pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
-              pluginManufacturer="Enhancia" pluginName="Plume" pluginDesc="Enhancia's Plume. Wraps other plugins and provides customizable and mappable gestures to use with Neova."
-              binaryDataNamespace="PlumeData">
+<JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" jucerVersion="5.4.3"
+              pluginFormats="buildAU,buildStandalone,buildVST" version="1.4.0"
+              companyName="Enhancia" buildVST="1" buildVST3="0" buildAU="1"
+              buildAUv3="0" buildRTAS="0" buildAAX="0" enableIAA="0" pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
+              pluginManufacturer="Enhancia" pluginName="Plume" pluginDesc="Enhancia's Plume. Wraps other plugins, provides customizable and mappable gestures to use with Neova."
+              binaryDataNamespace="PlumeData" includeBinaryInJuceHeader="1"
+              id="PjN2uz" pluginManufacturerCode="Enhn" pluginCode="Plum" compilerFlagSchemes="NewScheme">
   <MAINGROUP id="RYgD59" name="Plume">
     <GROUP id="{9375F276-9F56-CF4A-C1B1-D4B5B9CE68B9}" name="Source">
+      <GROUP id="{C4265A58-C7CC-0AD4-EB4C-B191A90D4C34}" name="Plugin">
+        <FILE id="QcTe6y" name="PluginEditor.cpp" compile="1" resource="0"
+              file="Source/Plugin/PluginEditor.cpp"/>
+        <FILE id="bZ5Qdl" name="PluginEditor.h" compile="0" resource="0" file="Source/Plugin/PluginEditor.h"/>
+        <FILE id="qTgVHs" name="PluginProcessor.cpp" compile="1" resource="0"
+              file="Source/Plugin/PluginProcessor.cpp"/>
+        <FILE id="RmlXrO" name="PluginProcessor.h" compile="0" resource="0"
+              file="Source/Plugin/PluginProcessor.h"/>
+      </GROUP>
+      <GROUP id="{AE0F84C5-94EC-13BD-B9DC-2AC22EE3F6D0}" name="Presets">
+        <FILE id="S1sDCS" name="PlumePreset.cpp" compile="1" resource="0" file="Source/Presets/PlumePreset.cpp"/>
+        <FILE id="AwGZm2" name="PlumePreset.h" compile="0" resource="0" file="Source/Presets/PlumePreset.h"/>
+        <FILE id="zJjRDW" name="PresetHandler.cpp" compile="1" resource="0"
+              file="Source/Presets/PresetHandler.cpp"/>
+        <FILE id="nBqgBr" name="PresetHandler.h" compile="0" resource="0" file="Source/Presets/PresetHandler.h"/>
+      </GROUP>
+      <GROUP id="{84727D1E-9E2A-349D-53A5-E2EDB50DAA12}" name="Common">
+        <FILE id="ustxre" name="PlumeColours.cpp" compile="1" resource="0"
+              file="Source/Common/PlumeColours.cpp"/>
+        <FILE id="Ljx0Gf" name="PlumeColours.h" compile="0" resource="0" file="Source/Common/PlumeColours.h"/>
+        <FILE id="jgeTBQ" name="PlumeCommon.cpp" compile="1" resource="0" file="Source/Common/PlumeCommon.cpp"/>
+        <FILE id="aoaZYk" name="PlumeCommon.h" compile="0" resource="0" file="Source/Common/PlumeCommon.h"/>
+      </GROUP>
       <GROUP id="{9B740626-EAB3-638F-41B5-B9DE410DDCF6}" name="DataReader">
         <FILE id="vdUcyM" name="DataReader.cpp" compile="1" resource="0" file="Source/DataReader/DataReader.cpp"/>
         <FILE id="xokgvb" name="DataReader.h" compile="0" resource="0" file="Source/DataReader/DataReader.h"/>
+        <FILE id="tYhzCi" name="StatutPipe.cpp" compile="1" resource="0" file="Source/DataReader/StatutPipe.cpp"/>
+        <FILE id="DA42aZ" name="StatutPipe.h" compile="0" resource="0" file="Source/DataReader/StatutPipe.h"/>
       </GROUP>
       <GROUP id="{D6346BB4-85D0-4DE6-B98D-2B6F2B878441}" name="Gesture">
+        <FILE id="BGrET6" name="Gesture.cpp" compile="1" resource="0" file="Source/Gesture/Gesture.cpp"/>
         <FILE id="BbeSU2" name="Gesture.h" compile="0" resource="0" file="Source/Gesture/Gesture.h"/>
         <FILE id="RWSIt8" name="GestureArray.cpp" compile="1" resource="0"
               file="Source/Gesture/GestureArray.cpp"/>
@@ -28,15 +55,6 @@
         <FILE id="YLjSHt" name="Wave.cpp" compile="0" resource="0" file="Source/Gesture/Wave.cpp"/>
         <FILE id="whCwen" name="Wave.h" compile="0" resource="0" file="Source/Gesture/Wave.h"/>
       </GROUP>
-      <GROUP id="{C4265A58-C7CC-0AD4-EB4C-B191A90D4C34}" name="Plugin">
-        <FILE id="QcTe6y" name="PluginEditor.cpp" compile="1" resource="0"
-              file="Source/Plugin/PluginEditor.cpp"/>
-        <FILE id="bZ5Qdl" name="PluginEditor.h" compile="0" resource="0" file="Source/Plugin/PluginEditor.h"/>
-        <FILE id="qTgVHs" name="PluginProcessor.cpp" compile="1" resource="0"
-              file="Source/Plugin/PluginProcessor.cpp"/>
-        <FILE id="RmlXrO" name="PluginProcessor.h" compile="0" resource="0"
-              file="Source/Plugin/PluginProcessor.h"/>
-      </GROUP>
       <GROUP id="{791186BF-BE9A-5E6E-9781-2AA91843C798}" name="Wrapper">
         <FILE id="js1EYd" name="PluginWrapper.cpp" compile="1" resource="0"
               file="Source/Wrapper/PluginWrapper.cpp"/>
@@ -44,56 +62,201 @@
         <FILE id="yRXN8O" name="WrapperEditor.cpp" compile="1" resource="0"
               file="Source/Wrapper/WrapperEditor.cpp"/>
         <FILE id="j6GR6E" name="WrapperEditor.h" compile="0" resource="0" file="Source/Wrapper/WrapperEditor.h"/>
+        <FILE id="tBWXMJ" name="WrapperEditor.mm" compile="1" resource="0"
+              file="Source/Wrapper/WrapperEditor.mm"/>
         <FILE id="lLQshd" name="WrapperProcessor.cpp" compile="1" resource="0"
               file="Source/Wrapper/WrapperProcessor.cpp"/>
         <FILE id="QOI79a" name="WrapperProcessor.h" compile="0" resource="0"
               file="Source/Wrapper/WrapperProcessor.h"/>
       </GROUP>
       <GROUP id="{EB1FE939-C694-02C5-E97F-E17B6084B07C}" name="Ui">
+        <GROUP id="{4CBB6F8D-0DE8-71C7-60AF-FF1213B7784A}" name="LookAndFeel">
+          <FILE id="zqremJ" name="PlumeLookAndFeel.cpp" compile="1" resource="0"
+                file="Source/Ui/LookAndFeel/PlumeLookAndFeel.cpp"/>
+          <FILE id="OXmlbL" name="PlumeLookAndFeel.h" compile="0" resource="0"
+                file="Source/Ui/LookAndFeel/PlumeLookAndFeel.h"/>
+        </GROUP>
+        <GROUP id="{4CA36361-EB23-BED0-3C51-3F19F9BE9F00}" name="Common">
+          <FILE id="wIBhgr" name="PlumeShapeButton.cpp" compile="1" resource="0"
+                file="Source/Ui/Common/PlumeShapeButton.cpp"/>
+          <FILE id="UpesGY" name="PlumeShapeButton.h" compile="0" resource="0"
+                file="Source/Ui/Common/PlumeShapeButton.h"/>
+          <FILE id="lhj2tX" name="TabbedPanelComponent.cpp" compile="1" resource="0"
+                file="Source/Ui/Common/TabbedPanelComponent.cpp"/>
+          <FILE id="cwIDnw" name="TabbedPanelComponent.h" compile="0" resource="0"
+                file="Source/Ui/Common/TabbedPanelComponent.h"/>
+          <FILE id="G8QEm8" name="PlumeComponent.h" compile="0" resource="0"
+                file="Source/Ui/Common/PlumeComponent.h"/>
+          <FILE id="k8QEEz" name="DualTextToggle.cpp" compile="1" resource="0"
+                file="Source/Ui/Common/DualTextToggle.cpp"/>
+          <FILE id="I8j3HU" name="DualTextToggle.h" compile="0" resource="0"
+                file="Source/Ui/Common/DualTextToggle.h"/>
+          <FILE id="QUY8ep" name="PlumeProgressBar.cpp" compile="1" resource="0"
+                file="Source/Ui/Common/PlumeProgressBar.cpp"/>
+          <FILE id="KjXDjo" name="PlumeProgressBar.h" compile="0" resource="0"
+                file="Source/Ui/Common/PlumeProgressBar.h"/>
+          <FILE id="cZ9UZJ" name="MovingCursor.cpp" compile="1" resource="0"
+                file="Source/Ui/Common/MovingCursor.cpp"/>
+          <FILE id="QhDpZl" name="MovingCursor.h" compile="0" resource="0" file="Source/Ui/Common/MovingCursor.h"/>
+        </GROUP>
+        <GROUP id="{B4604567-1941-DD36-C775-AB9FE7EF3408}" name="Top">
+          <GROUP id="{3B670344-8B9E-60BC-E91B-56E589C27872}" name="NewGesture">
+            <FILE id="ip2Hp8" name="NewGesturePanel.cpp" compile="1" resource="0"
+                  file="Source/Ui/Top/NewGesture/NewGesturePanel.cpp"/>
+            <FILE id="dC7xeE" name="NewGesturePanel.h" compile="0" resource="0"
+                  file="Source/Ui/Top/NewGesture/NewGesturePanel.h"/>
+          </GROUP>
+          <GROUP id="{08D684D7-62B2-F45E-A81F-31AF1CF91736}" name="NewPreset">
+            <FILE id="EGjZhQ" name="NewPresetPanel.cpp" compile="1" resource="0"
+                  file="Source/Ui/Top/NewPreset/NewPresetPanel.cpp"/>
+            <FILE id="uOYCti" name="NewPresetPanel.h" compile="0" resource="0"
+                  file="Source/Ui/Top/NewPreset/NewPresetPanel.h"/>
+          </GROUP>
+          <GROUP id="{FABD1A98-14A0-C209-A3D9-7A2FA878BDDD}" name="Options">
+            <GROUP id="{91FA2D8E-9BD0-9DAC-429F-3F89736CDC5A}" name="SubPanels">
+              <FILE id="HJpsek" name="FileOptionsSubPanel.cpp" compile="1" resource="0"
+                    file="Source/Ui/Top/Options/SubPanels/FileOptionsSubPanel.cpp"/>
+              <FILE id="Fa4HPE" name="FileOptionsSubPanel.h" compile="0" resource="0"
+                    file="Source/Ui/Top/Options/SubPanels/FileOptionsSubPanel.h"/>
+              <FILE id="HlZu8z" name="GeneralOptionsSubPanel.cpp" compile="1" resource="0"
+                    file="Source/Ui/Top/Options/SubPanels/GeneralOptionsSubPanel.cpp"/>
+              <FILE id="PGS8sw" name="GeneralOptionsSubPanel.h" compile="0" resource="0"
+                    file="Source/Ui/Top/Options/SubPanels/GeneralOptionsSubPanel.h"/>
+              <FILE id="VE6GSt" name="SubPanelComponent.cpp" compile="1" resource="0"
+                    file="Source/Ui/Top/Options/SubPanels/SubPanelComponent.cpp"/>
+              <FILE id="AjlIkJ" name="SubPanelComponent.h" compile="0" resource="0"
+                    file="Source/Ui/Top/Options/SubPanels/SubPanelComponent.h"/>
+            </GROUP>
+            <FILE id="BLC4C2" name="OptionsPanel.cpp" compile="1" resource="0"
+                  file="Source/Ui/Top/Options/OptionsPanel.cpp"/>
+            <FILE id="XScjx7" name="OptionsPanel.h" compile="0" resource="0" file="Source/Ui/Top/Options/OptionsPanel.h"/>
+            <FILE id="NnFS37" name="ScannerComponent.cpp" compile="1" resource="0"
+                  file="Source/Ui/Top/Options/ScannerComponent.cpp"/>
+            <FILE id="ylLF43" name="ScannerComponent.h" compile="0" resource="0"
+                  file="Source/Ui/Top/Options/ScannerComponent.h"/>
+          </GROUP>
+        </GROUP>
+        <GROUP id="{ACEA364D-47F4-BE67-B3B0-D0FEC5CE7BA7}" name="Header">
+          <FILE id="hBml6T" name="HeaderComponent.cpp" compile="1" resource="0"
+                file="Source/Ui/Header/HeaderComponent.cpp"/>
+          <FILE id="Z3rHfA" name="HeaderComponent.h" compile="0" resource="0"
+                file="Source/Ui/Header/HeaderComponent.h"/>
+        </GROUP>
+        <GROUP id="{50A59D03-EF8C-6884-6A1F-9905EDBD4B18}" name="SideBar">
+          <FILE id="DV0B4f" name="HideSideBarButton.cpp" compile="1" resource="0"
+                file="Source/Ui/SideBar/HideSideBarButton.cpp"/>
+          <FILE id="DXd2V8" name="HideSideBarButton.h" compile="0" resource="0"
+                file="Source/Ui/SideBar/HideSideBarButton.h"/>
+          <FILE id="CzkUFf" name="SideBarComponent.cpp" compile="1" resource="0"
+                file="Source/Ui/SideBar/SideBarComponent.cpp"/>
+          <FILE id="lr3xWX" name="SideBarComponent.h" compile="0" resource="0"
+                file="Source/Ui/SideBar/SideBarComponent.h"/>
+          <GROUP id="{693F65FB-8648-1EA3-28B9-CF29DBC1C443}" name="Info">
+            <FILE id="NlkNio" name="InfoPanel.cpp" compile="1" resource="0" file="Source/Ui/SideBar/InfoPanel.cpp"/>
+            <FILE id="r6lplr" name="InfoPanel.h" compile="0" resource="0" file="Source/Ui/SideBar/InfoPanel.h"/>
+          </GROUP>
+          <GROUP id="{922E7A2E-047F-B1E6-F663-0CA731B3EF8D}" name="Presets">
+            <FILE id="sfzzO7" name="PresetSearchBar.cpp" compile="1" resource="0"
+                  file="Source/Ui/SideBar/PresetSearchBar.cpp"/>
+            <FILE id="Lr157P" name="PresetSearchBar.h" compile="0" resource="0"
+                  file="Source/Ui/SideBar/PresetSearchBar.h"/>
+            <FILE id="fBUhLf" name="TypeToggleComponent.cpp" compile="1" resource="0"
+                  file="Source/Ui/SideBar/TypeToggleComponent.cpp"/>
+            <FILE id="glyl8Y" name="TypeToggleComponent.h" compile="0" resource="0"
+                  file="Source/Ui/SideBar/TypeToggleComponent.h"/>
+            <FILE id="HqBBQd" name="FilterBox.cpp" compile="1" resource="0" file="Source/Ui/SideBar/FilterBox.cpp"/>
+            <FILE id="Cykhy0" name="FilterBox.h" compile="0" resource="0" file="Source/Ui/SideBar/FilterBox.h"/>
+            <FILE id="qdqEga" name="PresetBox.cpp" compile="1" resource="0" file="Source/Ui/SideBar/PresetBox.cpp"/>
+            <FILE id="vPMU3M" name="PresetBox.h" compile="0" resource="0" file="Source/Ui/SideBar/PresetBox.h"/>
+            <FILE id="VoBRbA" name="PresetComponent.cpp" compile="1" resource="0"
+                  file="Source/Ui/SideBar/PresetComponent.cpp"/>
+            <FILE id="gfzO6n" name="PresetComponent.h" compile="0" resource="0"
+                  file="Source/Ui/SideBar/PresetComponent.h"/>
+          </GROUP>
+        </GROUP>
         <GROUP id="{3CFEC0E3-E11C-6973-B8F6-2519E7B63825}" name="Gesture">
-          <GROUP id="{6AF40B7D-7CAB-7E83-301F-B50F2A1EF68A}" name="Mapper">
-            <FILE id="Y4L9JA" name="MappedParameterComponent.h" compile="0" resource="0"
-                  file="Source/Ui/Gesture/Mapper/MappedParameterComponent.h"/>
-            <FILE id="EvACj5" name="MapperComponent.cpp" compile="1" resource="0"
-                  file="Source/Ui/Gesture/Mapper/MapperComponent.cpp"/>
-            <FILE id="zvBlwR" name="MapperComponent.h" compile="0" resource="0"
-                  file="Source/Ui/Gesture/Mapper/MapperComponent.h"/>
-          </GROUP>
-          <GROUP id="{027C4BCF-8809-483D-C6DA-16DDB0E6F69A}" name="Tuner">
-            <FILE id="p4jPAQ" name="GesturesTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/GesturesTuner.h"/>
-            <FILE id="lWYww1" name="OneRangeTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/OneRangeTuner.h"/>
-            <FILE id="WeeLEA" name="SymmetricalTuner.h" compile="0" resource="0"
-                  file="Source/Ui/Gesture/Tuner/SymmetricalTuner.h"/>
-            <FILE id="M4nvbi" name="Tuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/Tuner.h"/>
-            <FILE id="ZmZmBe" name="TwoRangeTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/TwoRangeTuner.h"/>
-          </GROUP>
           <FILE id="tb4LAs" name="GesturePanel.cpp" compile="1" resource="0"
                 file="Source/Ui/Gesture/GesturePanel.cpp"/>
           <FILE id="ZGz1SG" name="GesturePanel.h" compile="0" resource="0" file="Source/Ui/Gesture/GesturePanel.h"/>
-          <GROUP id="{5E507387-603C-6B32-621A-C8B4F8C947FA}" name="LookAndFeel"/>
-        </GROUP>
-        <GROUP id="{5450FD28-5BE9-06D6-902F-232955675D30}" name="Presets">
-          <FILE id="jEnMNo" name="PresetComponent.cpp" compile="1" resource="0"
-                file="Source/Ui/Presets/PresetComponent.cpp"/>
-          <FILE id="m6axr4" name="PresetComponent.h" compile="0" resource="0"
-                file="Source/Ui/Presets/PresetComponent.h"/>
-        </GROUP>
-        <GROUP id="{0D2A9DE8-260D-995D-E894-2CD89C78486D}" name="Wrapper">
-          <FILE id="HpuqnY" name="WrapperComponent.cpp" compile="1" resource="0"
-                file="Source/Ui/Wrapper/WrapperComponent.cpp"/>
-          <FILE id="XEqLHr" name="WrapperComponent.h" compile="0" resource="0"
-                file="Source/Ui/Wrapper/WrapperComponent.h"/>
+          <FILE id="bhSeXc" name="GesturePanelSlots.cpp" compile="1" resource="0"
+                file="Source/Ui/Gesture/GesturePanelSlots.cpp"/>
+          <FILE id="cKZVio" name="GesturePanelSlots.h" compile="0" resource="0"
+                file="Source/Ui/Gesture/GesturePanelSlots.h"/>
+          <FILE id="tIRjc2" name="GestureSettingsComponent.cpp" compile="1" resource="0"
+                file="Source/Ui/Gesture/GestureSettingsComponent.cpp"/>
+          <FILE id="iz3dGi" name="GestureSettingsComponent.h" compile="0" resource="0"
+                file="Source/Ui/Gesture/GestureSettingsComponent.h"/>
+          <GROUP id="{94FA1FB9-480C-C968-3466-0795EE8D84A4}" name="SettingsTabs">
+            <FILE id="FHQ36F" name="DescriptionPanel.cpp" compile="1" resource="0"
+                  file="Source/Ui/Gesture/SettingsTabs/DescriptionPanel.cpp"/>
+            <FILE id="T68x6g" name="DescriptionPanel.h" compile="0" resource="0"
+                  file="Source/Ui/Gesture/SettingsTabs/DescriptionPanel.h"/>
+            <FILE id="zs0DnI" name="MappedParameterComponent.cpp" compile="1" resource="0"
+                  file="Source/Ui/Gesture/SettingsTabs/MappedParameterComponent.cpp"/>
+            <FILE id="YNQxRp" name="MappedParameterComponent.h" compile="0" resource="0"
+                  file="Source/Ui/Gesture/SettingsTabs/MappedParameterComponent.h"/>
+            <FILE id="LcBscD" name="MapperComponent.cpp" compile="1" resource="0"
+                  file="Source/Ui/Gesture/SettingsTabs/MapperComponent.cpp"/>
+            <FILE id="NrssXB" name="MapperComponent.h" compile="0" resource="0"
+                  file="Source/Ui/Gesture/SettingsTabs/MapperComponent.h"/>
+            <FILE id="K8E9DQ" name="MidiModeComponent.cpp" compile="1" resource="0"
+                  file="Source/Ui/Gesture/SettingsTabs/MidiModeComponent.cpp"/>
+            <FILE id="n4LhnU" name="MidiModeComponent.h" compile="0" resource="0"
+                  file="Source/Ui/Gesture/SettingsTabs/MidiModeComponent.h"/>
+            <FILE id="ka0SiX" name="RetractableMapAndMidiPanel.cpp" compile="1"
+                  resource="0" file="Source/Ui/Gesture/SettingsTabs/RetractableMapAndMidiPanel.cpp"/>
+            <FILE id="m0o7BP" name="RetractableMapAndMidiPanel.h" compile="0" resource="0"
+                  file="Source/Ui/Gesture/SettingsTabs/RetractableMapAndMidiPanel.h"/>
+          </GROUP>
+          <GROUP id="{027C4BCF-8809-483D-C6DA-16DDB0E6F69A}" name="Tuner">
+            <FILE id="ZZPCLJ" name="VibratoTuner.cpp" compile="1" resource="0"
+                  file="Source/Ui/Gesture/Tuner/VibratoTuner.cpp"/>
+            <FILE id="REZ9Li" name="VibratoTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/VibratoTuner.h"/>
+            <FILE id="M4nvbi" name="Tuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/Tuner.h"/>
+            <FILE id="Cp1JGI" name="OneRangeTuner.cpp" compile="1" resource="0"
+                  file="Source/Ui/Gesture/Tuner/OneRangeTuner.cpp"/>
+            <FILE id="lWYww1" name="OneRangeTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/OneRangeTuner.h"/>
+            <FILE id="y1OJNc" name="TwoRangeTuner.cpp" compile="1" resource="0"
+                  file="Source/Ui/Gesture/Tuner/TwoRangeTuner.cpp"/>
+            <FILE id="ZmZmBe" name="TwoRangeTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/TwoRangeTuner.h"/>
+            <FILE id="p4jPAQ" name="GesturesTuner.h" compile="0" resource="0" file="Source/Ui/Gesture/Tuner/GesturesTuner.h"/>
+          </GROUP>
         </GROUP>
       </GROUP>
     </GROUP>
     <GROUP id="{546D02F0-3AB6-3299-2C87-A268693EF763}" name="Resources">
-      <GROUP id="{27E3E65B-7279-1B0D-BCF6-0DB2823FEC54}" name="Fonts"/>
+      <GROUP id="{27E3E65B-7279-1B0D-BCF6-0DB2823FEC54}" name="Fonts">
+        <GROUP id="{3CBEDA6E-8DAA-AA08-C57E-2151B2BCA145}" name="Fonts">
+          <GROUP id="{DBB08BE0-CC27-D9EE-B08F-754CFE8C4EDA}" name="HalisGR">
+            <FILE id="Dh7jMR" name="Ahmet Altun - HalisGR-Bold.otf" compile="0"
+                  resource="1" file="Resources/Fonts/HalisGR/Ahmet Altun - HalisGR-Bold.otf"/>
+            <FILE id="IAHQze" name="Ahmet Altun - HalisGR-Book.otf" compile="0"
+                  resource="1" file="Resources/Fonts/HalisGR/Ahmet Altun - HalisGR-Book.otf"/>
+            <FILE id="eumggr" name="Ahmet Altun - HalisGR-Light.otf" compile="0"
+                  resource="1" file="Resources/Fonts/HalisGR/Ahmet Altun - HalisGR-Light.otf"/>
+            <FILE id="x8Nw1y" name="Ahmet Altun - HalisGR-Medium.otf" compile="0"
+                  resource="1" file="Resources/Fonts/HalisGR/Ahmet Altun - HalisGR-Medium.otf"/>
+            <FILE id="DLgAOM" name="Ahmet Altun - HalisGR-Regular.otf" compile="0"
+                  resource="1" file="Resources/Fonts/HalisGR/Ahmet Altun - HalisGR-Regular.otf"/>
+          </GROUP>
+        </GROUP>
+      </GROUP>
       <GROUP id="{C68567B8-DFE3-8FC9-B013-03678584A057}" name="Images">
-        <GROUP id="{3FD5E2A0-1ED1-28E0-6BB9-5FF273A9EF0B}" name="Backgrounds"/>
+        <GROUP id="{3FD5E2A0-1ED1-28E0-6BB9-5FF273A9EF0B}" name="Backgrounds">
+          <FILE id="esWm6n" name="gesturesBackground.jpg" compile="0" resource="1"
+                file="Resources/Images/Backgrounds/gesturesBackground.jpg"/>
+          <FILE id="nuFIiw" name="gesturesBackground1.jpeg" compile="0" resource="1"
+                file="Resources/Images/Backgrounds/gesturesBackground1.jpeg"/>
+          <FILE id="ViiXLg" name="gesturesBackground2.jpeg" compile="0" resource="1"
+                file="Resources/Images/Backgrounds/gesturesBackground2.jpeg"/>
+          <FILE id="i6J5N0" name="homePageEnhancia.jpg" compile="0" resource="1"
+                file="Resources/Images/Backgrounds/homePageEnhancia.jpg"/>
+        </GROUP>
         <GROUP id="{20DFADED-00CA-0C8D-0252-C1692DB76059}" name="Gestures">
           <FILE id="imHDAT" name="Close.png" compile="0" resource="1" file="Resources/Images/Gestures/Close.png"/>
           <FILE id="CXrCc0" name="OnOff.png" compile="0" resource="1" file="Resources/Images/Gestures/OnOff.png"/>
           <FILE id="OyT0Q1" name="pitchBend.png" compile="0" resource="1" file="Resources/Images/Gestures/pitchBend.png"/>
+          <FILE id="CcJ0Sl" name="reverse.png" compile="0" resource="1" file="Resources/Images/Gestures/reverse.png"/>
           <FILE id="crL2PT" name="roll.png" compile="0" resource="1" file="Resources/Images/Gestures/roll.png"/>
           <FILE id="oFcoGt" name="tilt.png" compile="0" resource="1" file="Resources/Images/Gestures/tilt.png"/>
           <FILE id="iUhiZn" name="vibrato.png" compile="0" resource="1" file="Resources/Images/Gestures/vibrato.png"/>
@@ -111,13 +274,13 @@
     </GROUP>
   </MAINGROUP>
   <LIVE_SETTINGS>
-    <WINDOWS/>
+    <WINDOWS buildEnabled="0"/>
   </LIVE_SETTINGS>
   <EXPORTFORMATS>
-    <VS2017 targetFolder="Builds/VisualStudio2017" bigIcon="YXx8Ce">
+    <VS2017 targetFolder="Builds/VisualStudio2017" bigIcon="YXx8Ce" smallIcon="YXx8Ce">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="0" name="Release" headerPath="D:\Workspace\GitWorkspace\Plume\Plume\Source"/>
-        <CONFIGURATION isDebug="1" name="Debug" headerPath="D:\Workspace\GitWorkspace\Plume\Plume\Source"/>
+        <CONFIGURATION isDebug="0" name="Release" headerPath="C:\Users\Enhancia Dev\Documents\Dev\Git_Workspace\Plume\Plume\Source"/>
+        <CONFIGURATION isDebug="1" name="Debug" headerPath="C:\Users\Enhancia Dev\Documents\Dev\Git_Workspace\Plume\Plume\Source"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../../../Programmes/JUCE/modules"/>
@@ -137,7 +300,8 @@
         <MODULEPATH id="juce_audio_utils" path="../../../../Programmes/JUCE/modules"/>
       </MODULEPATHS>
     </VS2017>
-    <XCODE_MAC targetFolder="Builds/MacOSX">
+    <XCODE_MAC targetFolder="Builds/MacOSX" smallIcon="YXx8Ce" bigIcon="YXx8Ce"
+               extraLinkerFlags="-framework SystemConfiguration">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" headerPath="/Users/macbook/Documents/Dev Plume/Plume/Plume/Source"/>
         <CONFIGURATION isDebug="0" name="Release" headerPath="/Users/macbook/Documents/Dev Plume/Plume/Plume/Source"/>
@@ -162,22 +326,22 @@
     </XCODE_MAC>
   </EXPORTFORMATS>
   <MODULES>
-    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
-            useGlobalPath="0"/>
-    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULE id="juce_cryptography" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULE id="juce_video" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+            useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_cryptography" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_video" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
   </MODULES>
-  <JUCEOPTIONS JUCE_PLUGINHOST_VST="1"/>
+  <JUCEOPTIONS JUCE_PLUGINHOST_VST="1" JUCE_PLUGINHOST_AU="1" JUCE_ENABLE_REPAINT_DEBUGGING="0"/>
 </JUCERPROJECT>

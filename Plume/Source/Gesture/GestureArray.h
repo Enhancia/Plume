@@ -11,7 +11,10 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "Common/PlumeCommon.h"
+
 #include "DataReader/DataReader.h"
+
 #include "Gesture/Gesture.h"
 #include "Gesture/Vibrato.h"
 #include "Gesture/PitchBend.h"
@@ -22,13 +25,14 @@
  *  \class GestureArray GestureArray.h
  *
  *  \brief Class that holds an array of Gesture, with several methods to use them.
+ *  \sa Gesture, GestureArray(), process()
  *
  */
 class GestureArray	: public ChangeListener,
                       public ChangeBroadcaster
 {
 public:
-    GestureArray(DataReader& reader);
+    GestureArray(DataReader& reader, AudioProcessorValueTreeState& params);
     ~GestureArray();
 
     //==============================================================================
@@ -40,7 +44,7 @@ public:
      *  This method is called by the processor processBlock() method to create Neova's effects. It will use
      *  addGestureMidiToBuffer() or updateAllMappedParameters
      */
-    void process (MidiBuffer& MidiMessages);
+    void process (MidiBuffer& MidiMessages, MidiBuffer& plumeBuffer);
     
     /**
      *  \brief Method that creates the Midi for each gesture and adds it to the parameter buffer.
@@ -48,7 +52,7 @@ public:
      *  This method is called by the process() method to create Neova's MIDI. It uses each gesture
      *  Gesture::addGestureMidi() method.
      */
-    void addGestureMidiToBuffer (MidiBuffer& midiMessages);
+    void addGestureMidiToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer);
     
     /**
      *  \brief Method that changes the value of every mapped parameter.
@@ -78,7 +82,7 @@ public:
      *  \param nameToSearch Name of the Gesture to look for.
      *  \return Pointer to the searched Gesture object, or nullptr if not found.
      */
-    Gesture* getGestureByName (const String nameToSearch);
+    Gesture* getGesture (const String nameToSearch);
     
     /**
      *  \brief Getter for a Gesture object, searched using it's id.
@@ -86,10 +90,10 @@ public:
      *  The method will search the array at specified id. If the id is in range, returns a pointer to the Gesture.
      *  If the id is not in range, returns nullptr. You should check the return value after using this method!
      *
-     *  \param nameToSearch Name of the Gesture to look for.
+     *  \param idToSearch Id of the Gesture to look for.
      *  \return Pointer to the searched Gesture object, or nullptr if not found.
      */
-    Gesture* getGestureById(const int idToSearch);
+    Gesture* getGesture (const int idToSearch);
     
     /**
      *  \brief Getter for the array's reference.
@@ -131,7 +135,21 @@ public:
      *  This method will create, add and enable a new Gesture object at the end of the array.
      *  The Gesture will have the specified name and type (chosen with the GestureType enum).
      */
-    void addGesture (String gestureName, int gestureType);
+    void addGesture (String gestureName, int gestureType, int gestureId);
+
+    /**
+     *  \brief Method to remove a gesture from the array
+     *
+     *  This method will remove a Gesture from the array, for the specified id.
+     */
+    void removeGesture (const int gestureId);
+
+    /**
+     *  \brief Method to remove a gesture from the array
+     *
+     *  This method will remove a Gesture from the array, for the specified name.
+     */
+    void removeGesture (const String gestureName);
     
     /**
      *  \brief Method to add a parameter to the gesture in mapMode.
@@ -143,7 +161,7 @@ public:
      *  \brief Method to add a parameter to the gesture in mapMode.
      *
      */
-    void addAndSetParameter (AudioProcessorParameter& param, int gestureId, float start, float end);
+    void addAndSetParameter (AudioProcessorParameter& param, int gestureId, float start, float end, bool rev);
     
     /**
      *  \brief Deletes all gestures in the array.
@@ -166,6 +184,14 @@ public:
      */
     void cancelMapMode();
     
+    //==============================================================================
+    // Methods to move gestures around
+
+    bool isIdAvailable (int idToCheck);
+    void moveGestureToId (int idToMoveFrom, int idToMoveTo);
+    void duplicateGesture (int idToDuplicateFrom, bool prioritizeHigherId = true);
+    void swapGestures (int firstId, int secondId);
+
     //==============================================================================
     // Xml related methods
     
@@ -207,7 +233,7 @@ private:
      *
      *  
      */
-    void addMergedPitchMessage (MidiBuffer& midiMessages);
+    void addMergedPitchMessage (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer);
     
     //==============================================================================
     /**
@@ -217,6 +243,10 @@ private:
      *  Initializes Plume with the default gestures, that eventually will be changeable / renable.
      */
     void initializeGestures();
+
+    void addGestureCopyingOther (Gesture* other, int gestureId, String gestureName = String());
+    int findClosestIdToDuplicate (int idToDuplicateFrom, bool prioritizeHigherId = true);
+    String createDuplicateName (String originalGestureName);
     
     //==============================================================================
     bool shouldMergePitch = false;
@@ -224,4 +254,10 @@ private:
     //==============================================================================
     OwnedArray<Gesture> gestures; /**< \brief OwnedArray that holds all gesture objects*/
     DataReader& dataReader; /**< \brief Reference to the data reader object, to access the raw data from the ring*/
+    AudioProcessorValueTreeState& parameters;
+    
+    CriticalSection gestureArrayLock;
+
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GestureArray)
 };

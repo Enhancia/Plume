@@ -9,8 +9,9 @@
 */
 
 #include "Wave.h"
+using namespace PLUME;
 
-Wave::Wave (String gestName)  : Gesture (gestName, Gesture::wave, Range<float> (-90.0f, 90.0f), 0.0f)
+Wave::Wave (String gestName)  : Gesture (gestName, Gesture::wave, gestId, Range<float> (-90.0f, 90.0f), 0.0f)
 {
 }
 
@@ -19,7 +20,7 @@ Wave::Wave (String gestName)  : Gesture (gestName, Gesture::wave, Range<float> (
 }
     
 //==============================================================================
-void Wave::addGestureMidi (MidiBuffer& midiMessages)
+void Wave::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 {
 }
 

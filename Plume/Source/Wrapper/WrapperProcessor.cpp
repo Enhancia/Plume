@@ -10,16 +10,13 @@
 
 #include "Wrapper/PluginWrapper.h"
 
-
-#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
-
 //==============================================================================
 /*class that wraps a parameter from the plugin, forwarding it's methods to the wrapperProcessor*/
 
 class WrapperProcessor::WrappedParameter :  public AudioProcessorParameter
 {
 public:
-    WrappedParameter(AudioProcessorParameter& wrap)
+    explicit WrappedParameter(AudioProcessorParameter& wrap)
         : wrappedParam(wrap)
     {}
     
@@ -66,6 +63,7 @@ WrapperProcessor::~WrapperProcessor()
     {
         param->removeListener (&getOwnerWrapper());
     }
+	
 }
 
 //==============================================================================

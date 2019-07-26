@@ -12,274 +12,130 @@
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
 #include "Ui/Gesture/Tuner/Tuner.h"
-
-#define W Component::getWidth()
-#define H Component::getHeight()
+#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
 
 class TwoRangeTuner:    public Tuner,
                         private Slider::Listener,
-                        private Label::Listener
+                        private Label::Listener,
+                        private Button::Listener
 {
 public:
     //==============================================================================
-    TwoRangeTuner(const float& val, const Range<float>& totRange,
-                  Range<float>& paramRangeLeft, Range<float>& paramRangeRight, const Range<float> paramMax,
-                  const String unit = "", bool show = true)
-        :   Tuner (val, totRange, unit, show), parameterRangeLeft (paramRangeLeft), parameterRangeRight (paramRangeRight), parameterMax (paramMax)
-    {
-        Component::setBounds (Tuner::getBounds());
-        createSliders();
-        createLabels();
-    }
-
-    ~TwoRangeTuner()
-    {
-		rangeSliderLeft = nullptr;
-		rangeSliderRight = nullptr;
-		rangeLabelMinLeft = nullptr;
-		rangeLabelMaxLeft = nullptr;
-		rangeLabelMinRight = nullptr;
-		rangeLabelMaxRight = nullptr;
-    }
+    TwoRangeTuner(const float& val, const NormalisableRange<float> gestureRange,
+                  RangedAudioParameter& rangeLL, RangedAudioParameter& rangeLH,
+                  RangedAudioParameter& rangeRL, RangedAudioParameter& rangeRH,
+                  const Range<float> paramMax, const String unit = "");
+    ~TwoRangeTuner();
     
     //==============================================================================
-    void paint (Graphics& g) override
-    {
-		Tuner::paint(g); // Base class paint method
-		
-		// Sets the text style
-        Colour fillColour = Colour (0xffffffff);
-        g.setColour (fillColour);
-        g.setFont (Font (12.0f, Font::plain).withTypefaceStyle ("Regular"));
-        
-        // Writes the "left" text
-        int x = W*3/4,
-            y = 0,
-            width = W/4,
-            height = H/4;
-                
-        String text (TRANS("Left"));
-        g.drawText (text, x, y, width, height,
-                    Justification::centred, true);
-                    
-        // Writes the "right" text
-        y = H/2;
-                
-        text = String (TRANS("Right"));
-        g.drawText (text, x, y, width, height,
-                    Justification::centred, true);
-        
-    }
+    void paint (Graphics& g) override;
+    void resized() override;
+    
+    void updateComponents() override;
+    void updateDisplay() override;
 
-    void resized() override
-    {
-        Tuner::resized(); // Base class resized()
-        
-        // Sets bounds and changes the slider and labels position
-        Component::setBounds (Tuner::getBounds());
-        
-        // Sliders
-        rangeSliderLeft->setBounds  (sliderPlacement.getStart(), H/3 - 6,
-                                     sliderPlacement.getLength()/2 + 6, 15);
-                                     
-        rangeSliderRight->setBounds (sliderPlacement.getStart()+sliderPlacement.getLength()/2 - 6, H/3 - 6,
-                                     sliderPlacement.getLength()/2 + 6, 15);
-        
-        // Labels
-        rangeLabelMinLeft->setBounds  (W*3/4+2, H/4, W/8-4, H/5);
-        rangeLabelMaxLeft->setBounds  (W*7/8+2, H/4, W/8-4, H/5);
-        rangeLabelMinRight->setBounds (W*3/4+2, H*3/4, W/8-4, H/5);
-        rangeLabelMaxRight->setBounds (W*7/8+2, H*3/4, W/8-4, H/5);
-        repaint();
-    }
+    void setColour (const Colour newColour) override;
     
     //==============================================================================
-    void labelTextChanged (Label* lbl) override
-    {
-        // checks that the string is numbers only (and unit)
-        if (lbl->getText().containsOnly ("-0123456789"+valueUnit) == false)
-        {
-            if      (lbl == rangeLabelMinLeft)   lbl->setText (String (int (parameterRangeLeft.getStart())) + valueUnit, dontSendNotification);
-            else if (lbl == rangeLabelMaxLeft)   lbl->setText (String (int (parameterRangeLeft.getEnd())) + valueUnit, dontSendNotification);
-            else if (lbl == rangeLabelMinRight)  lbl->setText (String (int (parameterRangeRight.getStart())) + valueUnit, dontSendNotification);
-            else if (lbl == rangeLabelMaxRight)  lbl->setText (String (int (parameterRangeRight.getEnd())) + valueUnit, dontSendNotification);
-
-            return;
-        }
-        
-        float val;
-        
-        // Gets the float value of the text 
-        if (valueUnit != "" &&
-            lbl->getText().endsWith(valueUnit)) val = lbl->getText().upToFirstOccurrenceOf(valueUnit, false, false).getFloatValue();
-        else                                    val = lbl->getText().getFloatValue();
-        
-        if (val < parameterMax.getStart())    val = parameterMax.getStart();
-        else if (val > parameterMax.getEnd()) val = parameterMax.getEnd();
-        
-        // Sets slider and labels accordingly
-        if (lbl == rangeLabelMinLeft)   // Min left
-        {
-            if ( val > parameterRangeLeft.getEnd()) val = parameterRangeLeft.getEnd();
-            
-            parameterRangeLeft.setStart (val);
-            rangeSliderLeft->setMinValue (parameterRangeLeft.getStart(), dontSendNotification);
-            lbl->setText (String (int (parameterRangeLeft.getStart())) + valueUnit, dontSendNotification);
-        }
-        else if (lbl == rangeLabelMaxLeft)  // Max left
-        {
-            if ( val < parameterRangeLeft.getStart()) val = parameterRangeLeft.getStart();
-            else if (val > (parameterMax.getStart() + parameterMax.getEnd())/2) val = (parameterMax.getStart() + parameterMax.getEnd())/2;
-            
-            parameterRangeLeft.setEnd (val);
-            rangeSliderLeft->setMaxValue (parameterRangeLeft.getEnd(), dontSendNotification);
-            lbl->setText (String (int (parameterRangeLeft.getEnd())) + valueUnit, dontSendNotification);
-        }
-        else if (lbl == rangeLabelMinRight)   // Min right
-        {
-            if ( val > parameterRangeRight.getEnd()) val = parameterRangeRight.getEnd();
-            else if (val < (parameterMax.getStart() + parameterMax.getEnd())/2) val = (parameterMax.getStart() + parameterMax.getEnd())/2;
-            
-            parameterRangeRight.setStart (val);
-            rangeSliderRight->setMinValue (parameterRangeRight.getStart(), dontSendNotification);
-            lbl->setText (String (int (parameterRangeRight.getStart())) + valueUnit, dontSendNotification);
-        }
-        else if (lbl == rangeLabelMaxRight)  // Max right
-        {
-            if ( val < parameterRangeRight.getStart()) val = parameterRangeRight.getStart();
-            
-            parameterRangeRight.setEnd (val);
-            rangeSliderRight->setMaxValue (parameterRangeRight.getEnd(), dontSendNotification);
-            lbl->setText (String (int (parameterRangeRight.getEnd())) + valueUnit, dontSendNotification);
-        }
-    }
+    void labelTextChanged (Label* lbl) override;
+    void editorHidden (Label* lbl, TextEditor& ted) override;
+    void sliderValueChanged (Slider* sldr) override;
+    void buttonClicked (Button* bttn) override;
     
-    void sliderValueChanged (Slider* sldr) override
-    {
-        if (sldr == rangeSliderLeft)
-        {
-            // min left value changed
-		    if (float (sldr->getMinValue()) != parameterRangeLeft.getStart())
-		    {
-			    parameterRangeLeft.setStart (float (sldr->getMinValue()));
-		        rangeLabelMinLeft->setText (String (int (parameterRangeLeft.getStart())) + valueUnit, sendNotification);
-		    }
+    //==============================================================================
+    void mouseDown (const MouseEvent& e) override;
+    void mouseDrag (const MouseEvent& e) override;
+    void mouseUp (const MouseEvent& e) override;
+    MouseCursor getMouseCursor() override;
 
-		    // max left value changed
-		    else if (float (sldr->getMaxValue()) != parameterRangeLeft.getEnd())
-		    {
-			    parameterRangeLeft.setEnd (float (sldr->getMaxValue()));
-		        rangeLabelMaxLeft->setText (String (int (parameterRangeLeft.getEnd())) + valueUnit, sendNotification);
-		    }
-        }
-        
-		else if (sldr == rangeSliderRight)
-        {
-		    // min right value changed
-		    if (float (sldr->getMinValue()) != parameterRangeRight.getStart())
-		    {
-			    parameterRangeRight.setStart (float (sldr->getMinValue()));
-		        rangeLabelMinRight->setText (String (int (parameterRangeRight.getStart())) + valueUnit, sendNotification);
-		    }
+    //==============================================================================
+    void setAngles (float startAngle, float endAngle);
 
-		    // max right value changed
-		    else if (float (sldr->getMaxValue()) != parameterRangeRight.getEnd())
-		    {
-			    parameterRangeRight.setEnd (float (sldr->getMaxValue()));
-		        rangeLabelMaxRight->setText (String (int (parameterRangeRight.getEnd())) + valueUnit, sendNotification);
-		    }
-        }
-    }
-    
 private:
-    void createSliders()
-    {
-        Tuner::addAndMakeVisible (rangeSliderLeft = new Slider ("Range Slider Left"));
-		Tuner::addAndMakeVisible (rangeSliderRight = new Slider ("Range Slider Right"));
-        
-        // Slider style
-        //Left
-        rangeSliderLeft->setColour (Slider::thumbColourId, Colour (0xffe6e6e6));
-        rangeSliderLeft->setColour (Slider::trackColourId, Colour (0xffb7b7b7));
-        rangeSliderLeft->setColour (Slider::backgroundColourId, Colour (0xff101010));
-	    rangeSliderLeft->setSliderStyle(Slider::TwoValueHorizontal);
-        rangeSliderLeft->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
-        
-        //Right
-        rangeSliderRight->setColour (Slider::thumbColourId, Colour (0xffe6e6e6));
-        rangeSliderRight->setColour (Slider::trackColourId, Colour (0xffb7b7b7));
-        rangeSliderRight->setColour (Slider::backgroundColourId, Colour (0xff101010));
-	    rangeSliderRight->setSliderStyle(Slider::TwoValueHorizontal);
-        rangeSliderRight->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
-	    
-        // Slider values
-        rangeSliderLeft->setRange (double (parameterMax.getStart()),
-                                   double ((parameterMax.getStart() + parameterMax.getEnd())/2), 1.0);
-        rangeSliderLeft->setMinValue (double (parameterRangeLeft.getStart()), dontSendNotification);
-        rangeSliderLeft->setMaxValue (double (parameterRangeLeft.getEnd()), dontSendNotification);
-        
-        rangeSliderRight->setRange (double ((parameterMax.getStart() + parameterMax.getEnd())/2),
-                                    double (parameterMax.getEnd()), 1.0);
-        rangeSliderRight->setMaxValue (double (parameterRangeRight.getEnd()), dontSendNotification);
-        rangeSliderRight->setMinValue (double (parameterRangeRight.getStart()), dontSendNotification);
-        
-        rangeSliderLeft->addListener (this);
-		rangeSliderRight->addListener(this);
-    }
-    
-    void createLabels()
-    {
-        Tuner::addAndMakeVisible (rangeLabelMinLeft  = new Label ("Min Left Label", TRANS (String(int(parameterRangeLeft.getStart())) + valueUnit)));
-        Tuner::addAndMakeVisible (rangeLabelMaxLeft  = new Label ("Max Left Label", TRANS (String(int(parameterRangeLeft.getEnd())) + valueUnit)));
-        Tuner::addAndMakeVisible (rangeLabelMinRight = new Label ("Min Right Label", TRANS (String(int(parameterRangeRight.getStart())) + valueUnit)));
-        Tuner::addAndMakeVisible (rangeLabelMaxRight = new Label ("Max Right Label", TRANS (String(int(parameterRangeRight.getEnd())) + valueUnit)));
-        
-        // LabelMinLeft style
-        rangeLabelMinLeft->setEditable (true, false, false);
-        rangeLabelMinLeft->setFont (Font (13.0f, Font::plain));
-        rangeLabelMinLeft->setColour (Label::textColourId, Colour(0xffffffff));
-        rangeLabelMinLeft->setColour (Label::backgroundColourId, Colour(0xff000000));
-        rangeLabelMinLeft->setJustificationType (Justification::centred);
-        
-        // LabelMaxLeft style
-        rangeLabelMaxLeft->setEditable (true, false, false);
-        rangeLabelMaxLeft->setFont (Font (13.0f, Font::plain));
-        rangeLabelMaxLeft->setColour (Label::textColourId, Colour(0xffffffff));
-        rangeLabelMaxLeft->setColour (Label::backgroundColourId, Colour(0xff000000));
-        rangeLabelMaxLeft->setJustificationType (Justification::centred);
-        
-        // LabelMinRight style
-        rangeLabelMinRight->setEditable (true, false, false);
-        rangeLabelMinRight->setFont (Font (13.0f, Font::plain));
-        rangeLabelMinRight->setColour (Label::textColourId, Colour(0xffffffff));
-        rangeLabelMinRight->setColour (Label::backgroundColourId, Colour(0xff000000));
-        rangeLabelMinRight->setJustificationType (Justification::centred);
-        
-        // LabelMaxRight style
-        rangeLabelMaxRight->setEditable (true, false, false);
-        rangeLabelMaxRight->setFont (Font (13.0f, Font::plain));
-        rangeLabelMaxRight->setColour (Label::textColourId, Colour(0xffffffff));
-        rangeLabelMaxRight->setColour (Label::backgroundColourId, Colour(0xff000000));
-        rangeLabelMaxRight->setJustificationType (Justification::centred);
-        
-        // Labels settings
-        rangeLabelMinLeft->addListener (this);
-        rangeLabelMaxLeft->addListener (this);
-        rangeLabelMinRight->addListener (this);
-        rangeLabelMaxRight->addListener (this);
-    }
+    //==============================================================================
+    void createSliders();
+    void resizeSliders();
+    void createLabels();
+    void createButtons();
+    void resizeButtons();
     
     //==============================================================================
-    Range<float>& parameterRangeLeft;
-    Range<float>& parameterRangeRight;
+    void setRangeLeftLow (float value);
+    void setRangeLeftHigh (float value);
+    void setRangeRightLow (float value);
+    void setRangeRightHigh (float value);
+    
+    float getRangeLeftLow();
+    float getRangeLeftHigh();
+    float getRangeRightLow();
+    float getRangeRightHigh();
+    
+    //==============================================================================
+    enum DraggableObject
+    {
+        none = -1,
+        leftLowThumb,
+        leftHighThumb,
+        rightLowThumb,
+        rightHighThumb,
+        middleAreaLeft,
+        middleAreaRight
+    };
+
+    double getAngleFromMouseEventRadians (const MouseEvent& e);
+    double getThumbAngleRadians (const DraggableObject thumb);
+
+    DraggableObject getObjectToDrag (const MouseEvent& e);
+    void handleSingleClick (const MouseEvent& e);
+    void handleDoubleClick (const MouseEvent& e);
+
+    void drawTunerSliderBackground (Graphics& g);
+    void updateLabelBounds (Label* labelToUpdate);
+
+    float getValueAngle();
+    void drawValueCursor (Graphics& g);
+    void drawLineFromSliderCentre (Graphics& g, float angleRadian);
+    void drawThumbsAndToleranceLines (Graphics& g);
+    
+    //==============================================================================
+    const float& value;
+    const NormalisableRange<float> gestureRange;
+    
+    //==============================================================================
+    RangedAudioParameter& rangeLeftLow;
+    RangedAudioParameter& rangeLeftHigh;
+    RangedAudioParameter& rangeRightLow;
+    RangedAudioParameter& rangeRightHigh;
     const Range<float> parameterMax;
     
-    ScopedPointer<Slider> rangeSliderLeft;
-    ScopedPointer<Slider> rangeSliderRight;
+    //==============================================================================
+    ScopedPointer<Slider> leftLowSlider;
+    ScopedPointer<Slider> leftHighSlider;
+    ScopedPointer<Slider> rightLowSlider;
+    ScopedPointer<Slider> rightHighSlider;
+    
     ScopedPointer<Label> rangeLabelMinLeft;
     ScopedPointer<Label> rangeLabelMaxLeft;
     ScopedPointer<Label> rangeLabelMinRight;
     ScopedPointer<Label> rangeLabelMaxRight;
+
+    ScopedPointer<TextButton> minLeftAngleButton;
+    ScopedPointer<TextButton> maxLeftAngleButton;
+    ScopedPointer<TextButton> minRightAngleButton;
+    ScopedPointer<TextButton> maxRightAngleButton;
+    
+    //==============================================================================
+    DraggableObject objectBeingDragged = none;
+    float previousCursorAngle = value;
+
+    juce::Rectangle<int> sliderBounds;
+    float sliderRadius;
+    Point<int> sliderCentre;
+    float startAngle;
+    float endAngle;
+
+    //==============================================================================
+    PLUME::UI::OneRangeTunerLookAndFeel slidersLookAndFeel;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TwoRangeTuner)
 };

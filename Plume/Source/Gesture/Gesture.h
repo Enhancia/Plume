@@ -11,10 +11,7 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#define MAX_PARAMETER 4
-
-#define TRACE_IN  Logger::writeToLog ("[+FNC] Entering: " + String(__FUNCTION__))
-#define TRACE_OUT Logger::writeToLog ("[-FNC]  Leaving: " + String(__FUNCTION__))
+#include "Common/PlumeCommon.h"
 
 /**
  *  \class Gesture Gesture.h
@@ -40,7 +37,21 @@ public:
         tilt,
         wave,
         roll,
-        numGestures
+
+        numGestureTypes
+    };
+    
+    /**
+     *  \enum MidiType
+     *
+     *  \brief Holds the several midi messages that can be sent to the wrapped plugin using midi Mapping.
+     *
+     */
+    enum MidiType
+    {
+        controlChange =1,
+        pitch,
+        afterTouch,
     };
     
      /**
@@ -53,8 +64,14 @@ public:
      */
     struct MappedParameter
     {
-        MappedParameter(AudioProcessorParameter& p, Range<float> pRange)
-            : parameter (p), range(pRange)
+        MappedParameter(AudioProcessorParameter& p, Range<float> pRange, bool rev = false)
+            : parameter (p), range(pRange), reversed (rev)
+        {
+            TRACE_IN;
+        }
+
+        MappedParameter (const MappedParameter& other)
+            : parameter (other.parameter), range(other.range), reversed (other.reversed)
         {
             TRACE_IN;
         }
@@ -66,6 +83,7 @@ public:
         
         AudioProcessorParameter& parameter; /**< \brief Reference to a mapped Parameter from the wrapped Plugin. */
         Range<float> range; /**< \brief Range of values from the parameter that the Gesture controls. */
+        bool reversed; /**< \brief Boolean that tells if the parameter's range should be inverted. */
     };
     
     //==============================================================================
@@ -79,25 +97,15 @@ public:
      *  \param maxRange The maximum values that the gesture's value can take.
      *  \param defaultValue The default value of the gesture's value attribute.
      */
-    Gesture(String gestName, int gestType, Range<float> maxRange,
-            float defaultValue = 0.0f, int defaultCc = 1)	: name (gestName), type (gestType)
-    {
-        TRACE_IN;
-        on = false;
-        mapped = false;
-        midiMap = false;
-        range = maxRange;
-        value = defaultValue;
-        cc = defaultCc;
-    }
+    Gesture (String gestName, int gestType, int gestId, const NormalisableRange<float> maxRange,
+             AudioProcessorValueTreeState& plumeParameters, String gestureDescription = String(),
+             float defaultValue = 0.0f, int defaultCc = 1,
+             Range<float> defaultMidiRange = Range<float> (0.0f, 1.0f));
     
     /**
      *  \brief Destructor.
      */
-    ~Gesture()
-    {
-        clearAllParameters();
-    }
+    ~Gesture();
 
     //==============================================================================
     // virtual getters used by the processor and the editor
@@ -111,7 +119,7 @@ public:
      *
      *  \param midiMessages Reference to a MidiBuffer on which the messages should be added. 
      */
-    virtual void addGestureMidi (MidiBuffer& midiMessages) =0;
+    virtual void addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer) =0;
     
     /**
      *  \brief Method that returns the value that would be used to create a MIDI message.
@@ -125,7 +133,7 @@ public:
     /**
      *  \brief Helper function to write the correct values for the mapped parameters.
      *
-     *  Updates all parameters of this Gesture with their right values. Uses getValueForMappedParameters() to get each value.
+     *  Updates all mapped parameters of this Gesture with their right values. Uses getValueForMappedParameters() to get each value.
      *
      */
     virtual void updateMappedParameters() =0;
@@ -133,26 +141,21 @@ public:
     /**
      *  \brief Method that returns the value for a specific mapped parameter.
      *
-     *  Override this function in derived classes to return a float between whithin the specified range.
+     *  Override this method in derived classes to return a float within the specified range.
      * 
      */
-    virtual float getValueForMappedParameter(Range<float> paramRange) =0;
+    virtual float getValueForMappedParameter (Range<float> paramRange, bool reversed = false) =0;
     
     //==============================================================================
     /**
      *  \brief Method that uses raw data to update the gestures raw value accordingly.
      *
-     *  Override this function in derived classes to update the right variable (or processor parameter), with the right raw value.
+     *  Override this method in derived classes to update the right variable (or processor parameter), with the right raw value.
      *
      *  \param rawData Array of floating point numbers representing Neova pre-processed values. 
      */
     virtual void updateValue (const Array<float> rawData) =0;
     
-    /**
-     *  \brief Adds the gesture settings as parameters to the processor's parameters array.
-     *
-     */
-    virtual void addGestureParameters() {}
     
     //==============================================================================
     // Static Methods to merge messages in a MidiBuffer
@@ -166,291 +169,252 @@ public:
      *
      *  \param midiMessages Reference to a MidiBuffer in which the pitch messages will be changed. 
      */
-    static void addEventAndMergePitchToBuffer (MidiBuffer& midiMessages, int midiValue, int channel/*, int& basePitch*/)
-    {
-        MidiBuffer newBuff;
-        int time;
-        MidiMessage m;
-        
-        for (MidiBuffer::Iterator i (midiMessages); i.getNextEvent (m, time);)
-        {
-            if (m.isPitchWheel()) // checks for pitch wheel events
-            {
-                // Changes the reference to the event's pitch message value
-                //basePitch = m.getPitchWheelValue();
-                
-                // Creates a pitch message with the right value
-                //int newVal = basePitch - 8192 + midiValue;
-                
-                int newVal = m.getPitchWheelValue() - 8192 + midiValue;
-                if (newVal < 0) newVal = 0;
-                else if (newVal > 16383) newVal = 16383;
-                
-                DBG ("OldVal = " << m.getPitchWheelValue() << "| NewVal = " << newVal);
-                
-                m = MidiMessage::pitchWheel (m.getChannel(), newVal);
-            }
-            
-            newBuff.addEvent (m, time);
-        }
-        /*
-        // Computes the right value (uses midi value along with basePitch)
-        midiValue = basePitch - 8192 + midiValue;
-        if (midiValue < 0) midiValue = 0;
-        else if (midiValue > 16383) midiValue = 16383;
-        */
-        
-        // Adds gesture's initial midi message
-        newBuff.addEvent (MidiMessage::pitchWheel (channel, midiValue), 1);
-        
-        midiMessages.swapWith (newBuff);
-    }
+    static void addEventAndMergePitchToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer,
+                                               int midiValue, int channel);
     
     /**
      *  \brief Helper function to prevent concurrent cc (mostly modWheel) MIDI messages in a buffer.
      *
      *  First, the method will add an cc midi event to the buffer at time 1 (for a tilt or any midiMapped gesture).
-     *  Additionnaly, goes through the buffer to change all the "ccValue" messages. This method will change their
+     *  Additionnaly, goes through the buffer to change all the cc messages. This method will change their
      *  values by adding the parameter midiValue.
      *
      *  \param midiMessages Reference to a MidiBuffer in which the modWheel messages will be changed.
      */
-    static void addEventAndMergeCCToBuffer (MidiBuffer& midiMessages, int midiValue, int ccValue, int channel)
-    {
-        MidiBuffer newBuff;
-        int time;
-        MidiMessage m;
-        
-        for (MidiBuffer::Iterator i (midiMessages); i.getNextEvent (m, time);)
-        {
-            if (m.isControllerOfType (ccValue)) // checks if right event
-            {
-                // Creates a cc message with the new value
-                int newVal = m.getControllerValue() + midiValue;
-                if (newVal > 127) newVal = 127;
-                
-                m = MidiMessage::controllerEvent (m.getChannel(), ccValue, newVal);
-            }
-            
-            newBuff.addEvent (m, time);
-        }
-        
-        // Adds gesture's initial cc message
-        newBuff.addEvent (MidiMessage::controllerEvent (channel, ccValue, midiValue), 1);
-        
-        midiMessages.swapWith (newBuff);
-    }
+    static void addEventAndMergeCCToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer,
+                                            int midiValue, int ccValue, int channel);
+    
+    /**
+     *  \brief Helper function to send after touch MIDI messages in a buffer.
+     *
+     *  First, the method will add an channel midi event to the buffer at time 0.296875
+     *  Additionnaly, goes through the buffer to change all the aftertouch/channel pressure messages.
+     *  This method will change their values by adding the parameter midiValue.
+     *
+     *  \param midiMessages Reference to a MidiBuffer in which the modWheel messages will be changed.
+     */
+    static void addEventAndMergeAfterTouchToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer,
+                                                    int midiValue, int channel);
     
     //==============================================================================
-    // Getters to get const references to the value and range of the gesture. Used by the display.
+    // Getter to the midiValue taking the midi mode range into account
+    
+    /**
+     *  \brief Getter to the midi value taking the midiRange parameter into account.
+     */
+    int getRescaledMidiValue();
+    
+    //==============================================================================
+    // Getters and setters to the value and range of the gesture. Used by the display among others.
+    /**
+     *  \brief Getter for a reference to the raw value used by the gesture.
+     */
+    void setGestureValue (float newVal);
+    
+    float getGestureValue() const;
     
     /**
      *  \brief Getter for a reference to the raw value used by the gesture.
      */
-    const float& getValueReference()
-    {
-        return value;
-    }
+    float& getValueReference();
     
     /**
      *  \brief Getter for the range of the raw value.
      */
-    const Range<float>& getRangeReference()
-    {
-        return range;
-    }
+    NormalisableRange<float> getRangeReference();
     
     //==============================================================================
+    // Getters and setters for various parameters
     /**
      *  \brief Setter for the "on" boolean value.
      *
      *  \param shouldBeOn The boolean value to set. 
      */
-    void setActive (bool shouldBeOn)
-    {
-        on = shouldBeOn;
-    }
+    void setActive (bool shouldBeOn);
     
     /**
      *  \brief Setter for the "mapped" boolean value.
      *
      *  \param shouldBeMapped The boolean value to set.
      */
-    void setMapped (bool shouldBeMapped)
-    {
-        mapped = shouldBeMapped;
-    }
+    void setMapped (bool shouldBeMapped);
     
     /**
-     *  \brief Setter for the "midiMap" boolean value.
+     *  \brief Setter for the "midiOnParameterOff" boolean value.
      *
-     *  \param shouldBeMidiMapped The boolean value to set.
+     *  \param shouldBeSendingMidi The boolean value to set. If true the gesture will affect midi.
+                                   If false it will affect parameters.
      */
-    void setMidiMapped (bool shouldBeMidiMapped)
-    {
-        midiMap = shouldBeMidiMapped;
-    }
+    void setGeneratesMidi (bool shouldBeSendingMidi);
     
     /**
      *  \brief Setter for the "cc" integer value.
      *
      *  \param ccValue The integer value to set.
      */
-    void setCc (int ccValue)
-    {
-        cc = ccValue;
-    }
+    void setCc (int ccValue);
     
     /**
      *  \brief Getter for the "cc" integer value.
      *
      *  \returns The cc value used by the gesture.
      */
-    int getCc()
-    {
-        return cc;
-    }
+    int getCc() const;
     
     /**
      *  \brief Getter for the "mapped" boolean value.
      */
-    bool isMapped()
-    {
-        return mapped;
-    }
+    bool isMapped() const;
     
     /**
      *  \brief Getter for the "midiMap" boolean value.
      */
-    bool isMidiMapped()
-    {
-        return midiMap;
-    }
+    bool generatesMidi() const;
+    
+    /**
+     *  \brief Setter for midiLow parameter float value.
+     *
+     *  \param newValue The float value to set.
+     */
+    void setMidiLow (float newValue, bool checkOtherValue = true);
+    
+    /**
+     *  \brief Setter for midiHigh parameter float value.
+     *
+     *  \param newValue The float value to set.
+     */
+    void setMidiHigh (float newValue, bool checkOtherValue = true);
     
     /**
      *  \brief Getter for the "active" boolean value.
      */
-    bool isActive()
-    {
-        return on;
-    }
+    bool isActive() const;
     
     /**
      *  \brief Returns a string corresponding to the gesture's type.
      */
-    String getTypeString()
-    {
-        switch (type)
-        {
-            case Gesture::vibrato:
-                return "vibrato";
-                break;
-                
-            case Gesture::pitchBend:
-                return "pitchBend";
-                break;
-                
-            case Gesture::tilt:
-                return "tilt";
-                break;
-                
-            case Gesture::wave:
-                return "wave";
-                break;
-                
-            case Gesture::roll:
-                return "roll";
-                break;
-            
-            default:
-                return "unknown";
-        }
-    }
+    String getName() const;
+    /**
+     *  \brief Returns a string corresponding to the gesture's type.
+     */
+    void setName (String nameToSet);
     
+    /**
+     *  \brief Returns a string corresponding to the gesture's description.
+     */
+    String getDescription() const;
+    /**
+     *  \brief Returns a string corresponding to the gesture's description.
+     */
+    void setDescription (String descrptionToSet);
+
+    /**
+     *  \brief Returns a string corresponding to the gesture's type.
+     */
+    String getTypeString (bool capitalized = false) const;
+    /**
+     *  \brief Returns a string corresponding to a specified gesture type.
+     */
+    static String getTypeString (int gestureType, bool capitalized = false);
+
+    /**
+       \brief  Returns a string corresponding to the gesture's type.
+
+               Call this method to return the gesture instance's type description.
+               This can be used by the interface to get a description while manipulating
+               a Gesture pointer or reference.
+     */
+    String getGestureTypeDescription() const;
+
+    /**
+       \brief  Returns a string corresponding to a specified gesture type.
+
+               Call this method to return a specific gesture type description.
+               This can be used by the interface to describe a gesture while
+               not manipulating gestures (ie the gesture type selection on the 
+               newGesturePanel)
+     */
+    static String getGestureTypeDescription (int gestureType);
+
+    /**
+       \brief  Returns the highlight colour corresponding to the gesture's type.
+
+               Call this method to return a specific gesture type description.
+               This can be used by the interface to draw the gesture's panels
+     */
+    Colour getHighlightColour() const;
+
+    /**
+       \brief  Returns the highlight colour corresponding to a specified gesture type.
+
+               Call this method to return a specific gesture type colour.
+               This can be used by the interface to draw the gesture's panels.
+     */
+    static Colour getHighlightColour (int gestureType);
+
     /**
      *  \brief Method to know if the gesture currently creates a pitchWheel midi message.
      *
      *  \return true if the gesture creates a PitchWheel message.
      */
-    bool affectsPitch()
-    {
-        if ((type == Gesture::vibrato || type == Gesture::pitchBend) && mapped == false)
-        {
-            return true;
-        }
-        
-        return false;
-    }
+    bool affectsPitch();
     
     //==============================================================================
     // Parameter related methods
     /**
      *  \brief Creates a new MappedParameter.
      */
-    void addParameter (AudioProcessorParameter& param)
-    {
-        TRACE_IN;
-                                        
-        if (parameterArray.size() < MAX_PARAMETER)
-        {
-            parameterArray.add ( new MappedParameter (param, Range<float> (0.0f, 1.0f)));
-            mapped = true;
-        }
-        
-        sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
-    }
+    void addParameter (AudioProcessorParameter& param,
+                       Range<float> r = Range<float> (0.0f, 1.0f), bool rev = false);
     
     /**
      *  \brief Deletes a MappedParameter.
      */
-    void deleteParameter(int paramId)
-    {
-        TRACE_IN;
-        parameterArray.remove (paramId);
-        
-        if (parameterArray.isEmpty()) mapped = false;
-        
-        sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
-    }
+    void deleteParameter(int paramId);
+
+    /**
+     *  \brief Replaces a MappedParameter with a new one.
+     */
+    void replaceParameter (int paramIdToReplace,
+                           AudioProcessorParameter& param,
+                           Range<float> r = Range<float> (0.0f, 1.0f), bool rev = false);
     
     /**
      *  \brief Deletes all MappedParameter in the array.
      */
-    void clearAllParameters()
-    {
-        TRACE_IN;
-        parameterArray.clear();
-        mapped = false;
-        sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
-    }
-    
+    void clearAllParameters (bool sendNotification = true);
+
+    /**
+     *  \brief Getter for the number of mapped parameters.
+     */
+    int getNumParameters() const;
+
     /**
      *  \brief Gets a reference to the parameter array.
      */
-    OwnedArray<MappedParameter>& getParameterArray()
-    {
-        return parameterArray;
-    }
+    OwnedArray<MappedParameter>& getParameterArray();
     
     /**
      *  \brief Checks if a specific parameter is already mapped to the gesture.
      *  
      *  \return True if the parameter is found for this gesture.
      */
-    bool parameterIsMapped (int parameterId)
-    {
-        for (auto* param : parameterArray)
-        {
-            if (param->parameter.getParameterIndex() == parameterId) return true;
-        }
-        
-        return false;
-    }
+    bool parameterIsMapped (int parameterId);
+
+    /**
+     *  \brief Replaces the mapped parameters with another gesture's.
+     */
+    void swapParametersWithOtherGesture (Gesture& other);
     
     //==============================================================================
-    const String name; /**< Specific name of the gesture. By default [gesture_type]_default */
-    const int type; /**< Type of Gesture. Int value from gestureType enum */
-    bool mapModeOn = false; /**< Boolean that indicates if the gesture looks for a new parameter to map */
+    const int type; /**< \brief Type of Gesture. Int value from gestureType enum */
+    const int id; /**< \brief Int that represents the number of the gesture */
+    
+    bool useDefaultMidi = true;
+    bool mapModeOn = false; /**< \brief Boolean that indicates if the gesture looks for a new parameter to map */
+    int midiType = Gesture::controlChange; /**< \brief Integer value that represents the midi type the gesture should provide if it is in midi map mode */
+    RangedAudioParameter& midiHigh; /**< \brief Holds the lower end of the range of values that the midi message should access. Between 0.0 and 1.0*/
+    RangedAudioParameter& midiLow; /**< \brief Holds the higher end of the range of values that the midi message should access. Between 0.0 and 1.0*/
     
 protected:
     //==============================================================================
@@ -462,24 +426,9 @@ protected:
      *
      *  \param minVal Low value of the range
      *  \param maxVal High value of the range
-     *  \param value  Current value inside the range
+     *  \param val  Current value inside the range
      */
-    static int normalizeMidi (float minVal, float maxVal, float value)
-    {
-        if (minVal == maxVal && value == minVal) return 0;
-        
-        int norm;
-        float a, b;
-        
-        a = 127.0f / (maxVal - minVal);
-        b = -a * minVal;
-  
-        norm = (a*value+b);
-        if (norm < 0) norm = 0;
-        if (norm > 127) norm = 127;
-  
-        return (int) norm;
-    }
+    static int normalizeMidi (float val, float minVal, float maxVal, bool is14BitMidi = false);
     
     /**
      *  \brief Helper function to map a floating point value to an int interval.
@@ -489,19 +438,24 @@ protected:
      * 
      *  \param minVal Low value of the range
      *  \param maxVal High value of the range
-     *  \param value  Current value inside the range
+     *  \param val  Current value inside the range
      *  \param minNew low value of the new range
      *  \param maxNew high value of the new range
      */
-    static int map (float value, float minVal, float maxVal, int minNew, int maxNew)
-    {
-        if (minVal == maxVal && value == minVal) return minNew;
+    static int map (float val, float minVal, float maxVal, int minNew, int maxNew);
     
-        if (value < minVal) return minNew;
-        if (value > maxVal) return maxNew;
-    
-        return (minNew + int ((maxNew - minNew)*(value - minVal)/(maxVal-minVal)));
-    }
+    /**
+     *  \brief Helper function to map an integer value to a new interval.
+     *
+     *  Used mostly in midi Mode for custom range midi messages.
+     * 
+     *  \param minVal Low value of the range
+     *  \param maxVal High value of the range
+     *  \param val  Current value inside the range
+     *  \param minNew low value of the new range
+     *  \param maxNew high value of the new range
+     */
+    static int mapInt (int val, int minVal, int maxVal, int minNew, int maxNew);
     
     /**
      *  \brief Helper function to map a floating point value to the specified interval within [0.0f 1.0f].
@@ -510,35 +464,49 @@ protected:
      * 
      *  \param minVal Low value of the range
      *  \param maxVal High value of the range
-     *  \param value  Current value inside the range
+     *  \param val  Current value inside the range
      *  \param paramRange Range used by the parameter
      */
-    static float mapParameter (float value, float minVal, float maxVal, Range<float> paramRange)
-    {
-        // Prevents dividing by 0
-        if (minVal == maxVal && value == minVal) return paramRange.getStart();
-        
-        // Forces the interval to [0.0f 1.0f]
-        if (paramRange.getStart() < 0.0f) paramRange.setStart (0.0f);
-        if (paramRange.getEnd() > 1.0f)   paramRange.setEnd (1.0f);
-        
-        // Checks out of bounds values
-        if (value < minVal) return paramRange.getStart();
-        if (value > maxVal) return paramRange.getEnd();
-        
-        return (paramRange.getStart() + paramRange.getLength()*(value - minVal)/(maxVal - minVal));
-    }
+    static float mapParameter (float val, float minVal, float maxVal,
+                               Range<float> paramRange, bool reversed = false);
+    
+     /**
+     *  \brief Helper function to handle the different MIDI messages that can be sent in midiMap mode.
+     *
+     *  The method will check the current type of MIDI signal the gesture is sending, and will process
+     *  the according midi value depending on that and the midiRange parameter. The method also gets the
+     *  current min and max midi values to handle both 7 bits (midiMax 127) and 14 bits (midiMAx 16383) MIDI messages.
+     *
+     *  \param midiMessages Reference to a MidiBuffer in which to write.
+     *  \param val midi value to fit in the new range.
+     *  \param midiMin minimum of "value"'s range. Pretty much always 0.
+     *  \param midiMin maximum of "value"'s range. Can be 127 or 16383.
+     *  \param channel midi channel.
+     */
+    void addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int channel);
     
     //==============================================================================
-    bool on; /**< \brief Boolean that represents if the gesture is active or not. */
+    String name; /**< \brief Specific name of the gesture. By default it is the gesture type*/
+    String description; /**< \brief User specified description of the gesture. By default it is empty*/
     bool mapped; /**< \brief Boolean that represents if the gesture is mapped or not. */
-    bool midiMap; /**< \brief Boolean that tells if the gesture is currently in midiMap mode */
-    int cc; /**< \brief Integer value that represent the CC used for the gesture in midiMap mode (default 1: modwheel) */
+    int lastMidi = -1; /**< \brief Integer value that represents the midiValue supposedely sent to the previous midiBuffer */
     
     //==============================================================================
-    float value; /**< \brief Parameter that holds the current "raw" value of the gesture. Should be used and updated by subclasses. */
-    Range<float> range; /**< \brief Attribute that holds the maximum range of values that the attribute "value" can take. */
+    float* valueRef; /**< \brief Parameter that holds the current "raw" value of the gesture. Should be used and updated by subclasses. */
+    const NormalisableRange<float> range; /**< \brief Attribute that holds the maximum range of values that the gesture can take. */
 	//int pitchReference = 8192; /**< \brief Base pitch value, that comes from external midi controllers */
-    
+	
+    //==============================================================================
+	RangedAudioParameter& value; /**< \brief Float parameter that holds the gesture's raw value in the [0.0f 1.0f]. Should be normalized using "range". */
+	RangedAudioParameter& on; /**< \brief Boolean parameter that represents if the gesture is active or not] range. */
+	RangedAudioParameter& midiOnParameterOff; /**< \brief Boolean parameter that represents if the gesture is set to midi mode or not. */
+	RangedAudioParameter& cc; /**< \brief Float parameter with an integer value for CC used by the gesture in midiMap mode (default 1: modwheel). */
+    //RangedAudioParameter& midiOnParameterOff;
+	
     OwnedArray<MappedParameter> parameterArray;  /**< \brief Array of all the MappedParameter that the gesture controls. */
+    CriticalSection parameterArrayLock;
+
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Gesture)
+    //JUCE_DECLARE_WEAK_REFERENCEABLE (Gesture)
 };

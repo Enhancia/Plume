@@ -24,19 +24,21 @@
 class Wave : public Gesture
 {
 public:
-    Wave (String gestName);
+    Wave (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
+          String description = "");
     ~Wave();
     
     //==============================================================================
-    void addGestureMidi(MidiBuffer& midiMessages) override;
+    void addGestureMidi(MidiBuffer& midiMessages, MidiBuffer& plumeBuffer) override;
     int getMidiValue () override;
     
     void updateMappedParameters() override;
-    float getValueForMappedParameter(Range<float> paramRange) override;
+    float getValueForMappedParameter (Range<float> paramRange, bool reversed) override;
     
     //==============================================================================
     void updateValue (const Array<float> rawData) override;
-    void addGestureParameters() override;
     
 private:
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Wave)
 };
