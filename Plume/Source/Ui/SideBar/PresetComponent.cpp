@@ -107,8 +107,18 @@ const String PresetComponent::getInfoString()
 
 void PresetComponent::update()
 {
-    presetBox->deselectRow (presetBox->getLastRowSelected());
+    if (processor.getPresetHandler().getCurrentPresetIdInSearchList() != -1)
+    {
+        presetBox->selectRow (processor.getPresetHandler().getCurrentPresetIdInSearchList());
+    }
+    else
+    {
+        presetBox->deselectRow (presetBox->getLastRowSelected());
+    }
+
     presetBox->updateContent();
+
+
     createComboBox();
 }
 

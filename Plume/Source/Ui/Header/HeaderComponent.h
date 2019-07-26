@@ -13,6 +13,7 @@
 #include "../../../JuceLibraryCode/JuceHeader.h"
 #include "Common/PlumeCommon.h"
 #include "Plugin/PluginProcessor.h"
+#include "Ui/Gesture/GesturePanel.h"
 
 //==============================================================================
 /*
@@ -46,9 +47,18 @@ public:
     void createPluginMenu (KnownPluginList::SortMethod sort);
     void createPluginWindow();
 
+    //==============================================================================
+    void setPreviousPreset();
+    void setNextPreset();
+
+
 private:
+    //==============================================================================
 	static void pluginMenuCallback (int result, HeaderComponent* header);
 	void handlePluginChoice (int chosenId);
+    void createButtons();
+    void setPresetWithOffset (const int offset);
+    void prepareGesturePanelAndLoadPreset (const int presetId);
 
     //==============================================================================
     PlumeProcessor& processor;
@@ -57,6 +67,8 @@ private:
     PopupMenu pluginListMenu;
     ScopedPointer<ShapeButton> pluginListButton;
     ScopedPointer<PlumeShapeButton> savePresetButton;
+    ScopedPointer<PlumeShapeButton> leftArrowButton;
+    ScopedPointer<PlumeShapeButton> rightArrowButton;
     ScopedPointer<Label> pluginNameLabel;
     ScopedPointer<Label> presetNameLabel;
     

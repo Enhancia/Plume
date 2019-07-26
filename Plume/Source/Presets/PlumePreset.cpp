@@ -88,6 +88,11 @@ PlumePreset& PlumePreset::operator= (const PlumePreset& other) noexcept
 	return *this;
 }
 
+bool PlumePreset::operator== (const PlumePreset& other) noexcept
+{
+    return (getFile() == other.getFile());
+}
+
 //==============================================================================
 bool PlumePreset::setFile (const File& newFile)
 {

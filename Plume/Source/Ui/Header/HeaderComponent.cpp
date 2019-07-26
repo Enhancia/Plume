@@ -35,27 +35,7 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc, Component& newPrst)  : p
     presetNameLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
     presetNameLabel->setColour (Label::textColourId, getPlumeColour (headerText));
     
-    // Plugin List Button
-    Path arrow;
-    arrow.startNewSubPath (PLUME::UI::MARGIN, 2*PLUME::UI::MARGIN);
-    arrow.lineTo (PLUME::UI::HEADER_HEIGHT/2, PLUME::UI::HEADER_HEIGHT - PLUME::UI::MARGIN);
-    arrow.lineTo (PLUME::UI::HEADER_HEIGHT - PLUME::UI::MARGIN, 2*PLUME::UI::MARGIN);
-    
-    addAndMakeVisible (pluginListButton = new PlumeShapeButton ("Plugin List Button",
-                                                                Colour(0x00000000),
-                                                                getPlumeColour (headerButtonStroke)));
-	pluginListButton->setShape (arrow, false, false, false);
-	pluginListButton->addListener (this);
-
-    // Save Preset Button
-    addAndMakeVisible (savePresetButton = new PlumeShapeButton ("Save Preset Button",
-                                                                Colour(0x00000000),
-                                                                getPlumeColour (headerButtonStroke)));
-
-
-    savePresetButton->setShape (PLUME::path::createPath (PLUME::path::floppyDisk), false, true, false);
-    savePresetButton->setPaintMode (PlumeShapeButton::fill);
-    savePresetButton->addListener (this);
+    createButtons();
     
 	// Plugin List menu
     createPluginMenu (KnownPluginList::sortByManufacturer);
@@ -98,20 +78,33 @@ void HeaderComponent::paint (Graphics& g)
 
     // Preset Name Area
     g.fillRoundedRectangle (presetNameLabel->getBounds().reduced (0, 6)
-                                                        .withLeft (savePresetButton->getX())
+                                                        .withLeft (leftArrowButton->getX())
+                                                        .withRight (rightArrowButton->getX() +
+                                                                    rightArrowButton->getWidth())
                                                         .toFloat(),
                             presetNameLabel->getHeight()/3.0f);
+
+    // Arrow buttons background
+    g.saveState();
+    g.excludeClipRegion (juce::Rectangle<int> (1, getHeight())
+                             .withLeft (leftArrowButton->getBounds().getRight())
+                             .withRight (rightArrowButton->getBounds().getX()));
+
+    g.setColour (getPlumeColour (presetDisplayArrowsBackground));
+    g.fillRoundedRectangle (presetNameLabel->getBounds().reduced (0, 6)
+                                                        .withLeft (leftArrowButton->getX())
+                                                        .withRight (rightArrowButton->getX() +
+                                                                    rightArrowButton->getWidth())
+                                                        .toFloat(),
+                            presetNameLabel->getHeight()/3.0f);
+
+    g.restoreState();
 
     // Plugin Name Area
     g.reduceClipRegion (getLocalBounds().withLeft (pluginNameLabel->getX()));
     g.setColour (getPlumeColour (pluginDisplayBackground));
 
     g.fillRoundedRectangle (getLocalBounds().reduced (MARGIN_SMALL).toFloat(), 15.0f);
-
-    /*
-    g.fillRoundedRectangle (pluginNameLabel->getBounds().reduced (0, 6)
-                                                        .toFloat(),
-                            pluginNameLabel->getHeight()/3.0f);*/
 }
 
 void HeaderComponent::resized()
@@ -131,10 +124,12 @@ void HeaderComponent::resized()
 
     // Preset Area
     {
-        auto presetArea = getLocalBounds().withSizeKeepingCentre (200, area.getHeight());
+        auto presetArea = getLocalBounds().withSizeKeepingCentre (250, area.getHeight());
         
-        savePresetButton->setBounds (presetArea.removeFromLeft (HEADER_HEIGHT).reduced (MARGIN));
+        leftArrowButton->setBounds (presetArea.removeFromLeft (HEADER_HEIGHT).reduced (MARGIN));
+        rightArrowButton->setBounds (presetArea.removeFromRight (HEADER_HEIGHT).reduced (MARGIN));
         presetNameLabel->setBounds (presetArea.reduced (0, MARGIN_SMALL));
+        savePresetButton->setBounds (presetArea.removeFromRight (20).reduced (0, MARGIN));
     }
 
 }
@@ -175,18 +170,6 @@ void HeaderComponent::mouseExit (const MouseEvent &event)
 
 void HeaderComponent::buttonClicked (Button* bttn) 
 {
-    if (auto* shapeBttn = dynamic_cast<ShapeButton*> (bttn))
-    {
-        if (shapeBttn == pluginListButton)
-        {
-            //shapeBttn->setOutline (getPlumeColour (headerText), 2.0f);
-        }
-        else if (shapeBttn == savePresetButton)
-        {
-            //shapeBttn->setOutline (getPlumeColour (headerText), 1.7f);
-        }
-    }
-
     if (bttn == pluginListButton)
     {
         pluginListMenu.showMenuAsync (PopupMenu::Options().withParentComponent (getParentComponent())
@@ -200,10 +183,17 @@ void HeaderComponent::buttonClicked (Button* bttn)
                                                                                      1, 1)),
                                       ModalCallbackFunction::forComponent (pluginMenuCallback, this));
     }
-
-    if (bttn == savePresetButton)
+    else if (bttn == savePresetButton)
     {
         newPresetPanel.setVisible (true);
+    }
+    else if (bttn == leftArrowButton)
+    {
+        setPreviousPreset();
+    }
+    else if (bttn == rightArrowButton)
+    {
+        setNextPreset();
     }
 }
 
@@ -245,11 +235,135 @@ void HeaderComponent::createPluginMenu (KnownPluginList::SortMethod sort)
     processor.getWrapper().addPluginsToMenu (pluginListMenu, sort);
 }
 
-
 void HeaderComponent::createPluginWindow()
 {
     if (auto* editor = getParentComponent())
     {
         processor.getWrapper().createWrapperEditor (editor);
+    }
+}
+
+void HeaderComponent::createButtons()
+{
+    // Plugin List Button
+    Path arrowDown;
+    arrowDown.startNewSubPath (PLUME::UI::MARGIN, 2*PLUME::UI::MARGIN);
+    arrowDown.lineTo (PLUME::UI::HEADER_HEIGHT/2, PLUME::UI::HEADER_HEIGHT - PLUME::UI::MARGIN);
+    arrowDown.lineTo (PLUME::UI::HEADER_HEIGHT - PLUME::UI::MARGIN, 2*PLUME::UI::MARGIN);
+    
+    addAndMakeVisible (pluginListButton = new PlumeShapeButton ("Plugin List Button",
+                                                                Colour(0x00000000),
+                                                                getPlumeColour (headerButtonStroke)));
+    pluginListButton->setShape (arrowDown, false, false, false);
+    pluginListButton->addListener (this);
+
+    // Save Preset Button
+    addAndMakeVisible (savePresetButton = new PlumeShapeButton ("Save Preset Button",
+                                                                Colour(0x00000000),
+                                                                getPlumeColour (headerButtonStroke)));
+
+
+    savePresetButton->setShape (PLUME::path::createPath (PLUME::path::floppyDisk), false, true, false);
+    savePresetButton->setPaintMode (PlumeShapeButton::fill);
+    savePresetButton->addListener (this);
+
+    // Preset Change buttons
+    Path arrowLeft;
+    arrowLeft.startNewSubPath (5.0f, 0.0f);
+    arrowLeft.lineTo (0.0f, 5.0f);
+    arrowLeft.lineTo (5.0f, 10.0f);
+
+    Path arrowRight;
+    arrowRight.startNewSubPath (0.0f, 0.0f);
+    arrowRight.lineTo (5.0f, 5.0f);
+    arrowRight.lineTo (0.0f, 10.0f);
+
+    addAndMakeVisible (leftArrowButton = new PlumeShapeButton ("Change Preset Left Button",
+                                                                Colour(0x00000000),
+                                                                getPlumeColour (headerButtonStroke)));
+
+
+    leftArrowButton->setShape (arrowLeft, false, true, false);
+    leftArrowButton->addListener (this);
+
+    addAndMakeVisible (rightArrowButton = new PlumeShapeButton ("Change Preset Right Button",
+                                                                Colour(0x00000000),
+                                                                getPlumeColour (headerButtonStroke)));
+
+
+    rightArrowButton->setShape (arrowRight, false, true, false);
+    rightArrowButton->addListener (this);
+}
+
+void HeaderComponent::setPreviousPreset()
+{
+    setPresetWithOffset (-1);
+}
+
+void HeaderComponent::setNextPreset()
+{
+    setPresetWithOffset (1);
+}
+
+void HeaderComponent::setPresetWithOffset (const int offset)
+{
+    if (offset == 0)
+    {
+        // Does nothing if the offset is 0 or negative...
+        jassertfalse;
+        return;
+    }
+
+    PresetHandler& presetHandler = processor.getPresetHandler();
+
+    // Invalid preset / no current preset / current preset not in search list
+    // Loads first or last preset in list
+    if (presetHandler.getCurrentPresetIdInSearchList() == -1 && presetHandler.getNumSearchedPresets() > 0)
+    {
+        if (offset < 0) prepareGesturePanelAndLoadPreset (presetHandler.getNumSearchedPresets() - 1);
+        else            prepareGesturePanelAndLoadPreset (0);
+    }
+
+    // Valid preset in search list. Loads preset depending on offset
+    else if (presetHandler.getNumSearchedPresets() > std::abs (offset))
+    {
+        int newPresetId = presetHandler.getCurrentPresetIdInSearchList() + offset;
+
+        if (newPresetId >= 0 && newPresetId < presetHandler.getNumSearchedPresets())
+        {
+            prepareGesturePanelAndLoadPreset (newPresetId);
+        }
+    }
+    
+}
+
+
+void HeaderComponent::prepareGesturePanelAndLoadPreset (const int presetId)
+{
+    // Prepares GesturePanel For Preset Change
+    if (GesturePanel* gesturePanel = dynamic_cast<GesturePanel*> ( getParentComponent()
+                                                                       ->findChildWithID("gesturePanel")))
+    {
+        gesturePanel->stopTimer();
+        gesturePanel->removeListenerForAllParameters();
+    }
+
+    // Sets Preset
+
+    // Gets the preset Xml and loads it using the processor
+    if (ScopedPointer<XmlElement> presetXml = processor.getPresetHandler().getPresetXmlToLoad (presetId))
+    {
+        MemoryBlock presetData;
+        AudioProcessor::copyXmlToBinary (*presetXml, presetData);
+
+        processor.getWrapper().removeAllChangeListeners();
+
+        // Calls the plugin's setStateInformation method to load the preset
+        processor.setStateInformation (presetData.getData(), int (presetData.getSize()));
+        presetXml->deleteAllChildElements(); // frees the memory
+    }
+    else // failed to get preset xml somehow
+    {
+        processor.getPresetHandler().resetPreset();
     }
 }

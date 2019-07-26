@@ -74,6 +74,7 @@ private:
 
     private:
         bool highlighted = false;
+        void drawGesturePath (Graphics& g, juce::Rectangle<int> area);
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GestureTypeSelector)
     };
