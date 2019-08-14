@@ -201,7 +201,7 @@ void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
     suspendProcessing (true);
     
     TRACE_IN;
-    ScopedPointer<XmlElement> wrapperData = getXmlFromBinary (data, sizeInBytes);
+	std::unique_ptr<XmlElement> wrapperData = getXmlFromBinary (data, sizeInBytes);
     
 	if (wrapperData == nullptr)
 	{
@@ -248,7 +248,7 @@ void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
 
 void PlumeProcessor::createGeneralXml(XmlElement& wrapperData)
 {
-    wrapperData.addChildElement (parameters.state.createXml());
+	wrapperData.addChildElement (new XmlElement (*parameters.state.createXml()));
 }
 
 void PlumeProcessor::createPluginXml(XmlElement& wrapperData)
@@ -264,7 +264,7 @@ void PlumeProcessor::createPluginXml(XmlElement& wrapperData)
 	        // Saves the description of current wrapped plugin
 	        PluginDescription pd;
 	        wrapper->fillInPluginDescription (pd);
-	        pluginData->addChildElement (pd.createXml());
+	        pluginData->addChildElement (new XmlElement (*pd.createXml()));
 	    }
 	    
 	    {

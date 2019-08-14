@@ -54,7 +54,7 @@ PluginWrapper::~PluginWrapper()
 //==============================================================================
 bool PluginWrapper::wrapPlugin (PluginDescription& description)
 {
-    auto descToWrap = getDescriptionToWrap (description);
+    ScopedPointer<PluginDescription> descToWrap = getDescriptionToWrap (description);
     
     if (descToWrap == nullptr)
     {
@@ -580,13 +580,13 @@ void PluginWrapper::addPluginsToMenu (PopupMenu& menu, KnownPluginList::SortMeth
 
 PluginDescription* PluginWrapper::getDescriptionToWrap (const PluginDescription& description)
 {   
-    for (auto desc = pluginList->begin(); desc != pluginList->end(); desc++)
+    for (auto& desc : pluginList->getTypes())
     {
-        if ((*desc)->uid == description.uid &&
-			(*desc)->pluginFormatName == description.pluginFormatName &&
-			(*desc)->name == description.name)
+		if (desc.uid == description.uid &&
+			desc.pluginFormatName == description.pluginFormatName &&
+			desc.name == description.name)
         {
-            return *desc;
+            return new PluginDescription (desc);
         }
     }
     
@@ -616,10 +616,10 @@ void PluginWrapper::savePluginListToFile()
     ScopedPointer<XmlElement> listXml = new XmlElement ("PLUME_PLUGINLIST_CONFIG");
     
     // Writes plugin list data into the file
-    listXml->addChildElement (pluginList->createXml());
+    listXml->addChildElement (pluginList->createXml().get());
     
     XmlElement* userDirs = listXml->createNewChildElement ("USER_DIRECTORIES");
-    userDirs->addChildElement (customDirectories.createXml());
+    userDirs->addChildElement (customDirectories.createXml().get());
     
     listXml->writeToFile (scannedPlugins, StringRef());
     listXml->deleteAllChildElements();
@@ -647,7 +647,7 @@ void PluginWrapper::loadPluginListFromFile()
     }
     
     // Recreates plugin List
-	ScopedPointer<XmlElement> listXml = XmlDocument::parse(scannedPlugins);
+	std::unique_ptr<XmlElement> listXml = XmlDocument::parse(scannedPlugins);
 	
 	if (listXml->getChildByName ("USER_DIRECTORIES")) // checks the file for the right XML
     {

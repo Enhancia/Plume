@@ -175,9 +175,9 @@ XmlElement* PresetHandler::getPresetXmlToLoad (int selectedPreset)
 	
 	XmlDocument doc (searchedPresets[selectedPreset]->getFile());
 	    
-	if (XmlElement* elem = doc.getDocumentElement())
+	if (std::unique_ptr<XmlElement> elem = doc.getDocumentElement())
     {
-        return elem;
+        return new XmlElement (*elem);
     }
     else
     {
@@ -279,7 +279,7 @@ bool PresetHandler::renamePreset (String newName, const int id)
     if (searchedPresets[id]->presetType == PlumePreset::userPreset && searchedPresets[id]->getFile().exists())
     {
         File f = searchedPresets[id]->getFile();
-		ScopedPointer<XmlElement> presetXml = XmlDocument::parse(f);
+		std::unique_ptr<XmlElement> presetXml = XmlDocument::parse(f);
 
         if (presetXml != nullptr)
         {
@@ -573,7 +573,7 @@ void PresetHandler::savePresetDirectoryToFile()
         presetDirFile.create();
     }
     
-    ScopedPointer<XmlElement> presetDirXml = userDirValue.createXml();
+	std::unique_ptr<XmlElement> presetDirXml = userDirValue.createXml();
     presetDirXml->writeToFile (presetDirFile, StringRef());
     presetDirXml->deleteAllChildElements();
 }
@@ -594,7 +594,7 @@ void PresetHandler::loadPresetDirectoryFromFile()
   
     if (presetDirFile.exists())
     {
-        ScopedPointer<XmlElement> presetDirXml = XmlDocument::parse (presetDirFile);
+		std::unique_ptr<XmlElement> presetDirXml = XmlDocument::parse (presetDirFile);
         
         if (presetDirXml != nullptr)
         {
