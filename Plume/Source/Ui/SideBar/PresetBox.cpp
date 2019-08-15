@@ -51,7 +51,7 @@ void PresetBox::paint (Graphics& g)
     g.fillRect (getLocalBounds().reduced (1, 0));
 }
 
-void PresetBox::paintOverChildren (Graphics& g)
+void PresetBox::paintOverChildren (Graphics&)
 {
 }
 

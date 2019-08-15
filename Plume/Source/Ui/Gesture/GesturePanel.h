@@ -99,7 +99,7 @@ private:
     OwnedArray<PlumeComponent> gestureSlots;
     ScopedPointer<GestureSettingsComponent> gestureSettings;
     ScopedPointer<PlumeShapeButton> closeButton;
-    DropShadowEffect shadowEffect;
+    //DropShadowEffect shadowEffect;
 
     //==============================================================================
     int selectedGesture = -1;

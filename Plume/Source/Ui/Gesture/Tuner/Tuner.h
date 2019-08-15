@@ -38,7 +38,7 @@ public:
     virtual void update() {}
 
     //==============================================================================
-	virtual void paint(Graphics& g) override {}
+	virtual void paint(Graphics&) override {}
 	virtual void resized() override {}
     
     //==============================================================================

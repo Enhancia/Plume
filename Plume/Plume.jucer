@@ -277,29 +277,6 @@
     <WINDOWS buildEnabled="0"/>
   </LIVE_SETTINGS>
   <EXPORTFORMATS>
-    <VS2017 targetFolder="Builds/VisualStudio2017" bigIcon="YXx8Ce" smallIcon="YXx8Ce">
-      <CONFIGURATIONS>
-        <CONFIGURATION isDebug="0" name="Release" headerPath="D:\Workspace\GitWorkspace\Plume\Plume\Source"/>
-        <CONFIGURATION isDebug="1" name="Debug" headerPath="D:\Workspace\GitWorkspace\Plume\Plume\Source"/>
-      </CONFIGURATIONS>
-      <MODULEPATHS>
-        <MODULEPATH id="juce_core" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_events" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_graphics" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_video" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_opengl" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../../../../Programmes/JUCE/modules"/>
-      </MODULEPATHS>
-    </VS2017>
     <XCODE_MAC targetFolder="Builds/MacOSX" smallIcon="YXx8Ce" bigIcon="YXx8Ce"
                extraLinkerFlags="-framework SystemConfiguration">
       <CONFIGURATIONS>
@@ -324,6 +301,29 @@
         <MODULEPATH id="juce_audio_basics" path="../../../../Programmes/JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
+    <VS2019 targetFolder="Builds/VisualStudio2019" smallIcon="YXx8Ce" bigIcon="YXx8Ce">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" headerPath="D:\Workspace\Dev\Git\Plume\Plume\Source"/>
+        <CONFIGURATION isDebug="0" name="Release" headerPath="D:\Workspace\Dev\Git\Plume\Plume\Source"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_video"/>
+        <MODULEPATH id="juce_opengl"/>
+        <MODULEPATH id="juce_gui_extra"/>
+        <MODULEPATH id="juce_gui_basics"/>
+        <MODULEPATH id="juce_graphics"/>
+        <MODULEPATH id="juce_events"/>
+        <MODULEPATH id="juce_data_structures"/>
+        <MODULEPATH id="juce_cryptography"/>
+        <MODULEPATH id="juce_core"/>
+        <MODULEPATH id="juce_audio_utils"/>
+        <MODULEPATH id="juce_audio_processors"/>
+        <MODULEPATH id="juce_audio_plugin_client"/>
+        <MODULEPATH id="juce_audio_formats"/>
+        <MODULEPATH id="juce_audio_devices"/>
+        <MODULEPATH id="juce_audio_basics"/>
+      </MODULEPATHS>
+    </VS2019>
   </EXPORTFORMATS>
   <MODULES>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>

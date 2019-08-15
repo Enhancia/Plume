@@ -71,7 +71,7 @@ void PresetComponent::paint (Graphics& g)
     g.restoreState();
 }
 
-void PresetComponent::paintOverChildren (Graphics& g)
+void PresetComponent::paintOverChildren (Graphics&)
 {
 }
 

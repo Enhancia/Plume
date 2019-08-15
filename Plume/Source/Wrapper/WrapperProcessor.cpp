@@ -63,7 +63,7 @@ WrapperProcessor::~WrapperProcessor()
     {
         param->removeListener (&getOwnerWrapper());
     }
-	
+	TRACE_OUT;
 }
 
 //==============================================================================

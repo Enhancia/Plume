@@ -71,7 +71,6 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     {
         comp->addMouseListener(this, true);
     }
-	
 
 	PLUME::UI::ANIMATE_UI_FLAG = true;
 
@@ -109,10 +108,10 @@ PlumeEditor::~PlumeEditor()
     resizableCorner = nullptr;
     optionsPanel = nullptr;
     newPresetPanel = nullptr;
+    newGesturePanel = nullptr;
     setLookAndFeel (nullptr);
 
 #if JUCE_WINDOWS
-    //PLUME::globalPointers.removePlumeHWND (static_cast<HWND> (getPeer()->getNativeHandle()));
 	jassert (UnhookWindowsHookEx (plumeWindowHook) != 0);
 #endif
 }

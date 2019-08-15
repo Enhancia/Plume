@@ -187,6 +187,7 @@ private:
     void initializeParameters();
     void initializeValueTree();
     void initializeSettings();
+    void removeLogger();
     
     //==============================================================================
     ScopedPointer<FileLogger> plumeLogger; /**< \brief Logger object. Allows to write logs for testing purposes. */
@@ -200,5 +201,6 @@ private:
     AudioProcessorValueTreeState parameters;
     
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeProcessor)
+    //JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeProcessor)
+    JUCE_HEAVYWEIGHT_LEAK_DETECTOR (PlumeProcessor)
 };

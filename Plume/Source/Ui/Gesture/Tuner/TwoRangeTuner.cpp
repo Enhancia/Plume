@@ -241,7 +241,7 @@ void TwoRangeTuner::sliderValueChanged (Slider* sldr)
         // Illegal attempt to get left range over right range
         if (sldr->getValue() > rightLowSlider->getValue())
         {
-            setRangeLeftLow (rightLowSlider->getValue());
+            setRangeLeftLow (float (rightLowSlider->getValue()));
             sldr->setValue (double (rightLowSlider->getValue()), dontSendNotification);
             updateLabelBounds (rangeLabelMinLeft);
             rangeLabelMinLeft->setText (String (int (getRangeLeftHigh())) + valueUnit, dontSendNotification);
@@ -271,7 +271,7 @@ void TwoRangeTuner::sliderValueChanged (Slider* sldr)
         // Illegal attempt to get left range over right range
         if (leftHighSlider->getValue() > rightLowSlider->getValue())
         {
-            setRangeLeftHigh (rightLowSlider->getValue());
+            setRangeLeftHigh (float(rightLowSlider->getValue()));
             sldr->setValue (double (rightLowSlider->getValue()), dontSendNotification);
             updateLabelBounds (rangeLabelMaxLeft);
             rangeLabelMaxLeft->setText (String (int (getRangeLeftHigh())) + valueUnit, dontSendNotification);
@@ -299,7 +299,7 @@ void TwoRangeTuner::sliderValueChanged (Slider* sldr)
         // Illegal attempt to get right range over left range
         if (leftHighSlider->getValue() > rightLowSlider->getValue())
         {
-            setRangeRightLow (leftHighSlider->getValue());
+            setRangeRightLow (float(leftHighSlider->getValue()));
             sldr->setValue (double (leftHighSlider->getValue()), dontSendNotification);
             updateLabelBounds (rangeLabelMinRight);
             rangeLabelMinRight->setText (String (int (getRangeLeftHigh())) + valueUnit, dontSendNotification);
@@ -327,7 +327,7 @@ void TwoRangeTuner::sliderValueChanged (Slider* sldr)
         // Illegal attempt to get right range over left range
         if (leftHighSlider->getValue() > sldr->getValue())
         {
-            setRangeRightHigh (leftHighSlider->getValue());
+            setRangeRightHigh (float(leftHighSlider->getValue()));
             sldr->setValue (double (leftHighSlider->getValue()), dontSendNotification);
             updateLabelBounds (rangeLabelMaxRight);
             rangeLabelMaxRight->setText (String (int (getRangeLeftHigh())) + valueUnit, dontSendNotification);
@@ -732,8 +732,8 @@ TwoRangeTuner::DraggableObject TwoRangeTuner::getObjectToDrag (const MouseEvent&
     //================ Primary check: should we consider the left or right range? ==============
     bool leftNotRight = true;
 
-    float leftHighAngle = jmax (getThumbAngleRadians (leftLowThumb), getThumbAngleRadians (leftHighThumb));
-    float rightLowAngle = jmin (getThumbAngleRadians (rightLowThumb), getThumbAngleRadians (rightHighThumb));
+    float leftHighAngle = jmax (float (getThumbAngleRadians (leftLowThumb)), float (getThumbAngleRadians (leftHighThumb)));
+    float rightLowAngle = jmin (float (getThumbAngleRadians (rightLowThumb)), float (getThumbAngleRadians (rightHighThumb)));
     
     auto adjustedMouseAngle = !differentRef ? mouseAngle
                                             : mouseAngle < startAngle ? mouseAngle + twoPi
@@ -852,20 +852,20 @@ void TwoRangeTuner::drawTunerSliderBackground (Graphics& g)
                                     arcRadius,
                                     arcRadius,
                                     0.0f,
-                                    leftLowAngle,
-                                    leftHighAngle,
+                                    float (leftLowAngle),
+                                    float (leftHighAngle),
                                     true);
 
         g.setColour (fillLeft);
         g.strokePath (valueArcLeft, PathStrokeType (6.0f, PathStrokeType::curved, PathStrokeType::rounded));
 
-        valueArcRight.addCentredArc (sliderCentre.x,
-                                     sliderCentre.y,
+        valueArcRight.addCentredArc (float (sliderCentre.x),
+                                     float (sliderCentre.y),
                                      arcRadius,
                                      arcRadius,
                                      0.0f,
-                                     rightLowAngle,
-                                     rightHighAngle,
+                                     float (rightLowAngle),
+                                     float (rightHighAngle),
                                      true);
 
         g.setColour (fillRight);
@@ -878,8 +878,8 @@ void TwoRangeTuner::drawTunerSliderBackground (Graphics& g)
     {
         auto angle = getThumbAngleRadians (objectBeingDragged);
 
-        Point<float> thumbPoint (sliderCentre.x + arcRadius * std::cos (angle - MathConstants<float>::halfPi),
-                                 sliderCentre.y + arcRadius * std::sin (angle - MathConstants<float>::halfPi));
+        Point<float> thumbPoint (float (sliderCentre.x) + arcRadius * std::cos (angle - MathConstants<float>::halfPi),
+                                 float (sliderCentre.y) + arcRadius * std::sin (angle - MathConstants<float>::halfPi));
 
         g.setColour (tunerColour.withAlpha (0.6f));
         g.fillEllipse (juce::Rectangle<float> (25.0f, 25.0f).withCentre (thumbPoint));
@@ -894,27 +894,27 @@ void TwoRangeTuner::updateLabelBounds (Label* labelToUpdate)
 
     if (labelToUpdate == rangeLabelMinLeft)
     {
-        radius = sliderRadius - 20;
-        angle = getThumbAngleRadians (leftLowThumb);
+        radius = int (sliderRadius) - 20;
+        angle = float (getThumbAngleRadians (leftLowThumb));
     }
     else if (labelToUpdate == rangeLabelMaxLeft)
     {
-        radius = sliderRadius + 15;
-        angle = getThumbAngleRadians (leftHighThumb);
+        radius = int (sliderRadius) + 15;
+        angle = float (getThumbAngleRadians (leftHighThumb));
     }
     else if (labelToUpdate == rangeLabelMinRight)
     {
-        radius = sliderRadius - 20;
+        radius = int (sliderRadius) - 20;
         angle = getThumbAngleRadians (rightLowThumb);
     }
     else if (labelToUpdate == rangeLabelMaxRight)
     {
-        radius = sliderRadius + 15;
-        angle = getThumbAngleRadians (rightHighThumb);
+        radius = int (sliderRadius) + 15;
+        angle = float (getThumbAngleRadians (rightHighThumb));
     }
     
-    labelToUpdate->setCentrePosition (sliderCentre.x + radius * std::cos (angle - MathConstants<float>::halfPi),
-                                      sliderCentre.y + radius * std::sin (angle - MathConstants<float>::halfPi));
+    labelToUpdate->setCentrePosition (sliderCentre.x + int (radius * std::cos (angle - MathConstants<float>::halfPi)),
+                                      sliderCentre.y + int (radius * std::sin (angle - MathConstants<float>::halfPi)));
 }
 
 float TwoRangeTuner::getValueAngle()

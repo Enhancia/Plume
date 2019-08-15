@@ -80,7 +80,7 @@ public:
     void minimisationStateChanged (bool) override;
 
     //==============================================================================
-    void componentMovedOrResized (bool wasMoved, bool wasResized) override {}
+    void componentMovedOrResized (bool, bool) override {}
     void componentPeerChanged() override;
     void componentVisibilityChanged() override {}
 

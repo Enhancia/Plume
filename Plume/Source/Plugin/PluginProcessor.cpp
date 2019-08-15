@@ -58,12 +58,18 @@ PlumeProcessor::PlumeProcessor()
 PlumeProcessor::~PlumeProcessor()
 {
     TRACE_IN;
-    dataReader->connectionLost();
     dataReader->removeChangeListener(gestureArray);
+    dataReader->connectionLost();
     dataReader = nullptr;
+    
     gestureArray = nullptr;
     wrapper = nullptr;
-    
+
+    removeLogger();
+}
+
+void PlumeProcessor::removeLogger()
+{
     Logger::setCurrentLogger (nullptr);
     plumeLogger = nullptr;
 }
@@ -184,7 +190,7 @@ AudioProcessorEditor* PlumeProcessor::createEditor()
 void PlumeProcessor::getStateInformation (MemoryBlock& destData)
 {
     TRACE_IN;
-    ScopedPointer<XmlElement> wrapperData = new XmlElement ("PLUME");
+    std::unique_ptr<XmlElement> wrapperData (new XmlElement ("PLUME"));
     
     // Adds plugin and gestures data, and saves them in a binary file
     createGeneralXml (*wrapperData);
@@ -254,7 +260,7 @@ void PlumeProcessor::createGeneralXml(XmlElement& wrapperData)
 void PlumeProcessor::createPluginXml(XmlElement& wrapperData)
 {
     // Creates the child Xml and stores hasWrappedPlugin bool value
-    ScopedPointer<XmlElement> pluginData = new XmlElement ("WRAPPED_PLUGIN");
+    std::unique_ptr<XmlElement> pluginData (new XmlElement ("WRAPPED_PLUGIN"));
     
     pluginData->setAttribute ("hasWrappedPlugin", wrapper->isWrapping());
     
@@ -282,7 +288,7 @@ void PlumeProcessor::createPluginXml(XmlElement& wrapperData)
 
 void PlumeProcessor::createGestureXml(XmlElement& wrapperData)
 {
-    ScopedPointer<XmlElement> gesturesData = new XmlElement ("GESTURES");
+    std::unique_ptr<XmlElement> gesturesData (new XmlElement ("GESTURES"));
     
 	gestureArray->createGestureXml(*gesturesData);
 	wrapperData.addChildElement (new XmlElement (*gesturesData));
@@ -519,5 +525,6 @@ void PlumeProcessor::initializeSettings()
 
 void PlumeProcessor::updateTrackProperties (const AudioProcessor::TrackProperties& properties)
 {
+	ignoreUnused (properties);
     DBG ("Name : " << properties.name << " | Colour : " << properties.colour.toDisplayString(false));
 }

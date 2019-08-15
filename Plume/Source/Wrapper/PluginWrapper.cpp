@@ -40,14 +40,13 @@ PluginWrapper::~PluginWrapper()
 {
     TRACE_IN;
     removeAllChangeListeners();
-    
     clearWrapperEditor();
+
 	wrapperProcessor = nullptr;
     wrappedInstance = nullptr;
-    
+
     pluginList->clear();
     pluginList = nullptr;
-    
     formatManager = nullptr;
 }
 
@@ -616,10 +615,10 @@ void PluginWrapper::savePluginListToFile()
     ScopedPointer<XmlElement> listXml = new XmlElement ("PLUME_PLUGINLIST_CONFIG");
     
     // Writes plugin list data into the file
-    listXml->addChildElement (pluginList->createXml().get());
+    listXml->addChildElement (new XmlElement (*pluginList->createXml()));
     
     XmlElement* userDirs = listXml->createNewChildElement ("USER_DIRECTORIES");
-    userDirs->addChildElement (customDirectories.createXml().get());
+    userDirs->addChildElement (new XmlElement (*customDirectories.createXml()));
     
     listXml->writeToFile (scannedPlugins, StringRef());
     listXml->deleteAllChildElements();
@@ -649,6 +648,12 @@ void PluginWrapper::loadPluginListFromFile()
     // Recreates plugin List
 	std::unique_ptr<XmlElement> listXml = XmlDocument::parse(scannedPlugins);
 	
+	if (listXml == nullptr)
+	{
+		DBG("Couldn't parse plugin list file..");
+		return;
+	}
+
 	if (listXml->getChildByName ("USER_DIRECTORIES")) // checks the file for the right XML
     {
 	    // Recreates custom directories list
