@@ -70,6 +70,10 @@ void GestureSettingsComponent::update (const String& parameterThatChanged)
     {
         update();
     }
+    else
+    {
+        gestTuner->updateComponents();
+    }
 }
 
 //==============================================================================

@@ -105,10 +105,16 @@ void OneRangeTuner::updateComponents()
     {
         // Sets slider value
         if (lowSlider->getThumbBeingDragged() == -1)
+        {
             lowSlider->setValue (double (getRangeLow()), dontSendNotification);
+            sliderValueChanged (lowSlider);
+        }
 
         if (highSlider->getThumbBeingDragged() == -1)
+        {
             highSlider->setValue (double (getRangeHigh()), dontSendNotification);
+            sliderValueChanged (highSlider);
+        }
         
         // Sets label text
         if (!(rangeLabelMin->isBeingEdited()))
@@ -242,7 +248,7 @@ void OneRangeTuner::sliderValueChanged (Slider* sldr)
         if (rangeLow.getValue() > rangeHigh.getValue())
         {
             setRangeHigh (float (lowSlider->getValue()));
-            highSlider->setValue (double (getRangeHigh()), dontSendNotification);
+            highSlider->setValue (double (getRangeHigh()), sendNotification);
             updateLabelBounds (rangeLabelMax);
             rangeLabelMax->setText (String (float (sldr->getValue())) + valueUnit, dontSendNotification);
         }
@@ -259,7 +265,7 @@ void OneRangeTuner::sliderValueChanged (Slider* sldr)
         if (rangeLow.getValue() > rangeHigh.getValue())
         {
             setRangeLow (float (highSlider->getValue()));
-            lowSlider->setValue (double (getRangeLow()), dontSendNotification);
+            lowSlider->setValue (double (getRangeLow()), sendNotification);
             updateLabelBounds (rangeLabelMin);
             rangeLabelMin->setText (String (float (sldr->getValue())) + valueUnit, dontSendNotification);
         }
