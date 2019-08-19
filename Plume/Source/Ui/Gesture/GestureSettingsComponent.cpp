@@ -72,7 +72,37 @@ void GestureSettingsComponent::update (const String& parameterThatChanged)
     }
     else
     {
-        gestTuner->updateComponents();
+        if (auto* oneRangeTuner = dynamic_cast<OneRangeTuner*> (gestTuner.get()))
+        {
+            if (parameterThatChanged.endsWith ("_low"))
+            {
+                oneRangeTuner->updateComponents (OneRangeTuner::lowThumb);
+            }
+            else if (parameterThatChanged.endsWith ("_high"))
+            {
+                oneRangeTuner->updateComponents (OneRangeTuner::highThumb);
+            }
+        }
+
+        else if (auto* twoRangeTuner = dynamic_cast<TwoRangeTuner*> (gestTuner.get()))
+        {
+            if (parameterThatChanged.endsWith ("_leftLow"))
+            {
+                //twoRangeTuner->updateComponents (TwoRangeTuner::leftLowThumb);
+            }
+            else if (parameterThatChanged.endsWith ("_leftHigh"))
+            {
+                //twoRangeTuner->updateComponents (TwoRangeTuner::leftHighThumb);
+            }
+            else if (parameterThatChanged.endsWith ("_rightHigh"))
+            {
+                //twoRangeTuner->updateComponents (TwoRangeTuner::rightLowThumb);
+            }
+            else if (parameterThatChanged.endsWith ("_rightHigh"))
+            {
+                //twoRangeTuner->updateComponents (TwoRangeTuner::rightHighThumb);
+            }
+        }
     }
 }
 

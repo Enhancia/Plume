@@ -27,6 +27,14 @@ public:
         wave
     };
 
+    enum DraggableObject
+    {
+        none = -1,
+        lowThumb,
+        highThumb,
+        middleArea
+    };
+
     //==============================================================================
     OneRangeTuner(const float& val, NormalisableRange<float> gestureRange,
                   RangedAudioParameter& rangeL, RangedAudioParameter& rangeH, const Range<float> paramMax,
@@ -38,6 +46,8 @@ public:
     void resized() override;
     
     void updateComponents() override;
+    void updateComponents (DraggableObject thumbThatShouldUpdate);
+
     void updateDisplay() override;
 
     void setColour (const Colour newColour) override;
@@ -72,15 +82,6 @@ private:
     
     float getRangeLow();
     float getRangeHigh();
-
-    //==============================================================================
-    enum DraggableObject
-    {
-        none = -1,
-        lowThumb,
-        highThumb,
-        middleArea
-    };
 
     double getAngleFromMouseEventRadians (const MouseEvent& e);
     double getThumbAngleRadians (const DraggableObject thumb);
@@ -128,6 +129,8 @@ private:
 
     //==============================================================================
     PLUME::UI::OneRangeTunerLookAndFeel oneRangeTunerLookAndFeel;
+
+    CriticalSection rangeUpdateLock;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OneRangeTuner)
