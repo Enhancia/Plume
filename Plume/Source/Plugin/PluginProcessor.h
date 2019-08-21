@@ -34,7 +34,8 @@
  */
  
 class PlumeProcessor  : public AudioProcessor,
-                        public ActionBroadcaster
+                        public ActionBroadcaster,
+                        public AudioProcessorValueTreeState::Listener
 {
 public:
     //==============================================================================
@@ -80,6 +81,9 @@ public:
     
     void updateTrackProperties (const AudioProcessor::TrackProperties& properties) override;
 
+    //==============================================================================
+    void parameterChanged (const String &parameterID, float newValue) override;
+    
     //==============================================================================
     /**
      * \brief State save method.
@@ -187,6 +191,7 @@ private:
     void initializeParameters();
     void initializeValueTree();
     void initializeSettings();
+    void removeLogger();
     
     //==============================================================================
     ScopedPointer<FileLogger> plumeLogger; /**< \brief Logger object. Allows to write logs for testing purposes. */
@@ -200,5 +205,6 @@ private:
     AudioProcessorValueTreeState parameters;
     
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeProcessor)
+    //JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeProcessor)
+    JUCE_HEAVYWEIGHT_LEAK_DETECTOR (PlumeProcessor)
 };

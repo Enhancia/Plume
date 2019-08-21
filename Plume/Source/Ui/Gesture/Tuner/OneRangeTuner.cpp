@@ -105,10 +105,14 @@ void OneRangeTuner::updateComponents()
     {
         // Sets slider value
         if (lowSlider->getThumbBeingDragged() == -1)
+        {
             lowSlider->setValue (double (getRangeLow()), dontSendNotification);
+        }
 
         if (highSlider->getThumbBeingDragged() == -1)
+        {
             highSlider->setValue (double (getRangeHigh()), dontSendNotification);
+        }
         
         // Sets label text
         if (!(rangeLabelMin->isBeingEdited()))
@@ -120,6 +124,48 @@ void OneRangeTuner::updateComponents()
         {
             rangeLabelMax->setText (String (int (getRangeHigh())) + valueUnit, dontSendNotification);
         }
+    }
+}
+
+void OneRangeTuner::updateComponents (OneRangeTuner::DraggableObject thumbThatShouldUpdate)
+{
+    if (thumbThatShouldUpdate == lowThumb)
+    {
+        // Sets slider value
+        if (lowSlider->getThumbBeingDragged() == -1)
+        {
+            if (rangeLow.getValue() > rangeHigh.getValue())
+            {
+                setRangeHigh (getRangeLow());
+
+                // Allows the DAW to update the value without using slider->setValue() with a notification
+                // The latter causes crashes on Ableton Live
+                sliderValueChanged (highSlider);
+            }
+
+            lowSlider->setValue (double (getRangeLow()), dontSendNotification);
+        }
+    }
+    else if (thumbThatShouldUpdate == highThumb)
+    {
+        // Sets slider value
+        if (highSlider->getThumbBeingDragged() == -1)
+        {
+            if (rangeLow.getValue() > rangeHigh.getValue())
+            {
+                setRangeLow (getRangeHigh());
+
+                // Allows the DAW to update the value without using slider->setValue() with a notification
+                // The latter causes crashes on Ableton Live
+                sliderValueChanged (lowSlider);
+            }
+
+            highSlider->setValue (double (getRangeHigh()), dontSendNotification);
+        }
+    }
+    else
+    {
+        updateComponents();
     }
 }
 
@@ -242,7 +288,6 @@ void OneRangeTuner::sliderValueChanged (Slider* sldr)
         if (rangeLow.getValue() > rangeHigh.getValue())
         {
             setRangeHigh (float (lowSlider->getValue()));
-            highSlider->setValue (double (getRangeHigh()), dontSendNotification);
             updateLabelBounds (rangeLabelMax);
             rangeLabelMax->setText (String (float (sldr->getValue())) + valueUnit, dontSendNotification);
         }
@@ -259,7 +304,6 @@ void OneRangeTuner::sliderValueChanged (Slider* sldr)
         if (rangeLow.getValue() > rangeHigh.getValue())
         {
             setRangeLow (float (highSlider->getValue()));
-            lowSlider->setValue (double (getRangeLow()), dontSendNotification);
             updateLabelBounds (rangeLabelMin);
             rangeLabelMin->setText (String (float (sldr->getValue())) + valueUnit, dontSendNotification);
         }
@@ -394,7 +438,6 @@ void OneRangeTuner::mouseUp (const MouseEvent& e)
         updateMouseCursor();
         repaint();
     }
-
 }
 
 MouseCursor OneRangeTuner::getMouseCursor()
@@ -477,6 +520,8 @@ void OneRangeTuner::createButtons()
     
 void OneRangeTuner::setRangeLow (float val)
 {
+    DBG ("Set range low");
+
     rangeLow.beginChangeGesture();
     rangeLow.setValueNotifyingHost (rangeLow.convertTo0to1 (val));
     rangeLow.endChangeGesture();
@@ -484,6 +529,8 @@ void OneRangeTuner::setRangeLow (float val)
     
 void OneRangeTuner::setRangeHigh (float val)
 {
+    DBG ("Set range high");
+
     rangeHigh.beginChangeGesture();
     rangeHigh.setValueNotifyingHost (rangeHigh.convertTo0to1 (val));
     rangeHigh.endChangeGesture();

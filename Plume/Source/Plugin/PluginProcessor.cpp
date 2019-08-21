@@ -58,12 +58,18 @@ PlumeProcessor::PlumeProcessor()
 PlumeProcessor::~PlumeProcessor()
 {
     TRACE_IN;
-    dataReader->connectionLost();
     dataReader->removeChangeListener(gestureArray);
+    dataReader->connectionLost();
     dataReader = nullptr;
+    
     gestureArray = nullptr;
     wrapper = nullptr;
-    
+
+    removeLogger();
+}
+
+void PlumeProcessor::removeLogger()
+{
     Logger::setCurrentLogger (nullptr);
     plumeLogger = nullptr;
 }
@@ -112,18 +118,6 @@ bool PlumeProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {   
     MidiBuffer plumeBuffer;
-    /* 
-    if (auto* pHead = getPlayHead())
-    {
-		AudioPlayHead::CurrentPositionInfo pos;
-
-		if (pHead->getCurrentPosition(pos))
-		{
-			DBG ("Playing ? " << String(int(pos.isPlaying)));
-			//Logger::writeToLog("Playing ? " + String(int(pos.isPlaying)));
-		}
-    }
-    */
     
     // Adds the gesture's MIDI messages to the buffer, and changes parameters if needed
     gestureArray->process (midiMessages, plumeBuffer);
@@ -184,7 +178,7 @@ AudioProcessorEditor* PlumeProcessor::createEditor()
 void PlumeProcessor::getStateInformation (MemoryBlock& destData)
 {
     TRACE_IN;
-    ScopedPointer<XmlElement> wrapperData = new XmlElement ("PLUME");
+    std::unique_ptr<XmlElement> wrapperData (new XmlElement ("PLUME"));
     
     // Adds plugin and gestures data, and saves them in a binary file
     createGeneralXml (*wrapperData);
@@ -201,7 +195,7 @@ void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
     suspendProcessing (true);
     
     TRACE_IN;
-    ScopedPointer<XmlElement> wrapperData = getXmlFromBinary (data, sizeInBytes);
+	std::unique_ptr<XmlElement> wrapperData = getXmlFromBinary (data, sizeInBytes);
     
 	if (wrapperData == nullptr)
 	{
@@ -248,13 +242,13 @@ void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
 
 void PlumeProcessor::createGeneralXml(XmlElement& wrapperData)
 {
-    wrapperData.addChildElement (parameters.state.createXml());
+	wrapperData.addChildElement (new XmlElement (*parameters.state.createXml()));
 }
 
 void PlumeProcessor::createPluginXml(XmlElement& wrapperData)
 {
     // Creates the child Xml and stores hasWrappedPlugin bool value
-    ScopedPointer<XmlElement> pluginData = new XmlElement ("WRAPPED_PLUGIN");
+    std::unique_ptr<XmlElement> pluginData (new XmlElement ("WRAPPED_PLUGIN"));
     
     pluginData->setAttribute ("hasWrappedPlugin", wrapper->isWrapping());
     
@@ -264,7 +258,7 @@ void PlumeProcessor::createPluginXml(XmlElement& wrapperData)
 	        // Saves the description of current wrapped plugin
 	        PluginDescription pd;
 	        wrapper->fillInPluginDescription (pd);
-	        pluginData->addChildElement (pd.createXml());
+	        pluginData->addChildElement (new XmlElement (*pd.createXml()));
 	    }
 	    
 	    {
@@ -282,7 +276,7 @@ void PlumeProcessor::createPluginXml(XmlElement& wrapperData)
 
 void PlumeProcessor::createGestureXml(XmlElement& wrapperData)
 {
-    ScopedPointer<XmlElement> gesturesData = new XmlElement ("GESTURES");
+    std::unique_ptr<XmlElement> gesturesData (new XmlElement ("GESTURES"));
     
 	gestureArray->createGestureXml(*gesturesData);
 	wrapperData.addChildElement (new XmlElement (*gesturesData));
@@ -483,6 +477,11 @@ void PlumeProcessor::initializeParameters()
                                                                                          String(gest) + paramIds[i],
                                                                                          range,
                                                                                          defVal));
+                /*
+                if (i != (int) PLUME::param::value && i != (int) vibrato_intensity)
+                {
+                    parameters.addParameterListener (String(gest) + paramIds[i], this);
+                }*/
             }
         }
     }
@@ -517,7 +516,26 @@ void PlumeProcessor::initializeSettings()
                                        0, nullptr);
 }
 
+
+void PlumeProcessor::parameterChanged (const String &parameterID, float newValue)
+{
+    /*
+    int paramId = parameterID.upToFirstOccurrenceOf ("_", false, false).getIntValue();
+    String gestType = parameterID.fromFirstOccurrenceOf ("_", false, false)
+                                 .upToLastOccurrenceOf ("_", false, false);
+    String paramType = parameterID.fromLastOccurrenceOf ("_", false, false);
+
+    DBG ("Parameter changed : " << paramId << " " << gestType << " " << paramType);
+
+    if (paramType.compare (low) )
+    {
+
+    }
+    */
+}
+
 void PlumeProcessor::updateTrackProperties (const AudioProcessor::TrackProperties& properties)
 {
+	ignoreUnused (properties);
     DBG ("Name : " << properties.name << " | Colour : " << properties.colour.toDisplayString(false));
 }

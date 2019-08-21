@@ -161,7 +161,7 @@ const String PlumePreset::getFilterString()
 
 bool PlumePreset::hasInfoXml()
 {
-    ScopedPointer<XmlElement> xml = XmlDocument::parse (presetFile);
+    std::unique_ptr<XmlElement> xml = XmlDocument::parse (presetFile);
     
     if (xml != nullptr)
     {
@@ -181,7 +181,7 @@ void PlumePreset::loadPresetInfoFromFile()
 {
     if (hasInfoXml())
     {
-		ScopedPointer<XmlElement> xml = XmlDocument::parse (presetFile);
+		std::unique_ptr<XmlElement> xml = XmlDocument::parse (presetFile);
 		
 		XmlElement* info = xml->getChildByName("INFO");
         
@@ -214,7 +214,7 @@ void PlumePreset::loadPresetFromFile (File& file)
 
 void PlumePreset::getPluginFromFile (File& file)
 {
-    ScopedPointer<XmlElement> xml = XmlDocument::parse (file);
+	std::unique_ptr<XmlElement> xml = XmlDocument::parse (file);
 	if (xml == nullptr) return;
 
 	XmlElement* wrap = xml->getChildByName ("WRAPPED_PLUGIN");
@@ -235,7 +235,7 @@ void PlumePreset::getPluginFromFile (File& file)
 
 void PlumePreset::setPresetInfoToFile()
 {
-    ScopedPointer<XmlElement> xml = XmlDocument::parse (presetFile);
+    std::unique_ptr<XmlElement> xml = XmlDocument::parse (presetFile);
     
     if (xml != nullptr)
     {

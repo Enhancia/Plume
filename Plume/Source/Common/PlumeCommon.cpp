@@ -117,8 +117,6 @@ namespace PLUME
 			if (auto* cwpStructPtr = reinterpret_cast<CWPSTRUCT*> (lParam))
 			{
 				uint64 message = cwpStructPtr->message;
-				char name[30];
-				GetWindowTextA (cwpStructPtr->hwnd, name, 30);
 
                 if (PLUME::globalPointers.isPlumeHWND (cwpStructPtr->hwnd))
                 {
@@ -153,6 +151,7 @@ namespace PLUME
 
 				return 0;
 			}
+
 		}
 		else
 		{

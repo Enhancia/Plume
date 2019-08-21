@@ -71,7 +71,6 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     {
         comp->addMouseListener(this, true);
     }
-	
 
 	PLUME::UI::ANIMATE_UI_FLAG = true;
 
@@ -104,17 +103,24 @@ PlumeEditor::~PlumeEditor()
 		comp->removeMouseListener(this);
 	}
 
+  #if JUCE_WINDOWS
+    if (plumeWindowHook != NULL)
+    {
+        int unhookResult = UnhookWindowsHookEx (plumeWindowHook);
+        jassert (unhookResult != 0);
+    }
+
+    plumeWindowHook = NULL;
+    instanceHWND = NULL;
+  #endif
+
     processor.removeActionListener (this);
     gesturePanel = nullptr;
     resizableCorner = nullptr;
     optionsPanel = nullptr;
     newPresetPanel = nullptr;
+    newGesturePanel = nullptr;
     setLookAndFeel (nullptr);
-
-#if JUCE_WINDOWS
-    //PLUME::globalPointers.removePlumeHWND (static_cast<HWND> (getPeer()->getNativeHandle()));
-	jassert (UnhookWindowsHookEx (plumeWindowHook) != 0);
-#endif
 }
 
 //==============================================================================

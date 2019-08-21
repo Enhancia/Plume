@@ -26,8 +26,8 @@ GesturePanel::GesturePanel (GestureArray& gestArray, PluginWrapper& wrap,
     setComponentID ("gesturePanel");
     setWantsKeyboardFocus (true);
 
-    shadowEffect.setShadowProperties ({Colour (0x50000000), PLUME::UI::MARGIN,
-                                      {0, 0}});
+    //shadowEffect.setShadowProperties ({Colour (0x50000000), PLUME::UI::MARGIN,
+    //                                  {0, 0}});
     //setComponentEffect (&shadowEffect);
 
     initialiseGestureSlots();
@@ -44,6 +44,7 @@ GesturePanel::~GesturePanel()
     unselectCurrentGesture();
     newGesturePanel.hidePanel (true);
     removeListenerForAllParameters();
+    TRACE_OUT;
 }
 
 //==============================================================================
@@ -86,11 +87,11 @@ void GesturePanel::update()
 }
 
 //==============================================================================
-void GesturePanel::paint (Graphics& g)
+void GesturePanel::paint (Graphics&)
 {
 }
 
-void GesturePanel::paintOverChildren (Graphics& g)
+void GesturePanel::paintOverChildren (Graphics&)
 {
     /* TODO paint the component snapshot during a drag.
        Get a snapshot of the component being dragged (might wanna cache it so it is not 
@@ -248,7 +249,7 @@ void GesturePanel::handleLeftClickUp (const MouseEvent& event)
     }
 }
 
-void GesturePanel::handleLeftClickDrag (const MouseEvent& event)
+void GesturePanel::handleLeftClickDrag (const MouseEvent&)
 {
 }
 

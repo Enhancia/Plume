@@ -118,7 +118,7 @@ private:
     
     //==============================================================================
     ScopedPointer<WrapperProcessor> wrapperProcessor;
-    ScopedPointer<AudioPluginInstance> wrappedInstance;
+    std::unique_ptr<AudioPluginInstance> wrappedInstance;
     ScopedPointer<WrapperEditorWindow> wrapperEditor;
     ScopedPointer<AudioProcessorEditor> wrapEd;
     ScopedPointer<PlumeProgressBar> bar;

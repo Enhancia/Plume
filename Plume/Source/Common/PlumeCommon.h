@@ -265,6 +265,8 @@ namespace PLUME
 
         HWND activePlumeWindow = NULL;
       #endif
+
+        JUCE_LEAK_DETECTOR (GlobalPointers);
     };
     
     extern GlobalPointers globalPointers;

@@ -13,6 +13,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "../juce_serialport/juce_serialport.h"
+#include "Common/PlumeCommon.h"
 
 #if JUCE_MAC
 #include "DataReader/StatutPipe.h"
