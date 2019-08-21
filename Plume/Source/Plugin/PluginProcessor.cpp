@@ -118,18 +118,6 @@ bool PlumeProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {   
     MidiBuffer plumeBuffer;
-    /* 
-    if (auto* pHead = getPlayHead())
-    {
-		AudioPlayHead::CurrentPositionInfo pos;
-
-		if (pHead->getCurrentPosition(pos))
-		{
-			DBG ("Playing ? " << String(int(pos.isPlaying)));
-			//Logger::writeToLog("Playing ? " + String(int(pos.isPlaying)));
-		}
-    }
-    */
     
     // Adds the gesture's MIDI messages to the buffer, and changes parameters if needed
     gestureArray->process (midiMessages, plumeBuffer);
@@ -489,6 +477,11 @@ void PlumeProcessor::initializeParameters()
                                                                                          String(gest) + paramIds[i],
                                                                                          range,
                                                                                          defVal));
+                /*
+                if (i != (int) PLUME::param::value && i != (int) vibrato_intensity)
+                {
+                    parameters.addParameterListener (String(gest) + paramIds[i], this);
+                }*/
             }
         }
     }
@@ -521,6 +514,24 @@ void PlumeProcessor::initializeSettings()
     generalTree.addChild (ValueTree (pluginDirs), 3, nullptr);
     generalTree.getChild (3).addChild (ValueTree (directory).setProperty (value, "", nullptr),
                                        0, nullptr);
+}
+
+
+void PlumeProcessor::parameterChanged (const String &parameterID, float newValue)
+{
+    /*
+    int paramId = parameterID.upToFirstOccurrenceOf ("_", false, false).getIntValue();
+    String gestType = parameterID.fromFirstOccurrenceOf ("_", false, false)
+                                 .upToLastOccurrenceOf ("_", false, false);
+    String paramType = parameterID.fromLastOccurrenceOf ("_", false, false);
+
+    DBG ("Parameter changed : " << paramId << " " << gestType << " " << paramType);
+
+    if (paramType.compare (low) )
+    {
+
+    }
+    */
 }
 
 void PlumeProcessor::updateTrackProperties (const AudioProcessor::TrackProperties& properties)

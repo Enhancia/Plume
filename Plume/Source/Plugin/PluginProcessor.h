@@ -34,7 +34,8 @@
  */
  
 class PlumeProcessor  : public AudioProcessor,
-                        public ActionBroadcaster
+                        public ActionBroadcaster,
+                        public AudioProcessorValueTreeState::Listener
 {
 public:
     //==============================================================================
@@ -80,6 +81,9 @@ public:
     
     void updateTrackProperties (const AudioProcessor::TrackProperties& properties) override;
 
+    //==============================================================================
+    void parameterChanged (const String &parameterID, float newValue) override;
+    
     //==============================================================================
     /**
      * \brief State save method.

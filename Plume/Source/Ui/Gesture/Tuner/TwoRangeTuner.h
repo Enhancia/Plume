@@ -20,6 +20,17 @@ class TwoRangeTuner:    public Tuner,
                         private Button::Listener
 {
 public:
+    enum DraggableObject
+    {
+        none = -1,
+        leftLowThumb,
+        leftHighThumb,
+        rightLowThumb,
+        rightHighThumb,
+        middleAreaLeft,
+        middleAreaRight
+    };
+
     //==============================================================================
     TwoRangeTuner(const float& val, const NormalisableRange<float> gestureRange,
                   RangedAudioParameter& rangeLL, RangedAudioParameter& rangeLH,
@@ -32,6 +43,8 @@ public:
     void resized() override;
     
     void updateComponents() override;
+    void updateComponents (DraggableObject thumbThatShouldUpdate);
+
     void updateDisplay() override;
 
     void setColour (const Colour newColour) override;
@@ -71,17 +84,6 @@ private:
     float getRangeRightHigh();
     
     //==============================================================================
-    enum DraggableObject
-    {
-        none = -1,
-        leftLowThumb,
-        leftHighThumb,
-        rightLowThumb,
-        rightHighThumb,
-        middleAreaLeft,
-        middleAreaRight
-    };
-
     double getAngleFromMouseEventRadians (const MouseEvent& e);
     double getThumbAngleRadians (const DraggableObject thumb);
 

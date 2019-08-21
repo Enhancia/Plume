@@ -101,8 +101,6 @@ void OneRangeTuner::resizeButtons()
     
 void OneRangeTuner::updateComponents()
 {
-    DBG ("Update unspecified");
-
     if (rangeLow.getValue() < rangeHigh.getValue())
     {
         // Sets slider value
@@ -133,15 +131,11 @@ void OneRangeTuner::updateComponents (OneRangeTuner::DraggableObject thumbThatSh
 {
     if (thumbThatShouldUpdate == lowThumb)
     {
-        DBG ("Update thumb low ( low : " << getRangeLow() << " | high : " << getRangeHigh() << " )");
-
         // Sets slider value
         if (lowSlider->getThumbBeingDragged() == -1)
         {
             if (rangeLow.getValue() > rangeHigh.getValue())
             {
-                DBG ("Range High Forced Update");
-
                 setRangeHigh (getRangeLow());
 
                 // Allows the DAW to update the value without using slider->setValue() with a notification
@@ -149,31 +143,16 @@ void OneRangeTuner::updateComponents (OneRangeTuner::DraggableObject thumbThatSh
                 sliderValueChanged (highSlider);
             }
 
-            DBG ("low slider set value no notif");
             lowSlider->setValue (double (getRangeLow()), dontSendNotification);
-        }
-        // Sets label text
-        if (!(rangeLabelMin->isBeingEdited()))
-        {
-            rangeLabelMin->setText (String (int (getRangeLow())) + valueUnit, dontSendNotification);
-
-            if (rangeLow.getValue() > rangeHigh.getValue())
-            {
-                rangeLabelMax->setText (String (int (getRangeLow())) + valueUnit, dontSendNotification);
-            }
         }
     }
     else if (thumbThatShouldUpdate == highThumb)
     {
-        DBG ("Update thumb high ( low : " << getRangeLow() << " | high : " << getRangeHigh() << " )");
-
         // Sets slider value
         if (highSlider->getThumbBeingDragged() == -1)
         {
             if (rangeLow.getValue() > rangeHigh.getValue())
             {
-                DBG ("Range Low Forced Update");
-
                 setRangeLow (getRangeHigh());
 
                 // Allows the DAW to update the value without using slider->setValue() with a notification
@@ -181,18 +160,7 @@ void OneRangeTuner::updateComponents (OneRangeTuner::DraggableObject thumbThatSh
                 sliderValueChanged (lowSlider);
             }
 
-            DBG ("high slider set value no notif");
             highSlider->setValue (double (getRangeHigh()), dontSendNotification);
-        }
-        // Sets label text
-        if (!(rangeLabelMax->isBeingEdited()))
-        {
-            rangeLabelMax->setText (String (int (getRangeHigh())) + valueUnit, dontSendNotification);
-
-            if (rangeLow.getValue() > rangeHigh.getValue())
-            {
-                rangeLabelMin->setText (String (int (getRangeHigh())) + valueUnit, dontSendNotification);
-            }
         }
     }
     else
@@ -311,8 +279,6 @@ void OneRangeTuner::sliderValueChanged (Slider* sldr)
 {
     if (sldr == lowSlider)
     {
-        DBG ("Update slider low");
-
         // min value changed by user
         setRangeLow (float (lowSlider->getValue()));
         updateLabelBounds (rangeLabelMin);
@@ -321,8 +287,6 @@ void OneRangeTuner::sliderValueChanged (Slider* sldr)
         // in case the other thumb is dragged along..
         if (rangeLow.getValue() > rangeHigh.getValue())
         {
-			DBG("Low drags high");
-
             setRangeHigh (float (lowSlider->getValue()));
             updateLabelBounds (rangeLabelMax);
             rangeLabelMax->setText (String (float (sldr->getValue())) + valueUnit, dontSendNotification);
@@ -332,8 +296,6 @@ void OneRangeTuner::sliderValueChanged (Slider* sldr)
     // max value changed by user
     else if (sldr == highSlider)
     {
-        DBG ("Update slider high");
-
         setRangeHigh (float (highSlider->getValue()));
         updateLabelBounds (rangeLabelMax);
         rangeLabelMax->setText (String (int (getRangeHigh())) + valueUnit, dontSendNotification);
@@ -341,8 +303,6 @@ void OneRangeTuner::sliderValueChanged (Slider* sldr)
         // in case the other thumb is dragged along..
         if (rangeLow.getValue() > rangeHigh.getValue())
         {
-			DBG("High drags low");
-
             setRangeLow (float (highSlider->getValue()));
             updateLabelBounds (rangeLabelMin);
             rangeLabelMin->setText (String (float (sldr->getValue())) + valueUnit, dontSendNotification);

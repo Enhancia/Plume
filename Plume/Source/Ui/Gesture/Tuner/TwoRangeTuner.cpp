@@ -133,8 +133,94 @@ void TwoRangeTuner::updateComponents()
             rangeLabelMaxRight->setText (String (int (getRangeRightHigh())) + valueUnit, dontSendNotification);
 		}
     }
-        
-    //repaint();
+}
+
+void TwoRangeTuner::updateComponents (TwoRangeTuner::DraggableObject thumbThatShouldUpdate)
+{
+    if (thumbThatShouldUpdate == leftLowThumb)
+    {
+        // Sets slider value
+        if (leftLowSlider->getThumbBeingDragged() == -1)
+        {
+            if (rangeLeftLow.getValue() > rangeLeftHigh.getValue())
+            {
+                setRangeLeftHigh (getRangeLeftLow());
+
+                // Allows the DAW to update the value without using slider->setValue() with a notification
+                // The latter causes crashes on Ableton Live
+                sliderValueChanged (leftHighSlider);
+            }
+
+            leftLowSlider->setValue (double (getRangeLeftLow()), dontSendNotification);
+        }
+    }
+
+    else if (thumbThatShouldUpdate == leftHighThumb)
+    {
+        // Sets slider value
+        if (leftHighSlider->getThumbBeingDragged() == -1)
+        {
+            if (rangeLeftLow.getValue() > rangeLeftHigh.getValue())
+            {
+                setRangeLeftLow (getRangeLeftHigh());
+
+                // Allows the DAW to update the value without using slider->setValue() with a notification
+                // The latter causes crashes on Ableton Live
+                sliderValueChanged (leftLowSlider);
+            }
+
+            if (rangeLeftHigh.getValue() > rangeRightLow.getValue()) // Tries to overlap with right range
+            {
+                setRangeLeftHigh (getRangeRightLow());
+                return;
+            }
+
+            leftHighSlider->setValue (double (getRangeLeftHigh()), dontSendNotification);
+        }
+    }
+
+    else if (thumbThatShouldUpdate == rightLowThumb)
+    {
+        // Sets slider value
+        if (rightLowSlider->getThumbBeingDragged() == -1)
+        {
+            if (rangeRightLow.getValue() > rangeRightHigh.getValue())
+            {
+                setRangeRightHigh (getRangeRightLow());
+
+                // Allows the DAW to update the value without using slider->setValue() with a notification
+                // The latter causes crashes on Ableton Live
+                sliderValueChanged (rightHighSlider);
+            }
+
+            if (rangeLeftHigh.getValue() > rangeRightLow.getValue()) // Tries to overlap with left range
+            {
+                setRangeRightLow (getRangeLeftHigh());
+                return;
+            }
+
+            rightLowSlider->setValue (double (getRangeRightLow()), dontSendNotification);
+        }
+    }
+
+    else if (thumbThatShouldUpdate == rightHighThumb)
+    {
+        // Sets slider value
+        if (rightHighSlider->getThumbBeingDragged() == -1)
+        {
+            if (rangeRightLow.getValue() > rangeRightHigh.getValue())
+            {
+                setRangeRightLow (getRangeRightHigh());
+
+                // Allows the DAW to update the value without using slider->setValue() with a notification
+                // The latter causes crashes on Ableton Live
+                sliderValueChanged (rightLowSlider);
+            }
+
+            rightHighSlider->setValue (double (getRangeRightHigh()), dontSendNotification);
+        }
+    }
+    else updateComponents();
 }
 
 void TwoRangeTuner::updateDisplay()
@@ -258,7 +344,6 @@ void TwoRangeTuner::sliderValueChanged (Slider* sldr)
 		if (rangeLeftLow.getValue() > rangeLeftHigh.getValue())
 		{
 			setRangeLeftHigh (float(sldr->getValue()));
-            leftHighSlider->setValue (double (getRangeLeftHigh()), sendNotification);
             updateLabelBounds (rangeLabelMaxLeft);
 			rangeLabelMaxLeft->setText(String(int(getRangeLeftHigh())) + valueUnit, dontSendNotification);
 		}
@@ -287,7 +372,6 @@ void TwoRangeTuner::sliderValueChanged (Slider* sldr)
 		if (rangeLeftLow.getValue() > rangeLeftHigh.getValue())
 		{
 			setRangeLeftLow (float(sldr->getValue()));
-            leftLowSlider->setValue (double (getRangeLeftLow()), dontSendNotification);
             updateLabelBounds (rangeLabelMinLeft);
 			rangeLabelMinLeft->setText(String(int(getRangeLeftLow())) + valueUnit, dontSendNotification);
 		}
@@ -315,7 +399,6 @@ void TwoRangeTuner::sliderValueChanged (Slider* sldr)
 		if (rangeRightLow.getValue() > rangeRightHigh.getValue())
 		{
 			setRangeRightHigh (float(sldr->getValue()));
-            rightHighSlider->setValue (double (getRangeRightHigh()), dontSendNotification);
             updateLabelBounds (rangeLabelMaxRight);
 			rangeLabelMaxRight->setText(String(int(getRangeRightHigh())) + valueUnit, dontSendNotification);
 		}
@@ -331,6 +414,7 @@ void TwoRangeTuner::sliderValueChanged (Slider* sldr)
             sldr->setValue (double (leftHighSlider->getValue()), dontSendNotification);
             updateLabelBounds (rangeLabelMaxRight);
             rangeLabelMaxRight->setText (String (int (getRangeLeftHigh())) + valueUnit, dontSendNotification);
+            return;
         }
         else // Normal drag
         {
@@ -342,7 +426,6 @@ void TwoRangeTuner::sliderValueChanged (Slider* sldr)
 		if (rangeRightLow.getValue() > rangeRightHigh.getValue())
 		{
 			setRangeRightLow (float(sldr->getValue()));
-            rightLowSlider->setValue (double (getRangeRightLow()), sendNotification);
             updateLabelBounds (rangeLabelMinRight);
 			rangeLabelMinRight->setText(String(int(getRangeRightLow())) + valueUnit, dontSendNotification);
 		}
