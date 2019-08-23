@@ -70,7 +70,7 @@ void MidiModeComponent::resized()
 
     auto rangeArea = area;
 
-    midiRangeTuner->setBounds (rangeArea.withSizeKeepingCentre (area.getWidth() - 2*MARGIN, area.getHeight()/2));
+    midiRangeTuner->setBounds (rangeArea.withSizeKeepingCentre (area.getWidth() - 2*MARGIN, area.getHeight()));
 }
 
 //==============================================================================
@@ -160,6 +160,12 @@ void MidiModeComponent::comboBoxChanged (ComboBox* box)
 void MidiModeComponent::updateComponents()
 {
     ccLabel->setText (String (gesture.getCc()), dontSendNotification);
+    midiRangeTuner->updateHighlightColour();
+}
+
+void MidiModeComponent::updateDisplay()
+{
+    midiRangeTuner->updateDisplay();
 }
 
 //==============================================================================
@@ -283,7 +289,8 @@ MidiRangeTuner::~MidiRangeTuner()
 void MidiRangeTuner::paint (Graphics& g)
 {
     drawSliderBackground (g);
-    drawCursor (g);
+
+    if (gesture.isActive()) drawCursor (g);
 }
 
 void MidiRangeTuner::resized()
@@ -300,8 +307,8 @@ void MidiRangeTuner::labelTextChanged (Label* lbl)
     // checks that the string is numbers only (and dot)
     if (lbl->getText().containsOnly ("-.0123456789") == false)
     {
-        if (lbl == rangeLabelMin)       lbl->setText (String (gesture.midiLow.getValue(), 1), dontSendNotification);
-        else if (lbl == rangeLabelMax)  lbl->setText (String (gesture.midiHigh.getValue(), 1), dontSendNotification);
+        if (lbl == rangeLabelMin)       lbl->setText (String (gesture.midiLow.getValue(), 2), dontSendNotification);
+        else if (lbl == rangeLabelMax)  lbl->setText (String (gesture.midiHigh.getValue(), 2), dontSendNotification);
 
         return;
     }
@@ -321,7 +328,7 @@ void MidiRangeTuner::labelTextChanged (Label* lbl)
         // Normal case
         {
             gesture.setMidiLow (val);
-            lbl->setText (String (gesture.midiLow.getValue(), 1), dontSendNotification);
+            lbl->setText (String (gesture.midiLow.getValue(), 2), dontSendNotification);
             lowSlider->setValue (val, dontSendNotification);
             setLabelBounds (*rangeLabelMin);
             rangeLabelMin->setVisible (false);
@@ -335,7 +342,7 @@ void MidiRangeTuner::labelTextChanged (Label* lbl)
         // Normal case
         {
             gesture.setMidiHigh (val);
-            lbl->setText (String (gesture.midiHigh.getValue(), 1), dontSendNotification);
+            lbl->setText (String (gesture.midiHigh.getValue(), 2), dontSendNotification);
             highSlider->setValue (val, dontSendNotification);
             setLabelBounds (*rangeLabelMax);
             rangeLabelMax->setVisible (false);
@@ -352,31 +359,33 @@ void MidiRangeTuner::sliderValueChanged (Slider* sldr)
 {
     if (sldr == lowSlider)
     {
-        gesture.setMidiLow (float (lowSlider->getValue()));
-        rangeLabelMin->setText (String (lowSlider->getValue(), 1), dontSendNotification);
+        gesture.setMidiLow (float (lowSlider->getValue()), false);
+        rangeLabelMin->setText (String (lowSlider->getValue(), 2), dontSendNotification);
         setLabelBounds (*rangeLabelMin);
 
         // in case the other thumb is dragged along..
-        if (float (highSlider->getValue()) != gesture.midiHigh.getValue())
+        if (gesture.midiHigh.getValue() < gesture.midiLow.getValue())
         {
+            gesture.setMidiHigh (gesture.midiLow.getValue(), false);
             highSlider->setValue (double (gesture.midiHigh.getValue()), dontSendNotification);
             setLabelBounds (*rangeLabelMax);
-            rangeLabelMax->setText (String (highSlider->getValue(), 1), dontSendNotification);
+            rangeLabelMax->setText (String (highSlider->getValue(), 2), dontSendNotification);
         }
     }
 
     else if (sldr == highSlider)
     {
-        gesture.setMidiHigh (float (highSlider->getValue()));
-        rangeLabelMax->setText (String (highSlider->getValue(), 1), dontSendNotification);
+        gesture.setMidiHigh (float (highSlider->getValue()), false);
+        rangeLabelMax->setText (String (highSlider->getValue(), 2), dontSendNotification);
         setLabelBounds (*rangeLabelMax);
 
         // in case the other thumb is dragged along..
-        if (float (lowSlider->getValue()) != gesture.midiLow.getValue())
+        if (gesture.midiHigh.getValue() < gesture.midiLow.getValue())
         {
+            gesture.setMidiLow (gesture.midiHigh.getValue(), false);
             lowSlider->setValue (double (gesture.midiLow.getValue()), dontSendNotification);
             setLabelBounds (*rangeLabelMin);
-            rangeLabelMin->setText (String (lowSlider->getValue(), 1), dontSendNotification);
+            rangeLabelMin->setText (String (lowSlider->getValue(), 2), dontSendNotification);
         }
     }
 }
@@ -498,6 +507,13 @@ void MidiRangeTuner::mouseUp (const MouseEvent& e)
 
 void MidiRangeTuner::updateDisplay()
 {
+    if (gesture.getRescaledMidiValue() != lastValue)
+    {
+        lastValue = gesture.getRescaledMidiValue();
+        
+        repaint (lowSlider->getBounds().withY (lowSlider->getBounds().getCentreY() - 13)
+                                       .withHeight (8));
+    }
 }
 
 void MidiRangeTuner::updateHighlightColour()
@@ -522,8 +538,8 @@ void MidiRangeTuner::updateHighlightColour()
 
 void MidiRangeTuner::createLabels()
 {
-    addAndMakeVisible (rangeLabelMin = new Label ("Min Label", String (gesture.midiLow.getValue(), 1)));
-    addAndMakeVisible (rangeLabelMax = new Label ("Max Label", String (gesture.midiHigh.getValue(), 1)));
+    addAndMakeVisible (rangeLabelMin = new Label ("Min Label", String (gesture.midiLow.getValue(), 2)));
+    addAndMakeVisible (rangeLabelMax = new Label ("Max Label", String (gesture.midiHigh.getValue(), 2)));
     
     // Label style
 
@@ -554,13 +570,13 @@ void MidiRangeTuner::setLabelBounds (Label& labelToResize)
     {
         rangeLabelMin->setCentrePosition (jmin (jmax ((int) getThumbX (lowThumb), rangeLabelMin->getWidth()/2),
                                                 getWidth() - rangeLabelMin->getWidth()/2),
-                                          lowSlider->getBounds().getCentreY() - 16);
+                                          lowSlider->getBounds().getCentreY() + 16);
     }
     else if (&labelToResize == rangeLabelMax)
     {
         rangeLabelMax->setCentrePosition (jmin (jmax ((int) getThumbX (highThumb), rangeLabelMax->getWidth()/2),
                                                 getWidth() - rangeLabelMax->getWidth()/2),
-                                          highSlider->getBounds().getCentreY() - 16);
+                                          highSlider->getBounds().getCentreY() + 16);
     }
 }
 
@@ -628,7 +644,21 @@ MidiRangeTuner::DraggableObject MidiRangeTuner::getObjectToDrag (const MouseEven
 
 void MidiRangeTuner::drawCursor (Graphics& g)
 {
+    if (lastValue == -1) return;
 
+    float maxMidiFloat = (gesture.midiType == Gesture::pitch) ? 16383.0f : 127.0f;
+
+    Path cursorPath;
+    float cursorX = 11.5f + (lowSlider->getWidth() - 23.0f) * (lastValue / maxMidiFloat);
+
+    Point<float> cursorPoint = {cursorX, lowSlider->getBounds().getCentreY() - 9.0f};
+
+    cursorPath.addTriangle ({cursorPoint.x - 3.0f, cursorPoint.y - 3.0f},
+                            {cursorPoint.x + 3.0f, cursorPoint.y - 3.0f},
+                            {cursorPoint.x       , cursorPoint.y + 3.0f});
+
+    g.setColour (highlightColour);
+    g.fillPath (cursorPath);
 }
 
 void MidiRangeTuner::drawSliderBackground (Graphics& g)
