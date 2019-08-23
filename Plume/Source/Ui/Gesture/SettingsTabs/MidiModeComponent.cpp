@@ -70,7 +70,7 @@ void MidiModeComponent::resized()
 
     auto rangeArea = area;
 
-    midiRangeTuner->setBounds (rangeArea.withSizeKeepingCentre (area.getWidth() - 2*MARGIN, area.getHeight()));
+    midiRangeTuner->setBounds (rangeArea.withSizeKeepingCentre (area.getWidth()*3/4 - 2*MARGIN, area.getHeight()));
 }
 
 //==============================================================================
