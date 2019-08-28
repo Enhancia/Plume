@@ -60,8 +60,8 @@ private:
     void computeSmoothIntensity (float smoothnessRamp);
 
     //==============================================================================
-    void setGain (float value);
-    void setThreshold (float value);
+    void setGain (float value, const bool createChangeGesture = false);
+    void setThreshold (float value, const bool createChangeGesture = false);
     float& getIntensityReference();
 
     float getGain();

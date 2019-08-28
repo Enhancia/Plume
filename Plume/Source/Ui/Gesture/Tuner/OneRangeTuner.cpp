@@ -101,6 +101,7 @@ void OneRangeTuner::resizeButtons()
     
 void OneRangeTuner::updateComponents()
 {
+    Logger::writeToLog ("One Range Tuner Update GENERAL");
     if (rangeLow.getValue() < rangeHigh.getValue())
     {
         // Sets slider value
@@ -134,9 +135,9 @@ void OneRangeTuner::updateComponents (OneRangeTuner::DraggableObject thumbThatSh
         // Sets slider value
         if (lowSlider->getThumbBeingDragged() == -1)
         {
-            if (rangeLow.getValue() > rangeHigh.getValue())
+            if (highSlider->getThumbBeingDragged() == -1 && rangeLow.getValue() > rangeHigh.getValue())
             {
-                setRangeHigh (getRangeLow());
+                setRangeHigh (getRangeLow(), true);
 
                 // Allows the DAW to update the value without using slider->setValue() with a notification
                 // The latter causes crashes on Ableton Live
@@ -151,9 +152,9 @@ void OneRangeTuner::updateComponents (OneRangeTuner::DraggableObject thumbThatSh
         // Sets slider value
         if (highSlider->getThumbBeingDragged() == -1)
         {
-            if (rangeLow.getValue() > rangeHigh.getValue())
+            if (lowSlider->getThumbBeingDragged() == -1 && rangeLow.getValue() > rangeHigh.getValue())
             {
-                setRangeLow (getRangeHigh());
+                setRangeLow (getRangeHigh(), true);
 
                 // Allows the DAW to update the value without using slider->setValue() with a notification
                 // The latter causes crashes on Ableton Live
@@ -277,6 +278,8 @@ void OneRangeTuner::editorHidden (Label* lbl, TextEditor&)
     
 void OneRangeTuner::sliderValueChanged (Slider* sldr)
 {
+    //ScopedLock sliderLock (rangeUpdateLock);
+    
     if (sldr == lowSlider)
     {
         // min value changed by user
@@ -285,9 +288,10 @@ void OneRangeTuner::sliderValueChanged (Slider* sldr)
         rangeLabelMin->setText (String (int (getRangeLow())) + valueUnit, dontSendNotification);
         
         // in case the other thumb is dragged along..
-        if (rangeLow.getValue() > rangeHigh.getValue())
+        if (highSlider->getThumbBeingDragged() == -1 && rangeLow.getValue() > rangeHigh.getValue())
         {
-            setRangeHigh (float (lowSlider->getValue()));
+            setRangeHigh (float (lowSlider->getValue()), true);
+            highSlider->setValue (double (getRangeLow()), dontSendNotification);
             updateLabelBounds (rangeLabelMax);
             rangeLabelMax->setText (String (float (sldr->getValue())) + valueUnit, dontSendNotification);
         }
@@ -299,11 +303,12 @@ void OneRangeTuner::sliderValueChanged (Slider* sldr)
         setRangeHigh (float (highSlider->getValue()));
         updateLabelBounds (rangeLabelMax);
         rangeLabelMax->setText (String (int (getRangeHigh())) + valueUnit, dontSendNotification);
-            
+        
         // in case the other thumb is dragged along..
-        if (rangeLow.getValue() > rangeHigh.getValue())
+        if (lowSlider->getThumbBeingDragged() == -1 && rangeLow.getValue() > rangeHigh.getValue())
         {
-            setRangeLow (float (highSlider->getValue()));
+            setRangeLow (float (highSlider->getValue()), true);
+            lowSlider->setValue (double (getRangeLow()), dontSendNotification);
             updateLabelBounds (rangeLabelMin);
             rangeLabelMin->setText (String (float (sldr->getValue())) + valueUnit, dontSendNotification);
         }
@@ -344,16 +349,21 @@ void OneRangeTuner::handleSingleClick (const MouseEvent& e)
     
     if (objectBeingDragged == lowThumb)
     {
+        rangeLow.beginChangeGesture();
         lowSlider->mouseDown (e.getEventRelativeTo (lowSlider));
         rangeLabelMin->setVisible (true);
     }
     else if (objectBeingDragged == highThumb)
     {
+        rangeHigh.beginChangeGesture();
         highSlider->mouseDown (e.getEventRelativeTo (highSlider));
         rangeLabelMax->setVisible (true);
     }
     else if (objectBeingDragged == middleArea)
     {
+        rangeLow.beginChangeGesture();
+        rangeHigh.beginChangeGesture();
+        
         lowSlider->setSliderStyle (tunerStyle == wave ? Slider::RotaryVerticalDrag
                                                       : tunerStyle == tilt ? Slider::RotaryHorizontalVerticalDrag
                                                                            : Slider::RotaryHorizontalDrag);
@@ -415,14 +425,19 @@ void OneRangeTuner::mouseUp (const MouseEvent& e)
 {
     if (objectBeingDragged == lowThumb)
     {
+        rangeLow.endChangeGesture();
         lowSlider->mouseUp (e.getEventRelativeTo (lowSlider));
     }
     else if (objectBeingDragged == highThumb)
     {
+        rangeHigh.endChangeGesture();
         highSlider->mouseUp (e.getEventRelativeTo (highSlider));
     }
     else if (objectBeingDragged == middleArea)
     {
+        rangeLow.endChangeGesture();
+        rangeHigh.endChangeGesture();
+        
         lowSlider->setSliderStyle (Slider::Rotary);
         highSlider->setSliderStyle (Slider::Rotary);
 
@@ -518,22 +533,22 @@ void OneRangeTuner::createButtons()
     setButtonSettings (*maxAngleButton);
 }
     
-void OneRangeTuner::setRangeLow (float val)
+void OneRangeTuner::setRangeLow (float val, const bool createChangeGesture)
 {
-    DBG ("Set range low");
-
-    rangeLow.beginChangeGesture();
+    if (createChangeGesture) rangeLow.beginChangeGesture();
+    
     rangeLow.setValueNotifyingHost (rangeLow.convertTo0to1 (val));
-    rangeLow.endChangeGesture();
+    
+    if (createChangeGesture) rangeLow.endChangeGesture();
 }
     
-void OneRangeTuner::setRangeHigh (float val)
+void OneRangeTuner::setRangeHigh (float val, const bool createChangeGesture)
 {
-    DBG ("Set range high");
-
-    rangeHigh.beginChangeGesture();
+    if (createChangeGesture) rangeHigh.beginChangeGesture();
+    
     rangeHigh.setValueNotifyingHost (rangeHigh.convertTo0to1 (val));
-    rangeHigh.endChangeGesture();
+    
+    if (createChangeGesture) rangeHigh.endChangeGesture();
 }
     
 float OneRangeTuner::getRangeLow()
