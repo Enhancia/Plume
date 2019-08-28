@@ -58,6 +58,8 @@ void GestureSettingsComponent::update()
 
 void GestureSettingsComponent::update (const String& parameterThatChanged)
 {
+    TRACE_IN;
+    
     if (disabled) return;
     DBG ("GSC update with parameter : " << parameterThatChanged);
 
