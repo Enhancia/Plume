@@ -276,14 +276,14 @@ public:
      *
      *  \param newValue The float value to set.
      */
-    void setMidiLow (float newValue, bool checkOtherValue = true);
+    void setMidiLow (float newValue, bool checkOtherValue = true, bool createChangeGesture = true);
     
     /**
      *  \brief Setter for midiHigh parameter float value.
      *
      *  \param newValue The float value to set.
      */
-    void setMidiHigh (float newValue, bool checkOtherValue = true);
+    void setMidiHigh (float newValue, bool checkOtherValue = true, bool createChangeGesture = true);
     
     /**
      *  \brief Getter for the "active" boolean value.

@@ -24,6 +24,16 @@ class MidiRangeTuner : public Component,
 {
 public:
     //==============================================================================
+    enum DraggableObject
+    {
+        none = 0,
+
+        lowThumb,
+        highThumb,
+        middleArea
+    };
+
+    //==============================================================================
     MidiRangeTuner(Gesture& gest);
     ~MidiRangeTuner();
 
@@ -43,19 +53,10 @@ public:
 
     //==============================================================================
     void updateDisplay();
+    void updateComponents (DraggableObject thumbThatShouldUpdate);
     void updateHighlightColour();
 
 private:
-    //==============================================================================
-    enum DraggableObject
-    {
-        none = 0,
-
-        lowThumb,
-        highThumb,
-        middleArea
-    };
-
     //==============================================================================
     void createLabels();
     void createSliders();
