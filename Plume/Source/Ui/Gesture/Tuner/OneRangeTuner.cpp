@@ -290,7 +290,6 @@ void OneRangeTuner::sliderValueChanged (Slider* sldr)
         // in case the other thumb is dragged along..
         if (highSlider->getThumbBeingDragged() == -1 && rangeLow.getValue() > rangeHigh.getValue())
         {
-            DBG ("LOW SLIDER DRAG ALONG");
             setRangeHigh (float (lowSlider->getValue()), true);
             highSlider->setValue (double (getRangeLow()), dontSendNotification);
             updateLabelBounds (rangeLabelMax);
@@ -308,7 +307,6 @@ void OneRangeTuner::sliderValueChanged (Slider* sldr)
         // in case the other thumb is dragged along..
         if (lowSlider->getThumbBeingDragged() == -1 && rangeLow.getValue() > rangeHigh.getValue())
         {
-            DBG ("HIGH SLIDER DRAG ALONG");
             setRangeLow (float (highSlider->getValue()), true);
             lowSlider->setValue (double (getRangeLow()), dontSendNotification);
             updateLabelBounds (rangeLabelMin);
