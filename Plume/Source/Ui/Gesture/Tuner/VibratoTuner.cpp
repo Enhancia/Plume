@@ -188,10 +188,12 @@ void VibratoTuner::mouseDown (const MouseEvent& e)
 		{
 			if (e.eventComponent == gainSlider)
 			{
+				gain.beginChangeGesture();
 				gainLabel->setVisible (true);
 			}
 			else if (e.eventComponent == thresholdSlider)
 			{
+				threshold.beginChangeGesture();
 				thresholdLabel->setVisible (true);
 			}
 		}
@@ -217,10 +219,12 @@ void VibratoTuner::mouseUp (const MouseEvent& e)
 	{
 		if (e.eventComponent == gainSlider)
 		{
+			gain.endChangeGesture();
 			gainLabel->setVisible (false);
 		}
 		else if (e.eventComponent == thresholdSlider)
 		{
+			threshold.endChangeGesture();
 			thresholdLabel->setVisible (false);
 		}
 	}
@@ -330,18 +334,18 @@ void VibratoTuner::updateLabelBounds (Label* labelToUpdate)
 	}
 }
 
-void VibratoTuner::setGain (float value)
+void VibratoTuner::setGain (float value, const bool createChangeGesture)
 {
-    gain.beginChangeGesture();
+    if (createChangeGesture) gain.beginChangeGesture();
     gain.setValueNotifyingHost (gain.convertTo0to1 (value));
-    gain.endChangeGesture();
+    if (createChangeGesture) gain.endChangeGesture();
 }
 
-void VibratoTuner::setThreshold (float value)
+void VibratoTuner::setThreshold (float value, const bool createChangeGesture)
 {
-    threshold.beginChangeGesture();
+    if (createChangeGesture) threshold.beginChangeGesture();
     threshold.setValueNotifyingHost (threshold.convertTo0to1 (value));
-    threshold.endChangeGesture();
+    if (createChangeGesture) threshold.endChangeGesture();
 }
 
 float VibratoTuner::getGain()
