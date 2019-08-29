@@ -129,6 +129,11 @@ void MidiModeComponent::updateDisplay()
     midiRangeTuner->updateDisplay();
 }
 
+MidiRangeTuner& MidiModeComponent::getTuner()
+{
+    return *midiRangeTuner;
+}
+
 //==============================================================================
 void MidiModeComponent::createComboBox()
 {
@@ -420,14 +425,14 @@ void MidiRangeTuner::mouseUp (const MouseEvent& e)
             if (objectBeingDragged == lowThumb)
             {
                 gesture.midiLow.endChangeGesture();
-                lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider));
+                lowSlider->mouseUp (e.getEventRelativeTo (lowSlider));
                 rangeLabelMin->setVisible (false);
             }
 
             else if (objectBeingDragged == highThumb)
             {
                 gesture.midiHigh.endChangeGesture();
-                highSlider->mouseDrag (e.getEventRelativeTo (highSlider));
+                highSlider->mouseUp (e.getEventRelativeTo (highSlider));
                 rangeLabelMax->setVisible (false);
             }
 
@@ -436,8 +441,8 @@ void MidiRangeTuner::mouseUp (const MouseEvent& e)
                 gesture.midiLow.endChangeGesture();
                 gesture.midiHigh.endChangeGesture();
 
-                lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider));
-                highSlider->mouseDrag (e.getEventRelativeTo (highSlider));
+                lowSlider->mouseUp (e.getEventRelativeTo (lowSlider));
+                highSlider->mouseUp (e.getEventRelativeTo (highSlider));
 
                 lowSlider->setSliderSnapsToMousePosition (true);
                 highSlider->setSliderSnapsToMousePosition (true);
@@ -502,6 +507,8 @@ void MidiRangeTuner::updateComponents (MidiRangeTuner::DraggableObject thumbThat
     else
     {
         // general update
+        updateComponents (lowThumb);
+        updateComponents (highThumb);
     }
 }
 

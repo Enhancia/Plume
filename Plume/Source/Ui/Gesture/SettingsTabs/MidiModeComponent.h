@@ -114,6 +114,8 @@ public:
     void updateComponents();
     void updateDisplay();
 
+    MidiRangeTuner& getTuner();
+
 private:
     //==============================================================================
     void createComboBox();

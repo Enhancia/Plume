@@ -85,6 +85,11 @@ void RetractableMapAndMidiPanel::updateDisplay()
 	}
 }
 
+void RetractableMapAndMidiPanel::updateMidiRange (MidiRangeTuner::DraggableObject thumbToUpdate)
+{
+	midiBody->getTuner().updateComponents (thumbToUpdate);
+}	
+
 void RetractableMapAndMidiPanel::paint (Graphics& g)
 {
 }
