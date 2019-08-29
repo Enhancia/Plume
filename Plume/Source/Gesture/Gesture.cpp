@@ -227,24 +227,24 @@ bool Gesture::generatesMidi() const
     return (midiOnParameterOff.getValue() < 0.5f ? false : true);
 }
 
-void Gesture::setMidiLow (float newValue, bool checkOtherValue)
+void Gesture::setMidiLow (float newValue, bool checkOtherValue, bool createChangeGesture)
 {
     if (newValue > midiHigh.getValue() && checkOtherValue) newValue = midiHigh.getValue();
     else if (newValue < 0.0f) newValue = 0.0f; 
     
-    midiLow.beginChangeGesture();
+    if (createChangeGesture) midiLow.beginChangeGesture();
     midiLow.setValueNotifyingHost (newValue);
-    midiLow.endChangeGesture();
+    if (createChangeGesture) midiLow.endChangeGesture();
 }
 
-void Gesture::setMidiHigh (float newValue, bool checkOtherValue)
+void Gesture::setMidiHigh (float newValue, bool checkOtherValue, bool createChangeGesture)
 {
     if (newValue < midiLow.getValue() && checkOtherValue)  newValue = midiLow.getValue();
     else if (newValue > 1.0f) newValue = 1.0f; 
     
-    midiHigh.beginChangeGesture();
+    if (createChangeGesture) midiHigh.beginChangeGesture();
     midiHigh.setValueNotifyingHost (newValue);
-    midiHigh.endChangeGesture();
+    if (createChangeGesture) midiHigh.endChangeGesture();
 }
 
 bool Gesture::isActive() const

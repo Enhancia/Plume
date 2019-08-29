@@ -49,6 +49,7 @@ public:
     const String getInfoString() override;
     void update() override;
     void updateDisplay();
+    void updateMidiRange (MidiRangeTuner::DraggableObject thumbToUpdate = MidiRangeTuner::none);
     
     //==============================================================================
     void paint (Graphics&) override;

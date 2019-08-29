@@ -79,7 +79,16 @@ void RetractableMapAndMidiPanel::updateDisplay()
 	{
 		parametersBody->updateDisplay();
 	}
+	else if (panelMode == midiMode)
+	{
+		midiBody->updateDisplay();
+	}
 }
+
+void RetractableMapAndMidiPanel::updateMidiRange (MidiRangeTuner::DraggableObject thumbToUpdate)
+{
+	midiBody->getTuner().updateComponents (thumbToUpdate);
+}	
 
 void RetractableMapAndMidiPanel::paint (Graphics& g)
 {
@@ -149,6 +158,8 @@ void RetractableMapAndMidiPanel::changeListenerCallback(ChangeBroadcaster* sourc
 
 void RetractableMapAndMidiPanel::setPanelMode (PanelMode newMode)
 {
+	panelMode = newMode;
+	
 	if (newMode == parameterMode)
 	{
 		midiRetractable.banner->setVisible (false);

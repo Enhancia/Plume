@@ -18,6 +18,82 @@
 //==============================================================================
 /*
 */
+class MidiRangeTuner : public Component,
+                       private Label::Listener,
+                       private Slider::Listener
+{
+public:
+    //==============================================================================
+    enum DraggableObject
+    {
+        none = 0,
+
+        lowThumb,
+        highThumb,
+        middleArea
+    };
+
+    //==============================================================================
+    MidiRangeTuner(Gesture& gest);
+    ~MidiRangeTuner();
+
+    //==============================================================================
+    void paint(Graphics& g) override;
+    void resized() override;
+
+    //==============================================================================
+    void labelTextChanged(Label* lbl) override;
+    void editorHidden(Label* lbl, TextEditor& ted) override;
+    void sliderValueChanged(Slider* sldr) override;
+
+    //==============================================================================
+    void mouseDown (const MouseEvent& e) override;
+    void mouseDrag (const MouseEvent& e) override;
+    void mouseUp (const MouseEvent& e) override;
+
+    //==============================================================================
+    void updateDisplay();
+    void updateComponents (DraggableObject thumbThatShouldUpdate);
+    void updateHighlightColour();
+
+private:
+    //==============================================================================
+    void createLabels();
+    void createSliders();
+
+    //==============================================================================
+    float getThumbX(DraggableObject thumb);
+    void setLabelBounds(Label& labelToResize);
+
+    void handleSliderClick(const MouseEvent& e);
+    DraggableObject getObjectToDrag(const MouseEvent& e);
+
+    //==============================================================================
+    void drawCursor(Graphics& g);
+    void drawSliderBackground(Graphics& g);
+
+    //==============================================================================
+    Gesture& gesture;
+    int lastValue = -1;
+
+    //==============================================================================
+    ScopedPointer<Label> rangeLabelMin;
+    ScopedPointer<Label> rangeLabelMax;
+    ScopedPointer<Slider> lowSlider;
+    ScopedPointer<Slider> highSlider;
+
+    DraggableObject objectBeingDragged = none;
+    Colour highlightColour;
+
+    PLUME::UI::TestTunerLookAndFeel sliderLookAndFeel;
+
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MidiRangeTuner)
+};
+
+
+//==================================================================================
+
 class MidiModeComponent    : public Component,
                              private Label::Listener,
                              private ComboBox::Listener
@@ -36,6 +112,9 @@ public:
     
     //==============================================================================
     void updateComponents();
+    void updateDisplay();
+
+    MidiRangeTuner& getTuner();
 
 private:
     //==============================================================================
@@ -47,6 +126,7 @@ private:
     ScopedPointer<Label> ccLabel;
     ScopedPointer<Label> rangeLabelMin;
     ScopedPointer<Label> rangeLabelMax;
+    ScopedPointer<MidiRangeTuner> midiRangeTuner;
 
     //==============================================================================
     Gesture& gesture;
@@ -54,6 +134,8 @@ private:
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MidiModeComponent)
 };
+
+//==================================================================================
 
 class MidiBanner : public Component
 {

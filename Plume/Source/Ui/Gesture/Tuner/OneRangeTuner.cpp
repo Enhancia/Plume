@@ -68,7 +68,7 @@ void OneRangeTuner::resizeSliders()
 
         case tilt:
             sliderRadius = jmin (sliderBounds.getWidth()*2/3.0f, sliderBounds.getHeight()*2/3.0f);
-            sliderCentre = {getLocalBounds().getCentreX() - (int) sliderRadius/2,
+            sliderCentre = {getLocalBounds().getCentreX() + (int) sliderRadius/2,
                             sliderBounds.getCentreY() + (int) sliderRadius/2};
             break;
 
@@ -210,7 +210,7 @@ void OneRangeTuner::setStyle (TunerStyle newStyle)
             break;
 
         case tilt:
-            setAngles (0.0f, MathConstants<float>::pi*4/10);
+            setAngles (MathConstants<float>::pi*16/10, MathConstants<float>::twoPi);
             tunerColour = getPlumeColour (tiltHighlight);
             break;
 
@@ -410,12 +410,19 @@ void OneRangeTuner::mouseDrag (const MouseEvent& e)
     }
     else
     {
-        // Inverts the drag for the y axis
-        auto invertedYEvent = e.withNewPosition(Point<int> (e.x,
-                                                            e.getMouseDownY() - e.getDistanceFromDragStartY()));
+        if (tunerStyle == tilt)
+        {
+            lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider));
+            highSlider->mouseDrag (e.getEventRelativeTo (highSlider));
+        }
+        else
+        {
+            // Inverts the drag for the y axis
+            auto invertedYEvent = e.withNewPosition(Point<int> (e.x, e.getMouseDownY() - e.getDistanceFromDragStartY()));
 
-        lowSlider->mouseDrag (invertedYEvent.getEventRelativeTo (lowSlider));
-        highSlider->mouseDrag (invertedYEvent.getEventRelativeTo (highSlider));
+            lowSlider->mouseDrag (invertedYEvent.getEventRelativeTo (lowSlider));
+            highSlider->mouseDrag (invertedYEvent.getEventRelativeTo (highSlider));
+        }
     }
 
     repaint();

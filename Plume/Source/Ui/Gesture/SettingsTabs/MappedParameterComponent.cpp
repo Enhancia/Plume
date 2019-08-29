@@ -576,7 +576,7 @@ float MappedParameterComponent::getThumbY (MappedParameterComponent::DraggableOb
                                           (1.0f - highSlider->getValue());
     }
 
-    return -1;
+    return -1.0f;
 }
 
 MappedParameterComponent::DraggableObject MappedParameterComponent::getObjectToDrag (const MouseEvent& e)
