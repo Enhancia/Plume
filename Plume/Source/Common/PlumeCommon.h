@@ -184,6 +184,29 @@ namespace PLUME
             "_roll_high"
         };
     }
+
+    // data
+    namespace data
+    {
+        enum PlumeData
+        {
+            variance =0,
+            acceleration,
+            tilt,
+            roll,
+            battery,
+
+            numDatas
+        };
+
+        static float convertRawBatteryToPercentage (float rawBatteryValue)
+        {
+            if (rawBatteryValue <= 3.0f)      return 0.0f;
+            else if (rawBatteryValue >= 4.2f) return 1.0f;
+
+            else return (rawBatteryValue - 3.0f)/(4.2f - 3.0f);
+        }
+    }
     
     // commands strings
     namespace commands

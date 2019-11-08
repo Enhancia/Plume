@@ -39,7 +39,7 @@ class DataReader   : public Component,
                      public ChangeListener
 {
 public:
-    static constexpr int DATA_SIZE = 7;
+    static constexpr int DATA_SIZE = PLUME::data::numDatas;
     
     //==============================================================================
     DataReader();

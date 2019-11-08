@@ -61,7 +61,7 @@ bool DataReader::readData (String s)
     // Checks for full lines
     if (strArr.size() == DATA_SIZE)
     {
-        // Splits the string into 7 separate ones
+        // Splits the string into DATA_SIZE separate ones
         *data = strArr;
         return true;
     }

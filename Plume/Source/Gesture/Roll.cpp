@@ -75,5 +75,5 @@ float Roll::getValueForMappedParameter (Range<float> paramRange, bool reversed =
 //==============================================================================
 void Roll::updateValue (const Array<float> rawData)
 {
-    setGestureValue (-rawData[5]);
+    setGestureValue (-rawData[PLUME::data::roll]);
 }

@@ -380,10 +380,11 @@ void PresetHandler::initialiseDirectories()
     //createDirectoryArborescence (defaultDir);
 
     loadPresetDirectoryFromFile();
-    setUserDirectory (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/")
-                                                                                       .getChildFile ("Plume/")
-                                                                                       .getChildFile ("Presets/")
-                                                                                       .getChildFile ("User/"), false);
+    setUserDirectory (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Audio/")
+                                                                                   .getChildFile ("Presets/")
+                                                                                   .getChildFile ("Enhancia/")
+                                                                                   .getChildFile ("Plume/")
+                                                                                   .getChildFile ("User/"), false);
   #else
     return; //Should only compile on win or mac
   #endif

@@ -146,6 +146,6 @@ float& Vibrato::getIntensityReference()
 //==============================================================================
 void Vibrato::updateValue (const Array<float> rawData)
 {
-    if (isActive()) setIntensityValue (rawData[1]);
-    setGestureValue (rawData[0]);
+    if (isActive()) setIntensityValue (rawData[PLUME::data::acceleration]);
+    setGestureValue (rawData[PLUME::data::variance]);
 }
