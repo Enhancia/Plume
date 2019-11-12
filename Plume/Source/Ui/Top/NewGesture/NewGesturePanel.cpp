@@ -309,7 +309,10 @@ void NewGesturePanel::GestureTypeSelector::paint (Graphics& g)
 	}
 
 	g.setColour (PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText));
-	drawGesturePath (g, getLocalBounds().reduced (PLUME::UI::MARGIN));
+  g.setFont (PLUME::font::plumeFontBook.withHeight (13.0f));
+  g.drawText (Gesture::getTypeString (gestureType, true), getLocalBounds().reduced (PLUME::UI::MARGIN),
+              Justification::centred, false);
+	//drawGesturePath (g, getLocalBounds().reduced (PLUME::UI::MARGIN));
 }
 void NewGesturePanel::GestureTypeSelector::resized()
 {
@@ -338,7 +341,7 @@ void NewGesturePanel::GestureTypeSelector::setHighlighted (bool shouldBeHighligh
 void NewGesturePanel::GestureTypeSelector::drawGesturePath (Graphics& g, juce::Rectangle<int> area)
 {
     g.setColour (Colour (0xfff3f3f3));
-
+    /*
     // Icon Fill
     Path iconFill;
 
@@ -354,7 +357,7 @@ void NewGesturePanel::GestureTypeSelector::drawGesturePath (Graphics& g, juce::R
                          areaFloat.getWidth(), areaFloat.getHeight(), true);
 
     g.fillPath (iconFill);
-
+    */
     // Icon stroke
     /*
     Path iconStroke;

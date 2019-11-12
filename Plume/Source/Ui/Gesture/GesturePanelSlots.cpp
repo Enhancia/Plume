@@ -238,6 +238,7 @@ void GestureComponent::paintParameterSlotDisplay  (Graphics& g, juce::Rectangle<
 
 void GestureComponent::drawGesturePath (Graphics& g, juce::Rectangle<int> area)
 {
+    /*
     g.setColour (Colour (0xfff3f3f3));
 
     // Icon Fill
@@ -255,7 +256,7 @@ void GestureComponent::drawGesturePath (Graphics& g, juce::Rectangle<int> area)
                          areaFloat.getWidth(), areaFloat.getHeight(), true);
 
     g.fillPath (iconFill);
-
+*/
     // Icon stroke
     /*
     Path iconStroke;

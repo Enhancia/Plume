@@ -207,7 +207,7 @@ bool PitchBend::getSend()
 //==============================================================================
 void PitchBend::updateValue (const Array<float> rawData)
 {
-    setGestureValue (-rawData[PLUME::data::roll]);
+    setGestureValue (rawData[PLUME::data::roll]);
 }
 
 

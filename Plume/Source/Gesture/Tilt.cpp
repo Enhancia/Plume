@@ -69,7 +69,7 @@ void Tilt::updateMappedParameters()
 
 float Tilt::getValueForMappedParameter (Range<float> paramRange, bool reversed = false)
 {
-	return Gesture::mapParameter (getGestureValue(),
+	  return Gesture::mapParameter (getGestureValue(),
                                   rangeLow.convertFrom0to1 (rangeLow.getValue()),
                                   rangeHigh.convertFrom0to1 (rangeHigh.getValue()),
                                   paramRange, reversed);
@@ -78,5 +78,5 @@ float Tilt::getValueForMappedParameter (Range<float> paramRange, bool reversed =
 //==============================================================================
 void Tilt::updateValue (const Array<float> rawData)
 {
-    setGestureValue (rawData[PLUME::data::tilt]);
+    setGestureValue (-rawData[PLUME::data::tilt]);
 }
