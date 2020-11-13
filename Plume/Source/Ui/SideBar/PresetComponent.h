@@ -11,12 +11,12 @@
 #pragma once
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
-#include "Plugin/PluginProcessor.h"
-#include "Ui/SideBar/PresetBox.h"
-#include "Ui/SideBar/FilterBox.h"
-#include "Ui/SideBar/TypeToggleComponent.h"
-#include "Ui/SideBar/PresetSearchBar.h"
+#include "../../Common/PlumeCommon.h"
+#include "../../Plugin/PluginProcessor.h"
+#include "PresetBox.h"
+#include "FilterBox.h"
+#include "TypeToggleComponent.h"
+#include "PresetSearchBar.h"
 
 //==============================================================================
 /*

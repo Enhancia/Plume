@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "Plugin/PluginProcessor.h"
+#include "../Plugin/PluginProcessor.h"
 
 #if ! (JUCE_PLUGINHOST_VST || JUCE_PLUGINHOST_VST3 || JUCE_PLUGINHOST_AU)
  #error "If you're building the wrapper, you probably want to enable VST and/or AU support"

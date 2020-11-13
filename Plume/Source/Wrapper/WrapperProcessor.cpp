@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "Wrapper/PluginWrapper.h"
+#include "PluginWrapper.h"
 
 //==============================================================================
 /*class that wraps a parameter from the plugin, forwarding it's methods to the wrapperProcessor*/

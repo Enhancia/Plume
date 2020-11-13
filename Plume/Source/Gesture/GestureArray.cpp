@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "Gesture/GestureArray.h"
+#include "GestureArray.h"
 
 GestureArray::GestureArray(DataReader& reader, AudioProcessorValueTreeState& params)  : dataReader (reader),
                                                                                         parameters (params)

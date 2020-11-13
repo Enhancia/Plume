@@ -12,10 +12,10 @@
 
 #include "../../JuceLibraryCode/JuceHeader.h"
 
-#include "Common/PlumeCommon.h"
+#include "../Common/PlumeCommon.h"
 
-#include "Gesture/GestureArray.h"
-#include "Wrapper/WrapperEditor.h"
+#include "../Gesture/GestureArray.h"
+#include "WrapperEditor.h"
 
 
 /**

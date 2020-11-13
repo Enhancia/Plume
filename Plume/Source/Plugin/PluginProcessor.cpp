@@ -8,8 +8,8 @@
   ==============================================================================
 */
 
-#include "Plugin/PluginProcessor.h"
-#include "Plugin/PluginEditor.h"
+#include "PluginProcessor.h"
+#include "PluginEditor.h"
 
 //==============================================================================
 PlumeProcessor::PlumeProcessor()
@@ -118,6 +118,8 @@ bool PlumeProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {   
     MidiBuffer plumeBuffer;
+
+    //DBG_trackSystemMidi (midiMessages);
     
     // Adds the gesture's MIDI messages to the buffer, and changes parameters if needed
     gestureArray->process (midiMessages, plumeBuffer);
@@ -538,4 +540,18 @@ void PlumeProcessor::updateTrackProperties (const AudioProcessor::TrackPropertie
 {
 	ignoreUnused (properties);
     DBG ("Name : " << properties.name << " | Colour : " << properties.colour.toDisplayString(false));
+}
+
+void PlumeProcessor::DBG_trackSystemMidi (MidiBuffer& midiMessages)
+{
+    if (!midiMessages.isEmpty())
+    {
+        for (const MidiMessageMetadata metadata : midiMessages)
+        {
+            if (metadata.getMessage().isMetaEvent())
+            {
+                DBG ("META EVENT !!");
+            }
+        }
+    }
 }
