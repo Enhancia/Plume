@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" pluginFormats="buildAU,buildStandalone,buildVST"
-              version="1.4.1" companyName="Enhancia" buildVST="1" buildVST3="0"
+<JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" pluginFormats="buildAU,buildStandalone,buildVST,buildVST3"
+              version="1.5.0" companyName="Enhancia" buildVST="1" buildVST3="1"
               buildAU="1" buildAUv3="0" buildRTAS="0" buildAAX="0" enableIAA="0"
               pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
               pluginManufacturer="Enhancia" pluginName="Plume" pluginDesc="Enhancia's Plume. Wraps other plugins, provides customizable and mappable gestures to use with Neova."
               binaryDataNamespace="PlumeData" includeBinaryInJuceHeader="1"
               id="PjN2uz" pluginManufacturerCode="Enhn" pluginCode="Plum" compilerFlagSchemes="NewScheme"
-              displaySplashScreen="1" jucerFormatVersion="1" jucerVersion="5.4.7">
+              displaySplashScreen="1" jucerFormatVersion="1">
   <MAINGROUP id="RYgD59" name="Plume">
     <GROUP id="{9375F276-9F56-CF4A-C1B1-D4B5B9CE68B9}" name="Source">
       <GROUP id="{C4265A58-C7CC-0AD4-EB4C-B191A90D4C34}" name="Plugin">
@@ -367,5 +367,6 @@
     <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_video" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
   </MODULES>
-  <JUCEOPTIONS JUCE_PLUGINHOST_VST="1" JUCE_PLUGINHOST_AU="1" JUCE_ENABLE_REPAINT_DEBUGGING="0"/>
+  <JUCEOPTIONS JUCE_PLUGINHOST_VST="1" JUCE_PLUGINHOST_AU="1" JUCE_ENABLE_REPAINT_DEBUGGING="0"
+               JUCE_PLUGINHOST_VST3="1"/>
 </JUCERPROJECT>
