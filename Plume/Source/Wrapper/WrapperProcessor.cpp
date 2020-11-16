@@ -75,6 +75,9 @@ void WrapperProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& mid
         buffer.clear();
     }
     
+    // Makes the plugin use playhead from the DAW
+    plugin.setPlayHead (getPlayHead());
+
     plugin.processBlock (buffer, midiMessages);
 }
 

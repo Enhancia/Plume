@@ -127,6 +127,9 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
     // if wrapped plugin, lets the wrapped plugin process all MIDI into sound
     if (wrapper->isWrapping())
     {
+        // Wrapper uses playhead from the DAW
+        wrapper->getWrapperProcessor().setPlayHead (getPlayHead());
+        
         // Calls the wrapper processor's processBlock method
         if (!(wrapper->getWrapperProcessor().isSuspended()))
         {
