@@ -93,7 +93,7 @@ void ScannerComponent::scanPlugins (bool clearList)
     scanButton->setButtonText ("Cancel");
     
     threadPool.reset (new ThreadPool (numThreads));
-    for (int i =0; i < numThreads; i++)
+    for (int i = 0; i < numThreads; i++)
     {
 		threadPool->addJob (new ScanJob(*this), true);
     }
@@ -143,32 +143,6 @@ bool ScannerComponent::shouldScanNextFile()
         
     }
   #endif
-
-    // Gets description and run checks
-    if (File::isAbsolutePath (nextPlugin))
-    {
-        OwnedArray<PluginDescription> descArray;
-
-		processor.getWrapper().getPluginFormat (nextPlugin)->findAllTypesForFile (descArray, nextPlugin);
-
-        if (!descArray.isEmpty())
-        {
-			if (PluginDescription* nextDesc = descArray.getFirst())
-			{
-                // Checks if instrument
-				if (!descArray.getFirst()->isInstrument)
-				{
-					return false;
-				}
-
-                // Checks if description was already scanned
-                if (isDescriptionAlreadyInList (*nextDesc))
-                {
-                    return false;
-                }
-			}
-        }
-    }
 
     return true;
 }
@@ -249,7 +223,8 @@ void ScannerComponent::scanFinished()
     // Else reverts to non scan mode and saves plugins to external list
     scanButton->setButtonText ("Scan");
     bar->repaint();
-    
+    processor.getWrapper().removeNonInstrumentsFromList();
+
     dirScanner.reset();
     processor.getWrapper().savePluginListToFile();
     

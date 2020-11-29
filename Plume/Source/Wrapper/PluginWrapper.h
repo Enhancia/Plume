@@ -60,6 +60,7 @@ public:
     void scanAllPluginsInDirectories (bool dontRescanIfAlreadyInList, bool ignoreBlackList = false);
     PluginDirectoryScanner* getDirectoryScannerForFormat (int formatToScan);
     void savePluginListToFile();
+    void removeNonInstrumentsFromList();
     
     AudioPluginFormat* getPluginFormat (File pluginFile);
     
@@ -104,6 +105,7 @@ private:
     Array<File*> createFileList();
     PluginDescription* getDescriptionToWrap (const PluginDescription& description);
     void loadPluginListFromFile();
+    File getOrCreateDeadsManPedalFile();
     
     //==============================================================================
     bool hasWrappedInstance;
