@@ -61,6 +61,7 @@ public:
     PluginDirectoryScanner* getDirectoryScannerForFormat (int formatToScan);
     void savePluginListToFile();
     void removeNonInstrumentsFromList();
+    void resetDeadsManPedalFile();
     
     AudioPluginFormat* getPluginFormat (File pluginFile);
     

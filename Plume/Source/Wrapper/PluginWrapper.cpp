@@ -624,7 +624,28 @@ void PluginWrapper::removeNonInstrumentsFromList()
         if (!type.isInstrument) pluginList->removeType (type);
     }
 }
-    
+
+void PluginWrapper::resetDeadsManPedalFile()
+{
+    // Attempts to find file
+    File deadFile;
+
+  #if JUCE_WINDOWS
+    deadFile = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/")
+                                                                            .getChildFile ("Plume/");
+  #elif JUCE_MAC
+    deadFile = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/")
+                                                                            .getChildFile ("Plume/");
+  #endif
+  
+    deadFile = deadFile.getChildFile ("plumedmp.cfg");
+
+    if (deadFile.exists() && deadFile.loadFileAsString().isNotEmpty())
+    {
+        deadFile.replaceWithText (String());
+    }
+}
+
 void PluginWrapper::loadPluginListFromFile()
 {
     // Attempts to find file

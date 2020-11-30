@@ -54,6 +54,12 @@ void ScannerComponent::buttonClicked (Button* bttn)
 
         else
         {
+            if (ModifierKeys::currentModifiers.isAltDown()) // Forced rescan
+            {
+                processor.getWrapper().resetDeadsManPedalFile();
+                processor.getWrapper().getList().clearBlacklistedFiles();
+            }
+
             formatToScan = 0;
             scanPlugins();
         }
