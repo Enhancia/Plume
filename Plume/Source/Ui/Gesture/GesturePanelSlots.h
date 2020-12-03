@@ -11,8 +11,8 @@
 #pragma once
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
-#include "../../Common/PlumeCommon.h"
-#include "../../Gesture/GestureArray.h"
+#include "Common/PlumeCommon.h"
+#include "Gesture/GestureArray.h"
 
 class GestureComponent : public PlumeComponent,
                          private Label::Listener

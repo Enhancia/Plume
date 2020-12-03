@@ -10,18 +10,18 @@
 
 #pragma once
 
-#include "../../JuceLibraryCode/JuceHeader.h"
-#include "../Common/PlumeCommon.h"
+#include "../JuceLibraryCode/JuceHeader.h"
+#include "Common/PlumeCommon.h"
 
-#include "../Ui/SideBar/SideBarComponent.h"
-#include "../Ui/SideBar/PresetComponent.h"
-#include "../Ui/SideBar/HideSideBarButton.h"
-#include "../Ui/Header/HeaderComponent.h"
-#include "../Ui/Gesture/GesturePanel.h"
-#include "../Ui/LookAndFeel/PlumeLookAndFeel.h"
-#include "../Ui/Top/Options/OptionsPanel.h"
-#include "../Ui/Top/NewPreset/NewPresetPanel.h"
-#include "../Ui/Top/NewGesture/NewGesturePanel.h"
+#include "Ui/SideBar/SideBarComponent.h"
+#include "Ui/SideBar/PresetComponent.h"
+#include "Ui/SideBar/HideSideBarButton.h"
+#include "Ui/Header/HeaderComponent.h"
+#include "Ui/Gesture/GesturePanel.h"
+#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
+#include "Ui/Top/Options/OptionsPanel.h"
+#include "Ui/Top/NewPreset/NewPresetPanel.h"
+#include "Ui/Top/NewGesture/NewGesturePanel.h"
 
 //==============================================================================
 /**

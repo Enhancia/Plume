@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include "../../JuceLibraryCode/JuceHeader.h"
-#include "Gesture.h"
+#include "../JuceLibraryCode/JuceHeader.h"
+#include "Gesture/Gesture.h"
 
 /**
  *  \class PitchBend PitchBend.h

@@ -9,7 +9,7 @@
 */
 
 #pragma once
-#include "../../JuceLibraryCode/JuceHeader.h"
+#include "../JuceLibraryCode/JuceHeader.h"
 #define getPlumeColour(x) (PLUME::UI::currentTheme.getColour (PLUME::colour::x))
 
 namespace PLUME

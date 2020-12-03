@@ -8,8 +8,8 @@
   ==============================================================================
 */
 
-#include "Tuner/GesturesTuner.h"
-#include "SettingsTabs/MapperComponent.h"
+#include "Ui/Gesture/Tuner/GesturesTuner.h"
+#include "Ui/Gesture/SettingsTabs/MapperComponent.h"
 #include "GestureSettingsComponent.h"
 
 //==============================================================================

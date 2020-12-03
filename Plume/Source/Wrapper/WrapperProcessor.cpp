@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "PluginWrapper.h"
+#include "Wrapper/PluginWrapper.h"
 
 //==============================================================================
 /*class that wraps a parameter from the plugin, forwarding it's methods to the wrapperProcessor*/
@@ -75,9 +75,6 @@ void WrapperProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& mid
         buffer.clear();
     }
     
-    // Makes the plugin use playhead from the DAW
-    plugin.setPlayHead (getPlayHead());
-
     plugin.processBlock (buffer, midiMessages);
 }
 

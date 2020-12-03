@@ -81,7 +81,7 @@ void Gesture::addEventAndMergeCCToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
     
     for (MidiBuffer::Iterator i (midiMessages); i.getNextEvent (m, time);)
     {
-        if (m.isController()) // checks if right event
+        if (m.isAftertouch()) // checks if right event
         {
             // Creates a cc message with the new value
             int newVal = m.getControllerValue() + midiValue;
@@ -170,7 +170,7 @@ float Gesture::getGestureValue() const
 	return range.convertFrom0to1 (value.getValue());
 }
 
-std::atomic<float>& Gesture::getValueReference()
+float& Gesture::getValueReference()
 {
 	return *valueRef;
 }

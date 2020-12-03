@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "MovingCursor.h"
+#include "Ui/Common/MovingCursor.h"
 
 //==============================================================================
 MovingCursor::MovingCursor(const float& val, const Range<float> disp, NormalisableRange<float> convt, int size, int offsetFromSide)

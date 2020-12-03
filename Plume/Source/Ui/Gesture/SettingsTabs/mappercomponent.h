@@ -11,12 +11,13 @@
 #pragma once
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
-#include "../../../Common/PlumeCommon.h"
-#include "../../../Wrapper/PluginWrapper.h"
-#include "../../../Gesture/Gesture.h"
-#include "../../LookAndFeel/PlumeLookAndFeel.h"
-#include "MappedParameterComponent.h"
-#include "MidiModeComponent.h"
+#include "Common/PlumeCommon.h"
+
+#include "Wrapper/PluginWrapper.h"
+#include "Gesture/Gesture.h"
+#include "Ui/Gesture/SettingsTabs/MappedParameterComponent.h"
+#include "Ui/Gesture/SettingsTabs/MidiModeComponent.h"
+#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
 
 //==============================================================================
 /*
