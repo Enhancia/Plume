@@ -11,8 +11,8 @@
 #pragma once
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
-#include "Ui/Gesture/Tuner/Tuner.h"
-#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
+#include "../../LookAndFeel/PlumeLookAndFeel.h"
+#include "Tuner.h"
 
 class OneRangeTuner:  public Tuner,
                       private Slider::Listener,
@@ -36,7 +36,7 @@ public:
     };
 
     //==============================================================================
-    OneRangeTuner(const float& val, NormalisableRange<float> gestureRange,
+    OneRangeTuner(const std::atomic<float>& val, NormalisableRange<float> gestureRange,
                   RangedAudioParameter& rangeL, RangedAudioParameter& rangeH, const Range<float> paramMax,
                   const String unit = "", TunerStyle style = wave);
     ~OneRangeTuner();
@@ -100,7 +100,7 @@ private:
     void drawThumbsAndToleranceLines (Graphics& g);
     
     //==============================================================================
-    const float& value;
+    const std::atomic<float>& value;
     const NormalisableRange<float> gestureRange;
 
     //==============================================================================

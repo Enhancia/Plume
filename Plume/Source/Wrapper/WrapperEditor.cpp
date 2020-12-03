@@ -13,9 +13,9 @@
 #if (JUCE_WINDOWS || defined(__OBJC__))
 
 #if JUCE_MAC
-#define Component juce::Component
+#define Component juce::Component // MacOS' API apparently has a Component object that conflicts with JUCE's
 #endif
-#include "Wrapper/PluginWrapper.h"
+#include "PluginWrapper.h"
 
 //==============================================================================
 WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc, const Component* componentWhichWindowToAttachTo)
@@ -155,7 +155,7 @@ void* WrapperEditorWindow::findHostHandle()
     }
   #endif
   
-	// If Plume's window is not owned by / related to the DAW. This is the case on mac (and is really not likely on win).
+	// If Plume's window is not owned by / related to the DAW. This is the case on mac (and is really unlikely on win).
     return nullptr;
 }
 

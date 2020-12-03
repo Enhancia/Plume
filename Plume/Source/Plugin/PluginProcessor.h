@@ -10,14 +10,14 @@
 
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
+#include "../../JuceLibraryCode/JuceHeader.h"
+#include "../Common/PlumeCommon.h"
 
-#include "Gesture/GestureArray.h"
-#include "Wrapper/PluginWrapper.h"
-#include "Gesture/Gesture.h"
-#include "DataReader/DataReader.h"
-#include "Presets/PresetHandler.h"
+#include "../Gesture/GestureArray.h"
+#include "../Wrapper/PluginWrapper.h"
+#include "../Gesture/Gesture.h"
+#include "../DataReader/DataReader.h"
+#include "../Presets/PresetHandler.h"
 
 
 //==============================================================================
@@ -187,6 +187,10 @@ public:
     
     
 private:
+    //==============================================================================
+    // TO DELETE
+    void DBG_trackSystemMidi (MidiBuffer& midiMessages);
+
     //==============================================================================
     void initializeParameters();
     void initializeValueTree();

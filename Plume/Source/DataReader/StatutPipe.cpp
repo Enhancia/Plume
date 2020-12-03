@@ -5,10 +5,10 @@
  
  ==============================================================================
  */
-#include "../JuceLibraryCode/JuceHeader.h"
+#include "../../JuceLibraryCode/JuceHeader.h"
 
 #if JUCE_MAC
-#include "DataReader/StatutPipe.h"
+#include "StatutPipe.h"
 
 //==============================================================================
 StatutPipe::StatutPipe(): InterprocessConnection (true, 0x6a6d626e)

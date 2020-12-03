@@ -8,10 +8,10 @@
   ==============================================================================
 */
 
-#include "Ui/Gesture/Tuner/OneRangeTuner.h"
+#include "OneRangeTuner.h"
 
 
-OneRangeTuner::OneRangeTuner(const float& val, NormalisableRange<float> gestRange,
+OneRangeTuner::OneRangeTuner(const std::atomic<float>& val, NormalisableRange<float> gestRange,
                              RangedAudioParameter& rangeL, RangedAudioParameter& rangeH, const Range<float> paramMax,
                              const String unit, TunerStyle style)
     : Tuner (unit),
