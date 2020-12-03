@@ -11,9 +11,9 @@
 #pragma once
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
-#include "../../Common/PlumeCommon.h"
-#include "../../Plugin/PluginProcessor.h"
-#include "../Gesture/GesturePanel.h"
+#include "Common/PlumeCommon.h"
+#include "Plugin/PluginProcessor.h"
+#include "Ui/Gesture/GesturePanel.h"
 
 //==============================================================================
 /*

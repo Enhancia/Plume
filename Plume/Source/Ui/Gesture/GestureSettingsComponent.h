@@ -11,14 +11,14 @@
 #pragma once
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
-#include "../../Common/PlumeCommon.h"
-#include "../../Gesture/GestureArray.h"
-#include "../../Wrapper/PluginWrapper.h"
-#include "../Common/TabbedPanelComponent.h"
-#include "Tuner/GesturesTuner.h"
-#include "SettingsTabs/RetractableMapAndMidiPanel.h"
-#include "SettingsTabs/MapperComponent.h"
-#include "SettingsTabs/DescriptionPanel.h"
+#include "Common/PlumeCommon.h"
+#include "Gesture/GestureArray.h"
+#include "Wrapper/PluginWrapper.h"
+#include "Ui/Common/TabbedPanelComponent.h"
+#include "Ui/Gesture/Tuner/GesturesTuner.h"
+#include "Ui/Gesture/SettingsTabs/RetractableMapAndMidiPanel.h"
+#include "Ui/Gesture/SettingsTabs/MapperComponent.h"
+#include "Ui/Gesture/SettingsTabs/DescriptionPanel.h"
 
 //==============================================================================
 /*

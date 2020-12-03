@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "../Plugin/PluginProcessor.h"
+#include "Plugin/PluginProcessor.h"
 
 #if ! (JUCE_PLUGINHOST_VST || JUCE_PLUGINHOST_VST3 || JUCE_PLUGINHOST_AU)
  #error "If you're building the wrapper, you probably want to enable VST and/or AU support"
@@ -371,60 +371,67 @@ KnownPluginList& PluginWrapper::getList()
 Array<File*> PluginWrapper::createFileList()
 {
     Array<File*> directories;
-
-    auto addFileToDirectories = [] (Array<File*>& dirs, File& fileToAdd)
-    {
-        if (fileToAdd.exists()) dirs.add (new File (fileToAdd));
-    };
     
     // Adds OS specific paths if they exist
   #if JUCE_WINDOWS
 
     if (useDefaultPaths)
     {
+        File f;
         // C:\Program Files\VSTPlugins 
-        addFileToDirectories (directories, File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("VSTPlugins/"));
+        f = File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("VSTPlugins/");
+        
+        if (f.exists()) directories.add (new File (f));
         
         // C:\Program Files\Steinberg\VSTPlugins
-        addFileToDirectories (directories, File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("Steinberg/")
-                                                                        .getChildFile ("VSTPlugins/"));
+        f = File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("Steinberg/")
+                                                                        .getChildFile ("VSTPlugins/");
+        if (f.exists()) directories.add (new File (f));
         
         // C:\Program Files\Common Files\VST2\                                                              
-        addFileToDirectories (directories, File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("Common Files/")
-                                                                        .getChildFile ("VST2/"));
+        f = File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("Common Files/")
+                                                                        .getChildFile ("VST2/");
+        if (f.exists()) directories.add (new File (f));
         
         // C:\Program Files\Common Files\Steinberg\VST2                                                              
-        addFileToDirectories (directories, File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("Common Files/")
+        f = File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("Common Files/")
                                                                         .getChildFile ("Steinberg/")
-                                                                        .getChildFile ("VST2/"));
+                                                                        .getChildFile ("VST2/");
+        if (f.exists()) directories.add (new File (f));
     }
 
   #elif JUCE_MAC
 
     if (useAudioUnits)
     {
+        File f;
         // Macintosh HD:/Library/Audio/Plug-Ins/Components/
-        addFileToDirectories (directories, File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Audio/")
+        f = File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Audio/")
                                                                            .getChildFile ("Plug-Ins/")
-                                                                           .getChildFile ("Components/"));
+                                                                           .getChildFile ("Components/");
+        if (f.exists()) directories.add (new File (f));
         
         // ~/Library/Audio/Plug-Ins/Components/                                                               
-        addFileToDirectories (directories, File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Audio/")
+        f = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Audio/")
                                                                          .getChildFile ("Plug-Ins/")
-                                                                         .getChildFile ("Components/"));
+                                                                         .getChildFile ("Components/");
+        if (f.exists()) directories.add (new File (f));
     }
 
     if (useDefaultPaths)
     {
+        File f;
         // Macintosh HD:/Library/Audio/Plug-Ins/VST/                                                               
-        addFileToDirectories (directories, File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Audio/")
+        f = File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Audio/")
                                                                            .getChildFile ("Plug-Ins/")
-                                                                           .getChildFile ("VST/"));
+                                                                           .getChildFile ("VST/");
+        if (f.exists()) directories.add (new File (f));
         
         // ~/Library/Audio/Plug-Ins/VST/                                                            
-        addFileToDirectories (directories, File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Audio/")
+        f = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Audio/")
                                                                          .getChildFile ("Plug-Ins/")
-                                                                         .getChildFile ("VST/"));
+                                                                         .getChildFile ("VST/");
+        if (f.exists()) directories.add (new File (f));    
     } 
 
   #endif
@@ -519,19 +526,19 @@ void PluginWrapper::scanAllPluginsInDirectories (bool dontRescanIfAlreadyInList,
     }
     */
     
-    //pluginList->clear();
+    pluginList->clear();
     
     // Sets all the files to search
     FileSearchPath fsp;
     for (auto* file : createFileList())
     {
-         fsp.add (File (*file)); // Creates a copy of the file to prevent leakage / nullptr bad access
-         delete file;
+        fsp.add (File (*file)); // Creates a copy of the file to prevent leakage / nullptr bad access
+		delete file;
     }
         
     for (int i=0; i<formatManager->getNumFormats(); i++)
     {
-        PluginDirectoryScanner dirScanner (*pluginList, *formatManager->getFormat (i), fsp, true, getOrCreateDeadsManPedalFile(), true);
+        PluginDirectoryScanner dirScanner (*pluginList, *formatManager->getFormat (i), fsp, true, File(), true);
         scanProgress = 0.0f;
         
         // Rescans until scanNextFile returns false
@@ -557,12 +564,12 @@ PluginDirectoryScanner* PluginWrapper::getDirectoryScannerForFormat (int formatT
     FileSearchPath fsp;
     for (auto* file : createFileList())
     {
-         fsp.add (File (*file)); // Creates a copy of the file to prevent leakage / nullptr bad access
-         delete file;
+        fsp.add (File (*file)); // Creates a copy of the file to prevent leakage / nullptr bad access
+		delete file;
     }
-
+        
     return new PluginDirectoryScanner (*pluginList, *formatManager->getFormat (formatToScan),
-                                                    fsp, true, getOrCreateDeadsManPedalFile(), true);
+                                                    fsp, true, File(), true);
 }
 
 void PluginWrapper::addPluginsToMenu (PopupMenu& menu, KnownPluginList::SortMethod sort)
@@ -616,36 +623,7 @@ void PluginWrapper::savePluginListToFile()
     listXml->writeToFile (scannedPlugins, StringRef());
     listXml->deleteAllChildElements();
 }
-
-void PluginWrapper::removeNonInstrumentsFromList()
-{
-    for (auto& type : pluginList->getTypes())
-    {
-        if (!type.isInstrument) pluginList->removeType (type);
-    }
-}
-
-void PluginWrapper::resetDeadsManPedalFile()
-{
-    // Attempts to find file
-    File deadFile;
-
-  #if JUCE_WINDOWS
-    deadFile = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/")
-                                                                            .getChildFile ("Plume/");
-  #elif JUCE_MAC
-    deadFile = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/")
-                                                                            .getChildFile ("Plume/");
-  #endif
-  
-    deadFile = deadFile.getChildFile ("plumedmp.cfg");
-
-    if (deadFile.exists() && deadFile.loadFileAsString().isNotEmpty())
-    {
-        deadFile.replaceWithText (String());
-    }
-}
-
+    
 void PluginWrapper::loadPluginListFromFile()
 {
     // Attempts to find file
@@ -690,29 +668,6 @@ void PluginWrapper::loadPluginListFromFile()
     }
     
 	listXml->deleteAllChildElements();
-}
-
-File PluginWrapper::getOrCreateDeadsManPedalFile()
-{
-    // Attempts to find file
-    File deadFile;
-
-  #if JUCE_WINDOWS
-    deadFile = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/")
-                                                                            .getChildFile ("Plume/");
-  #elif JUCE_MAC
-    deadFile = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/")
-                                                                            .getChildFile ("Plume/");
-  #endif
-  
-    deadFile = deadFile.getChildFile ("plumedmp.cfg");
-
-    if (deadFile.exists() || deadFile.create().wasOk())
-    {
-        return deadFile;
-    }
-
-    return File();
 }
 
 //==============================================================================

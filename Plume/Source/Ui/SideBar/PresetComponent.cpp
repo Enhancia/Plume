@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "PresetComponent.h"
+#include "Ui/SideBar/PresetComponent.h"
 
 PresetComponent::PresetComponent (PlumeProcessor& p)  : processor (p)
 {

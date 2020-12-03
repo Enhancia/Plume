@@ -8,8 +8,8 @@
   ==============================================================================
 */
 
-#include "PluginProcessor.h"
-#include "PluginEditor.h"
+#include "Plugin/PluginProcessor.h"
+#include "Plugin/PluginEditor.h"
 
 //==============================================================================
 PlumeEditor::PlumeEditor (PlumeProcessor& p)

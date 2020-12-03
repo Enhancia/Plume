@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include "../../JuceLibraryCode/JuceHeader.h"
-#include "../Common/PlumeCommon.h"
+#include "../JuceLibraryCode/JuceHeader.h"
+#include "Common/PlumeCommon.h"
 
 #include "PlumePreset.h"
 

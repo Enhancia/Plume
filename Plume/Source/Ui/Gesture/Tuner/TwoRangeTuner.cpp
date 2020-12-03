@@ -8,10 +8,10 @@
   ==============================================================================
 */
 
-#include "TwoRangeTuner.h"
+#include "Ui/Gesture/Tuner/TwoRangeTuner.h"
 
 //==============================================================================
-TwoRangeTuner::TwoRangeTuner(const std::atomic<float>& val, const NormalisableRange<float> gestRange,
+TwoRangeTuner::TwoRangeTuner(const float& val, const NormalisableRange<float> gestRange,
                 RangedAudioParameter& rangeLL, RangedAudioParameter& rangeLH,
                 RangedAudioParameter& rangeRL, RangedAudioParameter& rangeRH,
                 const Range<float> paramMax, const String unit)

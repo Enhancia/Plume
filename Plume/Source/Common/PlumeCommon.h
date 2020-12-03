@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "../../JuceLibraryCode/JuceHeader.h"
+#include "../JuceLibraryCode/JuceHeader.h"
 
 #if JUCE_WINDOWS
 #include <windows.h>
@@ -20,10 +20,10 @@
 #endif
 
 #include "PlumeColours.h"
-#include "../Ui/Common/PlumeComponent.h"
-#include "../Ui/Common/PlumeProgressBar.h"
-#include "../Ui/Common/DualTextToggle.h"
-#include "../Ui/Common/PlumeShapeButton.h"
+#include "Ui/Common/PlumeComponent.h"
+#include "Ui/Common/PlumeProgressBar.h"
+#include "Ui/Common/DualTextToggle.h"
+#include "Ui/Common/PlumeShapeButton.h"
 
 // Preprocessor expressions
 #define TRACE_IN  Logger::writeToLog ("[+] Entering: " + String(__FUNCTION__) + "\n")

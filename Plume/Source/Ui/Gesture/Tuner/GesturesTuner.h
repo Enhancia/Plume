@@ -12,16 +12,16 @@
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
 
-#include "Tuner.h"
-#include "TwoRangeTuner.h"
-#include "OneRangeTuner.h"
-#include "VibratoTuner.h"
+#include "Ui/Gesture/Tuner/Tuner.h"
+#include "Ui/Gesture/Tuner/TwoRangeTuner.h"
+#include "Ui/Gesture/Tuner/OneRangeTuner.h"
+#include "Ui/Gesture/Tuner/VibratoTuner.h"
 
-#include "../../../Gesture/Vibrato.h"
-#include "../../../Gesture/PitchBend.h"
-#include "../../../Gesture/Tilt.h"
-#include "../../../Gesture/Wave.h"
-#include "../../../Gesture/Roll.h"
+#include "Gesture/Vibrato.h"
+#include "Gesture/PitchBend.h"
+#include "Gesture/Tilt.h"
+#include "Gesture/Wave.h"
+#include "Gesture/Roll.h"
 
 //==============================================================================
 class PitchBendTuner: public TwoRangeTuner

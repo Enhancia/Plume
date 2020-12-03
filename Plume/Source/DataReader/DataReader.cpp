@@ -6,7 +6,7 @@
   ==============================================================================
 */
 
-#include "DataReader.h"
+#include "DataReader/DataReader.h"
 
 //==============================================================================
 DataReader::DataReader(): InterprocessConnection (true, 0x6a6d626e)

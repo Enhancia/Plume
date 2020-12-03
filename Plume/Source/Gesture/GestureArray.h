@@ -10,16 +10,16 @@
 
 #pragma once
 
-#include "../../JuceLibraryCode/JuceHeader.h"
-#include "../Common/PlumeCommon.h"
+#include "../JuceLibraryCode/JuceHeader.h"
+#include "Common/PlumeCommon.h"
 
-#include "../DataReader/DataReader.h"
+#include "DataReader/DataReader.h"
 
-#include "Gesture.h"
-#include "Vibrato.h"
-#include "PitchBend.h"
-#include "Tilt.h"
-#include "Roll.h"
+#include "Gesture/Gesture.h"
+#include "Gesture/Vibrato.h"
+#include "Gesture/PitchBend.h"
+#include "Gesture/Tilt.h"
+#include "Gesture/Roll.h"
 
 /**
  *  \class GestureArray GestureArray.h

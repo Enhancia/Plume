@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "PlumeCommon.h"
+#include "Common/PlumeCommon.h"
 
 namespace PLUME
 {

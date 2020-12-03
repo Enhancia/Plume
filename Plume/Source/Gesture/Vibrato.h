@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include "../../JuceLibraryCode/JuceHeader.h"
-#include "Gesture.h"
+#include "../JuceLibraryCode/JuceHeader.h"
+#include "Gesture/Gesture.h"
 
 /**
  *  \class Vibrato Vibrato.h
@@ -37,7 +37,7 @@ public:
     
     //==============================================================================
     void setIntensityValue (float newVal);
-    std::atomic<float>& getIntensityReference();
+    float& getIntensityReference();
     void updateValue (const Array<float> rawData) override;
     
     //==============================================================================
@@ -49,7 +49,7 @@ public:
 	RangedAudioParameter& intensity; /**< Current intensity of the vibrato. The effect is triggered if this is above the threshold parameter*/
     
 private:
-    std::atomic<float>* intensityRef; /**< Value that will be checked to trigger the vibrato if higher than the treshold */
+    float* intensityRef; /**< Value that will be checked to trigger the vibrato if higher than the treshold */
     
     // Booleans that represent the state of the vibrato
     bool send = false; /**< \brief Boolean to know if the gesture should send midi */

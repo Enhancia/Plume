@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "MapperComponent.h"
+#include "Ui/Gesture/SettingsTabs/MapperComponent.h"
 
 #ifndef W 
 #define W Component::getWidth()

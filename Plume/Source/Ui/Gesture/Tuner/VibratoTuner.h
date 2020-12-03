@@ -11,9 +11,9 @@
 #pragma once
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
-#include "../../../Gesture/Vibrato.h"
-#include "../../LookAndFeel/PlumeLookAndFeel.h"
-#include "Tuner.h"
+#include "Ui/Gesture/Tuner/Tuner.h"
+#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
+#include "Gesture/Vibrato.h"
 
 class VibratoTuner:    public Tuner,
                        private Slider::Listener,
@@ -43,8 +43,8 @@ public:
     
 private:
     //==============================================================================
-	VibratoTuner (const std::atomic<float>& val, NormalisableRange<float> gestRange,
-					  const std::atomic<float>& vibratoIntensity, float maxIntens,
+	VibratoTuner (const float& val, NormalisableRange<float> gestRange,
+					  const float& vibratoIntensity, float maxIntens,
     				  RangedAudioParameter& gain, const Range<float> gainMax,
     				  RangedAudioParameter& thresh, const Range<float> threshMax);
 
@@ -62,18 +62,18 @@ private:
     //==============================================================================
     void setGain (float value, const bool createChangeGesture = false);
     void setThreshold (float value, const bool createChangeGesture = false);
-    std::atomic<float>& getIntensityReference();
+    float& getIntensityReference();
 
     float getGain();
     float getThreshold();
     
     //==============================================================================
-    const std::atomic<float>& value;
+    const float& value;
     float lastValue = -1.0f;
 
     const NormalisableRange<float> gestureRange;
+    const float& intensity;
     const float maxIntensity;
-    const std::atomic<float>& intensity;
 	float lastIntensity = -1.0f;
     float smoothIntensity = intensity;
     float incrementalSmoothFactor = 1.0f;
