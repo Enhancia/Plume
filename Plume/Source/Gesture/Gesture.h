@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
+#include "../../JuceLibraryCode/JuceHeader.h"
+#include "../Common/PlumeCommon.h"
 
 /**
  *  \class Gesture Gesture.h
@@ -216,7 +216,7 @@ public:
     /**
      *  \brief Getter for a reference to the raw value used by the gesture.
      */
-    float& getValueReference();
+    std::atomic<float>& getValueReference();
     
     /**
      *  \brief Getter for the range of the raw value.
@@ -492,7 +492,7 @@ protected:
     int lastMidi = -1; /**< \brief Integer value that represents the midiValue supposedely sent to the previous midiBuffer */
     
     //==============================================================================
-    float* valueRef; /**< \brief Parameter that holds the current "raw" value of the gesture. Should be used and updated by subclasses. */
+    std::atomic<float>* valueRef; /**< \brief Parameter that holds the current "raw" value of the gesture. Should be used and updated by subclasses. */
     const NormalisableRange<float> range; /**< \brief Attribute that holds the maximum range of values that the gesture can take. */
 	//int pitchReference = 8192; /**< \brief Base pitch value, that comes from external midi controllers */
 	

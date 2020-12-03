@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "Gesture/Vibrato.h"
+#include "Vibrato.h"
 using namespace PLUME;
 
 Vibrato::Vibrato (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
@@ -138,7 +138,7 @@ void Vibrato::setIntensityValue (float newVal)
     intensity.endChangeGesture();
 }
 
-float& Vibrato::getIntensityReference()
+std::atomic<float>& Vibrato::getIntensityReference()
 {
     return *intensityRef;
 }

@@ -8,10 +8,10 @@
   ==============================================================================
 */
 
-#include "Gesture/GestureArray.h"
-#include "Ui/Gesture/GesturePanel.h"
-#include "Ui/Gesture/Tuner/GesturesTuner.h"
-#include "Ui/Gesture/SettingsTabs/MapperComponent.h"
+#include "../../Gesture/GestureArray.h"
+#include "GesturePanel.h"
+#include "Tuner/GesturesTuner.h"
+#include "SettingsTabs/MapperComponent.h"
 #include "GestureSettingsComponent.h"
 
 //==============================================================================

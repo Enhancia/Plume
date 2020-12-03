@@ -10,8 +10,8 @@
 
 #include "VibratoTuner.h"
 
-VibratoTuner::VibratoTuner (const float& val, NormalisableRange<float> gestRange,
-						    const float& vibratoIntensity, float maxIntens,
+VibratoTuner::VibratoTuner (const std::atomic<float>& val, NormalisableRange<float> gestRange,
+						    const std::atomic<float>& vibratoIntensity, float maxIntens,
     				        RangedAudioParameter& vibGain, const Range<float> gainMax,
     				        RangedAudioParameter& thresh, const Range<float> threshMax)
     : Tuner ("", getPlumeColour (vibratoHighlight)),

@@ -12,10 +12,10 @@
 
 #include "../../JuceLibraryCode/JuceHeader.h"
 
-#include "Common/PlumeCommon.h"
+#include "../Common/PlumeCommon.h"
 
-#include "Gesture/GestureArray.h"
-#include "Wrapper/WrapperEditor.h"
+#include "../Gesture/GestureArray.h"
+#include "WrapperEditor.h"
 
 
 /**
@@ -60,6 +60,8 @@ public:
     void scanAllPluginsInDirectories (bool dontRescanIfAlreadyInList, bool ignoreBlackList = false);
     PluginDirectoryScanner* getDirectoryScannerForFormat (int formatToScan);
     void savePluginListToFile();
+    void removeNonInstrumentsFromList();
+    void resetDeadsManPedalFile();
     
     AudioPluginFormat* getPluginFormat (File pluginFile);
     
@@ -104,6 +106,7 @@ private:
     Array<File*> createFileList();
     PluginDescription* getDescriptionToWrap (const PluginDescription& description);
     void loadPluginListFromFile();
+    File getOrCreateDeadsManPedalFile();
     
     //==============================================================================
     bool hasWrappedInstance;

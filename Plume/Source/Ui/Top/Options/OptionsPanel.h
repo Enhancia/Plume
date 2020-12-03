@@ -11,12 +11,12 @@
 #pragma once
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
-#include "Plugin/PluginProcessor.h"
-#include "Ui/Top/Options/ScannerComponent.h"
-#include "Ui/Common/TabbedPanelComponent.h"
-#include "Ui/Top/Options/SubPanels/FileOptionsSubPanel.h"
-#include "Ui/Top/Options/SubPanels/GeneralOptionsSubPanel.h"
+#include "../../../Common/PlumeCommon.h"
+#include "../../../Plugin/PluginProcessor.h"
+#include "../../Common/TabbedPanelComponent.h"
+#include "ScannerComponent.h"
+#include "SubPanels/FileOptionsSubPanel.h"
+#include "SubPanels/GeneralOptionsSubPanel.h"
 
 //==============================================================================
 /*

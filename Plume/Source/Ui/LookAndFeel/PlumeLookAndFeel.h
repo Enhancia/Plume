@@ -10,7 +10,7 @@
 
 #pragma once
 #include "../../../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
+#include "../../Common/PlumeCommon.h"
 
 namespace PLUME
 {

@@ -11,8 +11,8 @@
 #pragma once
 
 #include "../../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
-#include "Wrapper/WrapperProcessor.h"
+#include "../Common/PlumeCommon.h"
+#include "WrapperProcessor.h"
 
 
 //==============================================================================

@@ -11,10 +11,10 @@
 #pragma once
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
-#include "Ui/SideBar/PresetComponent.h"
-#include "Ui/SideBar/InfoPanel.h"
-#include "Plugin/PluginProcessor.h"
+#include "../../Common/PlumeCommon.h"
+#include "../../Plugin/PluginProcessor.h"
+#include "PresetComponent.h"
+#include "InfoPanel.h"
 
 
 //==============================================================================

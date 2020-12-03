@@ -11,9 +11,9 @@
 #pragma once
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
-#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
-#include "Common/PlumeCommon.h"
-#include "Ui/Common/MovingCursor.h"
+#include "../../../Common/PlumeCommon.h"
+#include "../../LookAndFeel/PlumeLookAndFeel.h"
+#include "../../Common/MovingCursor.h"
 
 //==============================================================================
 /*
