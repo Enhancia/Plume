@@ -21,7 +21,7 @@ PitchBend::PitchBend (String gestName, int gestId, AudioProcessorValueTreeState&
                       float leftLow, float leftHigh, float rightLow, float rightHigh, String description)
                       
     : Gesture (gestName, Gesture::pitchBend, gestId,
-               NormalisableRange<float> (PITCHBEND_MIN, PITCHBEND_MAX, 0.1f),
+               NormalisableRange<float> (PLUME::gesture::PITCHBEND_MIN, PLUME::gesture::PITCHBEND_MAX, 0.1f),
                plumeParameters, description),
     
       rangeLeftLow   (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::bend_leftLow]))),
@@ -62,7 +62,7 @@ void PitchBend::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffe
 
 	if (pbVal == lastMidi) return; // Does nothing if the midi value did not change
 
-    if (send == true)
+    if (send)
     {
         // Creates the pitchwheel message
         addRightMidiSignalToBuffer (midiMessages, plumeBuffer, 1);
@@ -71,6 +71,13 @@ void PitchBend::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffe
 
 int PitchBend::getMidiValue()
 {
+    /*if (!(getGestureValue() >= rangeLeftEnd && getGestureValue() <= rangeRightStart && pbLast == true))
+    {
+        DBG ("COMPUTE PITCH BEND !! \nGesture value : " << getGestureValue() <<
+            "\nSend bool     : " << (send ? "Y" : "N") <<
+            "\nbLast bool     : " << (pbLast ? "Y" : "N"));
+    }*/
+
     // Right side
     if (getGestureValue() >= rangeRightStart && getGestureValue() < 140.0f)
     {
@@ -98,7 +105,7 @@ int PitchBend::getMidiValue()
     }
     
     // If back to central zone
-    else if (getGestureValue() > rangeLeftEnd && getGestureValue() < rangeRightStart && pbLast == true)
+    else if (getGestureValue() >= rangeLeftEnd && getGestureValue() <= rangeRightStart && pbLast == true)
     {
         send = true;
         pbLast = false;
@@ -113,14 +120,9 @@ bool PitchBend::shouldSend()
 {
     const float val = getGestureValue();
 
-    if ((val >= rangeRightStart && val < 140.0f) || // Right side
-        (val < rangeLeftEnd && val > -140.0f) || // Left side
-        (val > rangeLeftEnd && val < rangeRightStart && pbLast == true)) // Back to center
-    {
-        return true;
-    }
-    
-    return false;
+    return ((val >= rangeRightStart && val < 140.0f) || // Right side
+            (val < rangeLeftEnd && val > -140.0f) || // Left side
+            (val > rangeLeftEnd && val < rangeRightStart && pbLast == true)); // Back to center
 }
    
 void PitchBend::updateMappedParameters()

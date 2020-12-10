@@ -432,42 +432,48 @@ void PlumeProcessor::initializeParameters()
                 switch (i)
                 {
                     case vibrato_range:
-                        range = NormalisableRange<float> (0.0f, 500.0f, 1.0f);
-                        defVal = 400.0f;
+                        range = NormalisableRange<float> (0.0f, PLUME::gesture::VIBRATO_RANGE_MAX, 1.0f);
+                        defVal = PLUME::gesture::VIBRATO_RANGE_DEFAULT;
                         break;
 			        case vibrato_thresh:
                         range = NormalisableRange<float> (0.0f, 500.0f, 1.0f);
-                        defVal = 40.0f;
+                        defVal = PLUME::gesture::VIBRATO_THRESH_DEFAULT;
                         break;
                     case vibrato_intensity:
                         range = NormalisableRange<float> (0.0f, 1000.0f, 1.0f);
                         defVal = 0.0f;
                         break;
 			        case bend_leftLow:
-                        range = NormalisableRange<float> (-90.0f, 90.0f, 1.0f);
-                        defVal = -50.0f;
+                        range = NormalisableRange<float> (PLUME::UI::PITCHBEND_DISPLAY_MIN, PLUME::UI::PITCHBEND_DISPLAY_MAX, 1.0f);
+                        defVal = PLUME::gesture::PITCHBEND_DEFAULT_LEFTMIN;
                         break;
 			        case bend_leftHigh:
-                        range = NormalisableRange<float> (-90.0f, 90.0f, 1.0f);
-                        defVal = -20.0f;
+                        range = NormalisableRange<float> (PLUME::UI::PITCHBEND_DISPLAY_MIN, PLUME::UI::PITCHBEND_DISPLAY_MAX, 1.0f);
+                        defVal = PLUME::gesture::PITCHBEND_DEFAULT_LEFTMAX;
                         break;
 			        case bend_rightLow:
-                        range = NormalisableRange<float> (-90.0f, 90.0f, 1.0f);
-                        defVal = 30.0f;
+                        range = NormalisableRange<float> (PLUME::UI::PITCHBEND_DISPLAY_MIN, PLUME::UI::PITCHBEND_DISPLAY_MAX, 1.0f);
+                        defVal = PLUME::gesture::PITCHBEND_DEFAULT_RIGHTMIN;
                         break;
 			        case bend_rightHigh:
-                        range = NormalisableRange<float> (-90.0f, 90.0f, 1.0f);
-                        defVal = 60.0f;
+                        range = NormalisableRange<float> (PLUME::UI::PITCHBEND_DISPLAY_MIN, PLUME::UI::PITCHBEND_DISPLAY_MAX, 1.0f);
+                        defVal = PLUME::gesture::PITCHBEND_DEFAULT_RIGHTMAX;
                         break;
 			        case roll_low:
-			        case tilt_low:
-                        range = NormalisableRange<float> (-90.0f, 90.0f, 1.0f);
-                        defVal = 0.0f;
+                        range = NormalisableRange<float> (PLUME::UI::ROLL_DISPLAY_MIN, PLUME::UI::ROLL_DISPLAY_MAX, 1.0f);
+                        defVal = PLUME::gesture::ROLL_DEFAULT_MIN;
                         break;
 			        case roll_high:
+                        range = NormalisableRange<float> (PLUME::UI::ROLL_DISPLAY_MIN, PLUME::UI::ROLL_DISPLAY_MAX, 1.0f);
+                        defVal = PLUME::gesture::ROLL_DEFAULT_MAX;
+                        break;
+			        case tilt_low:
+                        range = NormalisableRange<float> (PLUME::UI::TILT_DISPLAY_MIN, PLUME::UI::TILT_DISPLAY_MAX, 1.0f);
+                        defVal = PLUME::gesture::TILT_DEFAULT_MIN;
+                        break;
 			        case tilt_high:
-                        range = NormalisableRange<float> (-90.0f, 90.0f, 1.0f);
-                        defVal = 50.0f;
+                        range = NormalisableRange<float> (PLUME::UI::TILT_DISPLAY_MIN, PLUME::UI::TILT_DISPLAY_MAX, 1.0f);
+                        defVal = PLUME::gesture::TILT_DEFAULT_MAX;
                         break;
 					case midi_cc:
 						range = NormalisableRange<float>(0.0f, 127.0f, 1.0f);

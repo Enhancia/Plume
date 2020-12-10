@@ -58,7 +58,7 @@ namespace PLUME
         extern bool ANIMATE_UI_FLAG;
         
         const float VIBRATO_DISPLAY_MAX  = 100.0f;
-        const float VIBRATO_THRESH_DISPLAY_MAX = 500.0f;
+        const float VIBRATO_THRESH_DISPLAY_MAX = 100.0f;
     
         const float PITCHBEND_DISPLAY_MIN = -90.0f;
         const float PITCHBEND_DISPLAY_MAX =  90.0f;
@@ -120,24 +120,21 @@ namespace PLUME
 	    static Identifier winH ("window_h");
     }
 
-    // gesture max range values
-    const float VIBRATO_RANGE_MAX  = 100.0f;
-    const float VIBRATO_THRESH_MAX = 300.0f;
-    
-    const float PITCHBEND_MIN = -180.0f;
-    const float PITCHBEND_MAX =  180.0f;
-    
-    const float TILT_MIN = -180.0f;
-    const float TILT_MAX =  180.0f;
-    
-    const float ROLL_MIN = -180.0f;
-    const float ROLL_MAX =  180.0f;
-    
-    const float WAVE_MIN = -180.0f;
-    const float WAVE_MAX =  180.0f;
-
     namespace gesture
     {
+        // gesture max range values
+        const float VIBRATO_RANGE_MAX  = 100.0f;
+        const float VIBRATO_THRESH_MAX = 300.0f;
+        const float PITCHBEND_MIN = -180.0f;
+        const float PITCHBEND_MAX =  180.0f;
+        const float TILT_MIN = -180.0f;
+        const float TILT_MAX =  180.0f;
+        const float ROLL_MIN = -180.0f;
+        const float ROLL_MAX =  180.0f;
+        
+        const float WAVE_MIN = -180.0f;
+        const float WAVE_MAX =  180.0f;
+
         // Gesture default values
         const float VIBRATO_RANGE_DEFAULT  = 50.0f;
         const float VIBRATO_THRESH_DEFAULT = 40.0f;
