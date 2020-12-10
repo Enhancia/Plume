@@ -64,7 +64,7 @@ int Vibrato::getMidiValue()
         vibLast = true;
         send = true;
         
-        return Gesture::normalizeMidi (getGestureValue(), -(500.0f - gainVal), (500.01f - gainVal), true);
+        return Gesture::normalizeMidi (getGestureValue(), -(VIBRATO_RANGE_MAX - gainVal), (VIBRATO_RANGE_MAX + 0.01f - gainVal), true);
     }
     
     // Vibrato back to neutral
@@ -111,7 +111,7 @@ float Vibrato::getValueForMappedParameter (Range<float> paramRange, bool reverse
     {
         vibLast = true;
         send = true;
-        return (Gesture::mapParameter (getGestureValue(), -(500.0f - gainVal), (500.01f - gainVal), paramRange, reversed));
+        return (Gesture::mapParameter (getGestureValue(), -(VIBRATO_RANGE_MAX - gainVal), (VIBRATO_RANGE_MAX + 0.01f - gainVal), paramRange, reversed));
     }
     else if (vibTrig != vibLast && vibTrig == false)
     {
