@@ -260,6 +260,19 @@ public:
      *  \returns The cc value used by the gesture.
      */
     int getCc() const;
+    /**
+     *  \brief Setter for the "midiReverse" boolean value.
+     *
+     *  \param ccValue The integer value to set.
+     */
+    void setMidiReverse (bool shouldBeReversed);
+    
+    /**
+     *  \brief Getter for the "midiReverse" boolean value.
+     *
+     *  \returns The cc value used by the gesture.
+     */
+    bool getMidiReverse() const;
     
     /**
      *  \brief Getter for the "mapped" boolean value.
@@ -428,7 +441,7 @@ protected:
      *  \param maxVal High value of the range
      *  \param val  Current value inside the range
      */
-    static int normalizeMidi (float val, float minVal, float maxVal, bool is14BitMidi = false);
+    static int normalizeMidi (float val, float minVal, float maxVal, bool is14BitMidi = false, bool reversed = false);
     
     /**
      *  \brief Helper function to map a floating point value to an int interval.
@@ -455,7 +468,7 @@ protected:
      *  \param minNew low value of the new range
      *  \param maxNew high value of the new range
      */
-    static int mapInt (int val, int minVal, int maxVal, int minNew, int maxNew);
+    static int map (int val, int minVal, int maxVal, int minNew, int maxNew);
     
     /**
      *  \brief Helper function to map a floating point value to the specified interval within [0.0f 1.0f].
@@ -499,6 +512,7 @@ protected:
     //==============================================================================
 	RangedAudioParameter& value; /**< \brief Float parameter that holds the gesture's raw value in the [0.0f 1.0f]. Should be normalized using "range". */
 	RangedAudioParameter& on; /**< \brief Boolean parameter that represents if the gesture is active or not] range. */
+    RangedAudioParameter& midiReverse; /**< \brief Boolean parameter that represents if the gesture midi reverse is active or not. */
 	RangedAudioParameter& midiOnParameterOff; /**< \brief Boolean parameter that represents if the gesture is set to midi mode or not. */
 	RangedAudioParameter& cc; /**< \brief Float parameter with an integer value for CC used by the gesture in midiMap mode (default 1: modwheel). */
     //RangedAudioParameter& midiOnParameterOff;

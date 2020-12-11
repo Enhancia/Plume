@@ -418,7 +418,7 @@ void PlumeProcessor::initializeParameters()
         for (int i =0; i < numParams; i++)
         {
             // boolean parameters
-            if (i == on || i == midi_on)
+            if (i == on || i == midi_on || i == midi_reverse)
             {
                 parameters.createAndAddParameter (std::make_unique<AudioParameterBool> (String(gest) + paramIds[i],
                                                                                         String(gest) + paramIds[i],

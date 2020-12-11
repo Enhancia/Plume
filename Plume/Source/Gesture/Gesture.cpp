@@ -17,6 +17,7 @@ Gesture::Gesture (String gestName, int gestType, int gestId, const NormalisableR
          		  : name (gestName), type (gestType), id (gestId), range (maxRange), description (gestureDescription),
 	       		  value    (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::value]))),
 	       		  on       (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::on]))),
+                  midiReverse         (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::midi_reverse]))),
 	       		  midiOnParameterOff  (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::midi_on]))),
  	       		  cc       (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::midi_cc]))),
  	       		  midiLow  (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::midi_low]))),
@@ -146,13 +147,13 @@ int Gesture::getRescaledMidiValue()
 {
     if (midiType == Gesture::pitch)
     {
-        return mapInt (getMidiValue(), 0, 16383, map (midiLow.getValue(), 0.0f, 1.0f, 0, 16383),
+        return map (getMidiValue(), 0, 16383, map (midiLow.getValue(), 0.0f, 1.0f, 0, 16383),
                                       map (midiHigh.getValue(),   0.0f, 1.0f, 0, 16383));
     }
        
     else
     {
-        return mapInt (getMidiValue(), 0, 127, map (midiLow.getValue(), 0.0f, 1.0f, 0, 127),
+        return map (getMidiValue(), 0, 127, map (midiLow.getValue(), 0.0f, 1.0f, 0, 127),
                                       map (midiHigh.getValue(),   0.0f, 1.0f, 0, 127));
     }                          
 }
@@ -217,6 +218,18 @@ int Gesture::getCc() const
     return int (cc.convertFrom0to1 (cc.getValue()));
 }
 
+void Gesture::setMidiReverse (bool shouldBeReversed)
+{
+    midiReverse.beginChangeGesture();
+    midiReverse.setValueNotifyingHost (shouldBeReversed ? 1.0f : 0.0f);
+    midiReverse.endChangeGesture();
+}
+
+bool Gesture::getMidiReverse() const
+{
+    return (midiReverse.getValue() > 0.5f);
+}
+
 bool Gesture::isMapped() const
 {
     return mapped;
@@ -249,7 +262,7 @@ void Gesture::setMidiHigh (float newValue, bool checkOtherValue, bool createChan
 
 bool Gesture::isActive() const
 {
-    return (on.getValue() < 0.5f ? false : true);
+    return (on.getValue() > 0.5f);
 }
 
 String Gesture::getName() const
@@ -472,9 +485,14 @@ void Gesture::swapParametersWithOtherGesture (Gesture& other)
     sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
 }
 
-int Gesture::normalizeMidi (float val, float minVal, float maxVal, bool is14BitMidi)
+int Gesture::normalizeMidi (float val, float minVal, float maxVal, bool is14BitMidi, bool reversed)
 {
     if (minVal == maxVal && val == minVal) return 0;
+
+    if (reversed)
+    {
+        val = maxVal - (val - minVal);
+    }
     
     return Gesture::map (val, minVal, maxVal, 0, is14BitMidi ? 16383 : 127);
 }
@@ -489,7 +507,7 @@ int Gesture::map (float val, float minVal, float maxVal, int minNew, int maxNew)
     return (minNew + int ((maxNew - minNew)*(val - minVal)/(maxVal-minVal)));
 }
 
-int Gesture::mapInt (int val, int minVal, int maxVal, int minNew, int maxNew)
+int Gesture::map (int val, int minVal, int maxVal, int minNew, int maxNew)
 {
     if (minVal == maxVal && val == minVal) return minNew;
     else if (minVal == minNew && maxVal == maxNew) return val;
@@ -533,7 +551,7 @@ void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
         switch (midiType)
         {
     		case (Gesture::pitch):
-                newMidi = mapInt (val, 0, 16383,
+                newMidi = map (val, 0, 16383,
                                   map (midiLow.getValue(), 0.0f, 1.0f, 0, 16383),
                                   map (midiHigh.getValue(),   0.0f, 1.0f, 0, 16383));
                                   
@@ -541,7 +559,7 @@ void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
                 break;
             
     		case (Gesture::controlChange):
-                newMidi = mapInt (val, 0, 127,
+                newMidi = map (val, 0, 127,
                                   map (midiLow.getValue(), 0.0f, 1.0f, 0, 127),
                                   map (midiHigh.getValue(),   0.0f, 1.0f, 0, 127));
                                   
@@ -549,7 +567,7 @@ void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
                 break;
             
     		case (Gesture::afterTouch):
-                newMidi = mapInt (val, 0, 127,
+                newMidi = map (val, 0, 127,
                                   map (midiLow.getValue(), 0.0f, 1.0f, 0, 127),
                                   map (midiHigh.getValue(),   0.0f, 1.0f, 0, 127));
                                   
