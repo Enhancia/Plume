@@ -360,20 +360,23 @@ String Gesture::getGestureTypeDescription (int gestureType)
 
 Colour Gesture::getHighlightColour() const
 {
-	if (isActive()) return getHighlightColour (type);
-
-	return getPlumeColour (mutedHighlight);
+	return getHighlightColour (type, isActive());
 }
 
-Colour Gesture::getHighlightColour (int gestureType)
+Colour Gesture::getHighlightColour (bool gestureIsActive) const
+{
+    return getHighlightColour (type, gestureIsActive);
+}
+
+Colour Gesture::getHighlightColour (int gestureType, bool gestureIsActive)
 {
     switch (gestureType)
     {
-        case (int) Gesture::tilt:      return getPlumeColour (tiltHighlight);
-        case (int) Gesture::roll:      return getPlumeColour (rollHighlight);
-        case (int) Gesture::wave:      return getPlumeColour (waveHighlight);
-        case (int) Gesture::vibrato:   return getPlumeColour (vibratoHighlight);
-        case (int) Gesture::pitchBend: return getPlumeColour (pitchBendHighlight);
+        case (int) Gesture::tilt:      return getPlumeColour (tiltHighlight).withAlpha (gestureIsActive ? 1.0f : 0.5f);
+        case (int) Gesture::roll:      return getPlumeColour (rollHighlight).withAlpha (gestureIsActive ? 1.0f : 0.5f);
+        case (int) Gesture::wave:      return getPlumeColour (waveHighlight).withAlpha (gestureIsActive ? 1.0f : 0.5f);
+        case (int) Gesture::vibrato:   return getPlumeColour (vibratoHighlight).withAlpha (gestureIsActive ? 1.0f : 0.5f);
+        case (int) Gesture::pitchBend: return getPlumeColour (pitchBendHighlight).withAlpha (gestureIsActive ? 1.0f : 0.5f);
         
         default: return Colour (0xffffffff);
     }

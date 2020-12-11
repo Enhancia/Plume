@@ -23,6 +23,7 @@ MidiModeComponent::MidiModeComponent (Gesture& gest, GestureArray& gestArray)
 {
     createComboBox();
     createLabels();
+    createButton();
 
     addAndMakeVisible (midiRangeTuner = new MidiRangeTuner (gesture));
 }
@@ -34,6 +35,7 @@ MidiModeComponent::~MidiModeComponent()
     
     midiTypeBox = nullptr;
     ccLabel = nullptr;
+    reverseButton = nullptr;
     midiRangeTuner = nullptr;
 }
 
@@ -70,13 +72,19 @@ void MidiModeComponent::resized()
 
     auto rangeArea = area;
 
-    midiRangeTuner->setBounds (rangeArea.withSizeKeepingCentre (area.getWidth()*3/4 - 2*MARGIN, area.getHeight()));
+    if (gesture.type != Gesture::vibrato &&
+        gesture.type != Gesture::pitchBend)
+    {
+        reverseButton->setBounds (rangeArea.removeFromRight (18 + MARGIN)
+                                           .withSizeKeepingCentre (18, 18));
+    }
+
+    midiRangeTuner->setBounds (rangeArea.withSizeKeepingCentre (area.getWidth() - 4*MARGIN, area.getHeight()));
 }
 
 //==============================================================================
 void MidiModeComponent::labelTextChanged (Label* lbl)
 {
-    if (lbl == ccLabel)
     {
         // checks that the string is numbers only
         if (lbl->getText().containsOnly ("0123456789") == false)
@@ -96,6 +104,17 @@ void MidiModeComponent::labelTextChanged (Label* lbl)
 
         if (auto* parentComp = getParentComponent())
         	parentComp->repaint();
+    }
+}
+   
+void MidiModeComponent::buttonClicked (Button* bttn)
+{
+    if (bttn == reverseButton.get())
+    {
+        gesture.setMidiReverse (reverseButton->getToggleState());
+
+        if (auto* parentComp = getParentComponent())
+            parentComp->repaint();
     }
 }
 
@@ -177,6 +196,21 @@ void MidiModeComponent::createLabels()
     ccLabel->setVisible (midiTypeBox->getSelectedId() == Gesture::controlChange);
     
     ccLabel->addListener (this);
+}
+
+void MidiModeComponent::createButton()
+{
+    reverseButton = std::make_unique<TextButton> ("Reverse Button");
+    addAndMakeVisible (*reverseButton);
+
+    reverseButton->setButtonText ("R");
+    reverseButton->setColour (TextButton::buttonColourId, getPlumeColour (midiMapSliderBackground));
+    reverseButton->setColour (TextButton::buttonOnColourId, Gesture::getHighlightColour (gesture.type, true));
+    reverseButton->setColour (TextButton::textColourOnId , getPlumeColour (detailPanelMainText));
+    reverseButton->setColour (TextButton::textColourOffId , getPlumeColour (detailPanelMainText));
+    reverseButton->setToggleState (gesture.getMidiReverse(), dontSendNotification);
+    reverseButton->setClickingTogglesState (true);
+    reverseButton->addListener (this);
 }
 
 //==============================================================================
