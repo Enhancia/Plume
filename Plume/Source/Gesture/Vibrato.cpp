@@ -63,12 +63,13 @@ int Vibrato::getMidiValue()
     {
         vibLast = true;
         send = true;
-        
-        return Gesture::normalizeMidi (getGestureValue(), -(PLUME::gesture::VIBRATO_RANGE_MAX - gainVal), (PLUME::gesture::VIBRATO_RANGE_MAX + 0.01f - gainVal), true);
+
+        const float normalizedValue = (getGestureValue()/(2*9.80665f)*gainVal/200.0f*0.5f + 0.5f);
+        return Gesture::normalizeMidi (normalizedValue, 0.0f, 1.0f, useDefaultMidi);
     }
     
     // Vibrato back to neutral
-    else if (vibTrig != vibLast && vibTrig == false)
+    else if (vibTrig != vibLast/* && vibTrig == false*/)
     {
         vibLast = false;
         send = true;
@@ -111,7 +112,8 @@ float Vibrato::getValueForMappedParameter (Range<float> paramRange, bool reverse
     {
         vibLast = true;
         send = true;
-        return (Gesture::mapParameter (getGestureValue(), -(PLUME::gesture::VIBRATO_RANGE_MAX - gainVal), (PLUME::gesture::VIBRATO_RANGE_MAX + 0.01f - gainVal), paramRange, reversed));
+        const float normalizedValue = (getGestureValue()/(2*9.80665f)*gainVal/200.0f*0.5f + 0.5f);
+        return (Gesture::mapParameter (getGestureValue(), 0.0f, 1.0f, paramRange, reversed));
     }
     else if (vibTrig != vibLast && vibTrig == false)
     {

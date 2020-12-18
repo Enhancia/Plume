@@ -81,6 +81,10 @@ int PitchBend::getMidiValue()
     // Right side
     if (getGestureValue() >= rangeRightStart && getGestureValue() < 140.0f)
     {
+        DBG ("PITCH BEND case RIGHT = \nValue " << getGestureValue() <<
+            " | Send " << (send ? "Y" : "N") <<
+            " | Last " << (pbLast ? "Y" : "N"));
+
         send = true;
         pbLast = true;
         
@@ -92,8 +96,12 @@ int PitchBend::getMidiValue()
     }
     
     // Left side
-    else if (getGestureValue() < rangeLeftEnd && getGestureValue() > -140.0f)
+    else if (getGestureValue() <= rangeLeftEnd && getGestureValue() > -140.0f)
     {
+        DBG ("PITCH BEND case LEFT = \nValue " << getGestureValue() <<
+            " | Send " << (send ? "Y" : "N") <<
+            " | Last " << (pbLast ? "Y" : "N"));
+
         send = true;
         pbLast = true;
         
@@ -107,6 +115,10 @@ int PitchBend::getMidiValue()
     // If back to central zone
     else if (getGestureValue() >= rangeLeftEnd && getGestureValue() <= rangeRightStart && pbLast == true)
     {
+        DBG ("PITCH BEND case CENTER = \nValue " << getGestureValue() <<
+            " | Send " << (send ? "Y" : "N") <<
+            " | Last " << (pbLast ? "Y" : "N"));
+
         send = true;
         pbLast = false;
         return 8192;
@@ -121,7 +133,7 @@ bool PitchBend::shouldSend()
     const float val = getGestureValue();
 
     return ((val >= rangeRightStart && val < 140.0f) || // Right side
-            (val < rangeLeftEnd && val > -140.0f) || // Left side
+            (val <= rangeLeftEnd && val > -140.0f) || // Left side
             (val > rangeLeftEnd && val < rangeRightStart && pbLast == true)); // Back to center
 }
    

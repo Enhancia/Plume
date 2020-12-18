@@ -49,7 +49,7 @@ void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages, MidiBuffer&
         // Adds non-pitch midi
         for (auto* g : gestures)
         {
-            if (g->generatesMidi() == true && g->affectsPitch() == false)
+            if (g->generatesMidi() && !g->affectsPitch())
             {
                 g->addGestureMidi (midiMessages, plumeBuffer);
             }
@@ -64,7 +64,7 @@ void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages, MidiBuffer&
         // Adds all midi
         for (auto* g : gestures)
         {
-            if (g->generatesMidi() == true)
+            if (g->generatesMidi())
             {
                 g->addGestureMidi (midiMessages, plumeBuffer);
             }

@@ -36,7 +36,7 @@ Roll::~Roll()
 void Roll::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 {
     // Checks if Gesture is on and if value is within the right range
-    if (on.getValue() == 0.0f || getGestureValue() >= 120.0f || getGestureValue() <= -120.0f)
+    if (on.getValue() == 0.0f || getGestureValue() >= 100.0f || getGestureValue() <= -100.0f)
     {
         return;
     }
@@ -55,7 +55,7 @@ int Roll::getMidiValue()
 void Roll::updateMappedParameters()
 {
     // Checks if Gesture is on and if value is within the right range
-    if (on.getValue() == 0.0f || getGestureValue() >= 120.0f || getGestureValue() <= -120.0f)
+    if (on.getValue() == 0.0f || getGestureValue() >= 100.0f || getGestureValue() <= -100.0f)
     {
         return;
     }
