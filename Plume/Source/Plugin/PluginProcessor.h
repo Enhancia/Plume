@@ -188,8 +188,9 @@ public:
     
 private:
     //==============================================================================
-    // TO DELETE
-    void DBG_trackSystemMidi (MidiBuffer& midiMessages);
+    bool isProbablyOnAnArmedTrack (MidiBuffer& midiMessages);
+    unsigned int trackReceivesGenericMidi (MidiBuffer& midiMessages);
+    //void updatePlumeTrackActivationStatus();
 
     //==============================================================================
     void initializeParameters();

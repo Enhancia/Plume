@@ -120,9 +120,11 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
     MidiBuffer plumeBuffer;
 
     //DBG_trackSystemMidi (midiMessages);
-    
-    // Adds the gesture's MIDI messages to the buffer, and changes parameters if needed
-    gestureArray->process (midiMessages, plumeBuffer);
+    if (isProbablyOnAnArmedTrack (midiMessages))
+    {
+        // Adds the gesture's MIDI messages to the buffer, and changes parameters if needed
+        gestureArray->process (midiMessages, plumeBuffer);
+    }
         
     // if wrapped plugin, lets the wrapped plugin process all MIDI into sound
     if (wrapper->isWrapping())
@@ -551,16 +553,48 @@ void PlumeProcessor::updateTrackProperties (const AudioProcessor::TrackPropertie
     DBG ("Name : " << properties.name << " | Colour : " << properties.colour.toDisplayString(false));
 }
 
-void PlumeProcessor::DBG_trackSystemMidi (MidiBuffer& midiMessages)
+unsigned int PlumeProcessor::trackReceivesGenericMidi (MidiBuffer& midiMessages)
 {
     if (!midiMessages.isEmpty())
     {
         for (const MidiMessageMetadata metadata : midiMessages)
         {
-            if (metadata.getMessage().isMetaEvent())
+            DBG ("Message : " << metadata.getMessage().getDescription());
+
+            if (metadata.getMessage().isChannelPressure() &&
+                (metadata.getMessage().getChannelPressureValue() == 127 ||
+                 metadata.getMessage().getChannelPressureValue() == 126)/* &&
+                metadata.getMessage().getChannel() == 16*/)
             {
-                DBG ("META EVENT !!");
+                return 1; // TEMP
+            }
+
+            // TODO implement rate detection (to know if we receive the sequence once or twice)
+        }
+    }
+
+    return 0;
+}
+
+bool PlumeProcessor::isProbablyOnAnArmedTrack (MidiBuffer& midiMessages)
+{
+    if (auto* playHead = getPlayHead())
+    {
+        AudioPlayHead::CurrentPositionInfo positionInfo;
+
+        if (playHead->getCurrentPosition (positionInfo))
+        {
+            if (positionInfo.isPlaying && !positionInfo.isRecording)
+            {
+                /*  If DAW is playing back some pre recorded midi, we want plume to activate its gestures only if it is armed.
+                    When the DAW plays but Plume only recieves one instance of the signed MIDI, it likely
+                    indicates that the track is inactive with some previously recorded signed MIDI playing. */
+                return trackReceivesGenericMidi (midiMessages) != 1; // True if we recieve signed midi twice or we dont
             }
         }
     }
+    
+    // Either playhead is not playing, or Plume failed to get playhead info
+    // If the latter is true it is safe to assume assume the host simply cannot playback or is atleast not playing atm
+    return trackReceivesGenericMidi (midiMessages) != 0; // True if we receive signed midi
 }
