@@ -643,6 +643,7 @@ void GestureArray::addGestureFromXml (XmlElement& gesture)
     // Sets the gesture parameters to the Xlm's values
     gestures.getLast()->setActive (gesture.getBoolAttribute ("on", true));
     gestures.getLast()->setMapped (gesture.getBoolAttribute ("mapped", false));
+    gestures.getLast()->setMidiReverse (gesture.getBoolAttribute ("midiReverse", false));
     gestures.getLast()->setCc (gesture.getIntAttribute ("cc", 1));
     gestures.getLast()->setMidiLow (float(gesture.getDoubleAttribute ("midiStart", 0.0)), false);
     gestures.getLast()->setMidiHigh (float(gesture.getDoubleAttribute ("midiEnd", 1.0)), false);
@@ -674,6 +675,7 @@ void GestureArray::createGestureXml (XmlElement& gesturesData)
         gestXml->setAttribute ("mapped", g->isMapped());
         gestXml->setAttribute ("midiMap", g->generatesMidi());
         gestXml->setAttribute ("cc", g->getCc());
+        gestXml->setAttribute ("midiReverse", g->getMidiReverse());
         gestXml->setAttribute ("midiStart", g->midiLow.getValue());
         gestXml->setAttribute ("midiEnd", g->midiHigh.getValue());
         gestXml->setAttribute ("midiType", g->midiType);

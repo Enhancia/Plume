@@ -49,7 +49,8 @@ int Roll::getMidiValue()
     return Gesture::normalizeMidi (getGestureValue(),
                                    rangeLow.convertFrom0to1 (rangeLow.getValue()),
                                    rangeHigh.convertFrom0to1 (rangeHigh.getValue()),
-                                   (midiType == Gesture::pitch));
+                                   (midiType == Gesture::pitch),
+                                   getMidiReverse());
 }
 
 void Roll::updateMappedParameters()

@@ -96,7 +96,8 @@ private:
 
 class MidiModeComponent    : public Component,
                              private Label::Listener,
-                             private ComboBox::Listener
+                             private ComboBox::Listener,
+                             private Button::Listener
 {
 public:
     MidiModeComponent (Gesture& gest, GestureArray& gestArray);
@@ -108,6 +109,7 @@ public:
 
     //==============================================================================
     void labelTextChanged (Label* lbl);
+    void buttonClicked (Button* bttn);
     void comboBoxChanged (ComboBox* box);
     
     //==============================================================================
@@ -120,6 +122,7 @@ private:
     //==============================================================================
     void createComboBox();
     void createLabels();
+    void createButton();
     
     //==============================================================================
     ScopedPointer<ComboBox> midiTypeBox;
@@ -127,6 +130,7 @@ private:
     ScopedPointer<Label> rangeLabelMin;
     ScopedPointer<Label> rangeLabelMax;
     ScopedPointer<MidiRangeTuner> midiRangeTuner;
+    std::unique_ptr<TextButton> reverseButton;
 
     //==============================================================================
     Gesture& gesture;
