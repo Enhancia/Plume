@@ -49,7 +49,7 @@ void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages, MidiBuffer&
         // Adds non-pitch midi
         for (auto* g : gestures)
         {
-            if (g->generatesMidi() == true && g->affectsPitch() == false)
+            if (g->generatesMidi() && !g->affectsPitch())
             {
                 g->addGestureMidi (midiMessages, plumeBuffer);
             }
@@ -64,7 +64,7 @@ void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages, MidiBuffer&
         // Adds all midi
         for (auto* g : gestures)
         {
-            if (g->generatesMidi() == true)
+            if (g->generatesMidi())
             {
                 g->addGestureMidi (midiMessages, plumeBuffer);
             }
@@ -592,8 +592,8 @@ void GestureArray::addGestureFromXml (XmlElement& gesture)
             gestures.add (new Vibrato (gesture.getTagName().compare ("gesture") == 0 ? gesture.getStringAttribute ("name", "Vibrato")
                                                                                      : gesture.getTagName(),
                                        gesture.getIntAttribute ("id", 0), parameters,
-									   float(gesture.getDoubleAttribute ("gain", 400.0)),
-									   float(gesture.getDoubleAttribute ("thresh", 40.0)),
+									   float(gesture.getDoubleAttribute ("gain", PLUME::gesture::VIBRATO_RANGE_DEFAULT)),
+									   float(gesture.getDoubleAttribute ("thresh", PLUME::gesture::VIBRATO_THRESH_DEFAULT)),
                                        gesture.getStringAttribute ("desc", "")));
             break;
         
@@ -601,10 +601,10 @@ void GestureArray::addGestureFromXml (XmlElement& gesture)
             gestures.add (new PitchBend (gesture.getTagName().compare("gesture") == 0 ? gesture.getStringAttribute("name", "PitchBend")
                                                                                       : gesture.getTagName(),
                                          gesture.getIntAttribute("id", 1), parameters,
-				                         float(gesture.getDoubleAttribute ("startLeft", -50.0)),
-                                         float(gesture.getDoubleAttribute ("endLeft", -20.0)),
-                                         float(gesture.getDoubleAttribute ("startRight", 30.0)),
-                                         float(gesture.getDoubleAttribute ("endRight", 60.0)),
+				                         float(gesture.getDoubleAttribute ("startLeft", PLUME::gesture::PITCHBEND_DEFAULT_LEFTMIN)),
+                                         float(gesture.getDoubleAttribute ("endLeft", PLUME::gesture::PITCHBEND_DEFAULT_LEFTMAX)),
+                                         float(gesture.getDoubleAttribute ("startRight", PLUME::gesture::PITCHBEND_DEFAULT_RIGHTMIN)),
+                                         float(gesture.getDoubleAttribute ("endRight", PLUME::gesture::PITCHBEND_DEFAULT_RIGHTMAX)),
                                          gesture.getStringAttribute ("desc", "")));
             break;
             
@@ -612,8 +612,8 @@ void GestureArray::addGestureFromXml (XmlElement& gesture)
             gestures.add (new Tilt (gesture.getTagName().compare("gesture") == 0 ? gesture.getStringAttribute("name", "Tilt")
                                                                                  : gesture.getTagName(),
                                     gesture.getIntAttribute("id", 2), parameters,
-				                    float(gesture.getDoubleAttribute ("start", 0.0)),
-                                    float(gesture.getDoubleAttribute ("end", 50.0)),
+				                    float(gesture.getDoubleAttribute ("start", PLUME::gesture::TILT_DEFAULT_MIN)),
+                                    float(gesture.getDoubleAttribute ("end", PLUME::gesture::TILT_DEFAULT_MAX)),
                                     gesture.getStringAttribute ("desc", "")));
             break;
 
@@ -622,8 +622,8 @@ void GestureArray::addGestureFromXml (XmlElement& gesture)
             gestures.add (new Wave (gesture.getTagName().compare ("gesture") == 0 ? gesture.getStringAttribute ("name", "Wave")
                                                                                   : gesture.getTagName(),
                                     gesture.getIntAttribute("id", 0), parameters,
-				                    float(gesture.getDoubleAttribute ("start", 0.0)),
-                                    float(gesture.getDoubleAttribute ("end", 50.0)),
+				                    float(gesture.getDoubleAttribute ("start", PLUME::gesture::WAVE_DEFAULT_MIN)),
+                                    float(gesture.getDoubleAttribute ("end", PLUME::gesture::WAVE_DEFAULT_MAX)),
                                     gesture.getStringAttribute ("desc", "")));
             break;
         */
@@ -631,8 +631,8 @@ void GestureArray::addGestureFromXml (XmlElement& gesture)
             gestures.add (new Roll (gesture.getTagName().compare("gesture") == 0 ? gesture.getStringAttribute("name", "Roll")
                                                                                  : gesture.getTagName(),
                                     gesture.getIntAttribute("id", 3), parameters,
-				                    float(gesture.getDoubleAttribute ("start", -30.0)),
-                                    float(gesture.getDoubleAttribute ("end", 30.0)),
+				                    float(gesture.getDoubleAttribute ("start", PLUME::gesture::ROLL_DEFAULT_MIN)),
+                                    float(gesture.getDoubleAttribute ("end", PLUME::gesture::ROLL_DEFAULT_MAX)),
                                     gesture.getStringAttribute ("desc", "")));
             break;
         

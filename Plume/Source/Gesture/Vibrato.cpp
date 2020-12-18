@@ -14,7 +14,7 @@ using namespace PLUME;
 Vibrato::Vibrato (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
                   float val, float thresh, String description)
     : Gesture (gestName, Gesture::vibrato, gestId,
-               NormalisableRange<float> (-VIBRATO_RANGE_MAX, VIBRATO_RANGE_MAX, 0.1f),
+               NormalisableRange<float> (-PLUME::gesture::VIBRATO_RANGE_MAX, PLUME::gesture::VIBRATO_RANGE_MAX, 0.1f),
                plumeParameters, description),
     
       gain      (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::vibrato_range]))),
@@ -63,12 +63,13 @@ int Vibrato::getMidiValue()
     {
         vibLast = true;
         send = true;
-        
-        return Gesture::normalizeMidi (getGestureValue(), -(500.0f - gainVal), (500.01f - gainVal), true);
+
+        const float normalizedValue = (getGestureValue()/(2*9.80665f)*gainVal/200.0f*0.5f + 0.5f);
+        return Gesture::normalizeMidi (normalizedValue, 0.0f, 1.0f, useDefaultMidi);
     }
     
     // Vibrato back to neutral
-    else if (vibTrig != vibLast && vibTrig == false)
+    else if (vibTrig != vibLast/* && vibTrig == false*/)
     {
         vibLast = false;
         send = true;
@@ -111,7 +112,8 @@ float Vibrato::getValueForMappedParameter (Range<float> paramRange, bool reverse
     {
         vibLast = true;
         send = true;
-        return (Gesture::mapParameter (getGestureValue(), -(500.0f - gainVal), (500.01f - gainVal), paramRange, reversed));
+        const float normalizedValue = (getGestureValue()/(2*9.80665f)*gainVal/200.0f*0.5f + 0.5f);
+        return (Gesture::mapParameter (getGestureValue(), 0.0f, 1.0f, paramRange, reversed));
     }
     else if (vibTrig != vibLast && vibTrig == false)
     {

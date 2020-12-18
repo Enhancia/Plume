@@ -136,10 +136,10 @@ PlumeTheme PlumeTheme::createDefaultTheme()
  
                     // Gesture Colours
                          0xff808080, //mutedHighlight
-                         0xffec6565, //vibratoHighlight
-                         0xff1fcaa8, //pitchBendHighlight
-                         0xfff3a536, //tiltHighlight
-                         0xffa255f3, //rollHighlight
+                         0xffff5ba1, //vibratoHighlight
+                         0xffb859f2, //pitchBendHighlight
+                         0xffffa21d, //tiltHighlight
+                         0xff1ec0b7, //rollHighlight
                          0xff7c80de, //waveHighlight
  
                     // Top Panel
@@ -235,11 +235,11 @@ PlumeTheme PlumeTheme::createRedTheme()
  
                     // Gesture Colours
                          0xff808080, //mutedHighlight
-                         0xffe04040, //vibratoHighlight
-                         0xffe04040, //pitchBendHighlight
-                         0xffe04040, //tiltHighlight
-                         0xffe04040, //rollHighlight
-                         0xffe04040, //waveHighlight
+                         0xffff5ba1, //vibratoHighlight
+                         0xffb859f2, //pitchBendHighlight
+                         0xffffa21d, //tiltHighlight
+                         0xff1ec0b7, //rollHighlight
+                         0xff7c80de, //waveHighlight
  
                     // Top Panel
                          0xff604040, //topPanelBackground
@@ -330,10 +330,10 @@ PlumeTheme PlumeTheme::createTestTheme()
  
                       // Gesture Colours
                          0xff808080, //mutedHighlight
-                         0xffec6565, //vibratoHighlight
-                         0xff1fcaa8, //pitchBendHighlight
-                         0xfff3a536, //tiltHighlight
-                         0xffa255f3, //rollHighlight
+                         0xffff5ba1, //vibratoHighlight
+                         0xffb859f2, //pitchBendHighlight
+                         0xffffa21d, //tiltHighlight
+                         0xff1ec0b7, //rollHighlight
                          0xff7c80de, //waveHighlight
  
                     // Top Panel

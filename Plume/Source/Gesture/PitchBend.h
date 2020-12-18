@@ -25,7 +25,8 @@ class PitchBend : public Gesture
 {
 public:
     PitchBend (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
-               float leftLow = -50.0f, float leftHigh = -20.0f, float rightLow = 30.0f, float rightHigh = 60.0f,
+               float leftLow = PLUME::gesture::PITCHBEND_DEFAULT_LEFTMIN, float leftHigh = PLUME::gesture::PITCHBEND_DEFAULT_LEFTMAX,
+               float rightLow = PLUME::gesture::PITCHBEND_DEFAULT_RIGHTMIN, float rightHigh = PLUME::gesture::PITCHBEND_DEFAULT_RIGHTMAX,
                String description = "");
     ~PitchBend();
     

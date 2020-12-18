@@ -1042,16 +1042,32 @@ void TwoRangeTuner::updateLabelBounds (Label* labelToUpdate)
 float TwoRangeTuner::getValueAngle()
 {
     float convertedValue = gestureRange.convertFrom0to1 (value);
-
     float cursorAngle;
 
     if (gestureRange.getRange().getLength() > 0)
     {
-        if (convertedValue < parameterMax.getStart())    convertedValue = parameterMax.getStart();
-        else if (convertedValue > parameterMax.getEnd()) convertedValue = parameterMax.getEnd();
+        // Cursor stays at same angle if value out of range.
+        if (convertedValue <= parameterMax.getStart() || convertedValue >= parameterMax.getEnd())
+        {
+            float startAngleModulo = startAngle;
+            float endAngleModulo = endAngle;
 
-        cursorAngle = startAngle + (convertedValue - parameterMax.getStart()) * (endAngle - startAngle)
+            while (startAngleModulo > MathConstants<float>::twoPi) startAngleModulo -= MathConstants<float>::twoPi;
+            while (endAngleModulo > MathConstants<float>::twoPi)   endAngleModulo   -= MathConstants<float>::twoPi;
+
+            if (previousCursorAngle == startAngleModulo || previousCursorAngle == endAngleModulo)
+            {
+                return previousCursorAngle;
+            }
+        }
+        
+        if (convertedValue <= parameterMax.getStart())    cursorAngle = startAngle;
+        else if (convertedValue >= parameterMax.getEnd()) cursorAngle = endAngle;
+        else
+        {
+            cursorAngle = startAngle + (convertedValue - parameterMax.getStart()) * (endAngle - startAngle)
                                         / parameterMax.getLength();
+        }
     }
     else
     {

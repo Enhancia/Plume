@@ -25,7 +25,8 @@ class Roll : public Gesture
 {
 public:
     Roll (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
-          float lowValue = -30.0f, float highValue = 30.0f, String description = "");
+          float lowValue = PLUME::gesture::ROLL_DEFAULT_MIN,
+          float highValue = PLUME::gesture::ROLL_DEFAULT_MAX, String description = "");
     ~Roll();
     
     //==============================================================================
