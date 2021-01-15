@@ -17,8 +17,8 @@ GestureComponent::GestureComponent (Gesture& gest, GestureArray& gestArray,
                                     const bool& dragModeReference,
                                     const int& draggedGestureReference,
                                     const int& draggedOverSlotReference)
-    : gesture (gest), gestureArray (gestArray),
-      id (gest.id),
+    : gestureArray (gestArray),
+      id (gest.id), gesture (gest),
       dragMode (dragModeReference),
       draggedGesture (draggedGestureReference),
       draggedOverSlot (draggedOverSlotReference)

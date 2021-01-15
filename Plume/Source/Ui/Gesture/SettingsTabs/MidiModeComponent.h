@@ -108,9 +108,9 @@ public:
     void resized() override;
 
     //==============================================================================
-    void labelTextChanged (Label* lbl);
-    void buttonClicked (Button* bttn);
-    void comboBoxChanged (ComboBox* box);
+    void labelTextChanged (Label* lbl) override;
+    void buttonClicked (Button* bttn) override;
+    void comboBoxChanged (ComboBox* box) override;
     
     //==============================================================================
     void updateComponents();

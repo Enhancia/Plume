@@ -96,10 +96,10 @@ private:
 
         bool isSeparator() { return type == separator; }
 
-        ScopedPointer<Component> comp;
         const String name;
-        const rowType type;
         const int height;
+        const rowType type;
+        ScopedPointer<Component> comp;
     };
 
     //==============================================================================

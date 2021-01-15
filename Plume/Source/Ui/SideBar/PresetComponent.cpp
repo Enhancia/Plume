@@ -51,8 +51,6 @@ void PresetComponent::paint (Graphics& g)
 {
     using namespace PLUME::UI;
     
-    auto area = getLocalBounds();
-    
     // Top background
     g.setColour (getPlumeColour (sideBarObjectFillBackground));
 

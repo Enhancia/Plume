@@ -8,7 +8,6 @@
   ==============================================================================
 */
 
-#include "../../../JuceLibraryCode/JuceHeader.h"
 #include "PlumeLookAndFeel.h"
 
 using namespace PLUME::UI;
@@ -120,10 +119,10 @@ void PlumeLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int width, i
 
         auto trackWidth = jmin (6.0f, slider.isHorizontal() ? height * 0.25f : width * 0.25f);
 
-        Point<float> startPoint (slider.isHorizontal() ? x : x + width * 0.5f,
+        juce::Point<float> startPoint (slider.isHorizontal() ? x : x + width * 0.5f,
                                  slider.isHorizontal() ? y + height * 0.5f : height + y);
 
-        Point<float> endPoint (slider.isHorizontal() ? width + x : startPoint.x,
+        juce::Point<float> endPoint (slider.isHorizontal() ? width + x : startPoint.x,
                                slider.isHorizontal() ? startPoint.y : y);
 
         Path backgroundTrack;
@@ -133,7 +132,7 @@ void PlumeLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int width, i
         g.strokePath (backgroundTrack, {  2.0f /*trackWidth*/, PathStrokeType::curved, PathStrokeType::rounded }); // changed track width
 
         Path valueTrack;
-        Point<float> minPoint, maxPoint, thumbPoint;
+        juce::Point<float> minPoint, maxPoint, thumbPoint;
 
         if (isTwoVal || isThreeVal)
         {
@@ -288,7 +287,7 @@ void OneRangeTunerLookAndFeel::drawRotarySlider (Graphics& g, int x, int y, int 
     }
 
     auto thumbWidth = 6.0f;
-    Point<float> thumbPoint (bounds.getCentreX() + arcRadius * std::cos (toAngle - MathConstants<float>::halfPi),
+    juce::Point<float> thumbPoint (bounds.getCentreX() + arcRadius * std::cos (toAngle - MathConstants<float>::halfPi),
                              bounds.getCentreY() + arcRadius * std::sin (toAngle - MathConstants<float>::halfPi));
 
     g.setColour (slider.findColour (Slider::thumbColourId));
@@ -317,10 +316,10 @@ void TwoRangeTunerLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int 
 
         auto trackWidth = jmin (6.0f, slider.isHorizontal() ? height * 0.25f : width * 0.25f);
 
-        Point<float> startPoint (slider.isHorizontal() ? x : x + width * 0.5f,
+        juce::Point<float> startPoint (slider.isHorizontal() ? x : x + width * 0.5f,
                                  slider.isHorizontal() ? y + height * 0.5f : height + y);
 
-        Point<float> endPoint (slider.isHorizontal() ? width + x : startPoint.x,
+        juce::Point<float> endPoint (slider.isHorizontal() ? width + x : startPoint.x,
                                slider.isHorizontal() ? startPoint.y : y);
 
         Path backgroundTrack;
@@ -331,7 +330,7 @@ void TwoRangeTunerLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int 
 									      , PathStrokeType::curved, PathStrokeType::rounded }); // changed track width
 
         Path valueTrack;
-        Point<float> minPoint, maxPoint, thumbPoint;
+        juce::Point<float> minPoint, maxPoint, thumbPoint;
 
         if (isTwoVal || isThreeVal)
         {
@@ -484,7 +483,7 @@ void TestTunerLookAndFeel::drawRotarySlider (Graphics& g, int x, int y, int widt
     }
 
     auto thumbWidth = 6.0f;
-    Point<float> thumbPoint (bounds.getCentreX() + arcRadius * std::cos (toAngle - MathConstants<float>::halfPi),
+    juce::Point<float> thumbPoint (bounds.getCentreX() + arcRadius * std::cos (toAngle - MathConstants<float>::halfPi),
                              bounds.getCentreY() + arcRadius * std::sin (toAngle - MathConstants<float>::halfPi));
 	if (slider.getThumbBeingDragged() != -1)
 	{
@@ -515,23 +514,20 @@ void TestTunerLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int widt
         auto isTwoVal   = (style == Slider::SliderStyle::TwoValueVertical   || style == Slider::SliderStyle::TwoValueHorizontal);
         auto isThreeVal = (style == Slider::SliderStyle::ThreeValueVertical || style == Slider::SliderStyle::ThreeValueHorizontal);
 
-        auto trackWidth = jmin (6.0f, slider.isHorizontal() ? height * 0.25f : width * 0.25f);
-
-        Point<float> startPoint (slider.isHorizontal() ? x : x + width * 0.5f,
+        juce::Point<float> startPoint (slider.isHorizontal() ? x : x + width * 0.5f,
                                  slider.isHorizontal() ? y + height * 0.5f : height + y);
 
-        Point<float> endPoint (slider.isHorizontal() ? width + x : startPoint.x,
+        juce::Point<float> endPoint (slider.isHorizontal() ? width + x : startPoint.x,
                                slider.isHorizontal() ? startPoint.y : y);
 
         Path backgroundTrack;
         backgroundTrack.startNewSubPath (startPoint);
         backgroundTrack.lineTo (endPoint);
         g.setColour (slider.findColour (Slider::backgroundColourId));
-        g.strokePath (backgroundTrack, {  12.0f //Old: trackWidth
-                                          , PathStrokeType::curved, PathStrokeType::rounded }); // changed track width
+        g.strokePath (backgroundTrack, {  12.0f, PathStrokeType::curved, PathStrokeType::rounded }); // changed track width
 
         Path valueTrack;
-        Point<float> minPoint, maxPoint, thumbPoint;
+        juce::Point<float> minPoint, maxPoint, thumbPoint;
 
         if (isTwoVal || isThreeVal)
         {

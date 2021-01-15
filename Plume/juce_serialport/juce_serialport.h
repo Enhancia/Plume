@@ -161,7 +161,7 @@ public:
 		const juce::ScopedLock l(bufferCriticalSection);
 		int iNdx=0;
 		while(iNdx<bufferedbytes)
-			if( /*buffer[iNdx++]=='\n' ||*/ (buffer[iNdx++]=='\r'))
+			if( /*buffer[iNdx++]=='\n' ||*/ buffer[iNdx++]=='\r')
 				return true;
 		return false;
 	}

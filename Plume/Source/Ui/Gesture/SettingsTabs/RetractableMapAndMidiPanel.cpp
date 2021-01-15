@@ -8,7 +8,6 @@
   ==============================================================================
 */
 
-#include "../../../../JuceLibraryCode/JuceHeader.h"
 #include "RetractableMapAndMidiPanel.h"
 
 //==============================================================================
@@ -98,8 +97,6 @@ void RetractableMapAndMidiPanel::resized()
 {
 	resized (parametersRetractable);
 	resized (midiRetractable);
-
-	auto bannerArea = getLocalBounds().removeFromTop (bannerHeight);
 }
 
 void RetractableMapAndMidiPanel::resized (Retractable& retractableToResize)

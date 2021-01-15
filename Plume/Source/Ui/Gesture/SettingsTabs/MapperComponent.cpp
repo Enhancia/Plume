@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "MapperComponent.h"
+#include "mappercomponent.h"
 
 #ifndef W 
 #define W Component::getWidth()
