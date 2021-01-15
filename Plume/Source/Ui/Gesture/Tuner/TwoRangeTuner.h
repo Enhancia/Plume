@@ -11,6 +11,7 @@
 #pragma once
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
+using namespace juce;
 #include "../../LookAndFeel/PlumeLookAndFeel.h"
 #include "Tuner.h"
 
@@ -132,7 +133,7 @@ private:
 
     juce::Rectangle<int> sliderBounds;
     float sliderRadius;
-    Point<int> sliderCentre;
+    juce::Point<int> sliderCentre;
     float startAngle;
     float endAngle;
 

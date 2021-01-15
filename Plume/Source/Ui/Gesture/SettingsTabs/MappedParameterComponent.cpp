@@ -608,7 +608,7 @@ void MappedParameterComponent::drawCursor (Graphics& g)
                         (1.0f - gesture.getValueForMappedParameter (mappedParameter.range,
                                                                     mappedParameter.reversed));
 
-    Point<float> cursorPoint = {lowSlider->getBounds().getCentreX() - 9.0f,
+    juce::Point<float> cursorPoint = {lowSlider->getBounds().getCentreX() - 9.0f,
                                 cursorY};
 
     cursorPath.addTriangle ({cursorPoint.x - 3.0f, cursorPoint.y - 3.0f},
@@ -627,10 +627,10 @@ void MappedParameterComponent::drawSliderBackground (Graphics& g)
                                                   .toFloat(),
                             3.0f);
 
-    Point<float> startPoint (lowSlider->getX() + lowSlider->getWidth() * 0.5f,
+    juce::Point<float> startPoint (lowSlider->getX() + lowSlider->getWidth() * 0.5f,
                              getThumbY (lowThumb));
 
-    Point<float> endPoint (lowSlider->getX() + lowSlider->getWidth() * 0.5f,
+    juce::Point<float> endPoint (lowSlider->getX() + lowSlider->getWidth() * 0.5f,
                            getThumbY (highThumb));
 
     Path valueTrack;

@@ -418,7 +418,7 @@ void OneRangeTuner::mouseDrag (const MouseEvent& e)
         else
         {
             // Inverts the drag for the y axis
-            auto invertedYEvent = e.withNewPosition(Point<int> (e.x, e.getMouseDownY() - e.getDistanceFromDragStartY()));
+            auto invertedYEvent = e.withNewPosition(juce::Point<int> (e.x, e.getMouseDownY() - e.getDistanceFromDragStartY()));
 
             lowSlider->mouseDrag (invertedYEvent.getEventRelativeTo (lowSlider));
             highSlider->mouseDrag (invertedYEvent.getEventRelativeTo (highSlider));
@@ -707,7 +707,7 @@ void OneRangeTuner::drawTunerSliderBackground (Graphics& g)
     {
         auto angle = getThumbAngleRadians (objectBeingDragged);
 
-        Point<float> thumbPoint (sliderCentre.x + arcRadius * std::cos (angle - MathConstants<float>::halfPi),
+        juce::Point<float> thumbPoint (sliderCentre.x + arcRadius * std::cos (angle - MathConstants<float>::halfPi),
                                  sliderCentre.y + arcRadius * std::sin (angle - MathConstants<float>::halfPi));
 
         g.setColour (fill.withAlpha (0.6f));
@@ -789,7 +789,7 @@ void OneRangeTuner::drawValueCursor (Graphics& g)
     previousCursorAngle = cursorAngle;
 
     auto cursorRadius = sliderRadius + 7;
-    Point<float> cursorPoint (sliderCentre.x + cursorRadius * std::cos (cursorAngle - MathConstants<float>::halfPi),
+    juce::Point<float> cursorPoint (sliderCentre.x + cursorRadius * std::cos (cursorAngle - MathConstants<float>::halfPi),
                               sliderCentre.y + cursorRadius * std::sin (cursorAngle - MathConstants<float>::halfPi));
 
     Path cursorPath;
@@ -809,7 +809,7 @@ void OneRangeTuner::drawValueCursor (Graphics& g)
 
 void OneRangeTuner::drawLineFromSliderCentre (Graphics& g, float angleRadian)
 {
-    Point<float> point (sliderCentre.x + sliderRadius * std::cos (angleRadian - MathConstants<float>::halfPi),
+    juce::Point<float> point (sliderCentre.x + sliderRadius * std::cos (angleRadian - MathConstants<float>::halfPi),
                         sliderCentre.y + sliderRadius * std::sin (angleRadian - MathConstants<float>::halfPi));
 
     g.drawLine (Line<float> (sliderCentre.toFloat(), point), 1.0f);

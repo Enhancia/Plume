@@ -24,7 +24,6 @@ PlumeProcessor::PlumeProcessor()
     TRACE_IN;
     
     // Logger
-    Time t;
     plumeLogger = FileLogger::createDefaultAppLogger ("Enhancia/Plume/Logs/",
                                                       "plumeLog.txt",
                                                       "Plume Log | Host application : "

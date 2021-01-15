@@ -57,7 +57,6 @@ void SubPanelComponent::resized()
 {
     using namespace PLUME::UI;
 
-    auto area = getLocalBounds();
     auto compArea = getLocalBounds().removeFromRight (getWidth()*2/3).reduced (MARGIN);
 
     if (!rows.isEmpty())

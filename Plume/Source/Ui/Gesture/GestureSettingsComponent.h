@@ -17,7 +17,7 @@
 #include "../Common/TabbedPanelComponent.h"
 #include "Tuner/GesturesTuner.h"
 #include "SettingsTabs/RetractableMapAndMidiPanel.h"
-#include "SettingsTabs/MapperComponent.h"
+#include "SettingsTabs/mappercomponent.h"
 #include "SettingsTabs/DescriptionPanel.h"
 
 //==============================================================================

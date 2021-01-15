@@ -366,7 +366,7 @@ void VibratoTuner::drawValueCursor (Graphics& g)
 	                                          : (value - 0.5f) * (gainSlider->getWidth() - 30)
 	                                                           * ((int) getGain())/50;
 
-	Point<int> cursorPoint = {gainSlider->getBounds().getCentreX() + offset,
+	juce::Point<int> cursorPoint = {gainSlider->getBounds().getCentreX() + offset,
 							  gainSlider->getBounds().getCentreY()};
 
     g.setColour ((intensity < getThreshold()) ? getPlumeColour (tunerSliderBackground) : tunerColour);
@@ -377,7 +377,7 @@ void VibratoTuner::drawIntensityCursor (Graphics& g)
 {
 	lastIntensity = intensity;
 
-    Point<float> cursorPoint (thresholdSlider->getBounds().getCentreX() - 10,
+    juce::Point<float> cursorPoint (thresholdSlider->getBounds().getCentreX() - 10,
                               jmax (thresholdSlider->getBottom() - 10 - (thresholdSlider->getHeight() - 20)
                               											    * smoothIntensity/500,
                               		(float) (thresholdSlider->getY() + 10)));

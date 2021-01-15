@@ -14,15 +14,15 @@ Gesture::Gesture (String gestName, int gestType, int gestId, const NormalisableR
          		  AudioProcessorValueTreeState& plumeParameters, String gestureDescription,
          		  float defaultValue, int defaultCc, Range<float> defaultMidiRange)
         
-         		  : name (gestName), type (gestType), id (gestId), range (maxRange), description (gestureDescription),
+         		  : type (gestType), name (gestName), id (gestId), range (maxRange), description (gestureDescription),
 	       		  value    (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::value]))),
 	       		  on       (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::on]))),
                   midiReverse         (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::midi_reverse]))),
 	       		  midiOnParameterOff  (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::midi_on]))),
- 	       		  cc       (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::midi_cc]))),
- 	       		  midiLow  (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::midi_low]))),
+                  midiLow  (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::midi_low]))),
 	       		  midiHigh (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::midi_high]))),
-	       		  valueRef (plumeParameters.getRawParameterValue (String(gestId) + PLUME::param::paramIds[PLUME::param::value]))
+	       		  valueRef (plumeParameters.getRawParameterValue (String(gestId) + PLUME::param::paramIds[PLUME::param::value])),
+                  cc       (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::midi_cc])))
 {
     TRACE_IN;
     mapped = false;

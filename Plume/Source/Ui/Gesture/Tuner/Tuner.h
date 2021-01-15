@@ -23,7 +23,7 @@ class Tuner    : public PlumeComponent
 public:
     //==============================================================================
 	Tuner (const String unit = String(), Colour colour = Colour (0xff7c80de))
-        : valueUnit(unit), tunerColour (colour)
+        : tunerColour (colour), valueUnit(unit)
     {}
 
 	~Tuner() {}
@@ -35,7 +35,7 @@ public:
                "- Use the sliders to tweak the gesture's behaviour.\n";
     }
 
-    virtual void update() {}
+    virtual void update() override {}
 
     //==============================================================================
 	virtual void paint(Graphics&) override {}

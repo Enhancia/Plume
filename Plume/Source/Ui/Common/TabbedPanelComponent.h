@@ -79,8 +79,8 @@ private:
         }
 
         ScopedPointer<TextButton> button;
-        ScopedPointer<Component> panel;
         const String name;
+        ScopedPointer<Component> panel;
     };
 
     //==============================================================================

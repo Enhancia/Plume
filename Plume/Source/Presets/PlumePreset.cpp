@@ -14,7 +14,7 @@
 //==============================================================================
 PlumePreset::PlumePreset (String presetName, File pathToPreset, PresetType pType,
                           FilterType category, String auth, String ver, String plug)
-                            : name (presetName), author (auth), version (ver), plugin (plug)
+                            : name (presetName), plugin (plug), author (auth), version (ver)
 {
     presetType = (int) pType;
     filterType = (int) category;
@@ -29,8 +29,8 @@ PlumePreset::PlumePreset (String presetName, File pathToPreset, PresetType pType
 }
 
 PlumePreset::PlumePreset (File pathToPreset, PresetType pType)
-                            : name (""), plugin (""),
-                                         author ((pType == defaultPreset) ? "Enhancia" : ""),
+                            : name (""), author ((pType == defaultPreset) ? "Enhancia" : ""),
+                                         plugin (""),
                                          version ("1.0")
 {
     presetType = (int) pType;
