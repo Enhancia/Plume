@@ -43,6 +43,7 @@ PlumeProcessor::PlumeProcessor()
     // Parameters
     initializeParameters();
     initializeSettings();
+    initializeMidiSequence();
     
     // Objects
     dataReader = new DataReader();
@@ -53,6 +54,7 @@ PlumeProcessor::PlumeProcessor()
 		                                               .getChildWithName (PLUME::treeId::presetDir));
     
     dataReader->addChangeListener (gestureArray);
+
 }
 
 PlumeProcessor::~PlumeProcessor()
@@ -119,8 +121,8 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
 {   
     MidiBuffer plumeBuffer;
 
-    //DBG_trackSystemMidi (midiMessages);
-    if (isProbablyOnAnArmedTrack (midiMessages))
+    checkForSignedMidi (midiMessages);
+    if (isProbablyOnAnArmedTrack())
     {
         // Adds the gesture's MIDI messages to the buffer, and changes parameters if needed
         gestureArray->process (midiMessages, plumeBuffer);
@@ -553,31 +555,24 @@ void PlumeProcessor::updateTrackProperties (const AudioProcessor::TrackPropertie
     DBG ("Name : " << properties.name << " | Colour : " << properties.colour.toDisplayString(false));
 }
 
-unsigned int PlumeProcessor::trackReceivesGenericMidi (MidiBuffer& midiMessages)
+void PlumeProcessor::checkForSignedMidi (MidiBuffer& midiMessages)
 {
+    if (signedMidiBufferCount > 0) signedMidiBufferCount--;
+    else if (lastSimultaneousSequenceCount != 0) lastSimultaneousSequenceCount = 0;
+
     if (!midiMessages.isEmpty())
     {
         for (const MidiMessageMetadata metadata : midiMessages)
         {
-            DBG ("Message : " << metadata.getMessage().getDescription());
-
-            if (metadata.getMessage().isChannelPressure() &&
-                (metadata.getMessage().getChannelPressureValue() == 127 ||
-                 metadata.getMessage().getChannelPressureValue() == 126)/* &&
-                metadata.getMessage().getChannel() == 16*/)
-            {
-                return 1; // TEMP
-            }
-
-            // TODO implement rate detection (to know if we receive the sequence once or twice)
+            checkMidiAndUpdateMidiSequence (metadata.getMessage());
         }
     }
-
-    return 0;
 }
 
-bool PlumeProcessor::isProbablyOnAnArmedTrack (MidiBuffer& midiMessages)
+bool PlumeProcessor::isProbablyOnAnArmedTrack()
 {
+    if (signedMidiBufferCount == 0) return false;
+    
     if (auto* playHead = getPlayHead())
     {
         AudioPlayHead::CurrentPositionInfo positionInfo;
@@ -589,12 +584,78 @@ bool PlumeProcessor::isProbablyOnAnArmedTrack (MidiBuffer& midiMessages)
                 /*  If DAW is playing back some pre recorded midi, we want plume to activate its gestures only if it is armed.
                     When the DAW plays but Plume only recieves one instance of the signed MIDI, it likely
                     indicates that the track is inactive with some previously recorded signed MIDI playing. */
-                return trackReceivesGenericMidi (midiMessages) != 1; // True if we recieve signed midi twice or we dont
+                return (lastSimultaneousSequenceCount != 1);
             }
         }
     }
     
     // Either playhead is not playing, or Plume failed to get playhead info
     // If the latter is true it is safe to assume assume the host simply cannot playback or is atleast not playing atm
-    return trackReceivesGenericMidi (midiMessages) != 0; // True if we receive signed midi
+    return (lastSimultaneousSequenceCount != 0);
+}
+
+
+void PlumeProcessor::initializeMidiSequence()
+{
+    // Adds aftertouch messages
+    signedMidiSequence.add (new MidiMessage (MidiMessage::channelPressureChange (16, 125)));
+    signedMidiSequence.add (new MidiMessage (MidiMessage::channelPressureChange (16, 126)));
+    signedMidiSequence.add (new MidiMessage (MidiMessage::channelPressureChange (16, 127)));
+}
+void PlumeProcessor::checkMidiAndUpdateMidiSequence (const MidiMessage& midiMessageToCheck)
+{
+    // Checks if new message comes after the current
+    if (isFromMidiSequence (midiMessageToCheck))
+    {
+        signedMidiBufferCount = int (std::trunc (getSampleRate()/(signedMidiFrequencyHz * getBlockSize()))) + 2;
+        lastSimultaneousSequenceCount = isNextStepInSequence (midiMessageToCheck) ? 1 : 2;
+        lastSignedMidiId = getIdInSequence (midiMessageToCheck);
+    }
+}
+
+const bool PlumeProcessor::isFromMidiSequence (const MidiMessage& midiMessageToCheck)
+{
+    if (midiMessageToCheck.isChannelPressure())
+    {
+        // Checks every message from sequ to see if message is there
+        for (auto* message : signedMidiSequence)
+        {
+            if (midiMessageToCheck.getChannelPressureValue() == message->getChannelPressureValue())
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+const bool PlumeProcessor::isNextStepInSequence (const MidiMessage& midiMessageToCheck)
+{
+    if (midiMessageToCheck.isChannelPressure())
+    {
+        if (lastSignedMidiId == 0) return true;
+
+        if (lastSignedMidiId == signedMidiSequence.size() - 1) return (getIdInSequence(midiMessageToCheck) == 0);
+        else                                                   return (getIdInSequence(midiMessageToCheck) == lastSignedMidiId + 1);
+    }
+
+    // Checks if message actually is next in the sequence
+    return false;
+}
+
+int PlumeProcessor::getIdInSequence (const MidiMessage& midiMessageToCheck)
+{
+    if (midiMessageToCheck.isChannelPressure())
+    {
+        // Checks every message from sequ to see if message is there
+        for (int messageId=0; messageId < signedMidiSequence.size(); messageId++)
+        {
+            if (midiMessageToCheck.getChannelPressureValue() == signedMidiSequence[messageId]->getChannelPressureValue())
+            {
+                return messageId;
+            }
+        }
+    }
+
+    return -1;
 }

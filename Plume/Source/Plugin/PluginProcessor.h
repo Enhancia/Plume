@@ -184,12 +184,14 @@ public:
      * \return Reference to the PresetHandler object.
      */
     PresetHandler& getPresetHandler();
+
+    //bool getUseRawData();
     
     
 private:
     //==============================================================================
-    bool isProbablyOnAnArmedTrack (MidiBuffer& midiMessages);
-    unsigned int trackReceivesGenericMidi (MidiBuffer& midiMessages);
+    void checkForSignedMidi (MidiBuffer& midiMessages);
+    bool isProbablyOnAnArmedTrack();
     //void updatePlumeTrackActivationStatus();
 
     //==============================================================================
@@ -197,7 +199,14 @@ private:
     void initializeValueTree();
     void initializeSettings();
     void removeLogger();
-    
+
+    //==============================================================================
+    void initializeMidiSequence();
+    void checkMidiAndUpdateMidiSequence (const MidiMessage& midiMessageToCheck);
+    const bool isFromMidiSequence (const MidiMessage& midiMessageToCheck);
+    const bool isNextStepInSequence (const MidiMessage& midiMessageToCheck);
+    int getIdInSequence (const MidiMessage& midiMessageToCheck);
+
     //==============================================================================
     ScopedPointer<FileLogger> plumeLogger; /**< \brief Logger object. Allows to write logs for testing purposes. */
     ScopedPointer<PluginWrapper> wrapper; /**< \brief PluginWrapper object. Handles the plugin wrapping. */
@@ -208,7 +217,14 @@ private:
     //==============================================================================
     //ValueTree settings;
     AudioProcessorValueTreeState parameters;
-    
+
+    //==============================================================================
+    OwnedArray<MidiMessage> signedMidiSequence;
+    int lastSignedMidiId = -1;
+    unsigned int signedMidiBufferCount = 0;
+    unsigned int lastSimultaneousSequenceCount = 0;
+    const int signedMidiFrequencyHz = 5;
+
     //==============================================================================
     //JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeProcessor)
     JUCE_HEAVYWEIGHT_LEAK_DETECTOR (PlumeProcessor)
