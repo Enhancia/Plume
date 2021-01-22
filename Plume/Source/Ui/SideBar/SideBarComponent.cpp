@@ -85,7 +85,7 @@ void SideBarComponent::paint (Graphics& g)
     // Plume. text
     g.setColour (currentTheme.getColour(PLUME::colour::sideBarMainText));
     g.setFont (PLUME::font::plumeFontBold.withHeight (24.0f));
-    g.drawText ("Plume.", area.removeFromTop (HEADER_HEIGHT).reduced (MARGIN),
+    g.drawText ("Plume SEQU 10", area.removeFromTop (HEADER_HEIGHT).reduced (MARGIN),
                 Justification::centredRight, true);
 }
 

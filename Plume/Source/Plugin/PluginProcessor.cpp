@@ -594,13 +594,13 @@ bool PlumeProcessor::isProbablyOnAnArmedTrack()
     return (lastSimultaneousSequenceCount != 0);
 }
 
-
 void PlumeProcessor::initializeMidiSequence()
 {
     // Adds aftertouch messages
-    signedMidiSequence.add (new MidiMessage (MidiMessage::channelPressureChange (16, 125)));
-    signedMidiSequence.add (new MidiMessage (MidiMessage::channelPressureChange (16, 126)));
-    signedMidiSequence.add (new MidiMessage (MidiMessage::channelPressureChange (16, 127)));
+    for (int value = 117; value <= 127; value++)
+    {
+        signedMidiSequence.add (new MidiMessage (MidiMessage::channelPressureChange (16, value)));
+    }
 }
 void PlumeProcessor::checkMidiAndUpdateMidiSequence (const MidiMessage& midiMessageToCheck)
 {
