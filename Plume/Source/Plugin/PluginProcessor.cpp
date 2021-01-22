@@ -117,7 +117,7 @@ bool PlumeProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {   
     MidiBuffer plumeBuffer;
-
+    filterInputMidi (midiMessages);
     //DBG_trackSystemMidi (midiMessages);
     
     // Adds the gesture's MIDI messages to the buffer, and changes parameters if needed
@@ -562,4 +562,33 @@ void PlumeProcessor::DBG_trackSystemMidi (MidiBuffer& midiMessages)
             }
         }
     }
+}
+
+void PlumeProcessor::filterInputMidi (MidiBuffer& midiMessages)
+{
+    if (!midiMessages.isEmpty())
+    {
+        MidiBuffer filteredBuffer;
+        
+        for (const MidiMessageMetadata metadata : midiMessages)
+        {
+            if (messageShouldBeKept (metadata.getMessage()))
+            {
+                filteredBuffer.addEvent (metadata.getMessage(), metadata.samplePosition);
+            }
+        }
+
+        midiMessages.swapWith (filteredBuffer);
+    }
+}
+
+bool PlumeProcessor::messageShouldBeKept (const MidiMessage& midiMessage)
+{
+    if (midiMessage.isPitchWheel() ||
+        (midiMessage.isController() && midiMessage.getControllerNumber() < 120))
+    {
+        return false;
+    }
+
+    return true;
 }

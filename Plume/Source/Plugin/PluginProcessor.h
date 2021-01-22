@@ -189,6 +189,8 @@ private:
     //==============================================================================
     // TO DELETE
     void DBG_trackSystemMidi (MidiBuffer& midiMessages);
+    void filterInputMidi (MidiBuffer& midiMessages);
+    bool messageShouldBeKept (const MidiMessage& midiMessage);
 
     //==============================================================================
     void initializeParameters();
