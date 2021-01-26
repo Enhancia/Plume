@@ -165,8 +165,6 @@ void PlumeEditor::resized()
 void PlumeEditor::componentPeerChanged()
 {
   #if JUCE_WINDOWS
-    jassert (getPeer() != nullptr);
-
     if (getPeer() != nullptr) // Peer was just created!
     {
 		if (!plumeHWNDIsSet)

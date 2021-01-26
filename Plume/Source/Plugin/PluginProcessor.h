@@ -184,12 +184,10 @@ public:
      * \return Reference to the PresetHandler object.
      */
     PresetHandler& getPresetHandler();
-
-    //bool getUseRawData();
-    
     
 private:
     //==============================================================================
+    void checkAndUpdateRecordingStatus();
     void checkForSignedMidi (MidiBuffer& midiMessages);
     bool isProbablyOnAnArmedTrack();
     //void updatePlumeTrackActivationStatus();
@@ -224,6 +222,7 @@ private:
     unsigned int signedMidiBufferCount = 0;
     unsigned int lastSimultaneousSequenceCount = 0;
     const int signedMidiFrequencyHz = 5;
+    bool lastRecordingStatus = false;
 
     //==============================================================================
     //JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeProcessor)

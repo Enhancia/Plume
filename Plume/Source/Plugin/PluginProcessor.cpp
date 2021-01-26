@@ -121,6 +121,7 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
 {   
     MidiBuffer plumeBuffer;
 
+    checkAndUpdateRecordingStatus();
     checkForSignedMidi (midiMessages);
     if (isProbablyOnAnArmedTrack())
     {
@@ -165,7 +166,6 @@ AudioProcessorValueTreeState& PlumeProcessor::getParameterTree()
 {
     return parameters;
 }
-
 
 PresetHandler& PlumeProcessor::getPresetHandler()
 {
@@ -566,6 +566,40 @@ void PlumeProcessor::checkForSignedMidi (MidiBuffer& midiMessages)
         {
             checkMidiAndUpdateMidiSequence (metadata.getMessage());
         }
+    }
+}
+
+void PlumeProcessor::checkAndUpdateRecordingStatus()
+{
+    bool isRecording = false;
+
+    if (auto* playHead = getPlayHead())
+    {
+        AudioPlayHead::CurrentPositionInfo positionInfo;
+
+        if (playHead->getCurrentPosition (positionInfo))
+        {
+            isRecording = positionInfo.isRecording;
+
+            DBG("BPM            : " << String(positionInfo.bpm));
+            DBG("Time (s)       : " << String(positionInfo.timeInSeconds));
+            DBG("Playing        : " << (positionInfo.isPlaying ? "Y" : "N"));
+            DBG("Recording      : " << (positionInfo.isRecording ? "Y" : "N"));
+            DBG("Ppq Position   : " << String(positionInfo.ppqPosition));
+            DBG("Time (samples) : " << String(positionInfo.timeInSamples));
+            DBG("Time sig denom : " << String(positionInfo.timeSigDenominator));
+            DBG("Time sig num   : " << String(positionInfo.timeSigNumerator));
+        }
+    }
+
+    if (lastRecordingStatus != isRecording)
+    {
+        lastRecordingStatus = isRecording;
+
+        // TODO send recording status change to HUB
+        // This will allow the HUB to send the right MIDI sequence
+
+        // updateHUBRecordingStatus (isRecording);
     }
 }
 
