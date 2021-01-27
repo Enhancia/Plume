@@ -155,7 +155,7 @@ namespace PLUME
 		}
 		else
 		{
-			DBG ("Unprocessable window event! Tread : " + (wParam == 0 ? String("Other")
+			DBG ("Unprocessable window event! Thread : " + (wParam == 0 ? String("Other")
                                                                        : String("Current")));
 		}
 

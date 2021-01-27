@@ -38,6 +38,14 @@ class PlumeProcessor  : public AudioProcessor,
                         public AudioProcessorValueTreeState::Listener
 {
 public:
+    enum midiSequenceId
+    {
+        noSequence =0,
+        normal,
+        recording,
+        normalAndRecording
+    };
+
     //==============================================================================
     /**
      * \brief Constructor.
@@ -199,11 +207,11 @@ private:
     void removeLogger();
 
     //==============================================================================
-    void initializeMidiSequence();
+    void initializeMidiSequences();
     void checkMidiAndUpdateMidiSequence (const MidiMessage& midiMessageToCheck);
-    const bool isFromMidiSequence (const MidiMessage& midiMessageToCheck);
-    const bool isNextStepInSequence (const MidiMessage& midiMessageToCheck);
-    int getIdInSequence (const MidiMessage& midiMessageToCheck);
+    const bool isFromMidiSequence (const MidiMessage& midiMessageToCheck, const midiSequenceId sequenceType = normalAndRecording);
+    const bool isNextStepInSequence (const MidiMessage& midiMessageToCheck, const midiSequenceId sequenceType);
+    int getIdInSequence (const MidiMessage& midiMessageToCheck, const midiSequenceId sequenceType);
 
     //==============================================================================
     ScopedPointer<FileLogger> plumeLogger; /**< \brief Logger object. Allows to write logs for testing purposes. */
@@ -217,10 +225,19 @@ private:
     AudioProcessorValueTreeState parameters;
 
     //==============================================================================
-    OwnedArray<MidiMessage> signedMidiSequence;
-    int lastSignedMidiId = -1;
+    struct LastSignedMidiIds
+    {
+        int generalId = -1;
+        int normalSequenceId = -1;
+        int recordingSequenceId = -1;
+    };
+
+    OwnedArray<MidiMessage> normalMidiSequence;
+    OwnedArray<MidiMessage> recordingMidiSequence;
+
     unsigned int signedMidiBufferCount = 0;
-    unsigned int lastSimultaneousSequenceCount = 0;
+    LastSignedMidiIds lastSignedMidi;
+    midiSequenceId lastSequenceType = noSequence;
     const int signedMidiFrequencyHz = 5;
     bool lastRecordingStatus = false;
 
