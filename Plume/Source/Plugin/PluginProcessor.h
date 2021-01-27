@@ -240,6 +240,7 @@ private:
     midiSequenceId lastSequenceType = noSequence;
     const int signedMidiFrequencyHz = 5;
     bool lastRecordingStatus = false;
+    uint8_t data[1024];
 
     //==============================================================================
     //JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeProcessor)

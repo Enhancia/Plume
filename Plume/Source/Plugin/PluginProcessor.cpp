@@ -580,7 +580,8 @@ void PlumeProcessor::checkAndUpdateRecordingStatus()
 
         if (playHead->getCurrentPosition (positionInfo))
         {
-            isRecording = positionInfo.isRecording;
+            // TODO change isPlaying to isRecording
+            isRecording = positionInfo.isPlaying;
 
             DBG("BPM            : " << String(positionInfo.bpm));
             DBG("Time (s)       : " << String(positionInfo.timeInSeconds));
@@ -599,8 +600,17 @@ void PlumeProcessor::checkAndUpdateRecordingStatus()
 
         // TODO send recording status change to HUB
         // This will allow the HUB to send the right MIDI sequence
-
-        // updateHUBRecordingStatus (isRecording);
+                //test change aftertouch seq sur enregistrement
+        if (isRecording)
+        {
+            memcpy(data, "reco", sizeof("reco"));
+            dataReader->sendString(data, 4);
+        }
+        else 
+        {
+            memcpy(data, "play", sizeof("play"));
+            dataReader->sendString(data, 4);
+        }
     }
 }
 
