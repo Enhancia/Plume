@@ -43,6 +43,8 @@ public:
         noSequence =0,
         normal,
         recording,
+        alternatingNormal,
+        alternatingRecording,
         normalAndRecording
     };
 
@@ -212,6 +214,7 @@ private:
     const bool isFromMidiSequence (const MidiMessage& midiMessageToCheck, const midiSequenceId sequenceType = normalAndRecording);
     const bool isNextStepInSequence (const MidiMessage& midiMessageToCheck, const midiSequenceId sequenceType);
     int getIdInSequence (const MidiMessage& midiMessageToCheck, const midiSequenceId sequenceType);
+    String sequenceTypeToString (const midiSequenceId sequenceType);
 
     //==============================================================================
     ScopedPointer<FileLogger> plumeLogger; /**< \brief Logger object. Allows to write logs for testing purposes. */
@@ -227,7 +230,6 @@ private:
     //==============================================================================
     struct LastSignedMidiIds
     {
-        int generalId = -1;
         int normalSequenceId = -1;
         int recordingSequenceId = -1;
     };
