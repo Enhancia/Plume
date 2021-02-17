@@ -199,6 +199,13 @@ namespace PLUME
             "_roll_low",
             "_roll_high"
         };
+
+        enum armValue
+        {
+            notArmed = 0,
+            armed = 1,
+            unknownArm = 2
+        };
     }
 
     // data

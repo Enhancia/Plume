@@ -146,6 +146,10 @@ void HeaderComponent::mouseUp (const MouseEvent &event)
 			}
         }
 	}
+    else
+    {
+        processor.setArm (PLUME::param::unknownArm);
+    }
 }
 
 

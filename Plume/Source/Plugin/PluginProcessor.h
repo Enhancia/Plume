@@ -82,6 +82,9 @@ public:
 
     //==============================================================================
     void parameterChanged (const String &parameterID, float newValue) override;
+
+    //==============================================================================
+    void setArm (PLUME::param::armValue newArm);
     
     //==============================================================================
     /**
@@ -191,8 +194,7 @@ private:
     void DBG_trackSystemMidi (MidiBuffer& midiMessages);
 
     //==============================================================================
-    void initializeParameters();
-    void initializeValueTree();
+    AudioProcessorValueTreeState::ParameterLayout initializeParameters();
     void initializeSettings();
     void removeLogger();
     

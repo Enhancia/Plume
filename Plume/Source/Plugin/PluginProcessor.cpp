@@ -19,7 +19,7 @@ PlumeProcessor::PlumeProcessor()
                        .withOutput ("Output", AudioChannelSet::stereo(), true)
                        )
 #endif
-       , parameters (*this, nullptr /*, PLUME::parametersIdentifier, {}*/)
+       , parameters (*this, nullptr, "PARAMETERS", initializeParameters())
 {
     TRACE_IN;
     
@@ -40,7 +40,6 @@ PlumeProcessor::PlumeProcessor()
     Logger::setCurrentLogger (plumeLogger);
     
     // Parameters
-    initializeParameters();
     initializeSettings();
     
     // Objects
@@ -121,8 +120,16 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
     //DBG_trackSystemMidi (midiMessages);
     
     // Adds the gesture's MIDI messages to the buffer, and changes parameters if needed
-    gestureArray->process (midiMessages, plumeBuffer);
-        
+    int armValue = parameters.getParameter ("track_arm")
+                             ->convertFrom0to1 (parameters.getParameter ("track_arm")
+                                                          ->getValue());
+
+    if (armValue == int (PLUME::param::armed) /* ||
+        (armValue == int (PLUME::params::unknownArm) && isProbablyOnAnArmedTrack())*/)
+    {    
+        gestureArray->process (midiMessages, plumeBuffer);
+    }
+
     // if wrapped plugin, lets the wrapped plugin process all MIDI into sound
     if (wrapper->isWrapping())
     {
@@ -408,10 +415,11 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 
 
 //==============================================================================
-void PlumeProcessor::initializeParameters()
+AudioProcessorValueTreeState::ParameterLayout PlumeProcessor::initializeParameters()
 {
     using namespace PLUME::param;
-            
+    AudioProcessorValueTreeState::ParameterLayout layout;
+    
     for (int gest =0; gest < PLUME::NUM_GEST; gest++)
     {
         for (int i =0; i < numParams; i++)
@@ -419,9 +427,9 @@ void PlumeProcessor::initializeParameters()
             // boolean parameters
             if (i == on || i == midi_on || i == midi_reverse)
             {
-                parameters.createAndAddParameter (std::make_unique<AudioParameterBool> (String(gest) + paramIds[i],
-                                                                                        String(gest) + paramIds[i],
-                                                                                        false));
+                layout.add (std::make_unique<AudioParameterBool> (String(gest) + paramIds[i],
+                                                                  String(gest) + paramIds[i],
+                                                                  false));
             }
             // float parameters
             else
@@ -483,10 +491,10 @@ void PlumeProcessor::initializeParameters()
                         break;
                 }
 				
-                parameters.createAndAddParameter (std::make_unique<AudioParameterFloat> (String(gest) + paramIds[i],
-                                                                                         String(gest) + paramIds[i],
-                                                                                         range,
-                                                                                         defVal));
+                layout.add (std::make_unique<AudioParameterFloat> (String(gest) + paramIds[i],
+                                                                   String(gest) + paramIds[i],
+                                                                   range,
+                                                                   defVal));
                 /*
                 if (i != (int) PLUME::param::value && i != (int) vibrato_intensity)
                 {
@@ -495,6 +503,10 @@ void PlumeProcessor::initializeParameters()
             }
         }
     }
+
+    layout.add (std::make_unique<AudioParameterInt> ("track_arm", "track_arm", 0, 2, 2));
+
+    return layout;
 }
 
 void PlumeProcessor::initializeSettings()
@@ -544,22 +556,15 @@ void PlumeProcessor::parameterChanged (const String &parameterID, float newValue
     */
 }
 
+void PlumeProcessor::setArm (PLUME::param::armValue newArm)
+{
+    parameters.getParameter ("track_arm")->beginChangeGesture();
+    parameters.getParameter ("track_arm")->setValueNotifyingHost (newArm);
+    parameters.getParameter ("track_arm")->endChangeGesture();
+}
+
 void PlumeProcessor::updateTrackProperties (const AudioProcessor::TrackProperties& properties)
 {
 	ignoreUnused (properties);
     DBG ("Name : " << properties.name << " | Colour : " << properties.colour.toDisplayString(false));
-}
-
-void PlumeProcessor::DBG_trackSystemMidi (MidiBuffer& midiMessages)
-{
-    if (!midiMessages.isEmpty())
-    {
-        for (const MidiMessageMetadata metadata : midiMessages)
-        {
-            if (metadata.getMessage().isMetaEvent())
-            {
-                DBG ("META EVENT !!");
-            }
-        }
-    }
 }
