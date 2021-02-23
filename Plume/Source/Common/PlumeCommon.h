@@ -124,7 +124,8 @@ namespace PLUME
     {
         // gesture max range values
         const float VIBRATO_RANGE_MAX  = 100.0f;
-        const float VIBRATO_THRESH_MAX = 300.0f;
+        const float VIBRATO_THRESH_MAX = 500.0f;
+        const float VIBRATO_INTENSITY_MAX = 1000.0f;
         const float PITCHBEND_MIN = -180.0f;
         const float PITCHBEND_MAX =  180.0f;
         const float TILT_MIN = -180.0f;
@@ -156,48 +157,35 @@ namespace PLUME
     {
 		enum
 		{
-		    value =0,
+            value_0 = 0,
+            value_1,
+            gesture_param_0,
+            gesture_param_1,
+            gesture_param_2,
+            gesture_param_3,
 			on,
 			midi_on,
 			midi_cc,
             midi_reverse,
 			midi_low,
 			midi_high,
-			vibrato_range,
-			vibrato_intensity,
-			vibrato_thresh,
-			bend_leftLow,
-			bend_leftHigh,
-			bend_rightLow,
-			bend_rightHigh,
-			tilt_low,
-			tilt_high,
-			roll_low,
-			roll_high,
 
 			numParams
 		};
         
         const String paramIds[] = {
-        
-            "_value",
+            "_value_0",
+            "_value_1",
+            "_gesture_param_0",
+            "_gesture_param_1",
+            "_gesture_param_2",
+            "_gesture_param_3",
             "_on",
             "_midi_on",
             "_midi_cc",
             "_midi_reverse",
             "_midi_low",
-            "_midi_high",
-            "_vibrato_range",
-            "_vibrato_intensity",
-            "_vibrato_thresh",
-            "_bend_leftLow",
-            "_bend_leftHigh",
-            "_bend_rightLow",
-            "_bend_rightHigh",
-            "_tilt_low",
-            "_tilt_high",
-            "_roll_low",
-            "_roll_high"
+            "_midi_high"
         };
     }
 

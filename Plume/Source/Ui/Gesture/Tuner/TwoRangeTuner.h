@@ -36,7 +36,7 @@ public:
     TwoRangeTuner(const std::atomic<float>& val, const NormalisableRange<float> gestureRange,
                   RangedAudioParameter& rangeLL, RangedAudioParameter& rangeLH,
                   RangedAudioParameter& rangeRL, RangedAudioParameter& rangeRH,
-                  const Range<float> paramMax, const String unit = "");
+                  const NormalisableRange<float> paramMax, const String unit = "");
     ~TwoRangeTuner();
     
     //==============================================================================
@@ -109,7 +109,7 @@ private:
     RangedAudioParameter& rangeLeftHigh;
     RangedAudioParameter& rangeRightLow;
     RangedAudioParameter& rangeRightHigh;
-    const Range<float> parameterMax;
+    const NormalisableRange<float> parameterMax;
     
     //==============================================================================
     ScopedPointer<Slider> leftLowSlider;

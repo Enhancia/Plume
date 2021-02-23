@@ -10,10 +10,10 @@
 
 #include "PitchBend.h"
 
-#define rangeLeftStart rangeLeftLow.convertFrom0to1 (rangeLeftLow.getValue())
-#define rangeLeftEnd rangeLeftHigh.convertFrom0to1 (rangeLeftHigh.getValue())
-#define rangeRightStart rangeRightLow.convertFrom0to1 (rangeRightLow.getValue())
-#define rangeRightEnd rangeRightHigh.convertFrom0to1 (rangeRightHigh.getValue())
+#define rangeLeftStart  pitchBendDisplayRange.convertFrom0to1 (rangeLeftLow.getValue())
+#define rangeLeftEnd    pitchBendDisplayRange.convertFrom0to1 (rangeLeftHigh.getValue())
+#define rangeRightStart pitchBendDisplayRange.convertFrom0to1 (rangeRightLow.getValue())
+#define rangeRightEnd   pitchBendDisplayRange.convertFrom0to1 (rangeRightHigh.getValue())
 
 using namespace PLUME;
 
@@ -23,29 +23,30 @@ PitchBend::PitchBend (String gestName, int gestId, AudioProcessorValueTreeState&
     : Gesture (gestName, Gesture::pitchBend, gestId,
                NormalisableRange<float> (PLUME::gesture::PITCHBEND_MIN, PLUME::gesture::PITCHBEND_MAX, 0.1f),
                plumeParameters, description),
-    
-      rangeLeftLow   (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::bend_leftLow]))),
-      rangeLeftHigh  (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::bend_leftHigh]))),
-      rangeRightLow  (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::bend_rightLow]))),
-      rangeRightHigh (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::bend_rightHigh])))
+
+      pitchBendDisplayRange (PLUME::UI::PITCHBEND_DISPLAY_MIN, PLUME::UI::PITCHBEND_DISPLAY_MAX, 1.0f),
+      rangeLeftLow   (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::gesture_param_0]))),
+      rangeLeftHigh  (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::gesture_param_1]))),
+      rangeRightLow  (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::gesture_param_2]))),
+      rangeRightHigh (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::gesture_param_3])))
 {
     midiType = Gesture::pitch;
 	midiOnParameterOff.setValueNotifyingHost(1.0f);
     
     rangeLeftLow.beginChangeGesture();
-    rangeLeftLow.setValueNotifyingHost   (rangeLeftLow.convertTo0to1 (leftLow));
+    rangeLeftLow.setValueNotifyingHost   (pitchBendDisplayRange.convertTo0to1 (leftLow));
     rangeLeftLow.endChangeGesture();
     
     rangeLeftHigh.beginChangeGesture();
-	rangeLeftHigh.setValueNotifyingHost  (rangeLeftHigh.convertTo0to1 (leftHigh));
+	rangeLeftHigh.setValueNotifyingHost  (pitchBendDisplayRange.convertTo0to1 (leftHigh));
     rangeLeftHigh.endChangeGesture();
 	
 	rangeRightLow.beginChangeGesture();
-	rangeRightLow.setValueNotifyingHost  (rangeRightLow.convertTo0to1 (rightLow));
+	rangeRightLow.setValueNotifyingHost  (pitchBendDisplayRange.convertTo0to1 (rightLow));
     rangeRightLow.endChangeGesture();
     
     rangeRightHigh.beginChangeGesture();
-	rangeRightHigh.setValueNotifyingHost (rangeRightHigh.convertTo0to1 (rightHigh));
+	rangeRightHigh.setValueNotifyingHost (pitchBendDisplayRange.convertTo0to1 (rightHigh));
     rangeRightHigh.endChangeGesture();
 }
 

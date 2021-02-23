@@ -31,7 +31,7 @@ public:
         :   TwoRangeTuner (pb.getValueReference(), pb.getRangeReference(),
                            pb.rangeLeftLow, pb.rangeLeftHigh,
                            pb.rangeRightLow, pb.rangeRightHigh,
-			               Range<float> (PLUME::UI::PITCHBEND_DISPLAY_MIN, PLUME::UI::PITCHBEND_DISPLAY_MAX),
+                           Range<float> (PLUME::UI::PITCHBEND_DISPLAY_MIN, PLUME::UI::PITCHBEND_DISPLAY_MAX),
                            String (CharPointer_UTF8 ("\xc2\xb0")))
     {}
     
@@ -49,9 +49,9 @@ class TiltTuner: public OneRangeTuner
 public:
     TiltTuner(Tilt& tilt)
         :   OneRangeTuner (tilt.getValueReference(), tilt.getRangeReference(),
-			               tilt.rangeLow,
-						   tilt.rangeHigh,
-			               Range<float> (PLUME::UI::TILT_DISPLAY_MIN, PLUME::UI::TILT_DISPLAY_MAX),
+                           tilt.rangeLow,
+                           tilt.rangeHigh,
+                           Range<float> (PLUME::UI::TILT_DISPLAY_MIN, PLUME::UI::TILT_DISPLAY_MAX),
                            String (CharPointer_UTF8 ("\xc2\xb0")), OneRangeTuner::tilt)
     {}
     
@@ -87,8 +87,8 @@ class RollTuner: public OneRangeTuner
 public:
     RollTuner(Roll& roll)
         :   OneRangeTuner (roll.getValueReference(), roll.getRangeReference(),
-			               roll.rangeLow, roll.rangeHigh,
-				           Range<float> (PLUME::UI::ROLL_DISPLAY_MIN, PLUME::UI::ROLL_DISPLAY_MAX),
+                           roll.rangeLow, roll.rangeHigh,
+                           Range<float> (PLUME::UI::ROLL_DISPLAY_MIN, PLUME::UI::ROLL_DISPLAY_MAX),
                            String (CharPointer_UTF8 ("\xc2\xb0")), OneRangeTuner::roll)
     {}
     

@@ -15,13 +15,13 @@ Gesture::Gesture (String gestName, int gestType, int gestId, const NormalisableR
          		  float defaultValue, int defaultCc, Range<float> defaultMidiRange)
         
          		  : type (gestType), name (gestName), id (gestId), range (maxRange), description (gestureDescription),
-	       		  value    (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::value]))),
+	       		  value    (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::value_0]))),
 	       		  on       (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::on]))),
                   midiReverse         (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::midi_reverse]))),
 	       		  midiOnParameterOff  (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::midi_on]))),
                   midiLow  (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::midi_low]))),
 	       		  midiHigh (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::midi_high]))),
-	       		  valueRef (plumeParameters.getRawParameterValue (String(gestId) + PLUME::param::paramIds[PLUME::param::value])),
+	       		  valueRef (plumeParameters.getRawParameterValue (String(gestId) + PLUME::param::paramIds[PLUME::param::value_0])),
                   cc       (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::midi_cc])))
 {
     TRACE_IN;
@@ -191,6 +191,11 @@ void Gesture::setActive (bool shouldBeOn)
     on.endChangeGesture();
 }
 
+bool Gesture::isActive() const
+{
+    return (on.getValue() > 0.5f);
+}
+
 void Gesture::setMapped (bool shouldBeMapped)
 {
     mapped = shouldBeMapped;
@@ -258,11 +263,6 @@ void Gesture::setMidiHigh (float newValue, bool checkOtherValue, bool createChan
     if (createChangeGesture) midiHigh.beginChangeGesture();
     midiHigh.setValueNotifyingHost (newValue);
     if (createChangeGesture) midiHigh.endChangeGesture();
-}
-
-bool Gesture::isActive() const
-{
-    return (on.getValue() > 0.5f);
 }
 
 String Gesture::getName() const

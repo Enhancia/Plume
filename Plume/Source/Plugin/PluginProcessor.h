@@ -191,7 +191,7 @@ private:
     void DBG_trackSystemMidi (MidiBuffer& midiMessages);
 
     //==============================================================================
-    void initializeParameters();
+    AudioProcessorValueTreeState::ParameterLayout initializeParameters();
     void initializeValueTree();
     void initializeSettings();
     void removeLogger();

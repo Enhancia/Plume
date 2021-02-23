@@ -10,13 +10,13 @@
 
 #include "VibratoTuner.h"
 
-VibratoTuner::VibratoTuner (const std::atomic<float>& val, NormalisableRange<float> gestRange,
-						    const std::atomic<float>& vibratoIntensity, float maxIntens,
-    				        RangedAudioParameter& vibGain, const Range<float> gainMax,
-    				        RangedAudioParameter& thresh, const Range<float> threshMax)
+VibratoTuner::VibratoTuner  (const std::atomic<float>& val, NormalisableRange<float> gestRange,
+				  			 const std::atomic<float>& vibratoIntensity, NormalisableRange<float> intRange,
+    			  			 RangedAudioParameter& vibGain, const NormalisableRange<float> gainMax,
+    			  			 RangedAudioParameter& thresh, const NormalisableRange<float> threshMax)
     : Tuner ("", getPlumeColour (vibratoHighlight)),
       value (val), gestureRange (gestRange),
-      intensity (vibratoIntensity), maxIntensity (maxIntens),
+      intensity (vibratoIntensity), intensityRange (intRange),
       gain (vibGain), parameterMaxGain (gainMax),
       threshold (thresh), parameterMaxThreshold (threshMax)
 {
@@ -28,7 +28,7 @@ VibratoTuner::VibratoTuner (const std::atomic<float>& val, NormalisableRange<flo
 
 VibratoTuner::VibratoTuner (Vibrato& vib)
     : VibratoTuner (vib.getValueReference(), vib.getRangeReference(),
-    				vib.getIntensityReference(), vib.intensity.getNormalisableRange().end,
+    				vib.getIntensityReference(), vib.intensityRange,
     	            vib.gain, Range<float> (0.0f, PLUME::UI::VIBRATO_DISPLAY_MAX),
     	            vib.threshold, Range<float> (0.0f, PLUME::UI::VIBRATO_THRESH_DISPLAY_MAX))
 {
@@ -104,7 +104,7 @@ void VibratoTuner::updateDisplay()
 {
 	computeSmoothIntensity (2.0f);
 
-	if (smoothIntensity > intensity || intensity != lastIntensity || value != lastValue)
+	if (smoothIntensity > getIntensity() || getIntensity() != lastIntensity || value != lastValue)
 	{
 		repaint();
 	}
@@ -126,7 +126,7 @@ void VibratoTuner::labelTextChanged (Label* lbl)
 	    float val = lbl->getText().getFloatValue();
 
 	    if (val < 0.0f) val = 0.0f;
-	    else if (val > parameterMaxGain.getEnd()) val = parameterMaxGain.getEnd();
+	    else if (val > parameterMaxGain.getRange().getEnd()) val = parameterMaxGain.getRange().getEnd();
 	    
 	    setGain (val);
 	    lbl->setText (String (val) + valueUnit, dontSendNotification);
@@ -146,7 +146,7 @@ void VibratoTuner::labelTextChanged (Label* lbl)
 	    float val = lbl->getText().getFloatValue();
 
 	    if (val < 0.0f) val = 0.0f;
-	    else if (val > parameterMaxThreshold.getEnd()) val = parameterMaxThreshold.getEnd();
+	    else if (val > parameterMaxThreshold.getRange().getEnd()) val = parameterMaxThreshold.getRange().getEnd();
 	    
 	    setThreshold (val);
 	    lbl->setText (String (val) + valueUnit, dontSendNotification);
@@ -262,7 +262,7 @@ void VibratoTuner::createSliders()
     gainSlider->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
     gainSlider->setColour (Slider::rotarySliderFillColourId, tunerColour);
     gainSlider->setColour (Slider::rotarySliderOutlineColourId, getPlumeColour (tunerSliderBackground));
-    gainSlider->setRange (double (parameterMaxGain.getStart()), double (parameterMaxGain.getEnd()), 1.0);
+    gainSlider->setRange (double (parameterMaxGain.getRange().getStart()), double (parameterMaxGain.getRange().getEnd()), 1.0);
     gainSlider->setValue (double (getGain()));
     gainSlider->addListener (this);
     gainSlider->addMouseListener (this, false);
@@ -273,7 +273,7 @@ void VibratoTuner::createSliders()
     thresholdSlider->setColour (Slider::backgroundColourId, getPlumeColour (tunerSliderBackground));
     thresholdSlider->setColour (Slider::trackColourId, tunerColour);
     //setThresholdSliderColour();
-    thresholdSlider->setRange (double (parameterMaxThreshold.getStart()), double (parameterMaxThreshold.getEnd()), 1.0);
+    thresholdSlider->setRange (double (parameterMaxThreshold.getRange().getStart()), double (parameterMaxThreshold.getRange().getEnd()), 1.0);
     thresholdSlider->setValue (double (getThreshold()));
     thresholdSlider->addListener (this);
     thresholdSlider->addMouseListener (this, false);
@@ -334,52 +334,57 @@ void VibratoTuner::updateLabelBounds (Label* labelToUpdate)
 	}
 }
 
-void VibratoTuner::setGain (float value, const bool createChangeGesture)
+void VibratoTuner::setGain (float newGain, const bool createChangeGesture)
 {
     if (createChangeGesture) gain.beginChangeGesture();
-    gain.setValueNotifyingHost (gain.convertTo0to1 (value));
+    gain.setValueNotifyingHost (parameterMaxGain.convertTo0to1 (newGain));
     if (createChangeGesture) gain.endChangeGesture();
 }
 
-void VibratoTuner::setThreshold (float value, const bool createChangeGesture)
+void VibratoTuner::setThreshold (float newTresh, const bool createChangeGesture)
 {
     if (createChangeGesture) threshold.beginChangeGesture();
-    threshold.setValueNotifyingHost (threshold.convertTo0to1 (value));
+    threshold.setValueNotifyingHost (parameterMaxThreshold.convertTo0to1 (newTresh));
     if (createChangeGesture) threshold.endChangeGesture();
 }
 
 float VibratoTuner::getGain()
 {
-    return gain.convertFrom0to1 (gain.getValue());
+    return parameterMaxGain.convertFrom0to1 (gain.getValue());
 }
 
 float VibratoTuner::getThreshold()
 {
-    return threshold.convertFrom0to1 (threshold.getValue());
+    return parameterMaxThreshold.convertFrom0to1 (threshold.getValue());
+}
+
+float VibratoTuner::getIntensity()
+{
+    return intensityRange.convertFrom0to1 (intensity);
 }
 
 void VibratoTuner::drawValueCursor (Graphics& g)
 {
 	lastValue = value;
 
-	int offset = (intensity < getThreshold()) ? 0
+	int offset = (getIntensity() < getThreshold()) ? 0
 	                                          : (value - 0.5f) * (gainSlider->getWidth() - 30)
 	                                                           * ((int) getGain())/50;
 
 	juce::Point<int> cursorPoint = {gainSlider->getBounds().getCentreX() + offset,
 							  gainSlider->getBounds().getCentreY()};
 
-    g.setColour ((intensity < getThreshold()) ? getPlumeColour (tunerSliderBackground) : tunerColour);
+    g.setColour ((getIntensity() < getThreshold()) ? getPlumeColour (tunerSliderBackground) : tunerColour);
     g.fillEllipse (juce::Rectangle<float> (5.0f, 5.0f).withCentre (cursorPoint.toFloat()));
 }
 
 void VibratoTuner::drawIntensityCursor (Graphics& g)
 {
-	lastIntensity = intensity;
+	lastIntensity = getIntensity();
 
     juce::Point<float> cursorPoint (thresholdSlider->getBounds().getCentreX() - 10,
                               jmax (thresholdSlider->getBottom() - 10 - (thresholdSlider->getHeight() - 20)
-                              											    * smoothIntensity/500,
+                              											    * smoothIntensity/100,
                               		(float) (thresholdSlider->getY() + 10)));
 
 	Path cursorPath;
@@ -387,14 +392,14 @@ void VibratoTuner::drawIntensityCursor (Graphics& g)
                             {cursorPoint.x + 3.0f, cursorPoint.y       },
                             {cursorPoint.x - 3.0f, cursorPoint.y + 3.0f});
 
-    g.setColour ((intensity < getThreshold()) ? getPlumeColour (tunerSliderBackground) : tunerColour);
+    g.setColour ((getIntensity() < getThreshold()) ? getPlumeColour (tunerSliderBackground) : tunerColour);
     g.fillPath (cursorPath);
 }
 
 void VibratoTuner::setThresholdSliderColour()
 {
 	thresholdSlider->setColour (Slider::trackColourId,
-							    (intensity < getThreshold()) ? getPlumeColour (tunerSliderBackground)
+							    (getIntensity() < getThreshold()) ? getPlumeColour (tunerSliderBackground)
 			                       							 : tunerColour);
 }
 
@@ -402,9 +407,9 @@ void VibratoTuner::computeSmoothIntensity (float smoothnessRamp)
 {
 	float decrement = std::pow (smoothnessRamp, incrementalSmoothFactor);
 
-	if (intensity > smoothIntensity - decrement)
+	if (getIntensity() > smoothIntensity - decrement)
 	{
-		smoothIntensity = intensity;
+		smoothIntensity = getIntensity();
 		incrementalSmoothFactor = 1.0f;
 	}
 	else

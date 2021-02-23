@@ -44,9 +44,9 @@ public:
 private:
     //==============================================================================
 	VibratoTuner (const std::atomic<float>& val, NormalisableRange<float> gestRange,
-					  const std::atomic<float>& vibratoIntensity, float maxIntens,
-    				  RangedAudioParameter& gain, const Range<float> gainMax,
-    				  RangedAudioParameter& thresh, const Range<float> threshMax);
+                  const std::atomic<float>& vibratoIntensity, NormalisableRange<float> intRange,
+                  RangedAudioParameter& vibGain, const NormalisableRange<float> gainMax,
+                  RangedAudioParameter& thresh, const NormalisableRange<float> threshMax);
 
     //==============================================================================
     void createSliders();
@@ -66,22 +66,23 @@ private:
 
     float getGain();
     float getThreshold();
+    float getIntensity();
     
     //==============================================================================
     const std::atomic<float>& value;
     float lastValue = -1.0f;
-
     const NormalisableRange<float> gestureRange;
-    const float maxIntensity;
+
     const std::atomic<float>& intensity;
 	float lastIntensity = -1.0f;
+    const NormalisableRange<float> intensityRange;
     float smoothIntensity = intensity;
     float incrementalSmoothFactor = 1.0f;
 
     RangedAudioParameter& gain;
     RangedAudioParameter& threshold;
-    const Range<float> parameterMaxGain;
-    const Range<float> parameterMaxThreshold;
+    const NormalisableRange<float> parameterMaxGain;
+    const NormalisableRange<float> parameterMaxThreshold;
 
     
     ScopedPointer<Slider> gainSlider;
