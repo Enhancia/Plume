@@ -163,12 +163,6 @@ namespace PLUME
             gesture_param_1,
             gesture_param_2,
             gesture_param_3,
-			on,
-			midi_on,
-			midi_cc,
-            midi_reverse,
-			midi_low,
-			midi_high,
 
 			numParams
 		};
@@ -179,13 +173,7 @@ namespace PLUME
             "_gesture_param_0",
             "_gesture_param_1",
             "_gesture_param_2",
-            "_gesture_param_3",
-            "_on",
-            "_midi_on",
-            "_midi_cc",
-            "_midi_reverse",
-            "_midi_low",
-            "_midi_high"
+            "_gesture_param_3"
         };
     }
 
@@ -254,6 +242,11 @@ namespace PLUME
 	extern LRESULT CALLBACK messageHook (int nCode, WPARAM wParam, LPARAM lParam);
   #endif
 
+    /** \brief Global pointer (*Gasp...*) that keeps the adress of the WrappedEditor's ComponentPeer.
+        
+               Use sparingly, mainly used to force the window to behave correctly on specific DAW/use case.
+               For instance, to force the WrapperEditor to minimize when switching tracks in Ableton Live.
+    */
     struct GlobalPointers
     {
     public:
@@ -279,11 +272,6 @@ namespace PLUME
       #endif
 
     private:
-        /** \brief Global pointer (*Gasp...*) that keeps the adress of the WrappedEditor's ComponentPeer.
-            
-                   Use sparingly, mainly used to force the window to behave correctly on specific DAW/use case.
-                   For instance, to force the WrapperEditor to minimize when switching tracks in Ableton Live.
-        */
         Array<ComponentPeer*> wrappedEditorPeerArray;
 
       #if JUCE_WINDOWS

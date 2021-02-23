@@ -36,7 +36,7 @@ Tilt::~Tilt()
 void Tilt::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 {
     // Checks if Gesture is on and if value is within the right range
-    if (on.getValue() == 0.0f || getGestureValue() >= 100.0f || getGestureValue() <= -100.0f)
+    if (isActive() == 0.0f || getGestureValue() >= 100.0f || getGestureValue() <= -100.0f)
     {
         return;
     }
@@ -56,7 +56,7 @@ int Tilt::getMidiValue()
 void Tilt::updateMappedParameters()
 {
     // Checks if Gesture is on and if value is within the right range
-    if (on.getValue() == 0.0f || getGestureValue() >= 100.0f || getGestureValue() <= -100.0f)
+    if (!isActive() || getGestureValue() >= 100.0f || getGestureValue() <= -100.0f)
     {
         return;
     }

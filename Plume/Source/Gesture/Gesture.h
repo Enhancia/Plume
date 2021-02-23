@@ -289,14 +289,24 @@ public:
      *
      *  \param newValue The float value to set.
      */
-    void setMidiLow (float newValue, bool checkOtherValue = true, bool createChangeGesture = true);
+    void setMidiLow (float newValue, bool checkOtherValue = true);
     
     /**
      *  \brief Setter for midiHigh parameter float value.
      *
      *  \param newValue The float value to set.
      */
-    void setMidiHigh (float newValue, bool checkOtherValue = true, bool createChangeGesture = true);
+    void setMidiHigh (float newValue, bool checkOtherValue = true);
+    
+    /**
+     *  \brief Getter for midiLow parameter float value.
+     */
+    float getMidiLow() const;
+    
+    /**
+     *  \brief Getter for midiHigh parameter float value.
+     */
+    float getMidiHigh() const;
     
     /**
      *  \brief Getter for the "active" boolean value.
@@ -434,8 +444,8 @@ public:
     bool useDefaultMidi = true;
     bool mapModeOn = false; /**< \brief Boolean that indicates if the gesture looks for a new parameter to map */
     int midiType = Gesture::controlChange; /**< \brief Integer value that represents the midi type the gesture should provide if it is in midi map mode */
-    RangedAudioParameter& midiHigh; /**< \brief Holds the lower end of the range of values that the midi message should access. Between 0.0 and 1.0*/
-    RangedAudioParameter& midiLow; /**< \brief Holds the higher end of the range of values that the midi message should access. Between 0.0 and 1.0*/
+    float midiHigh; /**< \brief Holds the lower end of the range of values that the midi message should access. Between 0.0 and 1.0*/
+    float midiLow; /**< \brief Holds the higher end of the range of values that the midi message should access. Between 0.0 and 1.0*/
     
 protected:
     //==============================================================================
@@ -519,11 +529,10 @@ protected:
 	
     //==============================================================================
 	RangedAudioParameter& value; /**< \brief Float parameter that holds the gesture's raw value in the [0.0f 1.0f]. Should be normalized using "range". */
-	RangedAudioParameter& on; /**< \brief Boolean parameter that represents if the gesture is active or not] range. */
-    RangedAudioParameter& midiReverse; /**< \brief Boolean parameter that represents if the gesture midi reverse is active or not. */
-	RangedAudioParameter& midiOnParameterOff; /**< \brief Boolean parameter that represents if the gesture is set to midi mode or not. */
-	RangedAudioParameter& cc; /**< \brief Float parameter with an integer value for CC used by the gesture in midiMap mode (default 1: modwheel). */
-    //RangedAudioParameter& midiOnParameterOff;
+	bool on; /**< \brief Boolean parameter that represents if the gesture is active or not] range. */
+    bool midiReverse; /**< \brief Boolean parameter that represents if the gesture midi reverse is active or not. */
+	bool midiOnParameterOff; /**< \brief Boolean parameter that represents if the gesture is set to midi mode or not. */
+	int cc; /**< \brief Float parameter with an integer value for CC used by the gesture in midiMap mode (default 1: modwheel). */
 	
     OwnedArray<MappedParameter> parameterArray;  /**< \brief Array of all the MappedParameter that the gesture controls. */
     CriticalSection parameterArrayLock;

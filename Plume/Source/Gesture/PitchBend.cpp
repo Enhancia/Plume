@@ -31,7 +31,6 @@ PitchBend::PitchBend (String gestName, int gestId, AudioProcessorValueTreeState&
       rangeRightHigh (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::gesture_param_3])))
 {
     midiType = Gesture::pitch;
-	midiOnParameterOff.setValueNotifyingHost(1.0f);
     
     rangeLeftLow.beginChangeGesture();
     rangeLeftLow.setValueNotifyingHost   (pitchBendDisplayRange.convertTo0to1 (leftLow));
@@ -57,7 +56,7 @@ PitchBend::~PitchBend()
 //==============================================================================
 void PitchBend::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 {
-    if (on.getValue() == 0.0f) return; // does nothing if the gesture is inactive or mapped
+    if (!isActive()) return; // does nothing if the gesture is inactive or mapped
     
     int pbVal = getMidiValue();
 
@@ -140,7 +139,7 @@ bool PitchBend::shouldSend()
    
 void PitchBend::updateMappedParameters()
 {
-    if (on.getValue() == 0.0f) return; // does nothing if the gesture is inactive
+    if (!isActive()) return; // does nothing if the gesture is inactive
     
     bool pbLastTemp = pbLast;
     

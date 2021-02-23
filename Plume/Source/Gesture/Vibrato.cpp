@@ -26,7 +26,6 @@ Vibrato::Vibrato (String gestName, int gestId, AudioProcessorValueTreeState& plu
       intensityRef (plumeParameters.getRawParameterValue (String (gestId) + PLUME::param::paramIds[PLUME::param::value_1]))
 {
     midiType = Gesture::pitch;
-    midiOnParameterOff.setValueNotifyingHost(1.0f);
 
     gain.beginChangeGesture();
     gain.setValueNotifyingHost (gainDisplayRange.convertTo0to1 (val));
@@ -44,7 +43,7 @@ Vibrato::~Vibrato()
 //==============================================================================
 void Vibrato::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 {
-    if (on.getValue() == 0.0f) return; // does nothing if the gesture is inactive
+    if (!isActive()) return; // does nothing if the gesture is inactive
     
     int vibVal = getMidiValue();
     
@@ -90,7 +89,7 @@ int Vibrato::getMidiValue()
 
 void Vibrato::updateMappedParameters()
 {
-    if (on.getValue() == 0.0f) return; // does nothing if the gesture is inactive
+    if (!isActive()) return; // does nothing if the gesture is inactive
     
     bool vibLastTemp = vibLast;
     

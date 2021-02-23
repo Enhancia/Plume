@@ -286,8 +286,8 @@ void GestureArray::addGestureCopyingOther (Gesture* other, int gestureId, String
     gestures.getLast()->midiType = other->midiType;
     gestures.getLast()->useDefaultMidi = other->useDefaultMidi;
     gestures.getLast()->setCc (other->getCc());
-    gestures.getLast()->setMidiLow (other->midiLow.getValue());
-    gestures.getLast()->setMidiHigh (other->midiHigh.getValue());
+    gestures.getLast()->setMidiLow (other->getMidiLow());
+    gestures.getLast()->setMidiHigh (other->getMidiHigh());
     
     checkPitchMerging();
 }
@@ -676,35 +676,35 @@ void GestureArray::createGestureXml (XmlElement& gesturesData)
         gestXml->setAttribute ("midiMap", g->generatesMidi());
         gestXml->setAttribute ("cc", g->getCc());
         gestXml->setAttribute ("midiReverse", g->getMidiReverse());
-        gestXml->setAttribute ("midiStart", g->midiLow.getValue());
-        gestXml->setAttribute ("midiEnd", g->midiHigh.getValue());
+        gestXml->setAttribute ("midiStart", g->getMidiLow());
+        gestXml->setAttribute ("midiEnd", g->getMidiHigh());
         gestXml->setAttribute ("midiType", g->midiType);
         
         // Gesture Specific attributes
         if (g->type == Gesture::vibrato)
         {
             Vibrato& v = dynamic_cast<Vibrato&> (*g);
-            gestXml->setAttribute ("gain", double (v.gain.convertFrom0to1 (v.gain.getValue())));
-			gestXml->setAttribute("thresh", double(v.threshold.convertFrom0to1 (v.threshold.getValue())));
+            gestXml->setAttribute ("gain", double (v.gainDisplayRange.convertFrom0to1 (v.gain.getValue())));
+			gestXml->setAttribute("thresh", double(v.thresholdDisplayRange.convertFrom0to1 (v.threshold.getValue())));
             gestXml->setAttribute ("midiMap", true);
         }
         
         else if (g->type == Gesture::pitchBend)
         {
             PitchBend& pb = dynamic_cast<PitchBend&> (*g);
-            gestXml->setAttribute ("startLeft", double (pb.rangeLeftLow.convertFrom0to1 (pb.rangeLeftLow.getValue())));
-            gestXml->setAttribute ("endLeft", double (pb.rangeLeftHigh.convertFrom0to1 (pb.rangeLeftHigh.getValue())));
+            gestXml->setAttribute ("startLeft", double (pb.pitchBendDisplayRange.convertFrom0to1 (pb.rangeLeftLow.getValue())));
+            gestXml->setAttribute ("endLeft", double (pb.pitchBendDisplayRange.convertFrom0to1 (pb.rangeLeftHigh.getValue())));
             
-            gestXml->setAttribute ("startRight", double (pb.rangeRightLow.convertFrom0to1 (pb.rangeRightLow.getValue())));
-            gestXml->setAttribute ("endRight", double (pb.rangeRightHigh.convertFrom0to1 (pb.rangeRightHigh.getValue())));
+            gestXml->setAttribute ("startRight", double (pb.pitchBendDisplayRange.convertFrom0to1 (pb.rangeRightLow.getValue())));
+            gestXml->setAttribute ("endRight", double (pb.pitchBendDisplayRange.convertFrom0to1 (pb.rangeRightHigh.getValue())));
             gestXml->setAttribute ("midiMap", true);
         }
         
         else if (g->type == Gesture::tilt)
         {
             Tilt& t = dynamic_cast<Tilt&> (*g);
-            gestXml->setAttribute ("start", double (t.rangeLow.convertFrom0to1 (t.rangeLow.getValue())));
-            gestXml->setAttribute ("end", double (t.rangeHigh.convertFrom0to1 (t.rangeHigh.getValue())));
+            gestXml->setAttribute ("start", double (t.tiltDisplayRange.convertFrom0to1 (t.rangeLow.getValue())));
+            gestXml->setAttribute ("end", double (t.tiltDisplayRange.convertFrom0to1 (t.rangeHigh.getValue())));
         }
         /* TODO WAVE
         else if (g->type == Gesture::wave)
@@ -717,8 +717,8 @@ void GestureArray::createGestureXml (XmlElement& gesturesData)
         else if (g->type == Gesture::roll)
         {
             Roll& r = dynamic_cast<Roll&> (*g);
-            gestXml->setAttribute ("start", double (r.rangeLow.convertFrom0to1 (r.rangeLow.getValue())));
-            gestXml->setAttribute ("end", double (r.rangeHigh.convertFrom0to1 (r.rangeHigh.getValue())));
+            gestXml->setAttribute ("start", double (r.rollDisplayRange.convertFrom0to1 (r.rangeLow.getValue())));
+            gestXml->setAttribute ("end", double (r.rollDisplayRange.convertFrom0to1 (r.rangeHigh.getValue())));
         }
         
 		createParameterXml (*gestXml, g->getParameterArray());

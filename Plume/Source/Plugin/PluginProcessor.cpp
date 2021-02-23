@@ -416,27 +416,19 @@ AudioProcessorValueTreeState::ParameterLayout PlumeProcessor::initializeParamete
     {
         for (int i =0; i < numParams; i++)
         {
-            if (i == on || i == midi_on || i == midi_reverse) // Boolean parameters
-            {
-                layout.add (std::make_unique<AudioParameterBool> (String(gest) + paramIds[i],
-                                                                  String(gest) + paramIds[i],
-                                                                  false));
-            }
-            else if (i == midi_cc)
-            {
-                layout.add (std::make_unique<AudioParameterInt> (String(gest) + paramIds[i],
-                                                                   String(gest) + paramIds[i],
-                                                                   0, 127, 0));
-            }
-            else
-            {
+                String description = "Gest " + String(gest + 1)
+                                             + (i < gesture_param_0 ? " - Val " + String (i + 1)
+                                                                    : " - Param " + String (i - gesture_param_0 + 1));
                 layout.add (std::make_unique<AudioParameterFloat> (String(gest) + paramIds[i],
-                                                                   String(gest) + paramIds[i],
-                                                                   NormalisableRange<float> (),
+                                                                   description,
+                                                                   NormalisableRange<float> (0.0f, 1.0, 0.0001f),
                                                                    0.0f));
-            }
         }
     }
+
+    layout.add (std::make_unique<AudioParameterInt> ("track_arm",
+                                                     "track_arm",
+                                                     0, 2, 2));
 
     return layout;
 }
