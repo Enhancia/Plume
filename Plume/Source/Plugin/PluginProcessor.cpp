@@ -121,6 +121,8 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
     MidiBuffer plumeBuffer;
 
     checkAndUpdateRecordingStatus();
+
+    filterInputMidi (midiMessages);
     checkForSignedMidi (midiMessages);
 
     if (isProbablyOnAnArmedTrack())
@@ -881,4 +883,33 @@ String PlumeProcessor::sequenceTypeToString (const midiSequenceId sequenceType) 
     }
 
     return "No Sequence";
+}
+
+void PlumeProcessor::filterInputMidi (MidiBuffer& midiMessages)
+{
+    if (!midiMessages.isEmpty())
+    {
+        MidiBuffer filteredBuffer;
+        
+        for (const MidiMessageMetadata metadata : midiMessages)
+        {
+            if (messageShouldBeKept (metadata.getMessage()))
+            {
+                filteredBuffer.addEvent (metadata.getMessage(), metadata.samplePosition);
+            }
+        }
+
+        midiMessages.swapWith (filteredBuffer);
+    }
+}
+
+bool PlumeProcessor::messageShouldBeKept (const MidiMessage& midiMessage)
+{
+    if (midiMessage.isPitchWheel() ||
+        (midiMessage.isController() && midiMessage.getControllerNumber() < 120))
+    {
+        return false;
+    }
+
+    return true;
 }

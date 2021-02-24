@@ -199,7 +199,8 @@ private:
     void checkAndUpdateRecordingStatus();
     void checkForSignedMidi (MidiBuffer& midiMessages);
     bool isProbablyOnAnArmedTrack();
-    //void updatePlumeTrackActivationStatus();
+    void filterInputMidi (MidiBuffer& midiMessages);
+    bool messageShouldBeKept (const MidiMessage& midiMessage);
 
     //==============================================================================
     void initializeParameters();
