@@ -50,6 +50,8 @@ public:
 	RangedAudioParameter& rangeLeftHigh; /**< \brief Bend's high range value. The down pitch effect will happen between rangeLeftLow and this. */
 	RangedAudioParameter& rangeRightLow; /**< \brief Bend's low range value. The up pitch effect will happen between this and rangeRightHigh. */
 	RangedAudioParameter& rangeRightHigh; /**< \brief Bend's high range value. The up pitch effect will happen between rangeRightLow and this. */
+    NormalisableRange<float> pitchBendDisplayRange;
+
     
 private:
     bool send = false; /**< \brief Boolean used to know if the gesture should send midi */

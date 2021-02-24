@@ -19,7 +19,7 @@ PlumeProcessor::PlumeProcessor()
                        .withOutput ("Output", AudioChannelSet::stereo(), true)
                        )
 #endif
-       , parameters (*this, nullptr /*, PLUME::parametersIdentifier, {}*/)
+       , parameters (*this, nullptr, "PARAMETERS", initializeParameters())
 {
     TRACE_IN;
     
@@ -415,93 +415,30 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 
 
 //==============================================================================
-void PlumeProcessor::initializeParameters()
+AudioProcessorValueTreeState::ParameterLayout PlumeProcessor::initializeParameters()
 {
     using namespace PLUME::param;
+    AudioProcessorValueTreeState::ParameterLayout layout;
             
     for (int gest =0; gest < PLUME::NUM_GEST; gest++)
     {
         for (int i =0; i < numParams; i++)
         {
-            // boolean parameters
-            if (i == on || i == midi_on || i == midi_reverse)
-            {
-                parameters.createAndAddParameter (std::make_unique<AudioParameterBool> (String(gest) + paramIds[i],
-                                                                                        String(gest) + paramIds[i],
-                                                                                        false));
-            }
-            // float parameters
-            else
-            {
-                NormalisableRange<float> range;
-                float defVal;
-                switch (i)
-                {
-                    case vibrato_range:
-                        range = NormalisableRange<float> (0.0f, PLUME::gesture::VIBRATO_RANGE_MAX, 1.0f);
-                        defVal = PLUME::gesture::VIBRATO_RANGE_DEFAULT;
-                        break;
-			        case vibrato_thresh:
-                        range = NormalisableRange<float> (0.0f, 500.0f, 1.0f);
-                        defVal = PLUME::gesture::VIBRATO_THRESH_DEFAULT;
-                        break;
-                    case vibrato_intensity:
-                        range = NormalisableRange<float> (0.0f, 1000.0f, 1.0f);
-                        defVal = 0.0f;
-                        break;
-			        case bend_leftLow:
-                        range = NormalisableRange<float> (PLUME::UI::PITCHBEND_DISPLAY_MIN, PLUME::UI::PITCHBEND_DISPLAY_MAX, 1.0f);
-                        defVal = PLUME::gesture::PITCHBEND_DEFAULT_LEFTMIN;
-                        break;
-			        case bend_leftHigh:
-                        range = NormalisableRange<float> (PLUME::UI::PITCHBEND_DISPLAY_MIN, PLUME::UI::PITCHBEND_DISPLAY_MAX, 1.0f);
-                        defVal = PLUME::gesture::PITCHBEND_DEFAULT_LEFTMAX;
-                        break;
-			        case bend_rightLow:
-                        range = NormalisableRange<float> (PLUME::UI::PITCHBEND_DISPLAY_MIN, PLUME::UI::PITCHBEND_DISPLAY_MAX, 1.0f);
-                        defVal = PLUME::gesture::PITCHBEND_DEFAULT_RIGHTMIN;
-                        break;
-			        case bend_rightHigh:
-                        range = NormalisableRange<float> (PLUME::UI::PITCHBEND_DISPLAY_MIN, PLUME::UI::PITCHBEND_DISPLAY_MAX, 1.0f);
-                        defVal = PLUME::gesture::PITCHBEND_DEFAULT_RIGHTMAX;
-                        break;
-			        case roll_low:
-                        range = NormalisableRange<float> (PLUME::UI::ROLL_DISPLAY_MIN, PLUME::UI::ROLL_DISPLAY_MAX, 1.0f);
-                        defVal = PLUME::gesture::ROLL_DEFAULT_MIN;
-                        break;
-			        case roll_high:
-                        range = NormalisableRange<float> (PLUME::UI::ROLL_DISPLAY_MIN, PLUME::UI::ROLL_DISPLAY_MAX, 1.0f);
-                        defVal = PLUME::gesture::ROLL_DEFAULT_MAX;
-                        break;
-			        case tilt_low:
-                        range = NormalisableRange<float> (PLUME::UI::TILT_DISPLAY_MIN, PLUME::UI::TILT_DISPLAY_MAX, 1.0f);
-                        defVal = PLUME::gesture::TILT_DEFAULT_MIN;
-                        break;
-			        case tilt_high:
-                        range = NormalisableRange<float> (PLUME::UI::TILT_DISPLAY_MIN, PLUME::UI::TILT_DISPLAY_MAX, 1.0f);
-                        defVal = PLUME::gesture::TILT_DEFAULT_MAX;
-                        break;
-					case midi_cc:
-						range = NormalisableRange<float>(0.0f, 127.0f, 1.0f);
-						defVal = 1.0f;
-						break;
-			        default:
-                        range = NormalisableRange<float> (0.0f, 1.0f, 0.001f);
-                        break;
-                }
-				
-                parameters.createAndAddParameter (std::make_unique<AudioParameterFloat> (String(gest) + paramIds[i],
-                                                                                         String(gest) + paramIds[i],
-                                                                                         range,
-                                                                                         defVal));
-                /*
-                if (i != (int) PLUME::param::value && i != (int) vibrato_intensity)
-                {
-                    parameters.addParameterListener (String(gest) + paramIds[i], this);
-                }*/
-            }
+                String description = "Gest " + String(gest + 1)
+                                             + (i < gesture_param_0 ? " - Val " + String (i + 1)
+                                                                    : " - Param " + String (i - gesture_param_0 + 1));
+                layout.add (std::make_unique<AudioParameterFloat> (String(gest) + paramIds[i],
+                                                                   description,
+                                                                   NormalisableRange<float> (0.0f, 1.0, 0.0001f),
+                                                                   0.0f));
         }
     }
+
+    layout.add (std::make_unique<AudioParameterInt> ("track_arm",
+                                                     "track_arm",
+                                                     0, 2, 2));
+
+    return layout;
 }
 
 void PlumeProcessor::initializeSettings()

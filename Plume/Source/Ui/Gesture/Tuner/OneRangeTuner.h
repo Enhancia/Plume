@@ -37,7 +37,7 @@ public:
 
     //==============================================================================
     OneRangeTuner(const std::atomic<float>& val, NormalisableRange<float> gestureRange,
-                  RangedAudioParameter& rangeL, RangedAudioParameter& rangeH, const Range<float> paramMax,
+                  RangedAudioParameter& rangeL, RangedAudioParameter& rangeH, const NormalisableRange<float> paramMax,
                   const String unit = "", TunerStyle style = wave);
     ~OneRangeTuner();
     
@@ -104,7 +104,7 @@ private:
     const NormalisableRange<float> gestureRange;
 
     //==============================================================================
-    const Range<float> parameterMax;
+    const NormalisableRange<float> parameterMax;
     RangedAudioParameter& rangeLow;
     RangedAudioParameter& rangeHigh;
     

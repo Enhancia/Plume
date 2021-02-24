@@ -203,8 +203,7 @@ private:
     bool messageShouldBeKept (const MidiMessage& midiMessage);
 
     //==============================================================================
-    void initializeParameters();
-    void initializeValueTree();
+    AudioProcessorValueTreeState::ParameterLayout initializeParameters();
     void initializeSettings();
     void removeLogger();
 

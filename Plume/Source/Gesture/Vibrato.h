@@ -48,7 +48,10 @@ public:
     RangedAudioParameter& gain; /**< Sensibility of the vibrato. From 0.0f (no effect) to 500.0f (maximum effect)*/
 	RangedAudioParameter& threshold; /**< threshold used to trigger the effect*/
 	RangedAudioParameter& intensity; /**< Current intensity of the vibrato. The effect is triggered if this is above the threshold parameter*/
-    
+    NormalisableRange<float> gainDisplayRange;
+    NormalisableRange<float> thresholdDisplayRange;
+    NormalisableRange<float> intensityRange;
+
 private:
     std::atomic<float>* intensityRef; /**< Value that will be checked to trigger the vibrato if higher than the treshold */
     

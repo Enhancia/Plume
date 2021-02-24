@@ -12,7 +12,7 @@
 
 
 OneRangeTuner::OneRangeTuner(const std::atomic<float>& val, NormalisableRange<float> gestRange,
-                             RangedAudioParameter& rangeL, RangedAudioParameter& rangeH, const Range<float> paramMax,
+                             RangedAudioParameter& rangeL, RangedAudioParameter& rangeH, const NormalisableRange<float> paramMax,
                              const String unit, TunerStyle style)
     : Tuner (unit),
       value (val), gestureRange (gestRange),
@@ -246,8 +246,8 @@ void OneRangeTuner::labelTextChanged (Label* lbl)
                                                                 .getFloatValue();
     else                                    val = lbl->getText().getFloatValue();
         
-    if (val < parameterMax.getStart())    val = parameterMax.getStart();
-    else if (val > parameterMax.getEnd()) val = parameterMax.getEnd();
+    if (val < parameterMax.getRange().getStart())    val = parameterMax.getRange().getStart();
+    else if (val > parameterMax.getRange().getEnd()) val = parameterMax.getRange().getEnd();
         
     // Sets slider and labels accordingly
     if (lbl == rangeLabelMin)
@@ -486,7 +486,7 @@ void OneRangeTuner::createSliders()
         slider.setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
         slider.setColour (Slider::rotarySliderFillColourId, Colour (0x00000000));
         slider.setColour (Slider::rotarySliderOutlineColourId, Colour (0x00000000));
-        slider.setRange (double (parameterMax.getStart()), double (parameterMax.getEnd()), 1.0);
+        slider.setRange (double (parameterMax.getRange().getStart()), double (parameterMax.getRange().getEnd()), 1.0);
         slider.setValue (double (valueToSet));
         slider.addListener (this);
         slider.setInterceptsMouseClicks (false, false);
@@ -544,7 +544,7 @@ void OneRangeTuner::setRangeLow (float val, const bool createChangeGesture)
 {
     if (createChangeGesture) rangeLow.beginChangeGesture();
     
-    rangeLow.setValueNotifyingHost (rangeLow.convertTo0to1 (val));
+    rangeLow.setValueNotifyingHost (parameterMax.convertTo0to1 (val));
     
     if (createChangeGesture) rangeLow.endChangeGesture();
 }
@@ -553,19 +553,19 @@ void OneRangeTuner::setRangeHigh (float val, const bool createChangeGesture)
 {
     if (createChangeGesture) rangeHigh.beginChangeGesture();
     
-    rangeHigh.setValueNotifyingHost (rangeHigh.convertTo0to1 (val));
+    rangeHigh.setValueNotifyingHost (parameterMax.convertTo0to1 (val));
     
     if (createChangeGesture) rangeHigh.endChangeGesture();
 }
     
 float OneRangeTuner::getRangeLow()
 {
-    return rangeLow.convertFrom0to1 (rangeLow.getValue());
+    return parameterMax.convertFrom0to1 (rangeLow.getValue());
 }
     
 float OneRangeTuner::getRangeHigh()
 {
-    return rangeHigh.convertFrom0to1 (rangeHigh.getValue());
+    return parameterMax.convertFrom0to1 (rangeHigh.getValue());
 }
 
 
@@ -746,7 +746,7 @@ float OneRangeTuner::getValueAngle()
     if (gestureRange.getRange().getLength() > 0)
     {
         // Cursor stays at same angle if value out of range.
-        if (convertedValue <= parameterMax.getStart() || convertedValue >= parameterMax.getEnd())
+        if (convertedValue <= parameterMax.getRange().getStart() || convertedValue >= parameterMax.getRange().getEnd())
         {
             float startAngleModulo = startAngle;
             float endAngleModulo = endAngle;
@@ -760,12 +760,12 @@ float OneRangeTuner::getValueAngle()
             }
         }
         
-        if (convertedValue <= parameterMax.getStart())    cursorAngle = startAngle;
-        else if (convertedValue >= parameterMax.getEnd()) cursorAngle = endAngle;
+        if (convertedValue <= parameterMax.getRange().getStart())    cursorAngle = startAngle;
+        else if (convertedValue >= parameterMax.getRange().getEnd()) cursorAngle = endAngle;
         else
         {
-            cursorAngle = startAngle + (convertedValue - parameterMax.getStart()) * (endAngle - startAngle)
-                                        / parameterMax.getLength();
+            cursorAngle = startAngle + (convertedValue - parameterMax.getRange().getStart()) * (endAngle - startAngle)
+                                        / parameterMax.getRange().getLength();
         }
         
     }

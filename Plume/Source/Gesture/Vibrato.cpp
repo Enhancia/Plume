@@ -16,21 +16,23 @@ Vibrato::Vibrato (String gestName, int gestId, AudioProcessorValueTreeState& plu
     : Gesture (gestName, Gesture::vibrato, gestId,
                NormalisableRange<float> (-PLUME::gesture::VIBRATO_RANGE_MAX, PLUME::gesture::VIBRATO_RANGE_MAX, 0.1f),
                plumeParameters, description),
-    
-      gain      (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::vibrato_range]))),
-      threshold (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::vibrato_thresh]))),
-      intensity (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::vibrato_intensity]))),
-      intensityRef (plumeParameters.getRawParameterValue (String (gestId) + PLUME::param::paramIds[PLUME::param::vibrato_intensity]))
+      
+      gainDisplayRange      (0.0f, PLUME::UI::VIBRATO_DISPLAY_MAX, 1.0f),
+      thresholdDisplayRange (0.0f, PLUME::UI::VIBRATO_THRESH_DISPLAY_MAX, 1.0f),
+      intensityRange (0.0f, PLUME::gesture::VIBRATO_INTENSITY_MAX, 1.0f),
+      gain      (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::gesture_param_0]))),
+      threshold (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::gesture_param_1]))),
+      intensity (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::value_1]))),
+      intensityRef (plumeParameters.getRawParameterValue (String (gestId) + PLUME::param::paramIds[PLUME::param::value_1]))
 {
     midiType = Gesture::pitch;
-    midiOnParameterOff.setValueNotifyingHost(1.0f);
 
     gain.beginChangeGesture();
-    gain.setValueNotifyingHost (gain.convertTo0to1 (val));
+    gain.setValueNotifyingHost (gainDisplayRange.convertTo0to1 (val));
     gain.endChangeGesture();
     
     threshold.beginChangeGesture();
-    threshold.setValueNotifyingHost (threshold.convertTo0to1 (thresh));
+    threshold.setValueNotifyingHost (thresholdDisplayRange.convertTo0to1 (thresh));
     threshold.endChangeGesture();
 }
 
@@ -41,7 +43,7 @@ Vibrato::~Vibrato()
 //==============================================================================
 void Vibrato::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 {
-    if (on.getValue() == 0.0f) return; // does nothing if the gesture is inactive
+    if (!isActive()) return; // does nothing if the gesture is inactive
     
     int vibVal = getMidiValue();
     
@@ -55,12 +57,13 @@ void Vibrato::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 
 int Vibrato::getMidiValue()
 {
-    bool vibTrig = (intensity.convertFrom0to1 (intensity.getValue()) > threshold.convertFrom0to1 (threshold.getValue()));
-    float gainVal = gain.convertFrom0to1 (gain.getValue());
+    bool vibTrig = (intensityRange.convertFrom0to1 (intensity.getValue()) > thresholdDisplayRange.convertFrom0to1 (threshold.getValue()));
+    float gainVal = gainDisplayRange.convertFrom0to1 (gain.getValue());
     
     // Vibrato should be triggered
     if (vibTrig && gainVal != 0.0f)
     {
+        DBG ("Tresh : " << thresholdDisplayRange.convertFrom0to1 (threshold.getValue()));
         vibLast = true;
         send = true;
 
@@ -86,7 +89,7 @@ int Vibrato::getMidiValue()
 
 void Vibrato::updateMappedParameters()
 {
-    if (on.getValue() == 0.0f) return; // does nothing if the gesture is inactive
+    if (!isActive()) return; // does nothing if the gesture is inactive
     
     bool vibLastTemp = vibLast;
     
@@ -105,8 +108,8 @@ void Vibrato::updateMappedParameters()
 
 float Vibrato::getValueForMappedParameter (Range<float> paramRange, bool reversed = false)
 {
-    bool vibTrig = (intensity.convertFrom0to1 (intensity.getValue()) > threshold.convertFrom0to1 (threshold.getValue()));
-    float gainVal = gain.convertFrom0to1 (gain.getValue());
+    bool vibTrig = (intensityRange.convertFrom0to1 (intensity.getValue()) > thresholdDisplayRange.convertFrom0to1 (threshold.getValue()));
+    float gainVal = gainDisplayRange.convertFrom0to1 (gain.getValue());
     
     if (vibTrig && gainVal != 0.0f)
     {
@@ -136,7 +139,7 @@ bool Vibrato::getSend()
 void Vibrato::setIntensityValue (float newVal)
 {
     intensity.beginChangeGesture();
-    intensity.setValueNotifyingHost (intensity.convertTo0to1 (newVal));
+    intensity.setValueNotifyingHost (intensityRange.convertTo0to1 (newVal));
     intensity.endChangeGesture();
 }
 
