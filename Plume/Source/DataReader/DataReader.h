@@ -55,6 +55,9 @@ public:
     bool getRawDataAsFloatArray(Array<float>& arrayToFill);
     
     //==============================================================================
+    void sendString(uint8_t* data, int data_size);
+
+    //==============================================================================
     bool connectToExistingPipe();
     bool connectToExistingPipe(int nbPipe);
     bool isConnected();

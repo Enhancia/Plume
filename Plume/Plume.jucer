@@ -36,10 +36,8 @@
       <GROUP id="{9B740626-EAB3-638F-41B5-B9DE410DDCF6}" name="DataReader">
         <FILE id="vdUcyM" name="DataReader.cpp" compile="1" resource="0" file="Source/DataReader/DataReader.cpp"/>
         <FILE id="xokgvb" name="DataReader.h" compile="0" resource="0" file="Source/DataReader/DataReader.h"/>
-        <FILE id="R4E9gZ" name="DataReader.mm" compile="1" resource="0" file="Source/DataReader/DataReader.mm"/>
         <FILE id="tYhzCi" name="StatutPipe.cpp" compile="1" resource="0" file="Source/DataReader/StatutPipe.cpp"/>
         <FILE id="DA42aZ" name="StatutPipe.h" compile="0" resource="0" file="Source/DataReader/StatutPipe.h"/>
-        <FILE id="CmUmmt" name="StatutPipe.mm" compile="1" resource="0" file="Source/DataReader/StatutPipe.mm"/>
       </GROUP>
       <GROUP id="{D6346BB4-85D0-4DE6-B98D-2B6F2B878441}" name="Gesture">
         <FILE id="BGrET6" name="Gesture.cpp" compile="1" resource="0" file="Source/Gesture/Gesture.cpp"/>
@@ -278,7 +276,6 @@
   </MAINGROUP>
   <LIVE_SETTINGS>
     <WINDOWS buildEnabled="0"/>
-    <OSX/>
   </LIVE_SETTINGS>
   <EXPORTFORMATS>
     <XCODE_MAC targetFolder="Builds/MacOSX" smallIcon="YXx8Ce" bigIcon="YXx8Ce"

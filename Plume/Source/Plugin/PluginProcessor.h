@@ -37,6 +37,16 @@ class PlumeProcessor  : public AudioProcessor,
                         public AudioProcessorValueTreeState::Listener
 {
 public:
+    enum midiSequenceId
+    {
+        noSequence =0,
+        normal,
+        recording,
+        alternatingNormal,
+        alternatingRecording,
+        normalAndRecording
+    };
+
     //==============================================================================
     /**
      * \brief Constructor.
@@ -184,18 +194,27 @@ public:
      */
     PresetHandler& getPresetHandler();
     
-    
 private:
     //==============================================================================
-    // TO DELETE
-    void DBG_trackSystemMidi (MidiBuffer& midiMessages);
+    void checkAndUpdateRecordingStatus();
+    void checkForSignedMidi (MidiBuffer& midiMessages);
+    bool isProbablyOnAnArmedTrack();
+    //void updatePlumeTrackActivationStatus();
 
     //==============================================================================
     void initializeParameters();
     void initializeValueTree();
     void initializeSettings();
     void removeLogger();
-    
+
+    //==============================================================================
+    void initializeMidiSequences();
+    void checkMidiAndUpdateMidiSequence (const MidiMessage& midiMessageToCheck);
+    const bool isFromMidiSequence (const MidiMessage& midiMessageToCheck, const midiSequenceId sequenceType = normalAndRecording);
+    const bool isNextStepInSequence (const MidiMessage& midiMessageToCheck, const midiSequenceId sequenceType);
+    int getIdInSequence (const MidiMessage& midiMessageToCheck, const midiSequenceId sequenceType);
+    String sequenceTypeToString (const midiSequenceId sequenceType);
+
     //==============================================================================
     ScopedPointer<FileLogger> plumeLogger; /**< \brief Logger object. Allows to write logs for testing purposes. */
     ScopedPointer<PluginWrapper> wrapper; /**< \brief PluginWrapper object. Handles the plugin wrapping. */
@@ -206,7 +225,24 @@ private:
     //==============================================================================
     //ValueTree settings;
     AudioProcessorValueTreeState parameters;
-    
+
+    //==============================================================================
+    struct LastSignedMidiIds
+    {
+        int normalSequenceId = -1;
+        int recordingSequenceId = -1;
+    };
+
+    OwnedArray<MidiMessage> normalMidiSequence;
+    OwnedArray<MidiMessage> recordingMidiSequence;
+
+    unsigned int signedMidiBufferCount = 0;
+    LastSignedMidiIds lastSignedMidi;
+    midiSequenceId lastSequenceType = noSequence;
+    const int signedMidiFrequencyHz = 5;
+    bool lastRecordingStatus = false;
+    uint8_t data[1024];
+
     //==============================================================================
     //JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeProcessor)
     JUCE_HEAVYWEIGHT_LEAK_DETECTOR (PlumeProcessor)

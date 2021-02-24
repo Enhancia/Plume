@@ -42,6 +42,7 @@ PlumeProcessor::PlumeProcessor()
     // Parameters
     initializeParameters();
     initializeSettings();
+    initializeMidiSequences();
     
     // Objects
     dataReader = new DataReader();
@@ -52,6 +53,7 @@ PlumeProcessor::PlumeProcessor()
 		                                               .getChildWithName (PLUME::treeId::presetDir));
     
     dataReader->addChangeListener (gestureArray);
+
 }
 
 PlumeProcessor::~PlumeProcessor()
@@ -118,10 +120,14 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
 {   
     MidiBuffer plumeBuffer;
 
-    //DBG_trackSystemMidi (midiMessages);
-    
-    // Adds the gesture's MIDI messages to the buffer, and changes parameters if needed
-    gestureArray->process (midiMessages, plumeBuffer);
+    checkAndUpdateRecordingStatus();
+    checkForSignedMidi (midiMessages);
+
+    if (isProbablyOnAnArmedTrack())
+    {
+        // Adds the gesture's MIDI messages to the buffer, and changes parameters if needed
+        gestureArray->process (midiMessages, plumeBuffer);
+    }
         
     // if wrapped plugin, lets the wrapped plugin process all MIDI into sound
     if (wrapper->isWrapping())
@@ -160,7 +166,6 @@ AudioProcessorValueTreeState& PlumeProcessor::getParameterTree()
 {
     return parameters;
 }
-
 
 PresetHandler& PlumeProcessor::getPresetHandler()
 {
@@ -550,16 +555,330 @@ void PlumeProcessor::updateTrackProperties (const AudioProcessor::TrackPropertie
     DBG ("Name : " << properties.name << " | Colour : " << properties.colour.toDisplayString(false));
 }
 
-void PlumeProcessor::DBG_trackSystemMidi (MidiBuffer& midiMessages)
+void PlumeProcessor::checkForSignedMidi (MidiBuffer& midiMessages)
 {
+    if (signedMidiBufferCount > 0) signedMidiBufferCount--;
+    else if (lastSequenceType != noSequence) lastSequenceType = noSequence;
+
     if (!midiMessages.isEmpty())
     {
         for (const MidiMessageMetadata metadata : midiMessages)
         {
-            if (metadata.getMessage().isMetaEvent())
+            checkMidiAndUpdateMidiSequence (metadata.getMessage());
+        }
+    }
+}
+
+void PlumeProcessor::checkAndUpdateRecordingStatus()
+{
+    bool isRecording = false;
+
+    if (auto* playHead = getPlayHead())
+    {
+        AudioPlayHead::CurrentPositionInfo positionInfo;
+
+        if (playHead->getCurrentPosition (positionInfo))
+        {
+            // TODO change isPlaying to isRecording
+            isRecording = positionInfo.isRecording;
+
+            /*//TO DELETE
+            DBG("BPM            : " << String(positionInfo.bpm));
+            DBG("Time (s)       : " << String(positionInfo.timeInSeconds));
+            DBG("Playing        : " << (positionInfo.isPlaying ? "Y" : "N"));
+            DBG("Recording      : " << (positionInfo.isRecording ? "Y" : "N"));
+            DBG("Ppq Position   : " << String(positionInfo.ppqPosition));
+            DBG("Time (samples) : " << String(positionInfo.timeInSamples));
+            DBG("Time sig denom : " << String(positionInfo.timeSigDenominator));
+            DBG("Time sig num   : " << String(positionInfo.timeSigNumerator));
+            */
+        }
+    }
+
+    if (lastRecordingStatus != isRecording)
+    {
+        lastRecordingStatus = isRecording;
+
+        // TODO send recording status change to HUB
+        // This will allow the HUB to send the right MIDI sequence
+                //test change aftertouch seq sur enregistrement
+        if (isRecording)
+        {
+            memcpy(data, "reco", sizeof("reco"));
+            dataReader->sendString(data, 4);
+        }
+        else 
+        {
+            memcpy(data, "play", sizeof("play"));
+            dataReader->sendString(data, 4);
+        }
+    }
+}
+
+bool PlumeProcessor::isProbablyOnAnArmedTrack()
+{
+    if (signedMidiBufferCount == 0) return false;
+    
+    if (auto* playHead = getPlayHead())
+    {
+        AudioPlayHead::CurrentPositionInfo positionInfo;
+
+        if (playHead->getCurrentPosition (positionInfo))
+        {
+            if (positionInfo.isPlaying && !positionInfo.isRecording)
             {
-                DBG ("META EVENT !!");
+                //  When the DAW is playing, we want plume to activate its midi only if it receives the normal sequence.
+                return (lastSequenceType == normal ||
+                        lastSequenceType == alternatingNormal ||
+                        lastSequenceType == alternatingRecording ||
+                        lastSequenceType == normalAndRecording);
+            }
+
+            else if (positionInfo.isRecording)
+            {
+                // If the DAW is recording, Plume's MIDI should activate only if it recieves thd recording sequence
+                return (lastSequenceType == recording); 
             }
         }
     }
+    // Either playhead is not playing, or Plume failed to get playhead info
+    // If the latter is true it is safe to assume assume the host simply cannot playback or is atleast not playing atm
+    // In this case, Plume should activate only of it recieves the normal midi sequence
+    return (lastSequenceType == normal);
+}
+
+void PlumeProcessor::initializeMidiSequences()
+{
+    for (int value = 0; value < 6; value++)
+    {
+        if (value < 3) normalMidiSequence.add (new MidiMessage (MidiMessage::channelPressureChange (1, value)));
+        else           recordingMidiSequence.add (new MidiMessage (MidiMessage::channelPressureChange (1, value)));
+    }
+}
+void PlumeProcessor::checkMidiAndUpdateMidiSequence (const MidiMessage& midiMessageToCheck)
+{
+    // Checks if new message should be considered at all
+    if (isFromMidiSequence (midiMessageToCheck, normalAndRecording))
+    {
+        signedMidiBufferCount = int (std::trunc (getSampleRate()/(signedMidiFrequencyHz * getBlockSize()))) + 2;
+
+        if (lastSequenceType == noSequence)
+        {
+            /*  We just got a fresh sequence, meaning either:
+                - Plume was just launched
+                - Neova was just connected
+                - Neova is NOT connected and DAW just started playing MIDI that was recorded with Neova
+            */
+            lastSequenceType = isFromMidiSequence (midiMessageToCheck, normal) ? normal : recording;
+            lastSignedMidi = {getIdInSequence (midiMessageToCheck, normal),
+                              getIdInSequence (midiMessageToCheck, recording)};
+        }
+        else if (lastSequenceType != normalAndRecording &&
+                 lastSequenceType != alternatingNormal &&
+                 lastSequenceType != alternatingRecording &&
+                 isFromMidiSequence (midiMessageToCheck, lastSequenceType))
+        {
+            // One sequence, either normal or recording
+            if (isNextStepInSequence (midiMessageToCheck, lastSequenceType)) 
+            {
+                if (lastSequenceType == normal)
+                    lastSignedMidi.normalSequenceId = getIdInSequence (midiMessageToCheck, lastSequenceType);
+
+                else if (lastSequenceType == recording)
+                    lastSignedMidi.recordingSequenceId = getIdInSequence (midiMessageToCheck, lastSequenceType);
+            }
+            else 
+            {
+                /*  TO DELETE (else section is for DBG)
+                    Being here means that Plume recieved a message from the right sequence, but not the excepted message...
+                    This could mean either:
+                        - This message is from Neova, but one or several messages were skipped due to transmission errors
+                        - This message is NOT from Neova and should not be considered signed
+
+                    Plume will just discard the message. If the sequence was offset due to a transmission error,
+                    the buffer count will naturally drop to 0. Plume will then catch up to the sequence where it should.
+                */
+                //jassert (false);
+            }
+        }
+        else
+        {
+            // Two sequences at the same time
+            const midiSequenceId newMessageSequenceId = isFromMidiSequence (midiMessageToCheck, normal) ? normal : recording;
+
+            // Still aleternating
+            if (((lastSequenceType == alternatingNormal ||
+                  lastSequenceType == normal) && newMessageSequenceId == recording) ||
+                ((lastSequenceType == alternatingRecording ||
+                  lastSequenceType == recording) && newMessageSequenceId == normal))
+            {
+                // if last midi is strictly in the different sequence, starts or keeps alternating sequences
+                if (lastSequenceType == normal || lastSequenceType == recording ||
+                    isNextStepInSequence (midiMessageToCheck, lastSequenceType))
+                {
+                    if (newMessageSequenceId == normal)
+                    {
+                        lastSequenceType = alternatingNormal;
+                        lastSignedMidi.normalSequenceId = getIdInSequence (midiMessageToCheck, newMessageSequenceId);
+                    }
+                    else if (newMessageSequenceId == recording)
+                    {
+                        lastSequenceType = alternatingRecording;
+                        lastSignedMidi.recordingSequenceId = getIdInSequence (midiMessageToCheck, newMessageSequenceId);
+                    }
+                }
+            }
+
+            // Back to one sequence
+            else
+            {
+                lastSequenceType = newMessageSequenceId;
+
+                if (lastSequenceType == normal)
+                    lastSignedMidi.normalSequenceId = getIdInSequence (midiMessageToCheck, lastSequenceType);
+
+                else if (lastSequenceType == recording)
+                    lastSignedMidi.recordingSequenceId = getIdInSequence (midiMessageToCheck, lastSequenceType);
+            }
+        }
+
+        //TO DELETE
+        /*DBG ("New MIDI sequence status :\n" <<
+             "Sequence      : " << sequenceTypeToString (lastSequenceType) << "\n" <<
+             "Buffer Count  : " << int (signedMidiBufferCount) << "\n" <<
+             "Last Midi IDs : Normal " << lastSignedMidi.normalSequenceId <<
+             " | Recording " << lastSignedMidi.recordingSequenceId <<
+             "\n======================================\n\n\n\n");*/
+    }
+}
+
+const bool PlumeProcessor::isFromMidiSequence (const MidiMessage& midiMessageToCheck, const midiSequenceId sequenceType)
+{
+    if (midiMessageToCheck.isChannelPressure())
+    {
+        Array<MidiMessage*> signedMidiSequenceToSearch;
+
+        switch (sequenceType)
+        {
+            case normal:
+                signedMidiSequenceToSearch.addArray (normalMidiSequence);
+                break;
+            case recording:
+                signedMidiSequenceToSearch.addArray (recordingMidiSequence);
+                break;
+            case alternatingNormal:
+            case alternatingRecording:
+            case normalAndRecording:
+                signedMidiSequenceToSearch.addArray (normalMidiSequence);
+                signedMidiSequenceToSearch.addArray (recordingMidiSequence);
+                break;
+            default:
+                break;
+        }
+
+        // Checks every message from sequ to see if message is there
+        for (auto* message : signedMidiSequenceToSearch)
+        {
+            if (midiMessageToCheck.getChannelPressureValue() == message->getChannelPressureValue())
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+const bool PlumeProcessor::isNextStepInSequence (const MidiMessage& midiMessageToCheck, const midiSequenceId sequenceType)
+{
+    if (midiMessageToCheck.isChannelPressure())
+    {
+        midiSequenceId sequenceToSearch = sequenceType;
+        
+        if (sequenceToSearch == alternatingNormal) sequenceToSearch = recording;
+        else if (sequenceToSearch == alternatingRecording) sequenceToSearch = normal;
+        
+        int signedMidiSequenceSize = (sequenceToSearch == normal)
+                                        ? normalMidiSequence.size()
+                                        : recordingMidiSequence.size();
+
+        const int lastSignedMidiId = (sequenceToSearch == normal)
+                                        ? lastSignedMidi.normalSequenceId
+                                        : lastSignedMidi.recordingSequenceId;
+
+        if (lastSignedMidiId == 0) return true;
+
+        if (lastSignedMidiId == signedMidiSequenceSize - 1)
+        {
+            return (getIdInSequence(midiMessageToCheck, sequenceToSearch) == 0);
+        }
+        else
+        {
+            return (getIdInSequence(midiMessageToCheck, sequenceToSearch) == lastSignedMidiId + 1);
+        }                                                
+    }
+
+    return false;
+}
+
+int PlumeProcessor::getIdInSequence (const MidiMessage& midiMessageToCheck, const midiSequenceId sequenceType)
+{
+    if (midiMessageToCheck.isChannelPressure())
+    {
+        Array<MidiMessage*> signedMidiSequenceToSearch;
+        
+        switch (sequenceType)
+        {
+            case noSequence:
+                return -1;
+            case normal:
+                signedMidiSequenceToSearch.addArray (normalMidiSequence);
+                break;
+            case recording:
+                signedMidiSequenceToSearch.addArray (recordingMidiSequence);
+                break;
+            case alternatingNormal:
+            case alternatingRecording:
+            case normalAndRecording:
+                signedMidiSequenceToSearch.addArray (normalMidiSequence);
+                signedMidiSequenceToSearch.addArray (recordingMidiSequence);
+                break;
+            default:
+                break;
+        }
+
+        // Checks every message from sequ to see if message is there
+        for (int messageId=0; messageId < signedMidiSequenceToSearch.size(); messageId++)
+        {
+            if (midiMessageToCheck.getChannelPressureValue() == signedMidiSequenceToSearch[messageId]->getChannelPressureValue())
+            {
+                //DBG ("Message : " << midiMessageToCheck.getDescription() <<
+                //     " ID n# " << messageId << " in sequ " << sequenceTypeToString (sequenceType));
+                return messageId;
+            }
+        }
+    }
+
+    return -1;
+}
+
+
+String PlumeProcessor::sequenceTypeToString (const midiSequenceId sequenceType) // TO DELETE
+{
+    switch (sequenceType)
+    {
+        case normal:
+            return "Normal";
+        case recording:
+            return "Recording";
+        case alternatingNormal:
+            return "Alternating Normal";
+        case alternatingRecording:
+            return "Alternating Recording";
+        case normalAndRecording:
+            return "Normal And Recording";
+        default:
+            break;
+    }
+
+    return "No Sequence";
 }
