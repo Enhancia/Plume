@@ -372,7 +372,7 @@ Array<File*> PluginWrapper::createFileList()
 {
     Array<File*> directories;
 
-    auto addFileToDirectories = [] (Array<File*>& dirs, File& fileToAdd)
+    auto addFileToDirectories = [] (Array<File*>& dirs, File fileToAdd)
     {
         if (fileToAdd.exists()) dirs.add (new File (fileToAdd));
     };

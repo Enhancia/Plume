@@ -5,6 +5,9 @@
 
   ==============================================================================
 */
+#include "../../JuceLibraryCode/JuceHeader.h"
+
+#if (JUCE_WINDOWS || defined(__OBJC__))
 
 #include "DataReader.h"
 
@@ -35,6 +38,8 @@ DataReader::DataReader(): InterprocessConnection (true, 0x6a6d626e)
 DataReader::~DataReader()
 {
     TRACE_IN;
+    
+    disconnect();
 
     data = nullptr;
     connectedLabel = nullptr;
@@ -177,3 +182,5 @@ void DataReader::changeListenerCallback (ChangeBroadcaster*)
     statutPipe.reset();
   #endif
 }
+
+#endif //JUCE_WINDOWS || DEFINED(__OBJC__)

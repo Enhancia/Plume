@@ -11,7 +11,7 @@
 #include "../../Gesture/GestureArray.h"
 #include "GesturePanel.h"
 #include "Tuner/GesturesTuner.h"
-#include "SettingsTabs/MapperComponent.h"
+#include "SettingsTabs/mappercomponent.h"
 #include "GestureSettingsComponent.h"
 
 //==============================================================================

@@ -24,7 +24,6 @@ PlumeProcessor::PlumeProcessor()
     TRACE_IN;
     
     // Logger
-    Time t;
     plumeLogger = FileLogger::createDefaultAppLogger ("Enhancia/Plume/Logs/",
                                                       "plumeLog.txt",
                                                       "Plume Log | Host application : "
@@ -642,7 +641,6 @@ bool PlumeProcessor::isProbablyOnAnArmedTrack()
             }
         }
     }
-    
     // Either playhead is not playing, or Plume failed to get playhead info
     // If the latter is true it is safe to assume assume the host simply cannot playback or is atleast not playing atm
     // In this case, Plume should activate only of it recieves the normal midi sequence

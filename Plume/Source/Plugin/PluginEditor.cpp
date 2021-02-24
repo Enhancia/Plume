@@ -13,7 +13,7 @@
 
 //==============================================================================
 PlumeEditor::PlumeEditor (PlumeProcessor& p)
-    : AudioProcessorEditor (&p), processor (p), ComponentMovementWatcher (this)
+    : AudioProcessorEditor (&p), ComponentMovementWatcher (this), processor (p)
 {
     TRACE_IN;
 	setComponentID ("plumeEditor");
@@ -137,10 +137,6 @@ void PlumeEditor::resized()
     
     optionsPanel->setBounds (area);
     newPresetPanel->setBounds (area);
-    
-    auto sideBarButtonArea = juce::Rectangle<int> (sideBarButton->getToggleState() ? 0 : SIDEBAR_WIDTH, 0,
-	                                               HEADER_HEIGHT - 2*MARGIN, HEADER_HEIGHT);
-	//sideBarButton->setBounds (sideBarButtonArea.reduced (MARGIN, MARGIN*3/2));
 
 	if (!sideBarButton->getToggleState())
 	{

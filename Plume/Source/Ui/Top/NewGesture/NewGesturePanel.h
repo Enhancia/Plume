@@ -33,8 +33,8 @@ public:
     
     //==============================================================================
     // PlumeComponent Methods
-    const String getInfoString();
-    void update();
+    const String getInfoString() override;
+    void update() override;
     
     //==============================================================================
     // Callbacks

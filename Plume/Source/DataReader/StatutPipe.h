@@ -14,7 +14,6 @@
 #include "../../JuceLibraryCode/JuceHeader.h"
 
 #if JUCE_MAC
-#include <SystemConfiguration/SystemConfiguration.h>
 
 //==============================================================================
 

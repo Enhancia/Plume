@@ -19,7 +19,6 @@
 #include "../DataReader/DataReader.h"
 #include "../Presets/PresetHandler.h"
 
-
 //==============================================================================
 /**
 */
