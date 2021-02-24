@@ -175,6 +175,13 @@ namespace PLUME
             "_gesture_param_2",
             "_gesture_param_3"
         };
+
+        enum armValue
+        {
+            notArmed = 0,
+            armed = 1,
+            unknownArm = 2
+        };
     }
 
     // data

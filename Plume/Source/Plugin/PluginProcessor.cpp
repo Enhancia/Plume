@@ -124,8 +124,14 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
 
     filterInputMidi (midiMessages);
     checkForSignedMidi (midiMessages);
+    
+    // Adds the gesture's MIDI messages to the buffer, and changes parameters if needed
+    int armValue = parameters.getParameter ("track_arm")
+                             ->convertFrom0to1 (parameters.getParameter ("track_arm")
+                                                          ->getValue());
 
-    if (isProbablyOnAnArmedTrack())
+    if ( armValue == int (PLUME::param::armed) ||
+        (armValue == int (PLUME::params::unknownArm) && isProbablyOnAnArmedTrack()))
     {
         // Adds the gesture's MIDI messages to the buffer, and changes parameters if needed
         gestureArray->process (midiMessages, plumeBuffer);
