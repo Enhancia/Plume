@@ -565,8 +565,6 @@ void PlumeProcessor::checkForSignedMidi (MidiBuffer& midiMessages)
     {
         for (const MidiMessageMetadata metadata : midiMessages)
         {
-            DBG (metadata.getMessage().getDescription());
-
             checkMidiAndUpdateMidiSequence (metadata.getMessage());
         }
     }
@@ -601,8 +599,6 @@ void PlumeProcessor::checkAndUpdateRecordingStatus()
     if (lastRecordingStatus != isRecording)
     {
         lastRecordingStatus = isRecording;
-
-        DBG ("Recording Status changed!! Recording : " << (isRecording ? "Y" : "N"));
 
         // TODO send recording status change to HUB
         // This will allow the HUB to send the right MIDI sequence
@@ -655,12 +651,10 @@ bool PlumeProcessor::isProbablyOnAnArmedTrack()
 
 void PlumeProcessor::initializeMidiSequences()
 {
-    for (int value = 107; value <= 127; value++)
+    for (int value = 0; value < 6; value++)
     {
-        if (value == 117) continue; // TO DELETE, FOR TESTING
-
-        if (value <= 117) recordingMidiSequence.add (new MidiMessage (MidiMessage::channelPressureChange (1, value)));
-        else              normalMidiSequence.add (new MidiMessage (MidiMessage::channelPressureChange (1, value)));
+        if (value < 3) normalMidiSequence.add (new MidiMessage (MidiMessage::channelPressureChange (1, value)));
+        else           recordingMidiSequence.add (new MidiMessage (MidiMessage::channelPressureChange (1, value)));
     }
 }
 void PlumeProcessor::checkMidiAndUpdateMidiSequence (const MidiMessage& midiMessageToCheck)
@@ -672,7 +666,6 @@ void PlumeProcessor::checkMidiAndUpdateMidiSequence (const MidiMessage& midiMess
 
         if (lastSequenceType == noSequence)
         {
-            DBG ("1)");
             /*  We just got a fresh sequence, meaning either:
                 - Plume was just launched
                 - Neova was just connected
@@ -687,11 +680,9 @@ void PlumeProcessor::checkMidiAndUpdateMidiSequence (const MidiMessage& midiMess
                  lastSequenceType != alternatingRecording &&
                  isFromMidiSequence (midiMessageToCheck, lastSequenceType))
         {
-            DBG ("2)");
             // One sequence, either normal or recording
             if (isNextStepInSequence (midiMessageToCheck, lastSequenceType)) 
             {
-                DBG ("  A)");
                 if (lastSequenceType == normal)
                     lastSignedMidi.normalSequenceId = getIdInSequence (midiMessageToCheck, lastSequenceType);
 
@@ -700,7 +691,6 @@ void PlumeProcessor::checkMidiAndUpdateMidiSequence (const MidiMessage& midiMess
             }
             else 
             {
-                DBG ("  B)");
                 /*  TO DELETE (else section is for DBG)
                     Being here means that Plume recieved a message from the right sequence, but not the excepted message...
                     This could mean either:
@@ -711,17 +701,12 @@ void PlumeProcessor::checkMidiAndUpdateMidiSequence (const MidiMessage& midiMess
                     the buffer count will naturally drop to 0. Plume will then catch up to the sequence where it should.
                 */
                 //jassert (false);
-                DBG ("JASSERT FALSE BREAKPOINT\n");
             }
         }
         else
         {
-            DBG ("3)");
             // Two sequences at the same time
             const midiSequenceId newMessageSequenceId = isFromMidiSequence (midiMessageToCheck, normal) ? normal : recording;
-
-            DBG ("Last Message sequ Id : " << sequenceTypeToString(lastSequenceType) <<
-                 "\nNew  Message sequ Id : " << sequenceTypeToString(newMessageSequenceId));
 
             // Still aleternating
             if (((lastSequenceType == alternatingNormal ||
@@ -729,12 +714,10 @@ void PlumeProcessor::checkMidiAndUpdateMidiSequence (const MidiMessage& midiMess
                 ((lastSequenceType == alternatingRecording ||
                   lastSequenceType == recording) && newMessageSequenceId == normal))
             {
-                DBG ("  A)");
                 // if last midi is strictly in the different sequence, starts or keeps alternating sequences
                 if (lastSequenceType == normal || lastSequenceType == recording ||
                     isNextStepInSequence (midiMessageToCheck, lastSequenceType))
                 {
-                    DBG ("    i)");
                     if (newMessageSequenceId == normal)
                     {
                         lastSequenceType = alternatingNormal;
@@ -751,7 +734,6 @@ void PlumeProcessor::checkMidiAndUpdateMidiSequence (const MidiMessage& midiMess
             // Back to one sequence
             else
             {
-                DBG ("  B)");
                 lastSequenceType = newMessageSequenceId;
 
                 if (lastSequenceType == normal)
@@ -763,12 +745,12 @@ void PlumeProcessor::checkMidiAndUpdateMidiSequence (const MidiMessage& midiMess
         }
 
         //TO DELETE
-        DBG ("New MIDI sequence status :\n" <<
+        /*DBG ("New MIDI sequence status :\n" <<
              "Sequence      : " << sequenceTypeToString (lastSequenceType) << "\n" <<
              "Buffer Count  : " << int (signedMidiBufferCount) << "\n" <<
              "Last Midi IDs : Normal " << lastSignedMidi.normalSequenceId <<
              " | Recording " << lastSignedMidi.recordingSequenceId <<
-             "\n======================================\n\n\n\n");
+             "\n======================================\n\n\n\n");*/
     }
 }
 
@@ -871,8 +853,8 @@ int PlumeProcessor::getIdInSequence (const MidiMessage& midiMessageToCheck, cons
         {
             if (midiMessageToCheck.getChannelPressureValue() == signedMidiSequenceToSearch[messageId]->getChannelPressureValue())
             {
-                DBG ("Message : " << midiMessageToCheck.getDescription() <<
-                     " ID n# " << messageId << " in sequ " << sequenceTypeToString (sequenceType));
+                //DBG ("Message : " << midiMessageToCheck.getDescription() <<
+                //     " ID n# " << messageId << " in sequ " << sequenceTypeToString (sequenceType));
                 return messageId;
             }
         }
