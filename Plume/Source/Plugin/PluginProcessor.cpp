@@ -131,7 +131,7 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
                                                           ->getValue());
 
     if ( armValue == int (PLUME::param::armed) ||
-        (armValue == int (PLUME::params::unknownArm) && isProbablyOnAnArmedTrack()))
+        (armValue == int (PLUME::param::unknownArm) && isProbablyOnAnArmedTrack()))
     {
         // Adds the gesture's MIDI messages to the buffer, and changes parameters if needed
         gestureArray->process (midiMessages, plumeBuffer);
