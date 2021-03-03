@@ -95,6 +95,7 @@ public:
 
     //==============================================================================
     void setArm (PLUME::param::armValue newArm);
+    bool& getLastArmRef();
     
     //==============================================================================
     /**
@@ -204,6 +205,7 @@ private:
     bool isProbablyOnAnArmedTrack();
     void filterInputMidi (MidiBuffer& midiMessages);
     bool messageShouldBeKept (const MidiMessage& midiMessage);
+    bool lastArm = false;
 
     //==============================================================================
     AudioProcessorValueTreeState::ParameterLayout initializeParameters();

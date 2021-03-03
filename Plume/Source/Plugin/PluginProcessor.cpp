@@ -46,7 +46,7 @@ PlumeProcessor::PlumeProcessor()
     
     // Objects
     dataReader = new DataReader();
-    gestureArray = new GestureArray (*dataReader, parameters);
+    gestureArray = new GestureArray (*dataReader, parameters, getLastArmRef());
     wrapper = new PluginWrapper (*this, *gestureArray, parameters.state.getChildWithName(PLUME::treeId::general)
 		                                                         .getChildWithName(PLUME::treeId::pluginDirs));
     presetHandler = new PresetHandler (parameters.state.getChildWithName (PLUME::treeId::general)
@@ -129,13 +129,11 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
     int armValue = parameters.getParameter ("track_arm")
                              ->convertFrom0to1 (parameters.getParameter ("track_arm")
                                                           ->getValue());
+    lastArm = armValue == int (PLUME::param::armed) ||
+             (armValue == int (PLUME::param::unknownArm) && isProbablyOnAnArmedTrack());
 
-    if ( armValue == int (PLUME::param::armed) ||
-        (armValue == int (PLUME::param::unknownArm) && isProbablyOnAnArmedTrack()))
-    {
-        // Adds the gesture's MIDI messages to the buffer, and changes parameters if needed
-        gestureArray->process (midiMessages, plumeBuffer);
-    }
+    // Adds the gesture's MIDI messages to the buffer, and changes parameters if needed
+    gestureArray->process (midiMessages, plumeBuffer);
         
     // if wrapped plugin, lets the wrapped plugin process all MIDI into sound
     if (wrapper->isWrapping())
@@ -855,4 +853,9 @@ bool PlumeProcessor::messageShouldBeKept (const MidiMessage& midiMessage)
     }
 
     return true;
+}
+
+bool& PlumeProcessor::getLastArmRef()
+{
+    return lastArm;
 }
