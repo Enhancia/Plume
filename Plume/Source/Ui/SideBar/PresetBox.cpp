@@ -63,7 +63,6 @@ int PresetBox::getNumRows()
 
 void PresetBox::paintListBoxItem (int rowNumber, Graphics& g, int width, int height, bool rowIsSelected)
 {
-    
     // Writes the preset name except for the presetIdToEdit row number (which has an editable label)
     if (rowNumber != presetIdToEdit)
     {
@@ -160,7 +159,7 @@ void PresetBox::labelTextChanged (Label*)
 {
     String presetName = editLabel->getText();
     
-    if (XmlElement::isValidXmlName (presetName.replace (" ", "_")))
+    //if (XmlElement::isValidXmlName (presetName.replace (" ", "_")))
     {
         if (newPresetEntry)
         {
@@ -319,11 +318,11 @@ void PresetBox::setPreset (const int row)
 
 void PresetBox::createUserPreset (const String& presetName)
 {
-    ScopedPointer<XmlElement> presetXml = new XmlElement (presetName.replace (" ", "_"));
+    ScopedPointer<XmlElement> presetXml = new XmlElement ("PLUME");
 	processor.createPluginXml (*presetXml);
 	processor.createGestureXml (*presetXml);
 	
-    processor.getPresetHandler().createNewUserPreset (presetName, *presetXml);
+    processor.getPresetHandler().createNewUserPreset (*presetXml);
     updateHeader();
     
     presetXml->deleteAllChildElements();
@@ -331,7 +330,10 @@ void PresetBox::createUserPreset (const String& presetName)
 
 void PresetBox::renamePreset (const String& newName)
 {
+    const int currentPresetId = processor.getPresetHandler().getCurrentPresetIdInSearchList();
     processor.getPresetHandler().renamePreset (newName, presetIdToEdit);
+    
+    if (presetIdToEdit == currentPresetId) setPreset (currentPresetId);
 }
 
 void PresetBox::prepareGesturePanelToPresetChange()
