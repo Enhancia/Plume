@@ -53,7 +53,7 @@ public:
 	PlumePreset& operator= (const PlumePreset& other) noexcept;
 	bool operator== (const PlumePreset& other) noexcept;
 	//==============================================================================
-	static String getFilterTypeString (int filterTypeId);
+	static String getFilterTypeString (int filterTypeId); 
 	static void addPresetInfoXml (XmlElement& presetXml, String author, String version,
                                   String plugin, int presetType, int filterType);
 	
@@ -64,8 +64,11 @@ public:
 	//==============================================================================
 	bool isValid();
 	void setName (const String newName);
-	const String getName();
-	const String getFilterString();
+	const String getName() const;
+	const String getAuthor() const;
+	const String getVersion() const;
+	const int getFilter() const;
+	const String getFilterString() const;
 	bool matchesSettings (int filter, String pluginName, String nameSearch);
 
 	int presetType;

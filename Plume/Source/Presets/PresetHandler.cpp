@@ -72,6 +72,11 @@ String PresetHandler::getCurrentPresetName()
     return currentPreset.isValid() ? currentPreset.getName() : "-"; //.replaceCharacter (' ', '_');
 }
 
+PlumePreset PresetHandler::getCurrentPreset()
+{
+    return currentPreset;
+}
+
 int PresetHandler::getCurrentPresetIdInSearchList()
 {
     if (currentPreset.isValid())

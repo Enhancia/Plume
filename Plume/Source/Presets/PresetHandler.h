@@ -86,6 +86,8 @@ public:
      */
     String getCurrentPresetName();
 
+    PlumePreset getCurrentPreset();
+
     /**
      * \brief Getter for the id of the preset currently in use.
      *
