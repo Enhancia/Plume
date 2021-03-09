@@ -133,7 +133,7 @@ public:
     //==============================================================================
     void storePresets();
     XmlElement* getPresetXmlToLoad (int selectedPreset);
-    bool savePreset (XmlElement& presetXml, String filterType);
+    bool savePreset (XmlElement& presetXml);
     bool createNewUserPreset (String presetName, XmlElement& presetXml);
     bool renamePreset (String newName, const int id);
 	PlumePreset getPresetForId (const int id);
