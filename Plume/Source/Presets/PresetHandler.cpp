@@ -26,12 +26,12 @@ PresetHandler::~PresetHandler()
 //==============================================================================
 void PresetHandler::setUserDirectory (const File& newDir, bool moveFiles)
 {
-    searchedPresets.clear();
-
     File oldDir = getUserDirectory();
 
 	if (newDir.isDirectory())
 	{
+        searchedPresets.clear();
+
 		File newDirUser = newDir;
 		if (newDirUser.getFileName() != "User" && newDirUser.getChildFile ("User").createDirectory().wasOk())
 		{
@@ -45,24 +45,20 @@ void PresetHandler::setUserDirectory (const File& newDir, bool moveFiles)
                          oldDir != newDirUser)
 		{
 		    oldDir.moveFileTo (newDirUser);
+
+            if (oldDir != newDirUser)
+            {
+                if (!newDirUser.isAChildOf (oldDir))
+                {
+                    oldDir.moveToTrash();
+                }
+            }
+
+            userDirValue.setProperty(PLUME::treeId::value, newDirUser.getFullPathName(), nullptr);
+            savePresetDirectoryToFile();
 		}
 
-        if (oldDir != newDirUser)
-        {
-            //deleteArborescence(oldDir);
-			/*
-            if (!newDirUser.isAChildOf (oldDir))
-            {
-                oldDir.deleteRecursively();
-            }
-			*/
-        }
-
-		userDirValue.setProperty(PLUME::treeId::value, newDirUser.getFullPathName(), nullptr);
-		//createDirectoryArborescence (newDirUser);
-		savePresetDirectoryToFile();
-
-		storePresets();
+        storePresets();
 	}
 }
 
@@ -110,7 +106,7 @@ void PresetHandler::storePresets()
     File userDir (getUserDirectory());
     DBG (userDir.getNumberOfChildFiles (File::findFiles + File::ignoreHiddenFiles));
     
-    if (userDir.exists() && userDir.containsSubDirectories())
+    if (userDir.exists())
     {
         for (auto f : userDir.findChildFiles (File::findFiles + File::ignoreHiddenFiles, true, "*.plume"))
         {
@@ -214,7 +210,7 @@ bool PresetHandler::savePreset (XmlElement& presetXml)
 bool PresetHandler::createNewUserPreset (String presetName, XmlElement& presetXml)
 {
     if (presetName.isEmpty()) return false;
-    
+
     presetName = File::createLegalFileName (presetName);
     
     // If the file is succesfully created, changes current preset and saves
@@ -366,7 +362,6 @@ void PresetHandler::initialiseDirectories()
                                                                               .getChildFile ("Enhancia/")
                                                                               .getChildFile ("Plume/")
                                                                               .getChildFile ("Default/");
-    //createDirectoryArborescence (defaultDir);
 
     loadPresetDirectoryFromFile();
     setUserDirectory (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Audio/")
@@ -378,10 +373,8 @@ void PresetHandler::initialiseDirectories()
     return; //Should only compile on win or mac
   #endif
 
-    //createDirectoryArborescence (defaultDir);
     
     File f = getUserDirectory();
-    //createDirectoryArborescence (f);
 
     storePresets();
 }
@@ -530,7 +523,7 @@ void PresetHandler::createDirectoryArborescence (File& dir)
     }
 }
 
-void PresetHandler::deleteArborescence (File& dir)
+void PresetHandler::deleteDirectoryArborescence (File& dir)
 {
     for (int i=0; i<PlumePreset::numFilters; i++)
     {

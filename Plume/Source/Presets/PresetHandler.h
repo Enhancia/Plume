@@ -142,7 +142,7 @@ public:
     void showPresetInExplorer (int id);
     void savePresetDirectoryToFile();
     void loadPresetDirectoryFromFile();
-    
+
     //==============================================================================
     void setSearchSettings (int type, int filter, String pluginName, String name);
     void setTypeSearchSetting (int type);
@@ -156,7 +156,7 @@ private:
     //==============================================================================
     void initialiseDirectories();
     void createDirectoryArborescence (File& dir);
-    void deleteArborescence (File& dir);
+    void deleteDirectoryArborescence (File& dir);
     //void createAllSubdirectories();
     
     //==============================================================================
