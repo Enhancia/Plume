@@ -111,7 +111,7 @@ void TypeToggleComponent::toggleButton (int buttonId)
 		{
 			presetBox->updateContent();
             presetBox->selectRow (0);
-            presetBox->repaint();
+            presetBox->scrollToEnsureRowIsOnscreen (0);
 		}
 	}
 }

@@ -96,6 +96,7 @@ void PresetSearchBar::buttonClicked (Button*)
 		    {
 			    presetBox->updateContent();
                 presetBox->selectRow (0);
+                presetBox->scrollToEnsureRowIsOnscreen (0);
 		    }
 	    }
 
@@ -147,6 +148,7 @@ void PresetSearchBar::textEditorTextChanged (TextEditor&)
 		{
 			presetBox->updateContent();
             presetBox->selectRow (0);
+            presetBox->scrollToEnsureRowIsOnscreen (0);
 		}
 	}
 }

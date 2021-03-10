@@ -88,7 +88,7 @@ void FilterBox::listBoxItemClicked (int row, const MouseEvent& event)
 	    {
 		    presetBox->updateContent();
             presetBox->selectRow (0);
-            presetBox->repaint();
+            presetBox->scrollToEnsureRowIsOnscreen (0);
 	    }
     }
 }

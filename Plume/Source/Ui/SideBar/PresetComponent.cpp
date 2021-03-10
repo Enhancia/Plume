@@ -129,6 +129,7 @@ void PresetComponent::comboBoxChanged (ComboBox* cmbx)
         
         presetBox->updateContent();
         presetBox->selectRow (0);
+        presetBox->scrollToEnsureRowIsOnscreen (0);
     }
 }
 
