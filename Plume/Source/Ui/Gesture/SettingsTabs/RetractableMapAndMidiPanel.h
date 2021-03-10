@@ -21,7 +21,8 @@
 //==============================================================================
 /*
 */
-class RetractableMapAndMidiPanel    : public PlumeComponent,
+class RetractableMapAndMidiPanel    : public Component,
+                                      public PlumeComponent,
                                       public Button::Listener,
                                       public ChangeListener
 {

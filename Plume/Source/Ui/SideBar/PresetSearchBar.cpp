@@ -95,6 +95,7 @@ void PresetSearchBar::buttonClicked (Button*)
 			                                                ->findChildWithID("presetBox")))
 		    {
 			    presetBox->updateContent();
+                presetBox->selectRow (0);
 		    }
 	    }
 
@@ -145,6 +146,7 @@ void PresetSearchBar::textEditorTextChanged (TextEditor&)
 			                                              ->findChildWithID("presetBox")))
 		{
 			presetBox->updateContent();
+            presetBox->selectRow (0);
 		}
 	}
 }

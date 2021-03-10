@@ -150,6 +150,13 @@ String PresetHandler::getTextForPresetId (int id)
     return searchedPresets[id]->getName();
 }
 
+String PresetHandler::getDescriptionForPresetId (int id)
+{
+    if (id < 0 || id >= getNumSearchedPresets()) return "-";
+    
+    return searchedPresets[id]->getDescription();
+}
+
 String PresetHandler::getFilterTextForPresetId (const int id)
 {
     if (id < 0 || id >= getNumSearchedPresets()) return "Custom";

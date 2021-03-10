@@ -20,7 +20,8 @@
 //==============================================================================
 /*
 */
-class SideBarComponent    : public PlumeComponent,
+class SideBarComponent    : public Component,
+                            public PlumeComponent,
                             private Button::Listener
 {
 public:

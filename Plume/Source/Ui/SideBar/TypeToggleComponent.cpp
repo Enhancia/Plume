@@ -110,6 +110,7 @@ void TypeToggleComponent::toggleButton (int buttonId)
 			                                              ->findChildWithID("presetBox")))
 		{
 			presetBox->updateContent();
+            presetBox->selectRow (0);
             presetBox->repaint();
 		}
 	}

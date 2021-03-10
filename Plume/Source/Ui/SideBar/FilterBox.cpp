@@ -87,6 +87,7 @@ void FilterBox::listBoxItemClicked (int row, const MouseEvent& event)
                                                           ->findChildWithID ("presetBox"))) 
 	    {
 		    presetBox->updateContent();
+            presetBox->selectRow (0);
             presetBox->repaint();
 	    }
     }

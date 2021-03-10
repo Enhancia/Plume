@@ -154,6 +154,13 @@ const String PlumePreset::getName()
     return name;
 }
 
+const String PlumePreset::getDescription()
+{
+    return name + " - " + author + " (v" + version + ") :\n\n"
+         + "  Plugin   : " + (plugin.isEmpty() ? "-" : plugin) + "\n"
+         + "  Category : " + getFilterTypeString (filterType);
+}
+
 const String PlumePreset::getFilterString()
 {
     return getFilterTypeString (filterType);

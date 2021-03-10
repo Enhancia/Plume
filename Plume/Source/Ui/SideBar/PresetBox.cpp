@@ -56,6 +56,27 @@ void PresetBox::paintOverChildren (Graphics&)
 }
 
 //==============================================================================
+void PresetBox::update()
+{
+    const int currentPresetId = processor.getPresetHandler().getCurrentPresetIdInSearchList();
+    selectRow (currentPresetId == -1 ? 0 : currentPresetId);
+}
+
+const String PresetBox::getInfoString()
+{
+    if (getSelectedRow() == -1)
+    {
+        return "Preset List :\n\n"
+            "- Use your left click and arrows to navigate between presets.\n"
+            "- Press Enter or delete to load or delete the currently selected preset.\n";
+    }
+    else
+    {    
+        return getTooltipForRow (getSelectedRow());
+    }
+}
+
+//==============================================================================
 int PresetBox::getNumRows()
 {
     return processor.getPresetHandler().getNumSearchedPresets() + newPresetEntry;
@@ -63,7 +84,6 @@ int PresetBox::getNumRows()
 
 void PresetBox::paintListBoxItem (int rowNumber, Graphics& g, int width, int height, bool rowIsSelected)
 {
-    
     // Writes the preset name except for the presetIdToEdit row number (which has an editable label)
     if (rowNumber != presetIdToEdit)
     {
@@ -151,8 +171,30 @@ void PresetBox::backgroundClicked (const MouseEvent& event)
     }
 }
 
-void PresetBox::deleteKeyPressed (int)
+void PresetBox::deleteKeyPressed (int lastRowSelected)
 {
+    //deletePreset (lastRowSelected);
+}
+
+void PresetBox::returnKeyPressed (int lastRowSelected)
+{
+    setPreset (lastRowSelected);
+}
+
+void PresetBox::selectedRowsChanged (int lastRowSelected)
+{
+    if (auto* infoText = dynamic_cast<TextEditor*> (getParentComponent() // presetComp
+                                                    ->getParentComponent() // sideBarComp
+                                                    ->findChildWithID("infoPanel")
+                                                    ->findChildWithID("infoText")))
+    {
+        infoText->setText (getInfoString(), false);
+    }
+}
+
+String PresetBox::getTooltipForRow (int row)
+{
+    return processor.getPresetHandler().getDescriptionForPresetId (row);
 }
 
 //==============================================================================
