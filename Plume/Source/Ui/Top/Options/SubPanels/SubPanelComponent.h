@@ -40,7 +40,7 @@ public:
     void addRow (String rowText, Component* rowCompToAdd, int height =PLUME::UI::SUBPANEL_ROW_HEIGHT);
     void addSeparatorRow (String rowText);
     void addToggleRow (String rowText, String buttonID, bool initialState =false);
-    void addButtonRow (String rowText, String buttonID, String buttonText);
+    void addButtonRow (String rowText, String buttonID, String buttonText, String feedbackString = String());
     void addLabelRow (String rowText, String labelID, String labelText);
     void addScannerRow (String rowText, String scannerID,
                         const String& dialogBoxTitle,
@@ -72,7 +72,7 @@ private:
     };
 
     //==============================================================================
-    class Row
+    class Row : public Timer
     {
 	public:
         enum rowType
@@ -80,6 +80,7 @@ private:
             separator =0,
             toggle,
             button,
+            buttonWithFeedback,
             label,
             scanner,
             value,
@@ -88,17 +89,48 @@ private:
         };
 
         Row (Component* compToUse, String rowName, rowType t, int rowH =PLUME::UI::SUBPANEL_ROW_HEIGHT)
-            : name (rowName), height (rowH), type (t), comp (compToUse)
+            : name (rowName), height (rowH), type (t == buttonWithFeedback ? button : t), comp (compToUse), hasFeedback (t == buttonWithFeedback)
         {
         }
 
         ~Row () { comp = nullptr; }
 
         bool isSeparator() { return type == separator; }
+        void timerCallback() override
+        {
+            if (hasFeedback && feedbackCount < feedbackMax)
+            {
+                comp->getParentComponent()->repaint();
+                feedbackCount++;
+            }
+            else if (feedbackCount == feedbackMax)
+            {
+                feedbackCount = 0;
+                stopTimer();
+            }
+        }
+
+        void drawUploadFeedback (Graphics& g, juce::Rectangle<int> area)
+        {
+            if (!hasFeedback) return;
+
+            const float animationProgress = feedbackCount/float (feedbackMax);
+            const float alpha = animationProgress < 0.5f ? 1.0f
+                                                         : 1.0f - std::pow (animationProgress*2 - 1.0f, 2.0f);
+
+            g.setColour (PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText).withAlpha (alpha));
+
+            g.setFont (PLUME::font::plumeFont.withHeight (11.0f));
+            g.drawText (feedbackString, area, Justification::centredLeft);
+        }
 
         const String name;
         const int height;
         const rowType type;
+        const bool hasFeedback;
+        int feedbackCount = 0;
+        const int feedbackMax = 25;
+        String feedbackString;
         ScopedPointer<Component> comp;
     };
 

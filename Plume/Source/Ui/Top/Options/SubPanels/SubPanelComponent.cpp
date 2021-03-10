@@ -24,8 +24,9 @@ SubPanelComponent::~SubPanelComponent()
 void SubPanelComponent::paint (Graphics& g)
 {
     using namespace PLUME::UI;
-
+	auto area = getLocalBounds();
     auto textArea = getLocalBounds().removeFromLeft (getWidth()/3).reduced (MARGIN);
+	auto compArea = area.reduced (MARGIN);
 
     if (!rows.isEmpty())
     {
@@ -39,16 +40,27 @@ void SubPanelComponent::paint (Graphics& g)
 
     		if (row->isSeparator() && row != rows.getFirst())
     		{
-    			textArea.removeFromTop (MARGIN);  // Additional space between sections
+				// Additional space between sections
+    			textArea.removeFromTop (MARGIN);
+				compArea.removeFromTop(MARGIN);
     		}
 
-    		g.drawText (row->name, 
+    		g.drawText (row->name,
                 		textArea.removeFromTop (row->height),
                 		//row->isSeparator() ? Justification::centredRight : Justification::centredLeft,
                 		Justification::centredLeft,
                 		true);
 
-    		textArea.removeFromTop (MARGIN);
+			if (row->hasFeedback && row->feedbackCount != 0)
+			{
+				auto feedbackArea = compArea.withHeight (row->height)
+					                        .withLeft (row->comp->getRight() + MARGIN);
+
+				row->drawUploadFeedback (g, feedbackArea);
+			}
+
+			textArea.removeFromTop(MARGIN);
+			compArea.removeFromTop(row->height + MARGIN);
 		}
     }
 }
@@ -83,6 +95,7 @@ void SubPanelComponent::resized()
         			break;
 
         		case Row::button:
+        		case Row::buttonWithFeedback:
         			getChildComponent (i)->setBounds (compArea.removeFromTop (row.height).withWidth(4*row.height));
         			break;
 
@@ -125,7 +138,7 @@ void SubPanelComponent::addToggleRow (String rowText, String buttonID, bool init
 	tggle->addListener(this);
 }
 
-void SubPanelComponent::addButtonRow (String rowText, String buttonID, String buttonText)
+void SubPanelComponent::addButtonRow (String rowText, String buttonID, String buttonText, String buttonFeedbackString)
 {
 	TextButton* bttn = new TextButton (buttonID);
 	bttn->setComponentID (buttonID);
@@ -133,7 +146,22 @@ void SubPanelComponent::addButtonRow (String rowText, String buttonID, String bu
 		             PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText));
 	bttn->setButtonText (buttonText);
 
-	rows.add (new Row (bttn, rowText, Row::button));
+	rows.add (new Row (bttn, rowText, buttonFeedbackString.isNotEmpty() ? Row::buttonWithFeedback : Row::button));
+	rows.getLast()->feedbackString = buttonFeedbackString;
+	
+	if (rows.getLast()->hasFeedback)
+	{
+		const int rowNum = rows.size() - 1;
+
+		bttn->onClick = [this, rowNum] ()
+	    { 
+	    	Row& rowToStartFeedbackOn = *rows[rowNum];
+
+			rowToStartFeedbackOn.feedbackCount = 0;
+			rowToStartFeedbackOn.startTimerHz (30);
+	    };
+	}
+
 	addAndMakeVisible (bttn);
 	bttn->addListener(this);
 }
