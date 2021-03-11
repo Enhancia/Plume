@@ -136,7 +136,7 @@ namespace PLUME
                                     peer->setMinimised (true);
                                 }
                             }
-
+                            /* UNCOMMENT to automatically open wrapped plugin on Plume unminimize / launch
                             else if ((windowPosPtr->flags >> 6 & 1) == 1) // Flag SWP_SHOWWINDOW (bit 6) is active
                             {
                                 using namespace PLUME;
@@ -144,7 +144,7 @@ namespace PLUME
                                 {
                                     peer->setMinimised (false);
                                 }
-                            }
+                            }*/
     					}
     				}
                 }
@@ -156,7 +156,7 @@ namespace PLUME
 		else
 		{
 			DBG ("Unprocessable window event! Thread : " + (wParam == 0 ? String("Other")
-                                                                       : String("Current")));
+                                                                        : String("Current")));
 		}
 
         return CallNextHookEx (NULL, nCode, wParam, lParam);

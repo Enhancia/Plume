@@ -463,7 +463,7 @@ void PluginWrapper::setAuUsage (bool
 {
   #if JUCE_MAC
     useAudioUnits = shouldUseAudioUnits;
-  #endif 
+  #endif
 }
 
 void PluginWrapper::addCustomDirectory (File newDir)

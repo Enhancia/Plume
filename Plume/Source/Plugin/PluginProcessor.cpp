@@ -454,8 +454,15 @@ void PlumeProcessor::initializeSettings()
     parameters.state.addChild (ValueTree (general), 0, nullptr);
     
 	auto generalTree = parameters.state.getChildWithName (general);
-    generalTree.addChild (ValueTree (winW).setProperty (value, var (PLUME::UI::DEFAULT_WINDOW_WIDTH), nullptr), 0, nullptr);
-    generalTree.addChild (ValueTree (winH).setProperty (value, var (PLUME::UI::DEFAULT_WINDOW_HEIGHT), nullptr), 1, nullptr);
+    generalTree.addChild (ValueTree (winX).setProperty (value, var (-1), nullptr), 0, nullptr);
+    generalTree.addChild (ValueTree (winY).setProperty (value, var (-1), nullptr), 1, nullptr);
+    generalTree.addChild (ValueTree (winW).setProperty (value, var (PLUME::UI::DEFAULT_WINDOW_WIDTH), nullptr), 2, nullptr);
+    generalTree.addChild (ValueTree (winH).setProperty (value, var (PLUME::UI::DEFAULT_WINDOW_HEIGHT), nullptr), 3, nullptr);
+    generalTree.addChild (ValueTree (wrapped_winX).setProperty (value, var (-1), nullptr), 4, nullptr);
+    generalTree.addChild (ValueTree (wrapped_winY).setProperty (value, var (-1), nullptr), 5, nullptr);
+    generalTree.addChild (ValueTree (wrapped_winW).setProperty (value, var (-1), nullptr), 6, nullptr);
+    generalTree.addChild (ValueTree (wrapped_winH).setProperty (value, var (-1), nullptr), 7, nullptr);
+    generalTree.addChild (ValueTree (wrapped_visible).setProperty (value, var (false), nullptr), 8, nullptr);
 
   #if JUCE_WINDOWS
     generalTree.addChild (ValueTree (presetDir).setProperty (value,
