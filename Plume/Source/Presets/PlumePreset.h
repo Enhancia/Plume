@@ -65,6 +65,7 @@ public:
 	bool isValid();
 	void setName (const String newName);
 	const String getName();
+	const String getDescription();
 	const String getFilterString();
 	bool matchesSettings (int filter, String pluginName, String nameSearch);
 

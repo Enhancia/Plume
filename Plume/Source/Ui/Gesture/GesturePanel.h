@@ -22,7 +22,8 @@
 //==============================================================================
 /*
 */
-class GesturePanel    : public PlumeComponent,
+class GesturePanel    : public Component,
+                        public PlumeComponent,
                         public Timer,
                         private Button::Listener,
                         private AudioProcessorValueTreeState::Listener
@@ -96,7 +97,7 @@ private:
     Image backgroundImage = ImageFileFormat::loadFrom (PlumeData::homePageEnhancia_jpg,
                                                        PlumeData::homePageEnhancia_jpgSize);
 
-    OwnedArray<PlumeComponent> gestureSlots;
+    OwnedArray<Component> gestureSlots;
     ScopedPointer<GestureSettingsComponent> gestureSettings;
     ScopedPointer<PlumeShapeButton> closeButton;
     //DropShadowEffect shadowEffect;

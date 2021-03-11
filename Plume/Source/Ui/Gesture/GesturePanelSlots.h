@@ -14,7 +14,8 @@
 #include "../../Common/PlumeCommon.h"
 #include "../../Gesture/GestureArray.h"
 
-class GestureComponent : public PlumeComponent,
+class GestureComponent : public Component,
+                         public PlumeComponent,
                          private Label::Listener
 {
 public:
@@ -80,7 +81,8 @@ private:
 };
 
 
-class EmptyGestureSlotComponent : public PlumeComponent
+class EmptyGestureSlotComponent : public Component,
+                                  public PlumeComponent
 {
 public:
     //==============================================================================

@@ -308,7 +308,7 @@ void HeaderComponent::setPresetWithOffset (const int offset)
 {
     if (offset == 0)
     {
-        // Does nothing if the offset is 0 or negative...
+        // Does nothing if the offset is 0...
         jassertfalse;
         return;
     }

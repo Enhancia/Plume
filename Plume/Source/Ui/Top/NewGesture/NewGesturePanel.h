@@ -17,7 +17,8 @@
 //==============================================================================
 /*
 */
-class NewGesturePanel    : public PlumeComponent,
+class NewGesturePanel    : public Component,
+                           public PlumeComponent,
                            private Label::Listener,
                            private Button::Listener
 {
@@ -53,7 +54,8 @@ public:
     const int getLastSelectedSlot();
 
 private:
-    class GestureTypeSelector : public PlumeComponent
+    class GestureTypeSelector : public Component,
+                                public PlumeComponent
     {
     public:
         GestureTypeSelector (int gestType);

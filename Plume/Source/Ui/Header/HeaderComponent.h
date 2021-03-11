@@ -18,7 +18,8 @@
 //==============================================================================
 /*
 */
-class HeaderComponent    : public PlumeComponent,
+class HeaderComponent    : public Component,
+                           public PlumeComponent,
                            public Button::Listener
 {
 public:

@@ -17,7 +17,8 @@
 //==============================================================================
 /*
 */
-class DescriptionPanel    : public PlumeComponent,
+class DescriptionPanel    : public Component,
+                            public PlumeComponent,
                             private Label::Listener
 {
 public:
