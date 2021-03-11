@@ -169,7 +169,7 @@ void PlumeEditor::componentPeerChanged()
 
             if (processor.getWrapper().isWrapping())
             {
-                processor.getWrapper().createWrapperEditor (this);
+                //processor.getWrapper().createWrapperEditor (this); // UNCOMMENT to automatically open wrapped plugin on Plume unminimize / launch
             }
         }
     }
