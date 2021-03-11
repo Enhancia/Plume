@@ -311,16 +311,17 @@ void NewPresetPanel::createBox()
 
 void NewPresetPanel::createUserPreset()
 {
-    ScopedPointer<XmlElement> presetXml = new XmlElement (nameLabel->getText().replace (" ", "_"));
+    ScopedPointer<XmlElement> presetXml = new XmlElement ("PLUME");
 	processor.createPluginXml (*presetXml);
 	processor.createGestureXml (*presetXml);
-    PlumePreset::addPresetInfoXml (*presetXml, authorLabel->getText() == "Author Name..." ? "" : authorLabel->getText(),
+    PlumePreset::addPresetInfoXml (*presetXml, nameLabel->getText() == "Preset Name..." ? "" : nameLabel->getText(),
+                                               authorLabel->getText() == "Author Name..." ? "" : authorLabel->getText(),
                                                verLabel->getText(),
                                                pluginLabel->getText() == "No plugin" ? "" : pluginLabel->getText(),
                                                PlumePreset::userPreset,
                                                typeBox->getSelectedId()-1);
 	
-    processor.getPresetHandler().createNewUserPreset (nameLabel->getText(), *presetXml);
+    processor.getPresetHandler().createNewUserPreset (*presetXml);
     
     // Updates Header..
     if (auto* hdr = dynamic_cast<PlumeComponent*> ( getParentComponent() // editor

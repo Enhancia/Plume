@@ -105,19 +105,9 @@ const String PresetComponent::getInfoString()
 
 void PresetComponent::update()
 {
-    if (processor.getPresetHandler().getCurrentPresetIdInSearchList() != -1)
-    {
-        presetBox->selectRow (processor.getPresetHandler().getCurrentPresetIdInSearchList());
-    }
-    else
-    {
-        presetBox->deselectRow (presetBox->getLastRowSelected());
-    }
-
     presetBox->updateContent();
-
-
     createComboBox();
+    presetBox->update();
 }
 
 //==============================================================================
@@ -131,11 +121,16 @@ void PresetComponent::focusLost (Component::FocusChangeType cause)
 
 void PresetComponent::comboBoxChanged (ComboBox* cmbx)
 {
-    if (cmbx->getSelectedId() == 1) processor.getPresetHandler().setPluginSearchSetting (String());
-    else                            processor.getPresetHandler().setPluginSearchSetting (cmbx->getText());
-    
-    presetBox->deselectRow (presetBox->getLastRowSelected());
-    presetBox->updateContent();
+    if (!(cmbx->getSelectedId() == 1 && processor.getPresetHandler().getCurrentSettings().plugin.isEmpty()) &&
+        cmbx->getText() != processor.getPresetHandler().getCurrentSettings().plugin)
+    {
+        if (cmbx->getSelectedId() == 1) processor.getPresetHandler().setPluginSearchSetting (String());
+        else                            processor.getPresetHandler().setPluginSearchSetting (cmbx->getText());
+        
+        presetBox->updateContent();
+        presetBox->selectRow (0);
+        presetBox->scrollToEnsureRowIsOnscreen (0);
+    }
 }
 
 void PresetComponent::savePreset()

@@ -22,7 +22,8 @@
 /*
 */
 
-class PresetComponent    : public PlumeComponent,
+class PresetComponent    : public Component,
+                           public PlumeComponent,
                            private ComboBox::Listener
 {
 public:

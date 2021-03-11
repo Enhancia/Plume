@@ -18,7 +18,8 @@
 //==============================================================================
 /*
 */
-class Tuner    : public PlumeComponent
+class Tuner    : public Component,
+                 public PlumeComponent
 {
 public:
     //==============================================================================

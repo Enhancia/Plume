@@ -23,7 +23,8 @@
 //==============================================================================
 /*
 */
-class GestureSettingsComponent : public PlumeComponent,
+class GestureSettingsComponent : public Component,
+                                 public PlumeComponent,
                                  private Button::Listener
 {
 public:

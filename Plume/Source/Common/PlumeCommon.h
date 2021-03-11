@@ -118,6 +118,11 @@ namespace PLUME
 	    static Identifier winY ("window_y");
 	    static Identifier winW ("window_w");
 	    static Identifier winH ("window_h");
+        static Identifier wrapped_winX ("w_window_x");
+        static Identifier wrapped_winY ("w_window_y");
+        static Identifier wrapped_winW ("w_window_w");
+        static Identifier wrapped_winH ("w_window_h");
+        static Identifier wrapped_visible ("w_visible");
     }
 
     namespace gesture

@@ -151,6 +151,13 @@ String PresetHandler::getTextForPresetId (int id)
     return searchedPresets[id]->getName();
 }
 
+String PresetHandler::getDescriptionForPresetId (int id)
+{
+    if (id < 0 || id >= getNumSearchedPresets()) return "-";
+    
+    return searchedPresets[id]->getDescription();
+}
+
 String PresetHandler::getFilterTextForPresetId (const int id)
 {
     if (id < 0 || id >= getNumSearchedPresets()) return "Custom";
@@ -190,11 +197,12 @@ XmlElement* PresetHandler::getPresetXmlToLoad (int selectedPreset)
 bool PresetHandler::savePreset (XmlElement& presetXml)
 {
     if (!canSavePreset()) return false;
+    String fileString = File::createLegalFileName(currentPreset.getName() + ".plume");
 
     // Tries to write the xml to the specified file
-    if (getUserDirectory().getChildFile (currentPreset.getName() + ".plume").exists())
+    if (getUserDirectory().getChildFile (fileString).exists())
     {
-        if (presetXml.writeToFile (getUserDirectory().getChildFile (currentPreset.getName() + ".plume"), String()))
+        if (presetXml.writeToFile (getUserDirectory().getChildFile (fileString), String()))
         {
             DBG ("Preset file succesfully written");
             return true;
@@ -212,48 +220,51 @@ bool PresetHandler::savePreset (XmlElement& presetXml)
     }
 }
 
-bool PresetHandler::createNewUserPreset (String presetName, XmlElement& presetXml)
+bool PresetHandler::createNewUserPreset (XmlElement& presetXml)
 {
-    if (presetName.isEmpty()) return false;
-
-    presetName = File::createLegalFileName (presetName);
-    
-    // If the file is succesfully created, changes current preset and saves
-    if (getUserDirectory().getChildFile (presetName + ".plume").create())
+    if (XmlElement* info = presetXml.getChildByName ("INFO"))
     {
-        // Saves the current preset in case saving fails
-        String formerPresetName = currentPreset.getName();
-        int formerType = currentPreset.presetType;
-		File formerFile = currentPreset.getFile();
-        
-        // Attempt to save preset
-        currentPreset.setName (presetName);
-		currentPreset.presetType = PlumePreset::userPreset;
-		currentPreset.setFile (getUserDirectory().getChildFile (presetName + ".plume"));
-		
-        if (savePreset (presetXml))
+        const String presetName = info->getStringAttribute ("name");
+        const String fileName = File::createLegalFileName (presetName);
+
+        // If the file is succesfully created, changes current preset and saves
+        if (getUserDirectory().getChildFile (fileName + ".plume").create())
         {
-            currentPreset = PlumePreset (getUserDirectory().getChildFile (currentPreset.getName() + ".plume"));
+            // Saves the current preset in case saving fails
+            String formerPresetName = currentPreset.getName();
+            int formerType = currentPreset.presetType;
+    		File formerFile = currentPreset.getFile();
             
-            // checks if the file exists already
-            for (auto* prst : userPresets)
+            // Attempt to save preset
+            currentPreset.setName (presetName);
+    		currentPreset.presetType = PlumePreset::userPreset;
+    		currentPreset.setFile (getUserDirectory().getChildFile (fileName + ".plume"));
+    		
+            if (savePreset (presetXml))
             {
-                if (prst->getFile().getFileNameWithoutExtension() == presetName) return false;
+                currentPreset = PlumePreset (getUserDirectory().getChildFile (fileName + ".plume"));
+                
+                // checks if the file exists already
+                for (auto* prst : userPresets)
+                {
+                    if (prst->getFile().getFileNameWithoutExtension() == fileName) return false;
+                }
+                
+                userPresets.add (new PlumePreset (getUserDirectory().getChildFile (fileName).withFileExtension("plume")));
+                
+                updateSearchedPresets();
+                return true;
             }
-            
-            userPresets.add (new PlumePreset (getUserDirectory().getChildFile (presetName).withFileExtension("plume")));
-            
-            updateSearchedPresets();
-            return true;
-        }
-        else
-        {
-            // restores to former values and deletes file
-            currentPreset.setName (formerPresetName);
-            currentPreset.presetType = formerType;
-			currentPreset.setFile (formerFile);
-			getUserDirectory().getChildFile (presetName).withFileExtension("plume").deleteFile();
-            return false;
+            else
+            {
+                // restores to former values and deletes file
+                currentPreset.setName (formerPresetName);
+                currentPreset.presetType = formerType;
+    			currentPreset.setFile (formerFile);
+    			getUserDirectory().getChildFile (fileName).withFileExtension("plume")
+                                                                                     .deleteFile();
+                return false;
+            }
         }
     }
     
@@ -264,7 +275,7 @@ bool PresetHandler::renamePreset (String newName, const int id)
 {
     if (newName.isEmpty()) return false;
     
-    newName = File::createLegalFileName (newName);
+    String newFileName = File::createLegalFileName (newName);
     
     if (searchedPresets[id]->presetType == PlumePreset::userPreset && searchedPresets[id]->getFile().exists())
     {
@@ -274,21 +285,24 @@ bool PresetHandler::renamePreset (String newName, const int id)
         if (presetXml != nullptr)
         {
             // Changes name of the preset for the main Xml tag
-            presetXml->setTagName (newName.replace (" ", "_"));
-            
-            // Writes the new xml to the old file
-            if (presetXml->writeToFile (f, String()))
+            if (XmlElement* info = presetXml->getChildByName ("INFO"))
             {
-                // Renames the file
-                if (f.moveFileTo (f.getSiblingFile (newName).withFileExtension ("plume")))
+                info->setAttribute ("name", newName);
+                
+                // Writes the new xml to the old file
+                if (presetXml->writeToFile (f, String()))
                 {
-                    presetXml->deleteAllChildElements();
-                    
-                    // Changes the file in the array..
-                    userPresets.set (userPresets.indexOf (searchedPresets[id]),
-                                     new PlumePreset (f.getSiblingFile(newName).withFileExtension("plume"), PlumePreset::userPreset));
-                    updateSearchedPresets();
-                    return true;
+                    // Renames the file
+                    if (f.moveFileTo (f.getSiblingFile (newFileName).withFileExtension ("plume")))
+                    {
+                        presetXml->deleteAllChildElements();
+                        
+                        // Changes the file in the array..
+                        userPresets.set (userPresets.indexOf (searchedPresets[id]),
+                                         new PlumePreset (f.getSiblingFile(newFileName).withFileExtension("plume"), PlumePreset::userPreset));
+                        updateSearchedPresets();
+                        return true;
+                    }
                 }
             }
             // Avoids memory leaks if the file wasn't written succesfully

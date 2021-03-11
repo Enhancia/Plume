@@ -376,6 +376,11 @@ Array<File*> PluginWrapper::createFileList()
     {
         if (fileToAdd.exists()) dirs.add (new File (fileToAdd));
     };
+
+    if (useDefaultPaths)
+    {
+        addFileToDirectories (directories, File::getSpecialLocation (File::currentExecutableFile).getParentDirectory());
+    }
     
     // Adds OS specific paths if they exist
   #if JUCE_WINDOWS
@@ -458,7 +463,7 @@ void PluginWrapper::setAuUsage (bool
 {
   #if JUCE_MAC
     useAudioUnits = shouldUseAudioUnits;
-  #endif 
+  #endif
 }
 
 void PluginWrapper::addCustomDirectory (File newDir)

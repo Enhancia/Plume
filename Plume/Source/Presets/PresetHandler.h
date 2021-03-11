@@ -117,6 +117,13 @@ public:
     String getTextForPresetId (int id);
     
     /**
+     * \brief Getter for the description of a specified preset number.
+     *
+     * \returns The name of the preset file corresponding to the id.
+     */
+    String getDescriptionForPresetId (int id);
+    
+    /**
      * \brief Helper method that tells is the specified preset is from the user.
      *
      * \returns True is the preset is user made, and therefore can be renamed and deleted.
@@ -136,7 +143,7 @@ public:
     void storePresets();
     XmlElement* getPresetXmlToLoad (int selectedPreset);
     bool savePreset (XmlElement& presetXml);
-    bool createNewUserPreset (String presetName, XmlElement& presetXml);
+    bool createNewUserPreset (XmlElement& presetXml);
     bool renamePreset (String newName, const int id);
 	PlumePreset getPresetForId (const int id);
     bool deletePresetForId (int id);

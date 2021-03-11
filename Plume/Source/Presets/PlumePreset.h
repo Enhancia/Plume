@@ -44,7 +44,7 @@ public:
 	//==============================================================================
 	PlumePreset (String name, File pathToPreset, PresetType pType =userPreset, FilterType category =custom,
 	             String auth ="", String ver ="1.0", String plug = "");
-	PlumePreset (File pathToPreset, PresetType pType=userPreset);
+	PlumePreset (File pathToPreset, PresetType pType=userPreset, String pName = "");
 	PlumePreset();
 	PlumePreset (const PlumePreset& other);
 	
@@ -53,8 +53,8 @@ public:
 	PlumePreset& operator= (const PlumePreset& other) noexcept;
 	bool operator== (const PlumePreset& other) noexcept;
 	//==============================================================================
-	static String getFilterTypeString (int filterTypeId); 
-	static void addPresetInfoXml (XmlElement& presetXml, String author, String version,
+	static String getFilterTypeString (int filterTypeId);
+	static void addPresetInfoXml (XmlElement& presetXml, String name, String author, String version,
                                   String plugin, int presetType, int filterType);
 	
 	//==============================================================================
@@ -69,13 +69,14 @@ public:
 	const String getVersion() const;
 	const int getFilter() const;
 	const String getFilterString() const;
+	const String getDescription() const;
 	bool matchesSettings (int filter, String pluginName, String nameSearch);
 
 	int presetType;
 
 private:
 	//==============================================================================
-	bool hasInfoXml();
+	bool hasInfoXml (File filePathToLookAt = File());
 	void loadPresetInfoFromFile();
 	void loadPresetFromFile (File& file);
 	void getPluginFromFile (File& file);

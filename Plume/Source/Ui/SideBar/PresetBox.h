@@ -17,12 +17,19 @@
 
 class PresetBox    : public ListBox,
                      public ListBoxModel,
+                     public PlumeComponent,
                      private Label::Listener
 {
 public:
     //==============================================================================
     PresetBox (const String &componentName, PlumeProcessor& p);
     ~PresetBox();
+    
+    //==============================================================================
+    //PlumeComponent methods
+    
+    const String getInfoString() override;
+    void update() override;
     
     //==============================================================================
     //ListBox methods
@@ -41,10 +48,11 @@ public:
     void listBoxItemDoubleClicked (int row, const MouseEvent& event) override;
     void backgroundClicked (const MouseEvent& event) override;
     void deleteKeyPressed (int lastRowSelected) override;
-    //void returnKeyPressed (int lastRowSelected) override;
+    void returnKeyPressed (int lastRowSelected) override;
+    void selectedRowsChanged (int lastRowSelected) override;
     //void listWasScrolled() override;
     //var getDragSourceDescription (const SparseSet<int>& rowsToDescribe) override;
-    //String getTooltipForRow (int row) override;
+    String getTooltipForRow (int row) override;
     //MouseCursor getMouseCursorForRow (int row) override;
     
     //==============================================================================
