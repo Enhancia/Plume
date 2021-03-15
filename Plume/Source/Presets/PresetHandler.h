@@ -86,6 +86,8 @@ public:
      */
     String getCurrentPresetName();
 
+    PlumePreset getCurrentPreset();
+
     /**
      * \brief Getter for the id of the preset currently in use.
      *
@@ -140,7 +142,7 @@ public:
     //==============================================================================
     void storePresets();
     XmlElement* getPresetXmlToLoad (int selectedPreset);
-    bool savePreset (XmlElement& presetXml, String filterType);
+    bool savePreset (XmlElement& presetXml);
     bool createNewUserPreset (XmlElement& presetXml);
     bool renamePreset (String newName, const int id);
 	PlumePreset getPresetForId (const int id);
@@ -149,7 +151,7 @@ public:
     void showPresetInExplorer (int id);
     void savePresetDirectoryToFile();
     void loadPresetDirectoryFromFile();
-    
+
     //==============================================================================
     void setSearchSettings (int type, int filter, String pluginName, String name);
     void setTypeSearchSetting (int type);
@@ -163,7 +165,7 @@ private:
     //==============================================================================
     void initialiseDirectories();
     void createDirectoryArborescence (File& dir);
-    void deleteArborescence (File& dir);
+    void deleteDirectoryArborescence (File& dir);
     //void createAllSubdirectories();
     
     //==============================================================================

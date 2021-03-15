@@ -234,22 +234,21 @@ void NewPresetPanel::update()
 {
 	using namespace PLUME;
 
-    //PresetHandler::PresetSearchSettings settings = processor.getPresetHandler().getCurrentSettings();
+    auto currentPreset = processor.getPresetHandler().getCurrentPreset();
+    const bool useCurrentPresetInfo = (currentPreset.isValid() && currentPreset.presetType != PlumePreset::defaultPreset);
     
-    nameLabel->setText ("Preset Name...", dontSendNotification);
+    nameLabel->setText ((useCurrentPresetInfo && currentPreset.getName().isNotEmpty()) ? currentPreset.getName(): "Preset Name...", dontSendNotification);
     nameLabel->setColour (Label::textColourId, UI::currentTheme.getColour (colour::topPanelMainText)
                                                                .withAlpha (0.6f));
                                                                
-    authorLabel->setText ("Author Name...", dontSendNotification);
+    authorLabel->setText ((useCurrentPresetInfo && currentPreset.getAuthor().isNotEmpty()) ? currentPreset.getAuthor() : "Author Name...", dontSendNotification);
     authorLabel->setColour (Label::textColourId, UI::currentTheme.getColour (colour::topPanelMainText)
                                                                  .withAlpha (0.6f));
                                                                  
-    verLabel->setText ("1.0", dontSendNotification);
+    verLabel->setText ((useCurrentPresetInfo && currentPreset.getVersion().isNotEmpty()) ? currentPreset.getVersion() : "1.0", dontSendNotification);
     pluginLabel->setText (processor.getWrapper().getWrappedPluginName(), dontSendNotification);
     
-    int filterToSelect = processor.getPresetHandler().getCurrentSettings().filterType;
-    if (filterToSelect < 0 || filterToSelect > PlumePreset::numFilters) filterToSelect = (int) PlumePreset::custom;
-    typeBox->setSelectedId (filterToSelect+1, dontSendNotification);
+    typeBox->setSelectedId (useCurrentPresetInfo ? currentPreset.getFilter()+1 : (int) PlumePreset::custom+1, dontSendNotification);
 }
 
 void NewPresetPanel::createLabels()

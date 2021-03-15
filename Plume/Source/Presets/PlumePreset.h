@@ -64,9 +64,12 @@ public:
 	//==============================================================================
 	bool isValid();
 	void setName (const String newName);
-	const String getName();
-	const String getDescription();
-	const String getFilterString();
+	const String getName() const;
+	const String getAuthor() const;
+	const String getVersion() const;
+	const int getFilter() const;
+	const String getFilterString() const;
+	const String getDescription() const;
 	bool matchesSettings (int filter, String pluginName, String nameSearch);
 
 	int presetType;

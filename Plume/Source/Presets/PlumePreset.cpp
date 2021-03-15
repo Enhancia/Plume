@@ -158,19 +158,34 @@ void PlumePreset::setName (const String newName)
     valid = presetFile.exists() && name.isNotEmpty();
 }
 
-const String PlumePreset::getName()
+const String PlumePreset::getName() const
 {
     return name;
 }
 
-const String PlumePreset::getDescription()
+const String PlumePreset::getAuthor() const
+{
+    return author;
+}
+
+const String PlumePreset::getVersion() const
+{
+    return version;
+}
+
+const int PlumePreset::getFilter() const
+{
+    return filterType;
+}
+
+const String PlumePreset::getDescription() const
 {
     return name + " - " + author + " (v" + version + ") :\n\n"
          + "  Plugin   : " + (plugin.isEmpty() ? "-" : plugin) + "\n"
          + "  Category : " + getFilterTypeString (filterType);
 }
 
-const String PlumePreset::getFilterString()
+const String PlumePreset::getFilterString() const
 {
     return getFilterTypeString (filterType);
 }
