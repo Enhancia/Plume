@@ -32,7 +32,7 @@ class GestureArray	: public ChangeListener,
                       public ChangeBroadcaster
 {
 public:
-    GestureArray(DataReader& reader, AudioProcessorValueTreeState& params);
+    GestureArray(DataReader& reader, AudioProcessorValueTreeState& params, bool& lastArmValue);
     ~GestureArray();
 
     //==============================================================================
@@ -255,6 +255,7 @@ private:
     OwnedArray<Gesture> gestures; /**< \brief OwnedArray that holds all gesture objects*/
     DataReader& dataReader; /**< \brief Reference to the data reader object, to access the raw data from the ring*/
     AudioProcessorValueTreeState& parameters;
+    bool& armValue;
     
     CriticalSection gestureArrayLock;
 

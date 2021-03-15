@@ -10,8 +10,8 @@
 
 #include "GestureArray.h"
 
-GestureArray::GestureArray(DataReader& reader, AudioProcessorValueTreeState& params)  : dataReader (reader),
-                                                                                        parameters (params)
+GestureArray::GestureArray(DataReader& reader, AudioProcessorValueTreeState& params, bool& lastArmValue)
+    : dataReader (reader), parameters (params), armValue (lastArmValue)
 {
     TRACE_IN;
     initializeGestures();
@@ -91,15 +91,21 @@ void GestureArray::updateAllMappedParameters()
 void GestureArray::updateAllValues()
 {
     Array<float> rawData;
+    int armValue = parameters.getParameter ("track_arm")
+                             ->convertFrom0to1 (parameters.getParameter ("track_arm")
+                                                          ->getValue());
     
-    // Gets the rawData in the array, and calls updateValue for each gesture
-    if (dataReader.getRawDataAsFloatArray (rawData))
+    if (armValue)
     {
-        ScopedLock gestlock (gestureArrayLock);
-    
-        for (auto* g : gestures)
+        // Gets the rawData in the array, and calls updateValue for each gesture
+        if (dataReader.getRawDataAsFloatArray (rawData))
         {
-            g->updateValue (rawData);
+            ScopedLock gestlock (gestureArrayLock);
+        
+            for (auto* g : gestures)
+            {
+                g->updateValue (rawData);
+            }
         }
     }
     
