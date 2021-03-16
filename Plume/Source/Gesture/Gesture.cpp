@@ -24,7 +24,8 @@ Gesture::Gesture (String gestName, int gestType, int gestId, const NormalisableR
     setMidiLow (defaultMidiRange.getStart(), false);
     setMidiHigh (defaultMidiRange.getEnd(), false);
     setMidiReverse (false);
-    setGeneratesMidi (false);
+    setGeneratesMidi (gestType == (int) Gesture::vibrato ||
+                      gestType == (int) Gesture::pitchBend);
 	setCc (defaultCc);
 }
 
