@@ -472,7 +472,7 @@ void PlumeProcessor::initializeSettings()
     generalTree.addChild (ValueTree (presetDir).setProperty (value,
                                                              File::getSpecialLocation (File::userApplicationDataDirectory)
                                                                 .getFullPathName()
-                                                                + "\\Enhancia\\Plume\\Presets\\User\\",
+                                                                + "/Audio/Presets/Enhancia/Plume/User/",
                                                              nullptr), 2, nullptr);
   #endif
     

@@ -33,9 +33,9 @@ void PresetHandler::setUserDirectory (const File& newDir, bool moveFiles)
         searchedPresets.clear();
 
 		File newDirUser = newDir;
-		if (newDirUser.getFileName() != "User" && newDirUser.getChildFile ("User").createDirectory().wasOk())
+		if (newDirUser.getFileName() != "User" && newDirUser.getChildFile ("User/").createDirectory().wasOk())
 		{
-			newDirUser = newDirUser.getChildFile ("User");
+			newDirUser = newDirUser.getChildFile ("User/");
 		}
 
 		// If both exist, moves the old dir's content to the new one
@@ -196,7 +196,6 @@ XmlElement* PresetHandler::getPresetXmlToLoad (int selectedPreset)
 
 bool PresetHandler::savePreset (XmlElement& presetXml)
 {
-    if (!canSavePreset()) return false;
     String fileString = File::createLegalFileName(presetXml.getChildByName("INFO")->getStringAttribute("name") + ".plume");
 
     // Tries to write the xml to the specified file
@@ -379,11 +378,17 @@ void PresetHandler::initialiseDirectories()
                                                                               .getChildFile ("Default/");
 
     loadPresetDirectoryFromFile();
-    setUserDirectory (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Audio/")
-                                                                                   .getChildFile ("Presets/")
-                                                                                   .getChildFile ("Enhancia/")
-                                                                                   .getChildFile ("Plume/")
-                                                                                   .getChildFile ("User/"), false);
+    
+    if (!getUserDirectory().exists())
+    {
+        File f = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Audio/")
+                                                                                       .getChildFile ("Presets/")
+                                                                                       .getChildFile ("Enhancia/")
+                                                                                       .getChildFile ("Plume/")
+                                                                                       .getChildFile ("User/");
+        f.createDirectory();
+        setUserDirectory (f, false);
+    }
   #else
     return; //Should only compile on win or mac
   #endif
