@@ -212,13 +212,10 @@ void GestureSettingsComponent::resized()
     area.removeFromBottom (MARGIN);
     gestTuner->setBounds (area);
 
-    if (gesture.type != Gesture::pitchBend && gesture.type != Gesture::vibrato)
-    {
-        midiParameterToggle->setBounds (retractablePanel->getBounds()
+    midiParameterToggle->setBounds (retractablePanel->getBounds()
                                             .withHeight (retractablePanel->bannerHeight)
                                             .withLeft (getWidth() - 50)
                                             .reduced (3*MARGIN_SMALL, MARGIN));
-    }
 }
 
 //==============================================================================
