@@ -123,6 +123,7 @@ void MidiModeComponent::comboBoxChanged (ComboBox* box)
     if (box == midiTypeBox)
     {
         bool isCC = (midiTypeBox->getSelectedId() == Gesture::controlChange);
+        const int previousType = gesture.midiType;
         
         // cc Label is visible & editable only if "CC" is selected
         ccLabel->setEditable (isCC, false, false);
@@ -130,6 +131,15 @@ void MidiModeComponent::comboBoxChanged (ComboBox* box)
         
         // Affects the gesture's midiType variable
         gesture.midiType = midiTypeBox->getSelectedId();
+
+        // Changes the range default value depending on the type
+        if ((gesture.type == Gesture::tilt || gesture.type == Gesture::roll))
+        {
+            gesture.setMidiHigh (1.0f, false);
+            gesture.setMidiLow (isCC ? 0.0f : 0.5f, false);
+            midiRangeTuner->updateComponents (MidiRangeTuner::middleArea);
+        }
+
         gestureArray.checkPitchMerging();
 
         if (auto* parentComp = getParentComponent())
