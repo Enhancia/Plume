@@ -33,6 +33,7 @@ PluginWrapper::PluginWrapper (PlumeProcessor& p, GestureArray& gArr, ValueTree p
   #endif
     
     pluginList = new KnownPluginList();
+    scanHandler.reset (new ScanHandler());
     loadPluginListFromFile();
 }
 
@@ -368,13 +369,13 @@ KnownPluginList& PluginWrapper::getList()
 }
 
 //==============================================================================
-Array<File*> PluginWrapper::createFileList()
+Array<File> PluginWrapper::createFileList()
 {
-    Array<File*> directories;
+    Array<File> directories;
 
-    auto addFileToDirectories = [] (Array<File*>& dirs, File fileToAdd)
+    auto addFileToDirectories = [] (Array<File>& dirs, File fileToAdd)
     {
-        if (fileToAdd.exists()) dirs.add (new File (fileToAdd));
+        if (fileToAdd.exists()) dirs.add (fileToAdd);
     };
 
     if (useDefaultPaths)
@@ -438,7 +439,7 @@ Array<File*> PluginWrapper::createFileList()
     {
 		for (int i = 0; i < customDirectories.getNumChildren(); i++)
 		{
-			directories.add (new File (getCustomDirectory (i)));
+			directories.add (getCustomDirectory (i));
 		}
     }
 
@@ -513,61 +514,12 @@ void PluginWrapper::clearCustomDirectories()
     //customDirectories.removeAllChildren (nullptr);
 }
 
-void PluginWrapper::scanAllPluginsInDirectories (bool dontRescanIfAlreadyInList, bool ignoreBlackList)
+void PluginWrapper::startScanProcess (bool dontRescanIfAlreadyInList, bool resetBlackList)
 {
-    if (formatManager->getNumFormats() == 0 ||
-        (!useDefaultPaths && customDirectories.getNumChildren() == 0)) return;
-    /*
-    if (!dontRescanIfAlreadyInList)
-    {
-        pluginList->clear();
-    }
-    */
-    
-    //pluginList->clear();
-    
-    // Sets all the files to search
-    FileSearchPath fsp;
-    for (auto* file : createFileList())
-    {
-         fsp.add (File (*file)); // Creates a copy of the file to prevent leakage / nullptr bad access
-         delete file;
-    }
-        
-    for (int i=0; i<formatManager->getNumFormats(); i++)
-    {
-        PluginDirectoryScanner dirScanner (*pluginList, *formatManager->getFormat (i), fsp, true, getOrCreateDeadsManPedalFile(), true);
-        scanProgress = 0.0f;
-        
-        // Rescans until scanNextFile returns false
-        while (dirScanner.scanNextFile (dontRescanIfAlreadyInList, pluginBeingScanned))
-        {
-            scanProgress = dirScanner.getProgress();
-            pluginBeingScanned = pluginBeingScanned.fromLastOccurrenceOf ("\\", false, false);
-            DBG ("Scanning : " << pluginBeingScanned << " | Progress : " << scanProgress);
-        }
-        
-        scanProgress = dirScanner.getProgress();
-    }
-    
-    savePluginListToFile();
-}
-
-PluginDirectoryScanner* PluginWrapper::getDirectoryScannerForFormat (int formatToScan)
-{
-    if (formatManager->getNumFormats() == 0 ||
-        (!useDefaultPaths && customDirectories.getNumChildren() == 0)) return nullptr;
-        
-    // Sets all the files to search
-    FileSearchPath fsp;
-    for (auto* file : createFileList())
-    {
-         fsp.add (File (*file)); // Creates a copy of the file to prevent leakage / nullptr bad access
-         delete file;
-    }
-
-    return new PluginDirectoryScanner (*pluginList, *formatManager->getFormat (formatToScan),
-                                                    fsp, true, getOrCreateDeadsManPedalFile(), true);
+    scanHandler->startScanProcess (getOrCreatePluginListFile(),
+                                   getOrCreateDeadsManPedalFile(),
+                                   !dontRescanIfAlreadyInList,
+                                   createFileList());
 }
 
 void PluginWrapper::addPluginsToMenu (PopupMenu& menu, KnownPluginList::SortMethod sort)
@@ -695,6 +647,29 @@ void PluginWrapper::loadPluginListFromFile()
     }
     
 	listXml->deleteAllChildElements();
+}
+
+File PluginWrapper::getOrCreatePluginListFile()
+{
+    // Attempts to find file
+    File scannedPlugins;
+
+  #if JUCE_WINDOWS
+    scannedPlugins = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/")
+                                                                                  .getChildFile ("Plume/");
+  #elif JUCE_MAC
+    scannedPlugins = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/")
+                                                                                  .getChildFile ("Plume/");
+  #endif
+  
+    scannedPlugins = scannedPlugins.getChildFile ("plumepl.cfg");
+
+    if (scannedPlugins.exists() || scannedPlugins.create().wasOk())
+    {
+        return scannedPlugins;
+    }
+
+    return File();
 }
 
 File PluginWrapper::getOrCreateDeadsManPedalFile()

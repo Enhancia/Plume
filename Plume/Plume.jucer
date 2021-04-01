@@ -62,6 +62,8 @@
         <FILE id="js1EYd" name="PluginWrapper.cpp" compile="1" resource="0"
               file="Source/Wrapper/PluginWrapper.cpp"/>
         <FILE id="qz9CdB" name="PluginWrapper.h" compile="0" resource="0" file="Source/Wrapper/PluginWrapper.h"/>
+        <FILE id="V4reEl" name="ScanHandler.cpp" compile="1" resource="0" file="Source/Wrapper/ScanHandler.cpp"/>
+        <FILE id="YiEMOR" name="ScanHandler.h" compile="0" resource="0" file="Source/Wrapper/ScanHandler.h"/>
         <FILE id="yRXN8O" name="WrapperEditor.cpp" compile="1" resource="0"
               file="Source/Wrapper/WrapperEditor.cpp"/>
         <FILE id="j6GR6E" name="WrapperEditor.h" compile="0" resource="0" file="Source/Wrapper/WrapperEditor.h"/>
@@ -298,10 +300,10 @@
         <MODULEPATH id="juce_core" path="../../../../Programmes/JUCE/modules"/>
         <MODULEPATH id="juce_audio_utils" path="../../../../Programmes/JUCE/modules"/>
         <MODULEPATH id="juce_audio_processors" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="../../../../Programmes/JUCE/modules"/>
         <MODULEPATH id="juce_audio_formats" path="../../../../Programmes/JUCE/modules"/>
         <MODULEPATH id="juce_audio_devices" path="../../../../Programmes/JUCE/modules"/>
         <MODULEPATH id="juce_audio_basics" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <VS2019 targetFolder="Builds/VisualStudio2019" smallIcon="AnkEeB" bigIcon="AnkEeB">
@@ -321,10 +323,10 @@
         <MODULEPATH id="juce_core"/>
         <MODULEPATH id="juce_audio_utils"/>
         <MODULEPATH id="juce_audio_processors"/>
-        <MODULEPATH id="juce_audio_plugin_client"/>
         <MODULEPATH id="juce_audio_formats"/>
         <MODULEPATH id="juce_audio_devices"/>
         <MODULEPATH id="juce_audio_basics"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../JUCE/modules"/>
       </MODULEPATHS>
     </VS2019>
     <VS2017 targetFolder="Builds/VisualStudio2017" smallIcon="AnkEeB" bigIcon="AnkEeB">
@@ -344,10 +346,10 @@
         <MODULEPATH id="juce_core"/>
         <MODULEPATH id="juce_audio_utils"/>
         <MODULEPATH id="juce_audio_processors"/>
-        <MODULEPATH id="juce_audio_plugin_client"/>
         <MODULEPATH id="juce_audio_formats"/>
         <MODULEPATH id="juce_audio_devices"/>
         <MODULEPATH id="juce_audio_basics"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../JUCE/modules"/>
       </MODULEPATHS>
     </VS2017>
   </EXPORTFORMATS>
@@ -369,6 +371,6 @@
     <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_video" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
   </MODULES>
-  <JUCEOPTIONS JUCE_PLUGINHOST_VST="1" JUCE_PLUGINHOST_AU="1" JUCE_ENABLE_REPAINT_DEBUGGING="0"
-               JUCE_PLUGINHOST_VST3="1"/>
+  <JUCEOPTIONS JUCE_ENABLE_REPAINT_DEBUGGING="0" JUCE_PLUGINHOST_VST="1" JUCE_PLUGINHOST_VST3="1"
+               JUCE_PLUGINHOST_AU="1"/>
 </JUCERPROJECT>

@@ -16,7 +16,10 @@
 
 #include "../Gesture/GestureArray.h"
 #include "WrapperEditor.h"
+#include "ScanHandler.h"
 
+
+class PlumeProcessor;
 
 /**
  *  \class PluginWrapper PluginWrapper.h
@@ -26,8 +29,6 @@
  *  The class holds pointers to a wrapperProcessor, an AudioPluginInstance and a WrapperEditorWindow.
  *  It can be used to wrap a plugin, unwrap it, create or destroy its editor.
  */
-class PlumeProcessor;
-
 class PluginWrapper : public AudioProcessorParameter::Listener,
                       public ChangeBroadcaster
 {
@@ -57,7 +58,7 @@ public:
     bool isWrapping();
     
     //==============================================================================
-    void scanAllPluginsInDirectories (bool dontRescanIfAlreadyInList, bool ignoreBlackList = false);
+    void startScanProcess (bool dontRescanIfAlreadyInList, bool resetBlackList = false);
     PluginDirectoryScanner* getDirectoryScannerForFormat (int formatToScan);
     void savePluginListToFile();
     void removeNonInstrumentsFromList();
@@ -103,9 +104,10 @@ public:
     
 private:
     //==============================================================================
-    Array<File*> createFileList();
+    Array<File> createFileList();
     PluginDescription* getDescriptionToWrap (const PluginDescription& description);
     void loadPluginListFromFile();
+    File getOrCreatePluginListFile();
     File getOrCreateDeadsManPedalFile();
     
     //==============================================================================
@@ -124,12 +126,12 @@ private:
     std::unique_ptr<AudioPluginInstance> wrappedInstance;
     ScopedPointer<WrapperEditorWindow> wrapperEditor;
     ScopedPointer<AudioProcessorEditor> wrapEd;
-    ScopedPointer<PlumeProgressBar> bar;
 
     //==============================================================================
     ValueTree customDirectories;
     ScopedPointer<KnownPluginList> pluginList;
     ScopedPointer<AudioPluginFormatManager> formatManager;
+    std::unique_ptr<ScanHandler> scanHandler;
  
     PlumeProcessor& owner;
     GestureArray& gestArray;

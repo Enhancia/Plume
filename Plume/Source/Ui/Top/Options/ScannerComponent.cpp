@@ -54,16 +54,9 @@ void ScannerComponent::buttonClicked (Button* bttn)
 
         else
         {
-            if (ModifierKeys::currentModifiers.isAltDown()) // Forced rescan
-            {
-                processor.getWrapper().resetDeadsManPedalFile();
-                processor.getWrapper().getList().clearBlacklistedFiles();
-            }
-
             formatToScan = 0;
-            scanPlugins();
+            scanPlugins (ModifierKeys::currentModifiers.isAltDown());
         }
-        
     }
 }
 
@@ -89,22 +82,21 @@ void ScannerComponent::timerCallback()
 
 void ScannerComponent::scanPlugins (bool clearList)
 {
-    if (!isCurrentlyModal()) enterModalState (false, nullptr, false);
+    //if (!isCurrentlyModal()) enterModalState (false, nullptr, false);
     DBG ("Scan Start");
     
-    if (clearList) processor.getWrapper().getList().clear();
-
-    dirScanner = processor.getWrapper().getDirectoryScannerForFormat (formatToScan);
-    scanning = true;
-    scanButton->setButtonText ("Cancel");
-    
-    threadPool.reset (new ThreadPool (numThreads));
-    for (int i = 0; i < numThreads; i++)
+    if (clearList)
     {
-		threadPool->addJob (new ScanJob(*this), true);
+        processor.getWrapper().getList().clear();
+        processor.getWrapper().resetDeadsManPedalFile();
+        processor.getWrapper().getList().clearBlacklistedFiles();
     }
+
+    scanning = true;
+    processor.getWrapper().startScanProcess (formatToScan);
+    //scanButton->setButtonText ("Cancel");
     
-    startTimer (20);
+    //startTimer (20);
 }
 
 bool ScannerComponent::shouldScanNextFile()
