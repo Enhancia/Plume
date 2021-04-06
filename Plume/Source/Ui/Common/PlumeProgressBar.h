@@ -23,7 +23,7 @@ public:
     static constexpr int BAR_H = 10;
     
     //==============================================================================
-    PlumeProgressBar (float& prog, String& message,
+    PlumeProgressBar (std::atomic<float>& prog, String& message,
                       const String prefix = "", const String finish = "Finished Scanning");
     ~PlumeProgressBar();
 
@@ -33,7 +33,7 @@ public:
 
 private:
     //==============================================================================
-    float& progress;
+    std::atomic<float>& progress;
     String& progressMessage;
     const String messagePrefix;
     const String finishMessage;

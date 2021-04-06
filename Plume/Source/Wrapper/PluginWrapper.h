@@ -73,6 +73,8 @@ public:
     
     void addPluginsToMenu (PopupMenu& menu, KnownPluginList::SortMethod sort);
     KnownPluginList& getList();
+    ScanHandler& getScanner();
+    void handleScanFinished();
     
     //==============================================================================
     void createWrapperEditor (const Component* componentWhichWindowToAttachTo);

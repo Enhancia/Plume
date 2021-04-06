@@ -368,6 +368,18 @@ KnownPluginList& PluginWrapper::getList()
     return *pluginList;
 }
 
+ScanHandler& PluginWrapper::getScanner()
+{
+    return *scanHandler;
+}
+
+void PluginWrapper::handleScanFinished()
+{
+    loadPluginListFromFile();
+    removeNonInstrumentsFromList();
+    savePluginListToFile();
+}
+
 //==============================================================================
 Array<File> PluginWrapper::createFileList()
 {

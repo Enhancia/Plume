@@ -11,7 +11,7 @@
 #include "PlumeProgressBar.h"
 
 //==============================================================================
-PlumeProgressBar::PlumeProgressBar (float& prog, String& message, const String prefix, const String finish)
+PlumeProgressBar::PlumeProgressBar (std::atomic<float>& prog, String& message, const String prefix, const String finish)
     : progress (prog), progressMessage (message), messagePrefix (prefix), finishMessage (finish)
 {
 }
@@ -48,7 +48,7 @@ void PlumeProgressBar::paint (Graphics& g)
             g.setColour (PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText));
             g.setFont (PLUME::font::plumeFontBook.withHeight (10.0f));
             
-            if (progress != 1.0f && juce_isfinite (progress))
+            if (progress != 1.0f && juce_isfinite (progress.load()))
             {
                 g.drawText (messagePrefix + progressMessage + " | " + String (100*progress) + "%",
                             compArea,
