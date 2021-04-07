@@ -423,17 +423,24 @@ AudioProcessorValueTreeState::ParameterLayout PlumeProcessor::initializeParamete
 {
     using namespace PLUME::param;
     AudioProcessorValueTreeState::ParameterLayout layout;
-            
+    
+    for (int i =0; i < numValues; i++)
+    {
+        layout.add (std::make_unique<AudioParameterFloat> (valuesIds[i],
+                                                           valuesIds[i],
+                                                           NormalisableRange<float> (0.0f, 1.0f, 0.0001f),
+                                                           0.0f));
+    }
+
     for (int gest =0; gest < PLUME::NUM_GEST; gest++)
     {
         for (int i =0; i < numParams; i++)
         {
                 String description = "Gest " + String(gest + 1)
-                                             + (i < gesture_param_0 ? " - Val " + String (i + 1)
-                                                                    : " - Param " + String (i - gesture_param_0 + 1));
+                                             + " - Param " + String (i - gesture_param_0 + 1);
                 layout.add (std::make_unique<AudioParameterFloat> (String(gest) + paramIds[i],
                                                                    description,
-                                                                   NormalisableRange<float> (0.0f, 1.0, 0.0001f),
+                                                                   NormalisableRange<float> (0.0f, 1.0f, 0.0001f),
                                                                    0.0f));
         }
     }

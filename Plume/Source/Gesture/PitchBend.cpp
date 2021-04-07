@@ -22,7 +22,7 @@ PitchBend::PitchBend (String gestName, int gestId, AudioProcessorValueTreeState&
                       
     : Gesture (gestName, Gesture::pitchBend, gestId,
                NormalisableRange<float> (PLUME::gesture::PITCHBEND_MIN, PLUME::gesture::PITCHBEND_MAX, 0.1f),
-               plumeParameters, description),
+               plumeParameters, param::valuesIds[param::roll_value], description),
 
       pitchBendDisplayRange (PLUME::UI::PITCHBEND_DISPLAY_MIN, PLUME::UI::PITCHBEND_DISPLAY_MAX, 1.0f),
       rangeLeftLow   (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::gesture_param_0]))),

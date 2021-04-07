@@ -11,12 +11,12 @@ Author:  Alex
 #include "Gesture.h"
 
 Gesture::Gesture (String gestName, int gestType, int gestId, const NormalisableRange<float> maxRange,
-         		  AudioProcessorValueTreeState& plumeParameters, String gestureDescription,
+         		  AudioProcessorValueTreeState& plumeParameters, const String valueId, String gestureDescription,
          		  float defaultValue, int defaultCc, Range<float> defaultMidiRange)
         
          		  : type (gestType), name (gestName), id (gestId), range (maxRange), description (gestureDescription),
-	       		  value    (*(plumeParameters.getParameter (String(gestId) + PLUME::param::paramIds[PLUME::param::value_0]))),
-	       		  valueRef (plumeParameters.getRawParameterValue (String(gestId) + PLUME::param::paramIds[PLUME::param::value_0]))
+	       		  value    (*(plumeParameters.getParameter (valueId))),
+	       		  valueRef (plumeParameters.getRawParameterValue (valueId))
 {
     TRACE_IN;
     mapped = false;

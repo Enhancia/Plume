@@ -15,15 +15,15 @@ Vibrato::Vibrato (String gestName, int gestId, AudioProcessorValueTreeState& plu
                   float val, float thresh, String description)
     : Gesture (gestName, Gesture::vibrato, gestId,
                NormalisableRange<float> (-PLUME::gesture::VIBRATO_RANGE_MAX, PLUME::gesture::VIBRATO_RANGE_MAX, 0.1f),
-               plumeParameters, description),
+               plumeParameters, param::valuesIds[param::vibrato_value], description),
       
       gainDisplayRange      (0.0f, PLUME::UI::VIBRATO_DISPLAY_MAX, 1.0f),
       thresholdDisplayRange (0.0f, PLUME::UI::VIBRATO_THRESH_DISPLAY_MAX, 1.0f),
       intensityRange (0.0f, PLUME::gesture::VIBRATO_INTENSITY_MAX, 1.0f),
       gain      (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::gesture_param_0]))),
       threshold (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::gesture_param_1]))),
-      intensity (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::value_1]))),
-      intensityRef (plumeParameters.getRawParameterValue (String (gestId) + PLUME::param::paramIds[PLUME::param::value_1]))
+      intensity (*(plumeParameters.getParameter (param::valuesIds[param::vibrato_intensity]))),
+      intensityRef (plumeParameters.getRawParameterValue (PLUME::param::valuesIds[PLUME::param::vibrato_intensity]))
 {
     midiType = Gesture::pitch;
 

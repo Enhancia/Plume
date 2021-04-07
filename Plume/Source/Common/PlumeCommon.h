@@ -162,23 +162,36 @@ namespace PLUME
     {
 		enum
 		{
-            value_0 = 0,
-            value_1,
-            gesture_param_0,
+            gesture_param_0 = 0,
             gesture_param_1,
             gesture_param_2,
             gesture_param_3,
 
 			numParams
 		};
+
+        enum
+        {
+            vibrato_value = 0,
+            vibrato_intensity,
+            tilt_value,
+            roll_value,
+
+            numValues
+        };
         
         const String paramIds[] = {
-            "_value_0",
-            "_value_1",
             "_gesture_param_0",
             "_gesture_param_1",
             "_gesture_param_2",
             "_gesture_param_3"
+        };
+        
+        const String valuesIds[] = {
+            "vibrato_value",
+            "vibrato_intensity",
+            "tilt_value",
+            "roll_value"
         };
 
         enum armValue

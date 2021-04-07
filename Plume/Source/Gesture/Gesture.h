@@ -98,7 +98,8 @@ public:
      *  \param defaultValue The default value of the gesture's value attribute.
      */
     Gesture (String gestName, int gestType, int gestId, const NormalisableRange<float> maxRange,
-             AudioProcessorValueTreeState& plumeParameters, String gestureDescription = String(),
+             AudioProcessorValueTreeState& plumeParameters, const String valueId = String(),
+             String gestureDescription = String(),
              float defaultValue = 0.0f, int defaultCc = 1,
              Range<float> defaultMidiRange = Range<float> (0.0f, 1.0f));
     

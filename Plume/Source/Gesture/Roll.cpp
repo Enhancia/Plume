@@ -14,7 +14,7 @@ using namespace PLUME;
 Roll::Roll (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
             float lowValue, float highValue, String description)
     : Gesture (gestName, Gesture::roll, gestId, NormalisableRange<float> (PLUME::gesture::ROLL_MIN, PLUME::gesture::ROLL_MAX, 0.1f),
-               plumeParameters, description),
+               plumeParameters, param::valuesIds[param::roll_value], description),
       rollDisplayRange (PLUME::UI::ROLL_DISPLAY_MIN, PLUME::UI::ROLL_DISPLAY_MAX, 1.0f),
       rangeLow  (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::gesture_param_0]))),
       rangeHigh (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::gesture_param_1])))
