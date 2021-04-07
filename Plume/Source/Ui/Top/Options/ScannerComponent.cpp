@@ -22,7 +22,7 @@ ScannerComponent::ScannerComponent (PlumeProcessor& proc, int buttonWidth)   : p
 	
 	addAndMakeVisible (bar = new PlumeProgressBar (processor.getWrapper().getScanner().getProgressRef(),
                                                    processor.getWrapper().getScanner().getPluginStringRef(),
-                                                   "Scanning :"));
+                                                   ""));
 }
 
 ScannerComponent::~ScannerComponent()
@@ -41,7 +41,7 @@ void ScannerComponent::resized()
 
     auto area = getLocalBounds();
 
-    scanButton->setBounds (area.removeFromLeft (buttonW));
+    scanButton->setBounds (area.removeFromLeft (buttonW).withSizeKeepingCentre (buttonW, PLUME::UI::SUBPANEL_ROW_HEIGHT));
     bar->setBounds (area.reduced (PLUME::UI::MARGIN, 0));
 }
 
@@ -65,13 +65,13 @@ void ScannerComponent::timerCallback()
 {
     if (processor.getWrapper().getScanner().isScanRunning())
     {
+        processor.getWrapper().getScanner().updateTotalProgress();
 		bar->repaint();
     }
     else
     {
         if (processor.getWrapper().getScanner().hasScanFinished())
         {
-            bar->repaint();
             stopTimer();
             
             scanFinished();
@@ -94,6 +94,7 @@ void ScannerComponent::scanPlugins (bool clearList)
 
     scanButton->setButtonText ("Cancel");
     processor.getWrapper().startScanProcess (true);
+    bar->setShouldDisplayProgress (true);
     
     startTimer (20);
 }
@@ -103,7 +104,7 @@ void ScannerComponent::cancelScan()
     processor.getWrapper().getScanner().cancelScan();
 
     stopTimer();
-    bar->repaint();
+    bar->setShouldDisplayProgress (false);
     scanButton->setButtonText ("Scan");
 
     if (auto* header = dynamic_cast<PlumeComponent*> (getParentComponent()
@@ -118,9 +119,10 @@ void ScannerComponent::cancelScan()
 
 void ScannerComponent::scanFinished()
 {
+    //bar->setShouldDisplayProgress (false);
+    bar->repaint();
     scanButton->setButtonText ("Scan");
     processor.getWrapper().handleScanFinished();
-    bar->repaint();
 
     if (auto* header = dynamic_cast<PlumeComponent*> (getParentComponent() // FileSubPanel
                                                         ->getParentComponent() // TabbedPanel

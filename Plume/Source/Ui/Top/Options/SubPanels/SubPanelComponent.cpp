@@ -218,7 +218,7 @@ SubPanelComponent::ScannerRowComponent::ScannerRowComponent  (const String& scan
 
 	chooser = new FileChooser (dialogBoxTitle, initialFileOrDirectory, filePatternsAllowed);
 	addAndMakeVisible (scanButton = new TextButton ("scanButton"));
-	scanButton->setButtonText ("Search");
+	scanButton->setButtonText ("Browse");
 	scanButton->setColour (TextButton::textColourOffId,
 		                   PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText));
 	scanButton->addListener (this);

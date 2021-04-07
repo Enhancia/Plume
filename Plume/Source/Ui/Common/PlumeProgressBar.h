@@ -31,12 +31,16 @@ public:
     void paint (Graphics&) override;
     void resized() override;
 
+    //==============================================================================
+    void setShouldDisplayProgress (const bool shouldDisplay);
+
 private:
     //==============================================================================
     std::atomic<float>& progress;
     String& progressMessage;
     const String messagePrefix;
     const String finishMessage;
+    bool showProgress = false;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeProgressBar)

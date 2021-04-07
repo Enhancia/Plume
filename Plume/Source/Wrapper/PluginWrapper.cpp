@@ -54,6 +54,8 @@ PluginWrapper::~PluginWrapper()
 //==============================================================================
 bool PluginWrapper::wrapPlugin (PluginDescription& description)
 {
+    ScopedLock plLock (pluginListLock);
+
     ScopedPointer<PluginDescription> descToWrap = getDescriptionToWrap (description);
     
     if (descToWrap == nullptr)
@@ -108,6 +110,8 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
 
 bool PluginWrapper::wrapPlugin (int pluginMenuId)
 {
+    ScopedLock plLock (pluginListLock);
+
     int pluginId = pluginList->getIndexChosenByMenu (pluginMenuId);
     
     if (pluginList->getType (pluginId) == nullptr)
@@ -536,11 +540,15 @@ void PluginWrapper::startScanProcess (bool dontRescanIfAlreadyInList, bool reset
 
 void PluginWrapper::addPluginsToMenu (PopupMenu& menu, KnownPluginList::SortMethod sort)
 {
+    ScopedLock plLock (pluginListLock);
+    
     pluginList->addToMenu (menu, sort);
 }
 
 PluginDescription* PluginWrapper::getDescriptionToWrap (const PluginDescription& description)
 {   
+    ScopedLock plLock (pluginListLock);
+
     for (auto& desc : pluginList->getTypes())
     {
 		if (desc.uid == description.uid &&
@@ -556,6 +564,8 @@ PluginDescription* PluginWrapper::getDescriptionToWrap (const PluginDescription&
 
 void PluginWrapper::savePluginListToFile()
 {
+    ScopedLock plLock (pluginListLock);
+
     // Create file if it doesn't exist yet
     File scannedPlugins;
     
@@ -588,6 +598,8 @@ void PluginWrapper::savePluginListToFile()
 
 void PluginWrapper::removeNonInstrumentsFromList()
 {
+    ScopedLock plLock (pluginListLock);
+
     for (auto& type : pluginList->getTypes())
     {
         if (!type.isInstrument) pluginList->removeType (type);
@@ -617,6 +629,8 @@ void PluginWrapper::resetDeadsManPedalFile()
 
 void PluginWrapper::loadPluginListFromFile()
 {
+    ScopedLock plLock (pluginListLock);
+    
     // Attempts to find file
 	File scannedPlugins;
 
@@ -663,6 +677,8 @@ void PluginWrapper::loadPluginListFromFile()
 
 File PluginWrapper::getOrCreatePluginListFile()
 {
+    ScopedLock plLock (pluginListLock);
+    
     // Attempts to find file
     File scannedPlugins;
 

@@ -52,13 +52,13 @@ public:
 						   const bool forceRescan,
 						   const Array<File>& directoriesToScan);
 	void cancelScan();
-	void resetScanInfo();
+	void resetScanInfo (const bool resetProgress);
 	void handleScanCrashed();
 	void handleScanRunning();
 	void handleScanFinished();
 
     //==============================================================================
-	void setPluginFormats (bool useVST = true, bool useVST3 = true, bool useAUOnMac = false);
+	void setPluginFormats (bool useVST = true, bool useVST3 = true, bool useAUOnMac = true);
 	void resetFormatQueue(); 
 
     //==============================================================================
@@ -69,6 +69,7 @@ public:
     //==============================================================================
     std::atomic<float>& getProgressRef();
     String& getPluginStringRef();
+    void updateTotalProgress();
 
 private:
     //==============================================================================
@@ -192,9 +193,12 @@ private:
 	int crashCount = 0;
 	String pluginBeingScanned;
 
+    int formatCount = 0;
+    int numFormatsToScan = 0;
     std::atomic<int> formatId  {0};
     std::atomic<int> pluginId  {0};
-    std::atomic<float> scanProgress {0.0f};
+    std::atomic<float> scannerProgress {0.0f};
+    std::atomic<float> totalScanProgress {0.0f};
 
 	ChildProcess scannerProcess;
 

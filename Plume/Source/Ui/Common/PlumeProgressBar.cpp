@@ -32,13 +32,12 @@ void PlumeProgressBar::paint (Graphics& g)
                                : compArea;
     // Bar Background
     g.setColour (Colour (0x50000000));
-    if (progress != 0.0f && progress != 1.0f)
-    {
-        g.fillRect (barArea.reduced (0, height/3));
-    }
 
-    if (progress != 0.0f)
+    if (showProgress)
     {
+        // Bar background
+        g.fillRect (barArea.reduced (0, height/3));
+
         // Bar progress
         g.setColour (PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText));
         g.fillRect (barArea.reduced (0, height/3).withWidth (int (progress*barArea.getWidth())));
@@ -50,7 +49,7 @@ void PlumeProgressBar::paint (Graphics& g)
             
             if (progress != 1.0f && juce_isfinite (progress.load()))
             {
-                g.drawText (messagePrefix + progressMessage + " | " + String (100*progress) + "%",
+                g.drawText (messagePrefix + String (int (100*progress)) + "%",
                             compArea,
                             Justification::centred, true);
             }
@@ -66,4 +65,10 @@ void PlumeProgressBar::paint (Graphics& g)
 
 void PlumeProgressBar::resized()
 {
+}
+
+void PlumeProgressBar::setShouldDisplayProgress (const bool shouldDisplay)
+{
+    showProgress = shouldDisplay;
+    repaint();
 }

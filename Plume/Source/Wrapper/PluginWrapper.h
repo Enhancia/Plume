@@ -132,6 +132,8 @@ private:
     //==============================================================================
     ValueTree customDirectories;
     ScopedPointer<KnownPluginList> pluginList;
+    CriticalSection pluginListLock;
+
     ScopedPointer<AudioPluginFormatManager> formatManager;
     std::unique_ptr<ScanHandler> scanHandler;
  

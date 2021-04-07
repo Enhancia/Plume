@@ -20,14 +20,13 @@ FileOptionsSubPanel::FileOptionsSubPanel (PlumeProcessor& proc)   : processor (p
     addToggleRow ("Use System Plugin Folder", "sysT", true);
     addToggleRow ("Use Custom Plugin Folder", "cusT", !processor.getWrapper().getCustomDirectory (0).isEmpty());
 
-  #if JUCE_MAC
-    addToggleRow ("Use Audio Units", "auT", true);
-  #endif
-
     addScannerRow ("Custom Plugin Folder", "pluginDir", TRANS("Select your custom plugin directory:"),
                    File::getSpecialLocation (File::userHomeDirectory), String(),
                    processor.getWrapper().getCustomDirectory (0), true);
 
+  #if JUCE_MAC
+    addToggleRow ("Use Audio Units", "auT", true);
+  #endif
 
 
     // Preset section
@@ -90,9 +89,10 @@ void FileOptionsSubPanel::buttonClicked (Button* bttn)
 
     else if (bttn->getComponentID() == "auT")
     {
-        processor.getWrapper().setAuUsage (bttn->getToggleState());
+        processor.getWrapper().getScanner().setPluginFormats (true, true, bttn->getToggleState());
     }
 }
+
 /*
 void FileOptionsSubPanel::labelTextChanged (Label* lbl)
 {

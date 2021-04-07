@@ -13,7 +13,7 @@
 
 ScanHandler::ScanHandler() : scanInfoFetchThread (formatId,
                                                   pluginId,
-                                                  scanProgress,
+                                                  scannerProgress,
                                                   scannerProcess)
 {
     setPluginFormats();
@@ -60,6 +60,8 @@ void ScanHandler::startScanProcess (const File& pluginList,
         return;
     }
 
+    resetScanInfo (true);
+
     for (auto& file : directoriesToScan)
     {
         if (file.isDirectory())
@@ -87,8 +89,11 @@ void ScanHandler::startScanForFormat (const String& pluginFormat,
                                       const bool forceRescan,
                                       const Array<File>& directoriesToScan)
 {
+  #if JUCE_WINDOWS
     File scannerExe (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/Plume/Utilities/PluginScanner.exe"));
-
+  #elif JUCE_MAC
+    File scannerExe (File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Application Support/Enhancia/PlumePluginScanner"));
+  #endif
     if (scannerExe.existsAsFile())
     {
         StringArray args;
@@ -131,12 +136,18 @@ void ScanHandler::cancelScan()
     stopTimer();
 }
 
-void ScanHandler::resetScanInfo()
+void ScanHandler::resetScanInfo (const bool resetProgress)
 {
     crashCount = 0;
     formatId = 0;
     pluginId = 0;
-    scanProgress = 0.0f;
+
+    if (resetProgress)
+    {
+        formatCount = 0;
+        scannerProgress = 0.0f;
+        totalScanProgress = 0.0f;
+    }
     pluginBeingScanned = "";
     fsp = FileSearchPath();
     resetFormatQueue();
@@ -160,7 +171,7 @@ void ScanHandler::handleScanCrashed()
         DBG ("Too many crashes.. Ending plugin scan here.");
 
         cancelScan();
-        resetScanInfo();
+        resetScanInfo (true);
     }
     else
     {
@@ -188,11 +199,15 @@ void ScanHandler::handleScanFinished()
     if (formatsToScanQueue.isEmpty())
     {
         // Scan fully finished
-        resetScanInfo();
+        totalScanProgress = 1.0f;
+        resetScanInfo (false);
         finished = true;
     }
     else // starts scan with next format
     {
+        formatCount++;
+        scannerProgress = 0.0f;
+
         startScanForFormat(formatsToScanQueue.getFirst()->getName(),
                            lastScanInfo.pluginList,
                            lastScanInfo.deadsManPedalFile,
@@ -220,6 +235,7 @@ void ScanHandler::setPluginFormats (bool useVST, bool useVST3, bool useAUOnMac)
     if (useVST3) formatManager->addFormat (new VST3PluginFormat());
   #endif
 
+    numFormatsToScan = formatManager->getNumFormats();
     resetFormatQueue();
 }
 
@@ -231,7 +247,7 @@ void ScanHandler::resetFormatQueue()
 
 String ScanHandler::getScanInfo()
 {
-    return String (int(scanProgress*100)) + "% | " + pluginBeingScanned;
+    return String (int(totalScanProgress*100)) + "%"/* + pluginBeingScanned*/;
 }
 
 bool ScanHandler::isScanRunning()
@@ -246,12 +262,17 @@ bool ScanHandler::hasScanFinished()
 
 std::atomic<float>& ScanHandler::getProgressRef()
 {
-    return scanProgress;
+    return totalScanProgress;
 }
 
 String& ScanHandler::getPluginStringRef()
 {
     return pluginBeingScanned;
+}
+
+void ScanHandler::updateTotalProgress()
+{
+    totalScanProgress = (formatCount + scannerProgress) / numFormatsToScan;
 }
 
 void ScanHandler::readProcessOutput (const int bufferSize)
@@ -277,7 +298,7 @@ bool ScanHandler::readProcessOutput (void* dataBuffer, const int bufferSize)
         {
             const String lastMessage = message.fromLastOccurrenceOf ("\n", false, false).upToLastOccurrenceOf ("\n", false, false);
             pluginBeingScanned = lastMessage.upToFirstOccurrenceOf (";", false, false);
-            scanProgress = lastMessage.fromFirstOccurrenceOf (";", false, false).getFloatValue();
+            scannerProgress = lastMessage.fromFirstOccurrenceOf (";", false, false).getFloatValue();
 
             return true;
         }
