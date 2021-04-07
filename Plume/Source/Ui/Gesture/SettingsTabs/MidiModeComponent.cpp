@@ -72,12 +72,8 @@ void MidiModeComponent::resized()
 
     auto rangeArea = area;
 
-    if (gesture.type != Gesture::vibrato &&
-        gesture.type != Gesture::pitchBend)
-    {
-        reverseButton->setBounds (rangeArea.removeFromRight (18 + MARGIN)
-                                           .withSizeKeepingCentre (18, 18));
-    }
+    reverseButton->setBounds (rangeArea.removeFromRight (18 + MARGIN)
+                                       .withSizeKeepingCentre (18, 18));
 
     midiRangeTuner->setBounds (rangeArea.withSizeKeepingCentre (area.getWidth() - 4*MARGIN, area.getHeight()));
 }
@@ -167,12 +163,6 @@ void MidiModeComponent::createComboBox()
     midiTypeBox->setColour (ComboBox::outlineColourId, getPlumeColour (detailPanelSubText));
     midiTypeBox->setColour (ComboBox::textColourId, getPlumeColour (detailPanelMainText));
     midiTypeBox->setColour (ComboBox::arrowColourId, getPlumeColour (detailPanelSubText));
-
-    if (gesture.type == Gesture::vibrato || gesture.type == Gesture::pitchBend)
-    {
-    	midiTypeBox->setAlpha (0.3f);
-    	midiTypeBox->setInterceptsMouseClicks (false, false);
-    }
     
     midiTypeBox->addListener (this);
 }

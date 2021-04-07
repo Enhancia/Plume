@@ -197,10 +197,7 @@ void Gesture::setMapped (bool shouldBeMapped)
 
 void Gesture::setGeneratesMidi (bool shouldGenerateMidi)
 {
-    if (type != Gesture::pitchBend && type != Gesture::vibrato)
-    {
-    	midiOnParameterOff = shouldGenerateMidi;
-    }
+    midiOnParameterOff = shouldGenerateMidi;
 }
 
 void Gesture::setCc (int ccValue)
