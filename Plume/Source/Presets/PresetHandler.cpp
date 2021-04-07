@@ -26,37 +26,44 @@ PresetHandler::~PresetHandler()
 //==============================================================================
 void PresetHandler::setUserDirectory (const File& newDir, bool moveFiles)
 {
-    File oldDir = getUserDirectory();
-
 	if (newDir.isDirectory())
 	{
         searchedPresets.clear();
 
-		File newDirUser = newDir;
-		if (newDirUser.getFileName() != "User" && newDirUser.getChildFile ("User/").createDirectory().wasOk())
-		{
-			newDirUser = newDirUser.getChildFile ("User/");
-		}
+        if (moveFiles) // A mess that creates a new User/ folder in new location then copies everything hopefully
+        {
+            File oldDir = getUserDirectory();
+            File newDirUser = newDir;
 
-		// If both exist, moves the old dir's content to the new one
-		if (moveFiles && oldDir.exists()  &&
-                         newDir.exists()  &&
-                         oldDir != newDir &&
-                         oldDir != newDirUser)
-		{
-		    oldDir.moveFileTo (newDirUser);
-
-            if (oldDir != newDirUser)
+            if (newDirUser.getFileName() != "User" && newDirUser.getChildFile ("User/").createDirectory().wasOk())
             {
-                if (!newDirUser.isAChildOf (oldDir))
+                newDirUser = newDirUser.getChildFile ("User/");
+            }
+    
+            // If both exist, moves the old dir's content to the new one
+            if (oldDir.exists()  && newDir.exists()  &&
+                oldDir != newDir &&  oldDir != newDirUser)
+            {
+                oldDir.moveFileTo (newDirUser);
+    
+                if (oldDir != newDirUser)
                 {
-                    oldDir.moveToTrash();
+                    if (!newDirUser.isAChildOf (oldDir))
+                    {
+                        oldDir.moveToTrash();
+                    }
+
+                    // If everything was succesful pdates userDir property and plumepr
+                    userDirValue.setProperty(PLUME::treeId::value, newDirUser.getFullPathName(), nullptr);
+                    savePresetDirectoryToFile();
                 }
             }
-
-            userDirValue.setProperty(PLUME::treeId::value, newDirUser.getFullPathName(), nullptr);
+        }
+        else // Just updates userDir property and plumepr
+        {
+            userDirValue.setProperty(PLUME::treeId::value, newDir.getFullPathName(), nullptr);
             savePresetDirectoryToFile();
-		}
+        }
 
         storePresets();
 	}
@@ -111,7 +118,7 @@ void PresetHandler::storePresets()
     File userDir (getUserDirectory());
     DBG (userDir.getNumberOfChildFiles (File::findFiles + File::ignoreHiddenFiles));
     
-    if (userDir.exists())
+    if (userDir.isDirectory())
     {
         for (auto f : userDir.findChildFiles (File::findFiles + File::ignoreHiddenFiles, true, "*.plume"))
         {
@@ -364,10 +371,12 @@ void PresetHandler::initialiseDirectories()
     loadPresetDirectoryFromFile();
     if (!getUserDirectory().exists())
     {
-        setUserDirectory (File::getSpecialLocation (File::userDocumentsDirectory).getChildFile ("Enhancia/")
+        defaultDir = File::getSpecialLocation (File::userDocumentsDirectory).getChildFile ("Enhancia/")
                                                                                  .getChildFile ("Plume/")
                                                                                  .getChildFile ("Presets/")
-                                                                                 .getChildFile ("User/"), false);
+                                                                                 .getChildFile ("User/");
+        defaultDir.createDirectory();
+        setUserDirectory (defaultDir, false);
     }
 
   #elif JUCE_MAC

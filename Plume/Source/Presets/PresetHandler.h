@@ -70,7 +70,7 @@ public:
      *
      * \param newDir the directory that should be used.
      */  
-    void setUserDirectory (const File& newDir, bool moveFiles = true);
+    void setUserDirectory (const File& newDir, bool moveFiles = false);
     
     /**
      * \brief Getter for the user directory.
