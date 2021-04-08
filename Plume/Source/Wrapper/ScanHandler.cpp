@@ -90,7 +90,7 @@ void ScanHandler::startScanForFormat (const String& pluginFormat,
                                       const Array<File>& directoriesToScan)
 {
   #if JUCE_WINDOWS
-    File scannerExe (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/Plume/Utilities/PluginScanner.exe"));
+    File scannerExe (File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("Enhancia/utilities/PluginScanner.exe"));
   #elif JUCE_MAC
     File scannerExe (File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Application Support/Enhancia/PlumePluginScanner"));
   #endif
