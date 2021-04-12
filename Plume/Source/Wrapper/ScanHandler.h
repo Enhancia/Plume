@@ -39,27 +39,23 @@ public:
     };
 
     //==============================================================================
-	ScanHandler();
-	~ScanHandler();
+    ScanHandler (KnownPluginList& pluginsRef);
+    ~ScanHandler();
 
     //==============================================================================
     void timerCallback();
 
     //==============================================================================
-
-	void startScanProcess (const File& pluginList,
-						   const File& deadsManPedalFIle,
-						   const bool forceRescan,
-						   const Array<File>& directoriesToScan);
-	void cancelScan();
-	void resetScanInfo (const bool resetProgress);
-	void handleScanCrashed();
-	void handleScanRunning();
-	void handleScanFinished();
+    void startScanProcess (const bool forceRescan,
+                           const Array<File>& directoriesToScan);
+    void cancelScan();
+    void resetScanInfo (const bool resetProgress);
+    void handleScanCrashed();
+    void handleScanRunning();
+    void handleScanFinished();
 
     //==============================================================================
-	void setPluginFormats (bool useVST = true, bool useVST3 = true, bool useAUOnMac = true);
-	void resetFormatQueue(); 
+    void setPluginFormats (bool useVST = true, bool useVST3 = true, bool useAUOnMac = true);
 
     //==============================================================================
     String getScanInfo();
@@ -68,151 +64,186 @@ public:
 
     //==============================================================================
     std::atomic<float>& getProgressRef();
-    String& getPluginStringRef();
-    void updateTotalProgress();
+    String& getProgressStringRef();
 
 private:
     //==============================================================================
-	class ScanInfoFetchThread : public Thread
+    class ScanThread : public Thread
     {
     public:
-        ScanInfoFetchThread (std::atomic<int>& formatIdRef,
-        					 std::atomic<int>& pluginIdRef,
-        					 std::atomic<float>& progressRef,
-        					 ChildProcess& scannerProcessRef,
-        					 const int readBufferSize = 50)
-        	: Thread ("Scan Info Fetch Thread"),
-        	  formatId (formatIdRef),
-        	  pluginId (pluginIdRef),
-        	  progress (progressRef),
-        	  scannerProcess (scannerProcessRef),
-        	  bufferSize (readBufferSize)
-        {
-        	dataBuffer = malloc (bufferSize);
-        }
+        explicit ScanThread (std::atomic<float>& progressRef,
+                             String& pluginStringRef,
+                             FileSearchPath& directoriesRef,
+                             KnownPluginList& pluginsRef)
+            : Thread ("Scan Thread"),
+              progress (progressRef),
+              progressMessage (pluginStringRef),
+              directoriesToSearch (directoriesRef),
+              pluginList (pluginsRef)
+        {}
 
-        ~ScanInfoFetchThread()
-        {
-        	free (dataBuffer);
-        }
+        ~ScanThread() {}
 
         void run() override
         {
-            while (! threadShouldExit())
-            {
-            	if (scannerProcess.isRunning())
-            	{
-                    DBG("Process Running");
-                	fetchData();
-            	}
-            	else
-            	{
-                    DBG("Process Finished");
-                    flushAvailableData();
-            		signalThreadShouldExit();
-            	}
+            numFilesToScan = countNumFilesToScan();
 
-                wait (10);
+            // For each format
+            for (int formatNum = 0; (formatNum < formatManager->getNumFormats() && !threadShouldExit()); formatNum++)
+            {
+                DBG (" Scanning format : " << formatManager->getFormat (formatNum)->getName() << "\n");
+                
+                StringArray fileOrIds = formatManager->getFormat (formatNum)->searchPathsForPlugins (directoriesToSearch, true, true);
+
+                // For all candidate plugin files for this format
+                for (int fileNum = 0; (fileNum < fileOrIds.size() && !threadShouldExit()); fileNum++)
+                {
+                    String fileOrIdentifier = fileOrIds[fileNum];
+                    DBG ("   - Scanning file : " << fileOrIdentifier << " ( Progress : " << progress << " )");
+
+                    if (launchScannerProgram (formatManager->getFormat(formatNum)->getName(), fileOrIdentifier))
+                    {
+                        int count = 0;
+                        while (scannerProcess.isRunning() && count < timerLimit
+                                                          && !threadShouldExit())
+                        {
+                            count++;
+                            wait (10);
+                        }
+
+                        const int exitCode = scannerProcess.getExitCode();
+
+                        if (!scannerProcess.isRunning()/* || exitCode == 0
+                                                        || exitCode == 1
+                                                        || exitCode == 2*/)
+                        {
+                            const int exitCode = scannerProcess.getExitCode();
+
+                            if (exitCode == 0)
+                            {
+                                if (!pluginList.isListingUpToDate (fileOrIdentifier, *formatManager->getFormat (formatNum)))
+                                {
+                                    OwnedArray<PluginDescription> found;
+                                    formatManager->getFormat(formatNum)->findAllTypesForFile (found, fileOrIdentifier);
+
+                                    for (auto* desc : found)
+                                    {
+                                        bool success = pluginList.addType (*desc); // Adds type with dbg alert
+                                        if (success) DBG ("     Successful!");
+                                        else DBG("     Failed to add to KPL...!");
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                pluginList.addToBlacklist (fileOrIdentifier);
+                                DBG ("     Failed... Added to blacklist");
+                            }
+                        }
+                        else // Scanner process still running..
+                        {
+                            jassert (scannerProcess.kill()); // Force kill with dbg alert
+                        }
+                    }
+
+                    updateProgress (fileNum, fileOrIdentifier);
+                }
             }
 
+            progress = 1.0f;
             DBG ("Thread just exited...");
         }
 
-		void fetchData()
-		{
-		    int dataSize = scannerProcess.readProcessOutput (dataBuffer, bufferSize);
-            DBG("Datasize " << dataSize);
+        bool launchScannerProgram (const String& formatString, const String& fileToScan)
+        {
+          #if JUCE_WINDOWS
+            File scannerExe (File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("Enhancia/utilities/PluginScanner.exe"));
+          #elif JUCE_MAC
+            File scannerExe (File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Application Support/Enhancia/PlumePluginScanner"));
+          #endif
 
-		    if (dataSize > 0)
-		    {
-		        String message = String::createStringFromData (dataBuffer, dataSize);
+            if (scannerExe.existsAsFile())
+            {
+                StringArray args;
 
-		        parseData (message);
-		    }
-		}
+                args.add (scannerExe.getFullPathName());
+                args.add (formatString);
+                args.add (fileToScan);
 
-		void flushAvailableData()
-		{
-			parseData (scannerProcess.readAllProcessOutput());
-		}
+                return (scannerProcess.start (args));
+            }
 
-		void parseData (const String& message)
-		{
-			if (message.isNotEmpty())
-	        {
-	            const String lastMessage = message.fromLastOccurrenceOf ("\n", false, false)
-	            								   .upToLastOccurrenceOf ("\n", false, false);
+            return false;
+        }
 
-	            StringArray values = StringArray::fromTokens (lastMessage, ";", String());
+        void copyFormats (const AudioPluginFormatManager& managerToUse)
+        {
+            formatManager.reset (new AudioPluginFormatManager());
 
-                DBG("Message : " << lastMessage << " | Values : " << values.joinIntoString (" - "));
+            for (auto* format : managerToUse.getFormats())
+            {
+                if (format->getName() == VSTPluginFormat::getFormatName())
+                    formatManager->addFormat (new VSTPluginFormat());
 
-	            if (values.size() == 3)
-	            {
-                    const int newFormat = values[0].getIntValue();
-                    const int newPlugin = values[1].getIntValue();
-                    const float newProgress = values[2].getFloatValue();
+              #if JUCE_MAC
+                else if (format->getName() == AudioUnitPluginFormat::getFormatName())
+                    formatManager->addFormat (new AudioUnitPluginFormat());
+              #endif
 
-	            	if (newPlugin > pluginId || newFormat > formatId) pluginId.store (newPlugin);
-                    if (newProgress > progress || newFormat > formatId) progress.store (newProgress);
-                    if (newFormat > formatId) formatId.store (newFormat);
+                else if (format->getName() == VST3PluginFormat::getFormatName())
+                    formatManager->addFormat (new VST3PluginFormat());
+            }
+        }
 
-                    DBG("[Values] format " << formatId << " | plugin " << pluginId << " | progress " << progress << "\n");
-	            }
-	        }
-		}
+        int countNumFilesToScan()
+        {
+            int numFilesTotal = 0;
 
-        std::atomic<int>& formatId;
-        std::atomic<int>& pluginId;
+            for (int formatNum = 0; formatNum < formatManager->getNumFormats(); formatNum++)
+            {
+                StringArray fileOrIds = formatManager->getFormat (formatNum)->searchPathsForPlugins (directoriesToSearch, true, true);
+
+                numFilesTotal += fileOrIds.size();
+            }
+
+            return numFilesTotal;
+        }
+
+        void updateProgress (const int currentFileNum, const String& currentPluginName)
+        {
+            progress = ((float) currentFileNum / (float) numFilesToScan);
+            progressMessage = currentPluginName.fromLastOccurrenceOf ("\\", false, false)
+                                               .upToLastOccurrenceOf (".", false, false) +
+                              " (" + String (currentFileNum) + "/" + String (numFilesToScan) + ")";
+        }
+
         std::atomic<float>& progress;
-        ChildProcess& scannerProcess;
-        const int bufferSize;
-        void* dataBuffer;
+        std::unique_ptr<AudioPluginFormatManager> formatManager;
+        FileSearchPath& directoriesToSearch;
+        ChildProcess scannerProcess;
+        KnownPluginList& pluginList;
+        String& progressMessage;
+        int numFilesToScan = 0;
+
+        const int timerLimit = 3000;
     };
 
-    ScanInfoFetchThread scanInfoFetchThread;
+    ScanThread scanThread;
 
     //==============================================================================
-	void startScanForFormat (const String& pluginFormat,
-							 const File& pluginList,
-							 const File& deadsManPedalFIle,
-							 const bool forceRescan,
-							 const Array<File>& directoriesToScan);
-
-	void flushAvailableMessages (const int bufferSize = 150);
-	void readProcessOutput (const int bufferSize = 150);
-	bool readProcessOutput (void* dataBuffer, const int bufferSize = 150);
+    void startScanForFormat (const String& pluginFormat,
+                             const File& pluginList,
+                             const File& deadsManPedalFIle,
+                             const bool forceRescan,
+                             const Array<File>& directoriesToScan);
 
     //==============================================================================
-	std::unique_ptr <AudioPluginFormatManager> formatManager;
-	FileSearchPath fsp;
-	StringArray pluginsToScan;
-
-	Array<AudioPluginFormat*> formatsToScanQueue;
-	bool finished = false;
-	int crashCount = 0;
-	String pluginBeingScanned;
-
-    int formatCount = 0;
-    int numFormatsToScan = 0;
-    std::atomic<int> formatId  {0};
-    std::atomic<int> pluginId  {0};
+    std::unique_ptr <AudioPluginFormatManager> formatManager;
+    KnownPluginList& pluginList;
+    FileSearchPath fsp;
+    bool finished = false;
+    String progressMessage;
     std::atomic<float> scannerProgress {0.0f};
-    std::atomic<float> totalScanProgress {0.0f};
-
-	ChildProcess scannerProcess;
-
-    //==============================================================================
-	struct LastScanInfo
-	{
-		String pluginFormat;
-		File pluginList;
-		File deadsManPedalFile;
-		bool forceRescan;
-		Array<File> directoriesToScan;
-	};
-
-	LastScanInfo lastScanInfo;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ScanHandler)

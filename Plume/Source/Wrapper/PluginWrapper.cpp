@@ -33,7 +33,7 @@ PluginWrapper::PluginWrapper (PlumeProcessor& p, GestureArray& gArr, ValueTree p
   #endif
     
     pluginList = new KnownPluginList();
-    scanHandler.reset (new ScanHandler());
+    scanHandler.reset (new ScanHandler (*pluginList));
     loadPluginListFromFile();
 }
 
@@ -379,7 +379,7 @@ ScanHandler& PluginWrapper::getScanner()
 
 void PluginWrapper::handleScanFinished()
 {
-    loadPluginListFromFile();
+    //loadPluginListFromFile();
     removeNonInstrumentsFromList();
     savePluginListToFile();
 }
@@ -532,9 +532,7 @@ void PluginWrapper::clearCustomDirectories()
 
 void PluginWrapper::startScanProcess (bool dontRescanIfAlreadyInList, bool resetBlackList)
 {
-    scanHandler->startScanProcess (getOrCreatePluginListFile(),
-                                   getOrCreateDeadsManPedalFile(),
-                                   !dontRescanIfAlreadyInList,
+    scanHandler->startScanProcess (!dontRescanIfAlreadyInList,
                                    createFileList());
 }
 

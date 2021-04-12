@@ -21,7 +21,7 @@ ScannerComponent::ScannerComponent (PlumeProcessor& proc, int buttonWidth)   : p
     scanButton->addListener (this);
 	
 	addAndMakeVisible (bar = new PlumeProgressBar (processor.getWrapper().getScanner().getProgressRef(),
-                                                   processor.getWrapper().getScanner().getPluginStringRef(),
+                                                   processor.getWrapper().getScanner().getProgressStringRef(),
                                                    ""));
 }
 
@@ -65,7 +65,7 @@ void ScannerComponent::timerCallback()
 {
     if (processor.getWrapper().getScanner().isScanRunning())
     {
-        processor.getWrapper().getScanner().updateTotalProgress();
+        //processor.getWrapper().getScanner().updateTotalProgress();
 		bar->repaint();
     }
     else
@@ -96,7 +96,7 @@ void ScannerComponent::scanPlugins (bool clearList)
     processor.getWrapper().startScanProcess (true);
     bar->setShouldDisplayProgress (true);
     
-    startTimer (20);
+    startTimer (1000);
 }
 
 void ScannerComponent::cancelScan()

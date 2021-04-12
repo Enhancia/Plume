@@ -11,10 +11,8 @@
 #include "ScanHandler.h"
 
 
-ScanHandler::ScanHandler() : scanInfoFetchThread (formatId,
-                                                  pluginId,
-                                                  scannerProgress,
-                                                  scannerProcess)
+ScanHandler::ScanHandler (KnownPluginList& pluginsRef)
+    : pluginList (pluginsRef), scanThread (scannerProgress, progressMessage, fsp, pluginsRef)
 {
     setPluginFormats();
 }
@@ -23,44 +21,39 @@ ScanHandler::~ScanHandler() {}
 
 void ScanHandler::timerCallback()
 {
-    const int exitCode = scannerProcess.getExitCode();
-
-    if (!scannerProcess.isRunning() ||
-        !scanInfoFetchThread.isThreadRunning() ||
-        exitCode == 0 || exitCode == 1)
+    if (!scanThread.isThreadRunning())
     {
-        if (exitCode == 0)
+        if (scannerProgress == 1.0f)
         {
             DBG("Scan Finished\n");
+            finished = true;
             handleScanFinished();
         }
-        else if (exitCode == 1)
+        else
         {
             DBG("Scan Crashed\n");
-            handleScanCrashed();
+            //handleScanCrashed();
         }
     }
     else
     {
-        DBG("Scan Running (code " << exitCode << ")");
-        DBG("Process running : " <<  (scannerProcess.isRunning() ? "1" : "0"));
-        DBG("Thread running : " << (scanInfoFetchThread.isThreadRunning() ? "1" : "0") << "\n");
+        //DBG("Scan running\n");
         //handleScanRunning();
     }
 }
 
-void ScanHandler::startScanProcess (const File& pluginList,
-                                    const File& deadsManPedalFile,
-                                    const bool forceRescan,
+void ScanHandler::startScanProcess (const bool forceRescan,
                                     const Array<File>& directoriesToScan)
 {
-    if (formatsToScanQueue.isEmpty())
+    if (formatManager->getNumFormats() == 0)
     {
         DBG ("Unable to scan plugins : no formats selected...");
         return;
     }
 
     resetScanInfo (true);
+
+    scanThread.copyFormats (*formatManager);
 
     for (auto& file : directoriesToScan)
     {
@@ -69,18 +62,10 @@ void ScanHandler::startScanProcess (const File& pluginList,
             fsp.add (file);
         }
     }
-      
-    String formats;
-    for (const auto* format : formatsToScanQueue) formats += format->getName() + " ";
 
-    DBG ("Starting scan process. Formats : " << formats);
-    pluginsToScan = formatsToScanQueue.getFirst()->searchPathsForPlugins (fsp, true, true);
+    scanThread.startThread();
 
-    startScanForFormat (formatsToScanQueue.getFirst()->getName(),
-                        pluginList,
-                        deadsManPedalFile,
-                        forceRescan,
-                        directoriesToScan);
+    startTimer (10);
 }
 
 void ScanHandler::startScanForFormat (const String& pluginFormat,
@@ -89,6 +74,7 @@ void ScanHandler::startScanForFormat (const String& pluginFormat,
                                       const bool forceRescan,
                                       const Array<File>& directoriesToScan)
 {
+    /*
   #if JUCE_WINDOWS
     File scannerExe (File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("Enhancia/utilities/PluginScanner.exe"));
   #elif JUCE_MAC
@@ -114,7 +100,7 @@ void ScanHandler::startScanForFormat (const String& pluginFormat,
         if (scannerProcess.start (args))
         {
             DBG ("============= SCAN START ===========\n");
-            scanInfoFetchThread.startThread();
+            scanThread.startThread();
 
             finished = false;
             lastScanInfo = {pluginFormat, pluginList, deadsManPedalFile, forceRescan, directoriesToScan};
@@ -125,37 +111,31 @@ void ScanHandler::startScanForFormat (const String& pluginFormat,
     else
     {
         DBG ("Unable to scan plugins : missing scanner executable.");
-    }
+    }*/
 }
 
 void ScanHandler::cancelScan()
 {
-    scanInfoFetchThread.stopThread (10000);
-    scannerProcess.kill();
+    scanThread.stopThread (10000);
 
     stopTimer();
 }
 
 void ScanHandler::resetScanInfo (const bool resetProgress)
 {
-    crashCount = 0;
-    formatId = 0;
-    pluginId = 0;
-
     if (resetProgress)
     {
-        formatCount = 0;
         scannerProgress = 0.0f;
-        totalScanProgress = 0.0f;
+        progressMessage = "";
     }
-    pluginBeingScanned = "";
+
     fsp = FileSearchPath();
-    resetFormatQueue();
+    finished = false;
 }
 
 void ScanHandler::handleScanRunning()
 {
-    if (scannerProcess.isRunning())
+    if (scanThread.isThreadRunning())
     {
         DBG (getScanInfo());
         //readProcessOutput();
@@ -164,6 +144,9 @@ void ScanHandler::handleScanRunning()
 
 void ScanHandler::handleScanCrashed()
 {
+    resetScanInfo (true);
+    
+    /*
     crashCount++;
 
     if (crashCount > 9)
@@ -183,37 +166,13 @@ void ScanHandler::handleScanCrashed()
                             0,
                             lastScanInfo.directoriesToScan);
     }
-
+    */
 }
 
 void ScanHandler::handleScanFinished()
 {
     stopTimer();
-    DBG ("Attempt to kill process..");
-    if (scannerProcess.isRunning()) scannerProcess.kill();
-    DBG ("Attempt to stop thread.. (30s time out)");
-    if (scanInfoFetchThread.isThreadRunning()) scanInfoFetchThread.stopThread (30000);
-
-    formatsToScanQueue.remove (0);
-
-    if (formatsToScanQueue.isEmpty())
-    {
-        // Scan fully finished
-        totalScanProgress = 1.0f;
-        resetScanInfo (false);
-        finished = true;
-    }
-    else // starts scan with next format
-    {
-        formatCount++;
-        scannerProgress = 0.0f;
-
-        startScanForFormat(formatsToScanQueue.getFirst()->getName(),
-                           lastScanInfo.pluginList,
-                           lastScanInfo.deadsManPedalFile,
-                           0,
-                           lastScanInfo.directoriesToScan);
-    }
+    finished = true;
 }
 
 void ScanHandler::setPluginFormats (bool useVST, bool useVST3, bool useAUOnMac)
@@ -234,25 +193,16 @@ void ScanHandler::setPluginFormats (bool useVST, bool useVST3, bool useAUOnMac)
   #if JUCE_PLUGINHOST_VST3
     if (useVST3) formatManager->addFormat (new VST3PluginFormat());
   #endif
-
-    numFormatsToScan = formatManager->getNumFormats();
-    resetFormatQueue();
-}
-
-void ScanHandler::resetFormatQueue()
-{
-    formatsToScanQueue.clear();
-    for (auto* format : formatManager->getFormats()) formatsToScanQueue.add (format);
 }
 
 String ScanHandler::getScanInfo()
 {
-    return String (int(totalScanProgress*100)) + "%"/* + pluginBeingScanned*/;
+    return progressMessage;
 }
 
 bool ScanHandler::isScanRunning()
 {
-    return scannerProcess.isRunning();
+    return scanThread.isThreadRunning();
 }
 
 bool ScanHandler::hasScanFinished()
@@ -262,56 +212,10 @@ bool ScanHandler::hasScanFinished()
 
 std::atomic<float>& ScanHandler::getProgressRef()
 {
-    return totalScanProgress;
+    return scannerProgress;
 }
 
-String& ScanHandler::getPluginStringRef()
+String& ScanHandler::getProgressStringRef()
 {
-    return pluginBeingScanned;
-}
-
-void ScanHandler::updateTotalProgress()
-{
-    totalScanProgress = (formatCount + scannerProgress) / numFormatsToScan;
-}
-
-void ScanHandler::readProcessOutput (const int bufferSize)
-{
-    void* dataBuffer = malloc (bufferSize);
-
-    readProcessOutput (dataBuffer, bufferSize);
-
-    free (dataBuffer);
-}
-
-bool ScanHandler::readProcessOutput (void* dataBuffer, const int bufferSize)
-{
-    int dataSize = scannerProcess.readProcessOutput (dataBuffer, bufferSize);
-
-    if (dataSize > 0)
-    {
-        String message = String::createStringFromData (dataBuffer, dataSize);
-
-        DBG ("Scanner message ("<< dataSize << "): " << message << "\n");
-
-        if (message.isNotEmpty())
-        {
-            const String lastMessage = message.fromLastOccurrenceOf ("\n", false, false).upToLastOccurrenceOf ("\n", false, false);
-            pluginBeingScanned = lastMessage.upToFirstOccurrenceOf (";", false, false);
-            scannerProgress = lastMessage.fromFirstOccurrenceOf (";", false, false).getFloatValue();
-
-            return true;
-        }
-    }
-
-    return false;
-}
-
-void ScanHandler::flushAvailableMessages (const int bufferSize)
-{
-    void* dataBuffer = malloc (bufferSize);
-    
-    do { DBG ("Flushing ...\n"); } while (readProcessOutput (dataBuffer, bufferSize));
-        
-    free (dataBuffer);
+    return progressMessage;
 }
