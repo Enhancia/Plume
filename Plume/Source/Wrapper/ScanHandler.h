@@ -99,7 +99,8 @@ private:
                 for (int fileNum = 0; (fileNum < fileOrIds.size() && !threadShouldExit()); fileNum++)
                 {
                     String fileOrIdentifier = fileOrIds[fileNum];
-                    DBG ("   - Scanning file : " << fileOrIdentifier << " ( Progress : " << progress << " )");
+                    DBG ("   - Scanning file : " << fileOrIdentifier << " ( Progress : " << progress
+                                                 << " | " << fileNum << "/" << numFilesToScan << " )");
 
                     if (launchScannerProgram (formatManager->getFormat(formatNum)->getName(), fileOrIdentifier))
                     {
@@ -107,11 +108,10 @@ private:
                         while (scannerProcess.isRunning() && count < timerLimit
                                                           && !threadShouldExit())
                         {
+                            if ((count % 5) == 0) DBG ("Code during scan : " << String (scannerProcess.getExitCode()));
                             count++;
                             wait (10);
                         }
-
-                        const int exitCode = scannerProcess.getExitCode();
 
                         if (!scannerProcess.isRunning()/* || exitCode == 0
                                                         || exitCode == 1
@@ -119,8 +119,10 @@ private:
                         {
                             const int exitCode = scannerProcess.getExitCode();
 
-                            if (exitCode == 0)
+                            if (exitCode == 0 && readDmp().isEmpty())
                             {
+                                DBG ("Scanner ended with 0 - count " << count);
+                                
                                 if (!pluginList.isListingUpToDate (fileOrIdentifier, *formatManager->getFormat (formatNum)))
                                 {
                                     OwnedArray<PluginDescription> found;
@@ -137,6 +139,7 @@ private:
                             else
                             {
                                 pluginList.addToBlacklist (fileOrIdentifier);
+                                clearDmp();
                                 DBG ("     Failed... Added to blacklist");
                             }
                         }
@@ -156,23 +159,19 @@ private:
 
         bool launchScannerProgram (const String& formatString, const String& fileToScan)
         {
-          #if JUCE_WINDOWS
-            File scannerExe (File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("Enhancia/utilities/PluginScanner.exe"));
-          #elif JUCE_MAC
-            File scannerExe (File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Application Support/Enhancia/PlumePluginScanner"));
-          #endif
-
-            if (scannerExe.existsAsFile())
+            if (PLUME::file::scannerExe.existsAsFile() && PLUME::file::deadMansPedal.existsAsFile())
             {
                 StringArray args;
 
-                args.add (scannerExe.getFullPathName());
+                args.add (PLUME::file::scannerExe.getFullPathName());
                 args.add (formatString);
                 args.add (fileToScan);
+                args.add (PLUME::file::deadMansPedal.getFullPathName());
 
                 return (scannerProcess.start (args));
             }
 
+            jassert (false); // scanner or dmp file did not exist somehow...
             return false;
         }
 
@@ -215,6 +214,20 @@ private:
             progressMessage = currentPluginName.fromLastOccurrenceOf ("\\", false, false)
                                                .upToLastOccurrenceOf (".", false, false) +
                               " (" + String (currentFileNum) + "/" + String (numFilesToScan) + ")";
+        }
+        
+        String readDmp()
+        {
+            if (PLUME::file::deadMansPedal.existsAsFile())
+                return PLUME::file::deadMansPedal.loadFileAsString();
+            else return String();
+        }
+        
+        bool clearDmp()
+        {
+            if (PLUME::file::deadMansPedal.existsAsFile())
+                return (PLUME::file::deadMansPedal.replaceWithText (String()));
+            return false;
         }
 
         std::atomic<float>& progress;
