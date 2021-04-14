@@ -41,51 +41,37 @@ void TabbedPanelComponent::paint (Graphics& g)
 {
     using namespace PLUME::UI;
 
-    juce::Rectangle<int> tabsArea;
+    g.setColour (currentTheme.getColour(PLUME::colour::topPanelBackground).brighter (0.03f));
+    g.fillRect (panelArea);
 
-    if (style == tabsVertical)
-    {
-        tabsArea = getLocalBounds().removeFromLeft (getWidth()*1/5)
-                                   .reduced (0, 2*MARGIN);
-    }
-    else
-    {
-        tabsArea = getLocalBounds().removeFromTop (30)
-                                   .reduced (2*MARGIN, 0);
-    }
-    
+    auto area = tabsArea;
 
     if (!tabs.isEmpty())
     {
-        //int tabHeight = (tabsArea.getHeight() - (tabs.size() - 1) * MARGIN)/tabs.size();
-        int tabHeightOrWidth = (style == tabsVertical)
-                                    ? jmin (30 , (tabsArea.getHeight() - (tabs.size() - 1) * MARGIN)/tabs.size())
-                                    : (tabsArea.getWidth() - (tabs.size() - 1) * MARGIN)/tabs.size();
-
         for (int i =0; i < tabs.size(); i++)
         {
-            auto tabArea = (style == tabsVertical) ? tabsArea.removeFromTop (tabHeightOrWidth)
-                                                   : tabsArea.removeFromLeft (tabHeightOrWidth);
+            auto tabArea = tabs[i]->button->getBounds();
 
             if (i == selectedTab)
             {
-                g.setColour (*colours[tabSelectedHighlight]);
+                g.setColour (currentTheme.getColour(PLUME::colour::topPanelBackground).brighter (0.03f));
+                g.fillRect (tabArea);
+
+                g.setColour (currentTheme.getColour(PLUME::colour::topPanelMainText));
                 g.fillRect ((style == tabsVertical) ? tabArea.withWidth (3)
                                                     : tabArea.withHeight (3));
             }
 
-            g.setColour (i == selectedTab ? *colours[tabSelectedText]
-                                          : *colours[tabUnselectedText]);
-            g.setFont (PLUME::font::plumeFontBook.withHeight (16.0f));
+            g.setColour (i == selectedTab ? currentTheme.getColour(PLUME::colour::topPanelMainText)
+                                          : currentTheme.getColour(PLUME::colour::topPanelSubText));
+            
+            g.setFont (PLUME::font::plumeFont.withHeight (16.0f));
             g.drawText (tabs[i]->name,
-                        (style == tabsVertical) ? tabArea.withTrimmedLeft (PLUME::UI::MARGIN + 5)
+                        (style == tabsVertical) ? tabArea.withTrimmedLeft (MARGIN + 5)
                                                 : tabArea.withTrimmedTop (5),
                         (style == tabsVertical) ? Justification::centredLeft
                                                 : Justification::centred,
                         true);
-
-            (style == tabsVertical) ? tabsArea.removeFromTop (MARGIN)
-                                    : tabsArea.removeFromLeft (MARGIN);
         }
     }
 }
@@ -95,23 +81,22 @@ void TabbedPanelComponent::resized()
     using namespace PLUME::UI;
 
     auto area = getLocalBounds();
-
-    juce::Rectangle<int> panelArea, tabsArea;
-    
     
     if (style == tabsVertical)
     {
-        panelArea = area.removeFromRight (getWidth()*4/5).reduced (MARGIN, 2*MARGIN);
-        tabsArea = area.reduced (0, 2*MARGIN);
+        panelArea = area.removeFromRight (getWidth()*4/5);
+        tabsArea = area;
     }
     else
     {
-        tabsArea = area.removeFromTop (30).reduced (2*MARGIN, 0);
-        panelArea = area.reduced (MARGIN, MARGIN);
+        tabsArea = area.removeFromTop (30);
+        panelArea = area;
     }
 
     if (!tabs.isEmpty())
     {
+        auto tabsAreaTemp = tabsArea;
+        
         //int tabHeight = (tabsArea.getHeight() - (tabs.size() - 1) * MARGIN)/tabs.size();
         int tabHeightOrWidth = (style == tabsVertical)
                                     ? jmin (30 , (tabsArea.getHeight() - (tabs.size() - 1) * MARGIN)/tabs.size())
@@ -119,12 +104,15 @@ void TabbedPanelComponent::resized()
 
         for (auto* tab : tabs)
         {
-            tab->button->setBounds ((style == tabsVertical) ? tabsArea.removeFromTop (tabHeightOrWidth)
-                                                            : tabsArea.removeFromLeft (tabHeightOrWidth));
+            tab->button->setBounds (tab == tabs.getLast() ? tabsAreaTemp
+                                                          : (style == tabsVertical) ? tabsAreaTemp.removeFromTop (tabHeightOrWidth)
+                                                                                    : tabsAreaTemp.removeFromLeft (tabHeightOrWidth));
 
-            (style == tabsVertical) ? tabsArea.removeFromTop (MARGIN)
-                                    : tabsArea.removeFromLeft (MARGIN);
-            
+            if (tab != tabs.getLast())
+            {
+                (style == tabsVertical) ? tabsAreaTemp.removeFromTop (MARGIN)
+                                        : tabsAreaTemp.removeFromLeft (MARGIN);
+            }
 
             tab->panel->setBounds (panelArea);
         }
@@ -135,7 +123,7 @@ void TabbedPanelComponent::resized()
 void TabbedPanelComponent::addTab (Component* panel, String tabName)
 {
     tabs.add (new Tab (panel, tabName));
-    addAndMakeVisible (tabs.getLast()->button);
+    addAndMakeVisible (tabs.getLast()->button.get());
     addChildAndSetID (tabs.getLast()->panel, "panel" + String(tabs.size() - 1));
     findChildWithID ("panel" + String(tabs.size() - 1))->setVisible (false);
     tabs.getLast()->button->addListener (this);
@@ -210,7 +198,7 @@ void TabbedPanelComponent::buttonClicked (Button* bttn)
 {
     for (int i =0; i < tabs.size(); i++)
     {
-        if (bttn == tabs[i]->button)
+        if (bttn == tabs[i]->button.get())
         {
             switchToTab(i);
         }

@@ -39,8 +39,13 @@ public:
     void mouseEnter (const MouseEvent& event) override;
     void mouseExit (const MouseEvent& event) override;
     void visibilityChanged() override;
+    void paintProductInformations (Graphics& g, juce::Rectangle<int> area);
 
 private:
+    //==============================================================================
+    Image enhanciaLogo = ImageFileFormat::loadFrom (PlumeData::BRANDPopupgrey_png,
+                                                    PlumeData::BRANDPopupgrey_pngSize);
+    
     //==============================================================================
     juce::Rectangle<int> optionsArea;
     ScopedPointer<TabbedPanelComponent> tabbedOptions;

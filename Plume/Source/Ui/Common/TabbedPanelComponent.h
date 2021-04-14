@@ -63,14 +63,28 @@ private:
     //==============================================================================
     struct Tab
     {
-        Tab (Component* panelToUse, String tabName)	: name (tabName), panel (panelToUse)
+        class TabButton : public Button
         {
-            button = new TextButton (name);
-            button->setButtonText ("");
-            //button->setColour (TextButton::textColourOffId, PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText));
-            //button->setColour (TextButton::textColourOnId, PLUME::UI::currentTheme.getColour(PLUME::colour::topPanelSubText));
-            button->setColour (TextButton::buttonColourId, Colour (0x00000000));
-            button->setColour (TextButton::buttonOnColourId, Colour (0x00000000));
+        public:
+            TabButton(String tabName) : Button(tabName + String("Button")) {}
+            ~TabButton() {}
+
+            void paintButton(Graphics& g, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
+            {
+                if (shouldDrawButtonAsDown || shouldDrawButtonAsHighlighted)
+                {
+                    g.setColour(PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelSubText).withAlpha(shouldDrawButtonAsDown ? 0.2f : 0.05f));
+                    g.fillRect(getLocalBounds());
+                }
+            }
+
+        private:
+            JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TabButton)
+        };
+
+        Tab (Component* panelToUse, String tabName) : name (tabName), panel (panelToUse)
+        {
+            button.reset (new TabButton (name));
         }
 
         ~Tab ()
@@ -78,15 +92,16 @@ private:
             button = nullptr;
         }
 
-        ScopedPointer<TextButton> button;
+        std::unique_ptr<TabButton> button;
         const String name;
         ScopedPointer<Component> panel;
     };
 
     //==============================================================================
+    juce::Rectangle<int> panelArea, tabsArea;
     OwnedArray<Tab> tabs;
     OwnedArray<Colour> colours;
-    TabbedPanelStyle style = tabsVertical;
+    TabbedPanelStyle style = tabsHorizontal;
     int selectedTab = 0;
 
     //==============================================================================
