@@ -87,6 +87,7 @@ private:
         void run() override
         {
             numFilesToScan = countNumFilesToScan();
+            currentFileNum = 0;
 
             // For each format
             for (int formatNum = 0; (formatNum < formatManager->getNumFormats() && !threadShouldExit()); formatNum++)
@@ -101,7 +102,10 @@ private:
                     String fileOrIdentifier = fileOrIds[fileNum];
                     DBG ("   - Scanning file : " << fileOrIdentifier << " ( Progress : " << progress
                                                  << " | " << fileNum << "/" << numFilesToScan << " )");
-
+                    Logger::writeToLog ("Scanning File : " + fileOrIdentifier
+                                                           + " ( Progress : " + String (fileNum)
+                                                           + "/" + String (numFilesToScan) + " )\n");
+                    
                     if (launchScannerProgram (formatManager->getFormat(formatNum)->getName(), fileOrIdentifier))
                     {
                         int count = 0;
@@ -118,6 +122,7 @@ private:
                                                         || exitCode == 2*/)
                         {
                             const int exitCode = scannerProcess.getExitCode();
+                            Logger::writeToLog ("Exit code : " + String (exitCode) + " ( count : " + String (count) + " )\n");
 
                             if (exitCode == 0 && readDmp().isEmpty())
                             {
@@ -145,11 +150,12 @@ private:
                         }
                         else // Scanner process still running..
                         {
+                            Logger::writeToLog ("Scanner Timeout\n");
                             jassert (scannerProcess.kill()); // Force kill with dbg alert
                         }
                     }
 
-                    updateProgress (fileNum, fileOrIdentifier);
+                    updateProgress (fileOrIdentifier);
                 }
             }
 
@@ -189,8 +195,10 @@ private:
                     formatManager->addFormat (new AudioUnitPluginFormat());
               #endif
 
+              #if JUCE_PLUGINHOST_VST3
                 else if (format->getName() == VST3PluginFormat::getFormatName())
                     formatManager->addFormat (new VST3PluginFormat());
+              #endif
             }
         }
 
@@ -208,12 +216,13 @@ private:
             return numFilesTotal;
         }
 
-        void updateProgress (const int currentFileNum, const String& currentPluginName)
+        void updateProgress (const String& currentPluginName)
         {
             progress = ((float) currentFileNum / (float) numFilesToScan);
             progressMessage = currentPluginName.fromLastOccurrenceOf ("\\", false, false)
                                                .upToLastOccurrenceOf (".", false, false) +
                               " (" + String (currentFileNum) + "/" + String (numFilesToScan) + ")";
+            currentFileNum++;
         }
         
         String readDmp()
@@ -237,6 +246,7 @@ private:
         KnownPluginList& pluginList;
         String& progressMessage;
         int numFilesToScan = 0;
+        int currentFileNum = 0;
 
         const int timerLimit = 3000;
     };

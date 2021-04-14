@@ -486,9 +486,10 @@ void PluginWrapper::setAuUsage (bool
 void PluginWrapper::addCustomDirectory (File newDir)
 {
     // TODO virer cette ligne et decommenter code quand implémentation plusieurs path
-    customDirectories.getChild (0).setProperty (PLUME::treeId::value,
-                                                newDir.getFullPathName(),
-                                                nullptr);
+    customDirectories.getOrCreateChildWithName (PLUME::treeId::directory, nullptr)
+                     .setProperty (PLUME::treeId::value,
+                                   newDir.getFullPathName(),
+                                   nullptr);
     
     /*
     if (newDir.exists() && newDir.isDirectory())
