@@ -124,7 +124,13 @@ private:
                             const int exitCode = scannerProcess.getExitCode();
                             Logger::writeToLog ("Exit code : " + String (exitCode) + " ( count : " + String (count) + " )\n");
 
-                            if (exitCode == 0 && readDmp().isEmpty())
+                            if (!readDmp().isEmpty())
+                            {
+                                pluginList.addToBlacklist (fileOrIdentifier);
+                                clearDmp();
+                                DBG ("     Crashed... Added to blacklist");
+                            }
+                            else if (exitCode == 0)
                             {
                                 DBG ("Scanner ended with 0 - count " << count);
                                 
@@ -143,9 +149,7 @@ private:
                             }
                             else
                             {
-                                pluginList.addToBlacklist (fileOrIdentifier);
-                                clearDmp();
-                                DBG ("     Failed... Added to blacklist");
+                                DBG ("Error : scanner ended with code " << exitCode);
                             }
                         }
                         else // Scanner process still running..
