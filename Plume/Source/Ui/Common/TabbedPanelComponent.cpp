@@ -96,7 +96,7 @@ void TabbedPanelComponent::resized()
     if (!tabs.isEmpty())
     {
         auto tabsAreaTemp = tabsArea;
-        
+
         //int tabHeight = (tabsArea.getHeight() - (tabs.size() - 1) * MARGIN)/tabs.size();
         int tabHeightOrWidth = (style == tabsVertical)
                                     ? jmin (30 , (tabsArea.getHeight() - (tabs.size() - 1) * MARGIN)/tabs.size())
@@ -114,7 +114,7 @@ void TabbedPanelComponent::resized()
                                         : tabsAreaTemp.removeFromLeft (MARGIN);
             }
 
-            tab->panel->setBounds (panelArea);
+            tab->panel->setBounds (panelArea.reduced ((style == tabsVertical) ? 0 : MARGIN, 0));
         }
     }
 }

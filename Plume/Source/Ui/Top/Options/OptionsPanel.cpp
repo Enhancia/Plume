@@ -16,7 +16,7 @@ OptionsPanel::OptionsPanel (PlumeProcessor& proc)   : processor (proc)
     addAndMakeVisible (tabbedOptions = new TabbedPanelComponent());
 
     tabbedOptions->addTab (new FileOptionsSubPanel (processor), "File");
-    tabbedOptions->addTab (new GeneralOptionsSubPanel (processor), "About");
+    tabbedOptions->addTab (new AboutPanel(), "About");
     tabbedOptions->addTab (new Component(), "Update");
     
     // Close button
@@ -33,6 +33,7 @@ OptionsPanel::OptionsPanel (PlumeProcessor& proc)   : processor (proc)
 
     closeButton->setShape (p, false, true, false);
 	closeButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::topPanelMainText), 1.0f);
+    closeButton->setBorderSize (BorderSize<int> (6));
     closeButton->addMouseListener (this, false);
 	closeButton->addListener (this);
 }
