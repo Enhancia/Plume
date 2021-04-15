@@ -129,9 +129,9 @@ void SubPanelComponent::addToggleRow (String rowText, String buttonID, bool init
 	tggle->setComponentID (buttonID);
 	tggle->setToggleState (initialState, dontSendNotification);
 	tggle->setColour (ToggleButton::tickColourId,
-		              PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText));
+		              getPlumeColour(topPanelMainText));
 	tggle->setColour (ToggleButton::tickDisabledColourId,
-		              PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelSubText));
+		              getPlumeColour(topPanelSubText));
 
 	rows.add (new Row (tggle, rowText, Row::toggle));
 	addAndMakeVisible (tggle);
@@ -143,7 +143,7 @@ void SubPanelComponent::addButtonRow (String rowText, String buttonID, String bu
 	TextButton* bttn = new TextButton (buttonID);
 	bttn->setComponentID (buttonID);
 	bttn->setColour (TextButton::textColourOffId,
-		             PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText));
+		             getPlumeColour(topPanelMainText));
 	bttn->setButtonText (buttonText);
 
 	rows.add (new Row (bttn, rowText, buttonFeedbackString.isNotEmpty() ? Row::buttonWithFeedback : Row::button));
@@ -220,7 +220,7 @@ SubPanelComponent::ScannerRowComponent::ScannerRowComponent  (const String& scan
 	addAndMakeVisible (scanButton = new TextButton ("scanButton"));
 	scanButton->setButtonText ("Browse");
 	scanButton->setColour (TextButton::textColourOffId,
-		                   PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText));
+		                   getPlumeColour(topPanelMainText));
 	scanButton->addListener (this);
 }
 

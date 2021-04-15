@@ -32,10 +32,10 @@ OptionsPanel::OptionsPanel (PlumeProcessor& proc)   : processor (proc)
     p.lineTo (3*PLUME::UI::MARGIN, 0);
 
     closeButton->setShape (p, false, true, false);
-	closeButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::topPanelMainText), 1.0f);
+    closeButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::topPanelMainText), 1.0f);
     closeButton->setBorderSize (BorderSize<int> (6));
     closeButton->addMouseListener (this, false);
-	closeButton->addListener (this);
+    closeButton->addListener (this);
 }
 
 OptionsPanel::~OptionsPanel()
@@ -128,18 +128,18 @@ void OptionsPanel::mouseUp (const MouseEvent& event)
 void OptionsPanel::mouseEnter (const MouseEvent &event)
 {
     if (event.eventComponent == closeButton)
-	{
-	    closeButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::topPanelMainText)
+    {
+        closeButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::topPanelMainText)
                                                       .withAlpha (0.4f), 1.0f);
-	}
+    }
 }
 
 void OptionsPanel::mouseExit (const MouseEvent &event)
 {
     if (event.eventComponent == closeButton)
-	{
-	    closeButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::topPanelMainText), 1.0f);
-	}
+    {
+        closeButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::topPanelMainText), 1.0f);
+    }
 }
 
 void OptionsPanel::visibilityChanged()

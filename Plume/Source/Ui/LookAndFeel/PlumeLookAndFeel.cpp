@@ -27,7 +27,7 @@ void PlumeLookAndFeel::setColours()
     
     // Label
 	setColour (Label::textColourId, Colour (0xffffffff));
-	setColour (Label::backgroundColourId, Colour (0xff000000));
+	setColour (Label::backgroundColourId, Colour (0x00000000));
 	setColour (Label::outlineColourId, Colour (0x00000000));
 
     // Text 
