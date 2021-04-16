@@ -355,7 +355,7 @@ String BugReportPanel::createMultipartData (const String& boundary, const Array<
 
     addFormDataParameter (multipartData, "subject", "\"Plume Bug Report\"", boundary);
     addFormDataParameter (multipartData, "text", "\"" + messageEditor->getText() + "\"", boundary);
-    addFormDataParameter (multipartData, "category", "2", boundary);
+    addFormDataParameter (multipartData, "category", "9", boundary);
     addFormDataParameter (multipartData, "priority", "1", boundary);
     addFormDataParameter (multipartData, "email", mailLabel->getText(), boundary);
     addFormDataParameter (multipartData, "name", nameLabel->getText(), boundary);
@@ -385,7 +385,7 @@ void BugReportPanel::getFilestoAttach (Array<File>& fileArrayToFill)
 
     // Plume Log File
     fileStrings.add (File::getSpecialLocation (File::userApplicationDataDirectory).getFullPathName()
-                            + "\\Enhancia\\NeovaDashboard\\Logs\\neovaDashLog.txt");
+                            + "\\Enhancia\\Plume\\Logs\\plumeLog.txt");
     // Daemon Log File
     fileStrings.add (File::getSpecialLocation (File::globalApplicationsDirectoryX86).getFullPathName()
                             + "\\Enhancia\\Enhancia_Service_Reader\\Enhancia_Service_Reader_Log.txt");
@@ -394,7 +394,7 @@ void BugReportPanel::getFilestoAttach (Array<File>& fileArrayToFill)
 
     // Plume Log File
     fileStrings.add (File::getSpecialLocation(File::userApplicationDataDirectory).getFullPathName()
-                            + "/Logs/Enhancia/NeovaDashboard/Logs/neovaDashLog.txt");
+                            + "/Logs/Enhancia/Plume/Logs/plumeLog.txt");
     // Daemon Log File
     fileStrings.add (File::getSpecialLocation(File::userApplicationDataDirectory).getFullPathName()
                             + "/Caches/DaemonSeriaPort_MacOS/EnhanciaDaemonlog.txt");
