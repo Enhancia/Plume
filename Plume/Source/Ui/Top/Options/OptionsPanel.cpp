@@ -18,12 +18,8 @@ OptionsPanel::OptionsPanel (PlumeProcessor& proc, UpdaterPanel& updtrPanel)
 
     tabbedOptions->addTab (new FileOptionsSubPanel (processor), "File");
     tabbedOptions->addTab (new AboutPanel(), "About");
-
-    // Update Button
-    updateButton.reset (new TextButton ("Update Button"));
-    updateButton->setButtonText ("Update");
-    
     tabbedOptions->addTab (new UpdaterSubPanel (processor.getUpdater(), updtrPanel), "Update");
+    tabbedOptions->setTabAlert (2, processor.getUpdater().hasNewAvailableVersion());
 
     // Close button
     addAndMakeVisible (closeButton = new ShapeButton ("Close Options Button",
@@ -48,7 +44,6 @@ OptionsPanel::~OptionsPanel()
 {
     tabbedOptions = nullptr;
     closeButton = nullptr;
-    updateButton = nullptr;
 }
 
 //==============================================================================

@@ -51,7 +51,6 @@ private:
     juce::Rectangle<int> optionsArea;
     ScopedPointer<TabbedPanelComponent> tabbedOptions;
     ScopedPointer<ShapeButton> closeButton;
-    std::unique_ptr<TextButton> updateButton;
 
     //==============================================================================
     PlumeProcessor& processor;

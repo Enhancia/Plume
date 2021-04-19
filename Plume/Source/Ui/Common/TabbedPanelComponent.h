@@ -51,6 +51,8 @@ public:
     //==============================================================================
     void setColour (TabbedPanelColourId id, Colour colourToSet);
     void setStyle (TabbedPanelStyle newStyle);
+    void setTabAlert (const int tabNumber, const bool alert);
+    void setTabAlert (const String tabName, const bool alert);
 
     //==============================================================================
     void paint (Graphics&) override;
@@ -95,6 +97,7 @@ private:
         std::unique_ptr<TabButton> button;
         const String name;
         ScopedPointer<Component> panel;
+        bool alert = false;
     };
 
     //==============================================================================
