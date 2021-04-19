@@ -90,7 +90,7 @@ void OptionsPanel::resized()
 {
     using namespace PLUME::UI;
     
-    optionsArea = getBounds().reduced (getWidth()/5, getHeight()/8);
+    optionsArea = getBounds().reduced (getWidth()/5, getHeight()/10);
 
     #if JUCE_WINDOWS
     closeButton->setBounds (juce::Rectangle<int> (25, 25).withRightX (optionsArea.getRight() - MARGIN_SMALL)

@@ -64,7 +64,7 @@ void BugReportPanel::resized()
 {
     using namespace PLUME::UI;
 
-    panelArea = getBounds().reduced (getWidth()/5, getHeight()/8);
+    panelArea = getBounds().reduced (getWidth()/5, getHeight()/10);
     
     // Close Button
     #if JUCE_WINDOWS

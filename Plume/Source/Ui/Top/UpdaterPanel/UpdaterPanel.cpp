@@ -35,7 +35,7 @@ void UpdaterPanel::resized()
 {
 	using namespace PLUME::UI;
 
-    panelArea = getLocalBounds().reduced (getWidth()/5, getHeight()/8);
+    panelArea = getLocalBounds().reduced (getWidth()/5, getHeight()/10);
     
     // Close Button
     #if JUCE_WINDOWS

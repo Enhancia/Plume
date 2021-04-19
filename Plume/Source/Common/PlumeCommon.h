@@ -37,8 +37,8 @@ namespace PLUME
     namespace UI
     {
         // Default settings
-        const int DEFAULT_WINDOW_WIDTH = 890;
-        const int DEFAULT_WINDOW_HEIGHT = 500;
+        const int DEFAULT_WINDOW_WIDTH = 980;
+        const int DEFAULT_WINDOW_HEIGHT = 550;
     
         // Display panels values
         const int MARGIN = 8;
