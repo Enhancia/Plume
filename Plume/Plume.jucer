@@ -145,6 +145,10 @@
               <FILE id="UgL6MT" name="UpdaterSubPanel.h" compile="0" resource="0"
                     file="Source/Ui/Top/Options/SubPanels/UpdaterSubPanel.h"/>
             </GROUP>
+            <FILE id="sYBSWy" name="BugReportPanel.cpp" compile="1" resource="0"
+                  file="Source/Ui/Top/Options/BugReportPanel.cpp"/>
+            <FILE id="oIDIzb" name="BugReportPanel.h" compile="0" resource="0"
+                  file="Source/Ui/Top/Options/BugReportPanel.h"/>
             <FILE id="BLC4C2" name="OptionsPanel.cpp" compile="1" resource="0"
                   file="Source/Ui/Top/Options/OptionsPanel.cpp"/>
             <FILE id="XScjx7" name="OptionsPanel.h" compile="0" resource="0" file="Source/Ui/Top/Options/OptionsPanel.h"/>

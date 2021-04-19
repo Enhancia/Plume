@@ -32,6 +32,11 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     addAndMakeVisible (newGesturePanel = new NewGesturePanel (processor));
     newGesturePanel->hidePanel();
 
+    bugReportPanel.reset (new BugReportPanel());
+    addAndMakeVisible (*bugReportPanel);
+    bugReportPanel->setVisible (false);
+    bugReportPanel->setAlwaysOnTop (true);
+	
     addAndMakeVisible (*updaterPanel);
     updaterPanel->setVisible (false);
     updaterPanel->setAlwaysOnTop (true);
@@ -148,6 +153,7 @@ void PlumeEditor::resized()
     auto area = getLocalBounds();
     
     optionsPanel->setBounds (area);
+    bugReportPanel->setBounds (area);
     updaterPanel->setBounds (area);
     newPresetPanel->setBounds (area);
 
@@ -249,7 +255,7 @@ void PlumeEditor::createSideBarButtonPath()
         p.lineTo (HEADER_HEIGHT - 2*MARGIN, HEADER_HEIGHT - 2*MARGIN);
     }
     
-    sideBarButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 2.0f);
+    sideBarButton->setOutline (getPlumeColour(headerStandartText), 2.0f);
     sideBarButton->setShape (p, false, false, false);
     */
 }
@@ -258,7 +264,7 @@ void PlumeEditor::mouseEnter (const MouseEvent &event)
 {
     if (event.eventComponent == sideBarButton)
     {
-        //sideBarButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerHighlightedText), 2.0f);
+        //sideBarButton->setOutline (getPlumeColour(headerHighlightedText), 2.0f);
     }
 }
 
@@ -266,7 +272,7 @@ void PlumeEditor::mouseExit (const MouseEvent &event)
 {
     if (event.eventComponent == sideBarButton)
     {
-        //sideBarButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::headerStandartText), 2.0f);
+        //sideBarButton->setOutline (getPlumeColour(headerStandartText), 2.0f);
     }
 }
 

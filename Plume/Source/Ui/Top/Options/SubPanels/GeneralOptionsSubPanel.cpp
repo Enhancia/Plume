@@ -24,7 +24,7 @@ AboutPanel::~AboutPanel()
 void AboutPanel::paint (Graphics& g)
 {
     g.setFont (PLUME::font::plumeFont.withHeight (17));
-    g.setColour (PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelSubText));
+    g.setColour (getPlumeColour(topPanelSubText));
 
     String osString;
     #if JUCE_WINDOWS
@@ -71,5 +71,13 @@ void ContactSubPanel::buttonClicked (Button* bttn)
     else if (bttn->getComponentID() == "sbr")
     {
         // Send bug report
+        if (auto bugReportPanel = getParentComponent() // AboutPanel
+                                    ->getParentComponent() // Tabbed Options
+                                    ->getParentComponent() // Options Panel
+                                    ->getParentComponent() // Plume Editor
+                                    ->findChildWithID ("BugReportPanel"))
+        {
+            bugReportPanel->setVisible (true);
+        }
     }
 }
