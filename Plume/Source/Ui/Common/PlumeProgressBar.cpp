@@ -49,7 +49,7 @@ void PlumeProgressBar::paint (Graphics& g)
             
             if (progress != 1.0f && juce_isfinite (progress.load()))
             {
-                g.drawText (messagePrefix + String (int (100*progress)) + "%",
+                g.drawText (messagePrefix + progressMessage,
                             compArea,
                             Justification::centred, true);
             }

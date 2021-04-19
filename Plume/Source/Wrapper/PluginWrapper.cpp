@@ -33,7 +33,7 @@ PluginWrapper::PluginWrapper (PlumeProcessor& p, GestureArray& gArr, ValueTree p
   #endif
     
     pluginList = new KnownPluginList();
-    scanHandler.reset (new ScanHandler());
+    scanHandler.reset (new ScanHandler (*pluginList));
     loadPluginListFromFile();
 }
 
@@ -379,7 +379,7 @@ ScanHandler& PluginWrapper::getScanner()
 
 void PluginWrapper::handleScanFinished()
 {
-    loadPluginListFromFile();
+    //loadPluginListFromFile();
     removeNonInstrumentsFromList();
     savePluginListToFile();
 }
@@ -486,9 +486,10 @@ void PluginWrapper::setAuUsage (bool
 void PluginWrapper::addCustomDirectory (File newDir)
 {
     // TODO virer cette ligne et decommenter code quand implémentation plusieurs path
-    customDirectories.getChild (0).setProperty (PLUME::treeId::value,
-                                                newDir.getFullPathName(),
-                                                nullptr);
+    customDirectories.getOrCreateChildWithName (PLUME::treeId::directory, nullptr)
+                     .setProperty (PLUME::treeId::value,
+                                   newDir.getFullPathName(),
+                                   nullptr);
     
     /*
     if (newDir.exists() && newDir.isDirectory())
@@ -532,9 +533,7 @@ void PluginWrapper::clearCustomDirectories()
 
 void PluginWrapper::startScanProcess (bool dontRescanIfAlreadyInList, bool resetBlackList)
 {
-    scanHandler->startScanProcess (getOrCreatePluginListFile(),
-                                   getOrCreateDeadsManPedalFile(),
-                                   !dontRescanIfAlreadyInList,
+    scanHandler->startScanProcess (!dontRescanIfAlreadyInList,
                                    createFileList());
 }
 
@@ -567,21 +566,9 @@ void PluginWrapper::savePluginListToFile()
     ScopedLock plLock (pluginListLock);
 
     // Create file if it doesn't exist yet
-    File scannedPlugins;
-    
-  #if JUCE_WINDOWS
-    scannedPlugins = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/")
-                                                                                  .getChildFile ("Plume/");
-  #elif JUCE_MAC
-    scannedPlugins = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/")
-                                                                                  .getChildFile ("Plume/");
-  #endif
-  
-    scannedPlugins = scannedPlugins.getChildFile ("plumepl.cfg");
-  
-    if (!scannedPlugins.exists())
+    if (!PLUME::file::pluginList.exists())
     {
-        scannedPlugins.create();
+        getOrCreatePluginListFile();
     }
     
     ScopedPointer<XmlElement> listXml = new XmlElement ("PLUME_PLUGINLIST_CONFIG");
@@ -592,7 +579,7 @@ void PluginWrapper::savePluginListToFile()
     XmlElement* userDirs = listXml->createNewChildElement ("USER_DIRECTORIES");
     userDirs->addChildElement (new XmlElement (*customDirectories.createXml()));
     
-    listXml->writeToFile (scannedPlugins, StringRef());
+    listXml->writeToFile (PLUME::file::pluginList, StringRef());
     listXml->deleteAllChildElements();
 }
 
@@ -609,21 +596,9 @@ void PluginWrapper::removeNonInstrumentsFromList()
 void PluginWrapper::resetDeadsManPedalFile()
 {
     // Attempts to find file
-    File deadFile;
-
-  #if JUCE_WINDOWS
-    deadFile = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/")
-                                                                            .getChildFile ("Plume/");
-  #elif JUCE_MAC
-    deadFile = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/")
-                                                                            .getChildFile ("Plume/");
-  #endif
-  
-    deadFile = deadFile.getChildFile ("plumedmp.cfg");
-
-    if (deadFile.exists() && deadFile.loadFileAsString().isNotEmpty())
+    if (PLUME::file::deadMansPedal.exists() && PLUME::file::deadMansPedal.loadFileAsString().isNotEmpty())
     {
-        deadFile.replaceWithText (String());
+        PLUME::file::deadMansPedal.replaceWithText (String());
     }
 }
 
@@ -631,27 +606,14 @@ void PluginWrapper::loadPluginListFromFile()
 {
     ScopedLock plLock (pluginListLock);
     
-    // Attempts to find file
-	File scannedPlugins;
-
-  #if JUCE_WINDOWS
-    scannedPlugins = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/")
-                                                                                  .getChildFile ("Plume/");
-  #elif JUCE_MAC
-    scannedPlugins = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/")
-                                                                                  .getChildFile ("Plume/");
-  #endif
-  
-    scannedPlugins = scannedPlugins.getChildFile ("plumepl.cfg");
-  
-    if (!scannedPlugins.exists())
+    if (!PLUME::file::pluginList.exists())
     {
         DBG ("Couldn't load plugin list, the file doesn't exist..");
         return;
     }
     
     // Recreates plugin List
-	std::unique_ptr<XmlElement> listXml = XmlDocument::parse(scannedPlugins);
+	std::unique_ptr<XmlElement> listXml = XmlDocument::parse (PLUME::file::pluginList);
 	
 	if (listXml == nullptr)
 	{
@@ -678,23 +640,10 @@ void PluginWrapper::loadPluginListFromFile()
 File PluginWrapper::getOrCreatePluginListFile()
 {
     ScopedLock plLock (pluginListLock);
-    
-    // Attempts to find file
-    File scannedPlugins;
 
-  #if JUCE_WINDOWS
-    scannedPlugins = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/")
-                                                                                  .getChildFile ("Plume/");
-  #elif JUCE_MAC
-    scannedPlugins = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/")
-                                                                                  .getChildFile ("Plume/");
-  #endif
-  
-    scannedPlugins = scannedPlugins.getChildFile ("plumepl.cfg");
-
-    if (scannedPlugins.exists() || scannedPlugins.create().wasOk())
+    if (PLUME::file::pluginList.exists() || PLUME::file::pluginList.create().wasOk())
     {
-        return scannedPlugins;
+        return PLUME::file::pluginList;
     }
 
     return File();
@@ -703,21 +652,9 @@ File PluginWrapper::getOrCreatePluginListFile()
 File PluginWrapper::getOrCreateDeadsManPedalFile()
 {
     // Attempts to find file
-    File deadFile;
-
-  #if JUCE_WINDOWS
-    deadFile = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/")
-                                                                            .getChildFile ("Plume/");
-  #elif JUCE_MAC
-    deadFile = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/")
-                                                                            .getChildFile ("Plume/");
-  #endif
-  
-    deadFile = deadFile.getChildFile ("plumedmp.cfg");
-
-    if (deadFile.exists() || deadFile.create().wasOk())
+    if (PLUME::file::deadMansPedal.exists() || PLUME::file::deadMansPedal.create().wasOk())
     {
-        return deadFile;
+        return PLUME::file::deadMansPedal;
     }
 
     return File();

@@ -224,6 +224,22 @@ namespace PLUME
             else return (rawBatteryValue - 3.0f)/(4.2f - 3.0f);
         }
     }
+
+    // file
+    namespace file
+    {
+      #if JUCE_WINDOWS
+        static const File pluginList       (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/Plume/plumepl.cfg"));
+        static const File deadMansPedal    (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/Plume/plumedmp.cfg"));
+        //static const File defaultPresetDir (File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("Enhancia/utilities/PluginScanner.exe"));
+        static const File scannerExe       (File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("Enhancia/utilities/PluginScanner.exe"));
+      #elif JUCE_MAC
+        static const File pluginList       (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/Plume/plumepl.cfg"));
+        static const File deadMansPedal    (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/Plume/plumedmp.cfg"));
+        //static const File defaultPresetDir (File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("Enhancia/utilities/PluginScanner.exe"));
+        static const File scannerExe       (File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Application Support/Enhancia/PlumePluginScanner"));
+      #endif
+    }
     
     // commands strings
     namespace commands
