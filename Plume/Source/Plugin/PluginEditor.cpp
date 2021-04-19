@@ -92,6 +92,12 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 
     newGesturePanel->toFront (false);
     sideBarButton->toFront (false);
+
+    if (processor.getUpdater().hasNewAvailableVersion())
+    {
+        optionsPanel->setVisible (true);
+        updaterPanel->resetAndOpenPanel();
+    }
 }
 
 PlumeEditor::~PlumeEditor()
