@@ -116,7 +116,7 @@ float Vibrato::getValueForMappedParameter (Range<float> paramRange, bool reverse
         vibLast = true;
         send = true;
         const float normalizedValue = (getGestureValue()/(2*9.80665f)*gainVal/200.0f*0.5f + 0.5f);
-        return (Gesture::mapParameter (getGestureValue(), 0.0f, 1.0f, paramRange, reversed));
+        return (Gesture::mapParameter (normalizedValue, 0.0f, 1.0f, paramRange, reversed));
     }
     else if (vibTrig != vibLast && vibTrig == false)
     {
