@@ -72,6 +72,15 @@ void TabbedPanelComponent::paint (Graphics& g)
                         (style == tabsVertical) ? Justification::centredLeft
                                                 : Justification::centred,
                         true);
+
+            if (tabs[i]->alert)
+            {
+                auto alertArea = juce::Rectangle<int> (10, 10).withCentre ({tabArea.getRight() - 8 - PLUME::UI::MARGIN * 2,
+                                                                            tabArea.getCentreY() + 2});
+                
+                g.setColour (Colour (0xff8090f0));
+                g.fillEllipse (alertArea.toFloat());
+            }
         }
     }
 }
@@ -168,6 +177,26 @@ Component* TabbedPanelComponent::getComponentFromTab (const String tabName)
     }
 
 	return nullptr;
+}
+
+void TabbedPanelComponent::setTabAlert (const int tabNumber, const bool alertToSet)
+{
+    if (tabNumber < 0 || tabNumber > tabs.size()) return;
+
+    tabs[tabNumber]->alert = alertToSet;
+    repaint();
+}
+
+void TabbedPanelComponent::setTabAlert (const String tabName, const bool alertToSet)
+{
+    for (int i = 0; i < tabs.size(); i++)
+    {
+        if (tabs[i]->name == tabName)
+        {
+            setTabAlert (i, alertToSet);
+            return;
+        }
+    }
 }
 
 Component* TabbedPanelComponent::getComponentFromSelectedTab()

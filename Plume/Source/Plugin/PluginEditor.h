@@ -23,6 +23,7 @@
 #include "../Ui/Top/Options/BugReportPanel.h"
 #include "../Ui/Top/NewPreset/NewPresetPanel.h"
 #include "../Ui/Top/NewGesture/NewGesturePanel.h"
+#include "../Ui/Top/UpdaterPanel/UpdaterPanel.h"
 
 //==============================================================================
 /**
@@ -121,6 +122,7 @@ private:
     std::unique_ptr<BugReportPanel> bugReportPanel;
     ScopedPointer<NewPresetPanel> newPresetPanel;
     ScopedPointer<NewGesturePanel> newGesturePanel;
+    std::unique_ptr<UpdaterPanel> updaterPanel;
     
     
     //==============================================================================

@@ -52,7 +52,7 @@ void PlumeLookAndFeel::setColours()
 	setColour (ComboBox::outlineColourId, Colour (0x00000000)); // Necessary to not draw Label outlines due to an Error in the JUCE code..
 	
 	// PopupMenu
-	setColour (PopupMenu::backgroundColourId, Colour (0xff323232));
+	setColour (PopupMenu::backgroundColourId, Colour (0xff222242));
 	setColour (PopupMenu::textColourId, Colour (0xffe5e5e5));
 	setColour (PopupMenu::highlightedBackgroundColourId, Colour (0xaae5e5e5));
 	setColour (PopupMenu::highlightedTextColourId, Colour (0xff323232));

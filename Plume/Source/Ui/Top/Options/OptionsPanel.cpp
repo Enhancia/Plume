@@ -11,19 +11,21 @@
 #include "OptionsPanel.h"
 
 //==============================================================================
-OptionsPanel::OptionsPanel (PlumeProcessor& proc)   : processor (proc)
+OptionsPanel::OptionsPanel (PlumeProcessor& proc, UpdaterPanel& updtrPanel)
+    : processor (proc)
 {
     addAndMakeVisible (tabbedOptions = new TabbedPanelComponent());
 
     tabbedOptions->addTab (new FileOptionsSubPanel (processor), "File");
     tabbedOptions->addTab (new AboutPanel(), "About");
-    tabbedOptions->addTab (new Component(), "Update");
-    
+    tabbedOptions->addTab (new UpdaterSubPanel (processor.getUpdater(), updtrPanel), "Update");
+    tabbedOptions->setTabAlert (2, processor.getUpdater().hasNewAvailableVersion());
+
     // Close button
     addAndMakeVisible (closeButton = new ShapeButton ("Close Options Button",
-                                                       Colour(0x00000000),
-                                                       Colour(0x00000000),
-                                                       Colour(0x00000000)));
+                                                       Colour(0),
+                                                       Colour(0),
+                                                       Colour(0)));
 
     Path p;
     p.startNewSubPath (0, 0);
@@ -164,6 +166,6 @@ void OptionsPanel::paintProductInformations(Graphics& g, juce::Rectangle<int> ar
 
     g.setColour (currentTheme.getColour(PLUME::colour::topPanelSubText));
     g.setFont (PLUME::font::plumeFont.withHeight (12.0f));
-    g.drawText (String ("v " + JUCEApplication::getInstance()->getApplicationVersion()),
+    g.drawText (String ("v " + String (JucePlugin_VersionString)),
                 plumeTextArea, Justification::centredBottom);
 }
