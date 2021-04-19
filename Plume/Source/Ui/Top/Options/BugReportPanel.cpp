@@ -390,7 +390,8 @@ void BugReportPanel::getFilestoAttach (Array<File>& fileArrayToFill)
     fileStrings.add (File::getSpecialLocation (File::globalApplicationsDirectoryX86).getFullPathName()
                             + "\\Enhancia\\Enhancia_Service_Reader\\Enhancia_Service_Reader_Log.txt");
     // Scanner Log File
-    fileStrings.add (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/Plume/Logs/scanLog.txt"));
+    fileStrings.add (File::getSpecialLocation (File::userApplicationDataDirectory).getFullPathName()
+                     + "\\Enhancia\\Plume\\Logs\\scanLog.txt"));
 
     #elif JUCE_MAC
 
@@ -401,7 +402,8 @@ void BugReportPanel::getFilestoAttach (Array<File>& fileArrayToFill)
     fileStrings.add (File::getSpecialLocation(File::userApplicationDataDirectory).getFullPathName()
                             + "/Caches/DaemonSeriaPort_MacOS/EnhanciaDaemonlog.txt");
     // Scanner Log File
-    fileStrings.add (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Logs/Enhancia/Plume/Logs/scanLog.txt"));
+    fileStrings.add (File::getSpecialLocation (File::userApplicationDataDirectory).getFullPathName()
+                     + "Logs/Enhancia/Plume/Logs/scanLog.txt");
 
     #endif
 
