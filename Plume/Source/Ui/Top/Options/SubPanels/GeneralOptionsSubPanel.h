@@ -27,15 +27,42 @@
 //==============================================================================
 /*
 */
-class GeneralOptionsSubPanel    : public SubPanelComponent
+
+class ContactSubPanel : public SubPanelComponent
 {
 public:
-    explicit GeneralOptionsSubPanel (PlumeProcessor& proc);
-    ~GeneralOptionsSubPanel();
+    //==============================================================================
+    ContactSubPanel();
+    ~ContactSubPanel();
 
-    void buttonClicked (Button* bttn) override;
+    //==============================================================================
+    void buttonClicked(Button* bttn) override;
+
 private:
-    PlumeProcessor& processor;
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ContactSubPanel)
+};
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GeneralOptionsSubPanel)
+class AboutPanel: public Component
+{
+public:
+    //==============================================================================
+    AboutPanel();
+    ~AboutPanel();
+
+    //==============================================================================
+    void paint (Graphics& g) override;
+    void resized() override;
+
+private:
+    //==============================================================================
+    std::unique_ptr<ContactSubPanel> contactComponent;
+
+    //==============================================================================
+    juce::Rectangle<int> aboutArea;
+    juce::Rectangle<int> contactArea;
+    juce::Rectangle<int> creditsArea;
+    
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AboutPanel)
 };
