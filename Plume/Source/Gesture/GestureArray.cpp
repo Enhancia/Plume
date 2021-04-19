@@ -567,8 +567,8 @@ void GestureArray::addMergedPitchMessage (MidiBuffer& midiMessages, MidiBuffer& 
 				}
             }
 
-            // Midi mode on pitch
-            else if (g->generatesMidi() && g->midiType == Gesture::pitch /*&& g->getMidiValue() != 64*/)
+            // Midi mode on pitch for tilt or roll
+            else
             {
                 send = true;
                 pitchVal += g->getRescaledMidiValue() - 8192;

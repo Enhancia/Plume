@@ -378,7 +378,7 @@ Colour Gesture::getHighlightColour (int gestureType, bool gestureIsActive)
 bool Gesture::affectsPitch()
 {
     // vibrato/pitchBend or any gesture with a pitch midi mode return true
-    if (type == Gesture::vibrato || type == Gesture::pitchBend ||
+    if (/*type == Gesture::vibrato || type == Gesture::pitchBend ||*/
         (generatesMidi() && midiType == Gesture::pitch))
     {
         return true;
