@@ -33,9 +33,9 @@ void AboutPanel::paint (Graphics& g)
     osString = "MacOS";
     #endif
 
-    g.drawText ("Plume " + JUCEApplication::getInstance()->getApplicationVersion()
-                                            + " " + osString
-                                            + "  |  Copyright 2021 Enhancia, inc.",
+    g.drawText ("Plume " + String (JucePlugin_VersionString)
+                         + " " + osString
+                         + "  |  Copyright 2021 Enhancia, inc.",
                       aboutArea,
                       Justification::centred);
 }

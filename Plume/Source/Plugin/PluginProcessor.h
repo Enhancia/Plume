@@ -18,6 +18,7 @@
 #include "../Gesture/Gesture.h"
 #include "../DataReader/DataReader.h"
 #include "../Presets/PresetHandler.h"
+#include "../Updater/PlumeUpdater.h"
 
 //==============================================================================
 /**
@@ -176,7 +177,7 @@ public:
     /**
      * \brief DataReader getter.
      *
-     * \return Reference to the DataReader object.
+     * \return Pointer to the DataReader object. Handle with Care.
      */
     DataReader* getDataReader();
     /**
@@ -197,6 +198,12 @@ public:
      * \return Reference to the PresetHandler object.
      */
     PresetHandler& getPresetHandler();
+    /**
+     * \brief PlumeUpdater getter.
+     *
+     * \return Reference to the PlumeUpdater object.
+     */
+    PlumeUpdater& getUpdater();
     
 private:
     //==============================================================================
@@ -226,6 +233,7 @@ private:
     ScopedPointer<DataReader> dataReader; /**< \brief DataReader object. Recieves the data from the ring. */
     ScopedPointer<GestureArray> gestureArray; /**< \brief GestureArray object. Stores all current gesture objects. */
     ScopedPointer<PresetHandler> presetHandler; /**< \brief PresetHandler object. Stores preset directories and lists of all presets. */
+    std::unique_ptr<PlumeUpdater> updater; /**< \brief Plume Updater object. Downloads new Plume installer and launches it. */
     
     //==============================================================================
     //ValueTree settings;

@@ -22,6 +22,7 @@
 #include "../Ui/Top/Options/OptionsPanel.h"
 #include "../Ui/Top/NewPreset/NewPresetPanel.h"
 #include "../Ui/Top/NewGesture/NewGesturePanel.h"
+#include "../Ui/Top/UpdaterPanel/UpdaterPanel.h"
 
 //==============================================================================
 /**
@@ -119,6 +120,7 @@ private:
     ScopedPointer<OptionsPanel> optionsPanel;
     ScopedPointer<NewPresetPanel> newPresetPanel;
     ScopedPointer<NewGesturePanel> newGesturePanel;
+    std::unique_ptr<UpdaterPanel> updaterPanel;
     
     
     //==============================================================================

@@ -23,13 +23,19 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	setBroughtToFrontOnMouseClick (true);
 
 	// Creates the Top Panels
+    updaterPanel.reset (new UpdaterPanel (processor.getUpdater()));
+
+    addAndMakeVisible(optionsPanel = new OptionsPanel (processor, *updaterPanel));
+    optionsPanel->setVisible(false);
+    optionsPanel->setAlwaysOnTop(true);
+
     addAndMakeVisible (newGesturePanel = new NewGesturePanel (processor));
     newGesturePanel->hidePanel();
 
-	addAndMakeVisible (optionsPanel = new OptionsPanel (processor));
-	optionsPanel->setVisible (false);
-	optionsPanel->setAlwaysOnTop (true);
-	
+    addAndMakeVisible (*updaterPanel);
+    updaterPanel->setVisible (false);
+    updaterPanel->setAlwaysOnTop (true);
+
 	addAndMakeVisible (newPresetPanel = new NewPresetPanel (processor));
 	newPresetPanel->setVisible (false);
 	newPresetPanel->setAlwaysOnTop (true);
@@ -136,6 +142,7 @@ void PlumeEditor::resized()
     auto area = getLocalBounds();
     
     optionsPanel->setBounds (area);
+    updaterPanel->setBounds (area);
     newPresetPanel->setBounds (area);
 
 	if (!sideBarButton->getToggleState())

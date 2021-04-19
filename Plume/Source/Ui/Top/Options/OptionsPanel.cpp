@@ -11,19 +11,25 @@
 #include "OptionsPanel.h"
 
 //==============================================================================
-OptionsPanel::OptionsPanel (PlumeProcessor& proc)   : processor (proc)
+OptionsPanel::OptionsPanel (PlumeProcessor& proc, UpdaterPanel& updtrPanel)
+    : processor (proc)
 {
     addAndMakeVisible (tabbedOptions = new TabbedPanelComponent());
 
     tabbedOptions->addTab (new FileOptionsSubPanel (processor), "File");
     tabbedOptions->addTab (new AboutPanel(), "About");
-    tabbedOptions->addTab (new Component(), "Update");
+
+    // Update Button
+    updateButton.reset (new TextButton ("Update Button"));
+    updateButton->setButtonText ("Update");
     
+    tabbedOptions->addTab (new UpdaterSubPanel (processor.getUpdater(), updtrPanel), "Update");
+
     // Close button
     addAndMakeVisible (closeButton = new ShapeButton ("Close Options Button",
-                                                       Colour(0x00000000),
-                                                       Colour(0x00000000),
-                                                       Colour(0x00000000)));
+                                                       Colour(0),
+                                                       Colour(0),
+                                                       Colour(0)));
 
     Path p;
     p.startNewSubPath (0, 0);
@@ -32,16 +38,17 @@ OptionsPanel::OptionsPanel (PlumeProcessor& proc)   : processor (proc)
     p.lineTo (3*PLUME::UI::MARGIN, 0);
 
     closeButton->setShape (p, false, true, false);
-	closeButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::topPanelMainText), 1.0f);
+    closeButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::topPanelMainText), 1.0f);
     closeButton->setBorderSize (BorderSize<int> (6));
     closeButton->addMouseListener (this, false);
-	closeButton->addListener (this);
+    closeButton->addListener (this);
 }
 
 OptionsPanel::~OptionsPanel()
 {
     tabbedOptions = nullptr;
     closeButton = nullptr;
+    updateButton = nullptr;
 }
 
 //==============================================================================
@@ -128,18 +135,18 @@ void OptionsPanel::mouseUp (const MouseEvent& event)
 void OptionsPanel::mouseEnter (const MouseEvent &event)
 {
     if (event.eventComponent == closeButton)
-	{
-	    closeButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::topPanelMainText)
+    {
+        closeButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::topPanelMainText)
                                                       .withAlpha (0.4f), 1.0f);
-	}
+    }
 }
 
 void OptionsPanel::mouseExit (const MouseEvent &event)
 {
     if (event.eventComponent == closeButton)
-	{
-	    closeButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::topPanelMainText), 1.0f);
-	}
+    {
+        closeButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::topPanelMainText), 1.0f);
+    }
 }
 
 void OptionsPanel::visibilityChanged()
@@ -164,6 +171,6 @@ void OptionsPanel::paintProductInformations(Graphics& g, juce::Rectangle<int> ar
 
     g.setColour (currentTheme.getColour(PLUME::colour::topPanelSubText));
     g.setFont (PLUME::font::plumeFont.withHeight (12.0f));
-    g.drawText (String ("v " + JUCEApplication::getInstance()->getApplicationVersion()),
+    g.drawText (String ("v " + String (JucePlugin_VersionString)),
                 plumeTextArea, Justification::centredBottom);
 }

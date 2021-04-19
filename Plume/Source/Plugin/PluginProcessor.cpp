@@ -51,6 +51,7 @@ PlumeProcessor::PlumeProcessor()
 		                                                         .getChildWithName(PLUME::treeId::pluginDirs));
     presetHandler = new PresetHandler (parameters.state.getChildWithName (PLUME::treeId::general)
 		                                               .getChildWithName (PLUME::treeId::presetDir));
+    updater.reset (new PlumeUpdater());
     
     dataReader->addChangeListener (gestureArray);
 
@@ -176,6 +177,11 @@ AudioProcessorValueTreeState& PlumeProcessor::getParameterTree()
 PresetHandler& PlumeProcessor::getPresetHandler()
 {
     return *presetHandler;
+}
+
+PlumeUpdater& PlumeProcessor::getUpdater()
+{
+    return *updater;
 }
 
 //==============================================================================

@@ -17,6 +17,7 @@
 #include "ScannerComponent.h"
 #include "SubPanels/FileOptionsSubPanel.h"
 #include "SubPanels/GeneralOptionsSubPanel.h"
+#include "SubPanels/UpdaterSubPanel.h"
 
 //==============================================================================
 /*
@@ -26,7 +27,7 @@ class OptionsPanel    : public Component,
 {
 public:
     //==============================================================================
-    explicit OptionsPanel (PlumeProcessor& proc);
+    explicit OptionsPanel (PlumeProcessor& proc, UpdaterPanel& updtrPanel);
     ~OptionsPanel();
 
     //==============================================================================
@@ -50,6 +51,9 @@ private:
     juce::Rectangle<int> optionsArea;
     ScopedPointer<TabbedPanelComponent> tabbedOptions;
     ScopedPointer<ShapeButton> closeButton;
+    std::unique_ptr<TextButton> updateButton;
+
+    //==============================================================================
     PlumeProcessor& processor;
     
     //==============================================================================
