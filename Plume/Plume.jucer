@@ -10,6 +10,15 @@
               jucerFormatVersion="1">
   <MAINGROUP id="RYgD59" name="Plume">
     <GROUP id="{9375F276-9F56-CF4A-C1B1-D4B5B9CE68B9}" name="Source">
+      <GROUP id="{A52FBFC7-37D0-2099-CA5B-989B8D3A840B}" name="Updater">
+        <FILE id="csAjpO" name="GitAssetDownloader.cpp" compile="1" resource="0"
+              file="Source/Updater/GitAssetDownloader.cpp"/>
+        <FILE id="eK0wYA" name="GitAssetDownloader.h" compile="0" resource="0"
+              file="Source/Updater/GitAssetDownloader.h"/>
+        <FILE id="zJnoeW" name="PlumeUpdater.cpp" compile="1" resource="0"
+              file="Source/Updater/PlumeUpdater.cpp"/>
+        <FILE id="Nigrk2" name="PlumeUpdater.h" compile="0" resource="0" file="Source/Updater/PlumeUpdater.h"/>
+      </GROUP>
       <GROUP id="{C4265A58-C7CC-0AD4-EB4C-B191A90D4C34}" name="Plugin">
         <FILE id="QcTe6y" name="PluginEditor.cpp" compile="1" resource="0"
               file="Source/Plugin/PluginEditor.cpp"/>
@@ -131,7 +140,15 @@
                     file="Source/Ui/Top/Options/SubPanels/SubPanelComponent.cpp"/>
               <FILE id="AjlIkJ" name="SubPanelComponent.h" compile="0" resource="0"
                     file="Source/Ui/Top/Options/SubPanels/SubPanelComponent.h"/>
+              <FILE id="Lypk58" name="UpdaterSubPanel.cpp" compile="1" resource="0"
+                    file="Source/Ui/Top/Options/SubPanels/UpdaterSubPanel.cpp"/>
+              <FILE id="UgL6MT" name="UpdaterSubPanel.h" compile="0" resource="0"
+                    file="Source/Ui/Top/Options/SubPanels/UpdaterSubPanel.h"/>
             </GROUP>
+            <FILE id="sYBSWy" name="BugReportPanel.cpp" compile="1" resource="0"
+                  file="Source/Ui/Top/Options/BugReportPanel.cpp"/>
+            <FILE id="oIDIzb" name="BugReportPanel.h" compile="0" resource="0"
+                  file="Source/Ui/Top/Options/BugReportPanel.h"/>
             <FILE id="BLC4C2" name="OptionsPanel.cpp" compile="1" resource="0"
                   file="Source/Ui/Top/Options/OptionsPanel.cpp"/>
             <FILE id="XScjx7" name="OptionsPanel.h" compile="0" resource="0" file="Source/Ui/Top/Options/OptionsPanel.h"/>
@@ -139,6 +156,11 @@
                   file="Source/Ui/Top/Options/ScannerComponent.cpp"/>
             <FILE id="ylLF43" name="ScannerComponent.h" compile="0" resource="0"
                   file="Source/Ui/Top/Options/ScannerComponent.h"/>
+          </GROUP>
+          <GROUP id="{36BC13E2-DC54-A7FF-AB49-1762BA76CFC3}" name="UpdaterPanel">
+            <FILE id="DwnQ2S" name="UpdaterPanel.cpp" compile="1" resource="0"
+                  file="Source/Ui/Top/UpdaterPanel/UpdaterPanel.cpp"/>
+            <FILE id="vKinEj" name="UpdaterPanel.h" compile="0" resource="0" file="Source/Ui/Top/UpdaterPanel/UpdaterPanel.h"/>
           </GROUP>
         </GROUP>
         <GROUP id="{ACEA364D-47F4-BE67-B3B0-D0FEC5CE7BA7}" name="Header">
@@ -247,32 +269,15 @@
         </GROUP>
       </GROUP>
       <GROUP id="{C68567B8-DFE3-8FC9-B013-03678584A057}" name="Images">
-        <GROUP id="{3FD5E2A0-1ED1-28E0-6BB9-5FF273A9EF0B}" name="Backgrounds">
-          <FILE id="esWm6n" name="gesturesBackground.jpg" compile="0" resource="1"
-                file="Resources/Images/Backgrounds/gesturesBackground.jpg"/>
-          <FILE id="nuFIiw" name="gesturesBackground1.jpeg" compile="0" resource="1"
-                file="Resources/Images/Backgrounds/gesturesBackground1.jpeg"/>
-          <FILE id="ViiXLg" name="gesturesBackground2.jpeg" compile="0" resource="1"
-                file="Resources/Images/Backgrounds/gesturesBackground2.jpeg"/>
-          <FILE id="i6J5N0" name="homePageEnhancia.jpg" compile="0" resource="1"
-                file="Resources/Images/Backgrounds/homePageEnhancia.jpg"/>
-        </GROUP>
         <GROUP id="{20DFADED-00CA-0C8D-0252-C1692DB76059}" name="Gestures">
           <FILE id="imHDAT" name="Close.png" compile="0" resource="1" file="Resources/Images/Gestures/Close.png"/>
           <FILE id="CXrCc0" name="OnOff.png" compile="0" resource="1" file="Resources/Images/Gestures/OnOff.png"/>
-          <FILE id="OyT0Q1" name="pitchBend.png" compile="0" resource="1" file="Resources/Images/Gestures/pitchBend.png"/>
-          <FILE id="CcJ0Sl" name="reverse.png" compile="0" resource="1" file="Resources/Images/Gestures/reverse.png"/>
-          <FILE id="crL2PT" name="roll.png" compile="0" resource="1" file="Resources/Images/Gestures/roll.png"/>
-          <FILE id="oFcoGt" name="tilt.png" compile="0" resource="1" file="Resources/Images/Gestures/tilt.png"/>
-          <FILE id="iUhiZn" name="vibrato.png" compile="0" resource="1" file="Resources/Images/Gestures/vibrato.png"/>
-          <FILE id="npAAWO" name="wave.png" compile="0" resource="1" file="Resources/Images/Gestures/wave.png"/>
+          <FILE id="S4IwM7" name="reverse.png" compile="0" resource="1" file="Resources/Images/Gestures/reverse.png"/>
         </GROUP>
         <GROUP id="{F93B62CD-63A5-A9FA-49F9-786C5A767BCC}" name="Logo">
+          <FILE id="J5oaDj" name="BRAND-Popup-grey.png" compile="0" resource="1"
+                file="Resources/Images/Logo/BRAND-Popup-grey.png"/>
           <FILE id="AnkEeB" name="plumeLogo.png" compile="0" resource="1" file="Resources/Images/Logo/plumeLogo.png"/>
-        </GROUP>
-        <GROUP id="{F6FAAEE0-96DB-E95C-4118-7E49BA1F7C90}" name="Wrapper">
-          <FILE id="eMeLtE" name="eye.png" compile="0" resource="1" file="Resources/Images/Wrapper/eye.png"/>
-          <FILE id="rrePb0" name="folder.png" compile="0" resource="1" file="Resources/Images/Wrapper/folder.png"/>
         </GROUP>
       </GROUP>
     </GROUP>

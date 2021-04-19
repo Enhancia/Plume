@@ -20,8 +20,10 @@
 #include "../Ui/Gesture/GesturePanel.h"
 #include "../Ui/LookAndFeel/PlumeLookAndFeel.h"
 #include "../Ui/Top/Options/OptionsPanel.h"
+#include "../Ui/Top/Options/BugReportPanel.h"
 #include "../Ui/Top/NewPreset/NewPresetPanel.h"
 #include "../Ui/Top/NewGesture/NewGesturePanel.h"
+#include "../Ui/Top/UpdaterPanel/UpdaterPanel.h"
 
 //==============================================================================
 /**
@@ -117,8 +119,10 @@ private:
     ScopedPointer<HeaderComponent> header; /**< \brief Header object that displays the preset, and the wrapping features */
     ScopedPointer<HideSideBarButton> sideBarButton; /**< \brief Button that hides or shows the sidebar */
     ScopedPointer<OptionsPanel> optionsPanel;
+    std::unique_ptr<BugReportPanel> bugReportPanel;
     ScopedPointer<NewPresetPanel> newPresetPanel;
     ScopedPointer<NewGesturePanel> newGesturePanel;
+    std::unique_ptr<UpdaterPanel> updaterPanel;
     
     
     //==============================================================================

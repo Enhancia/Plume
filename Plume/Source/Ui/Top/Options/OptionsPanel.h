@@ -17,6 +17,7 @@
 #include "ScannerComponent.h"
 #include "SubPanels/FileOptionsSubPanel.h"
 #include "SubPanels/GeneralOptionsSubPanel.h"
+#include "SubPanels/UpdaterSubPanel.h"
 
 //==============================================================================
 /*
@@ -26,7 +27,7 @@ class OptionsPanel    : public Component,
 {
 public:
     //==============================================================================
-    explicit OptionsPanel (PlumeProcessor& proc);
+    explicit OptionsPanel (PlumeProcessor& proc, UpdaterPanel& updtrPanel);
     ~OptionsPanel();
 
     //==============================================================================
@@ -39,12 +40,19 @@ public:
     void mouseEnter (const MouseEvent& event) override;
     void mouseExit (const MouseEvent& event) override;
     void visibilityChanged() override;
+    void paintProductInformations (Graphics& g, juce::Rectangle<int> area);
 
 private:
+    //==============================================================================
+    Image enhanciaLogo = ImageFileFormat::loadFrom (PlumeData::BRANDPopupgrey_png,
+                                                    PlumeData::BRANDPopupgrey_pngSize);
+    
     //==============================================================================
     juce::Rectangle<int> optionsArea;
     ScopedPointer<TabbedPanelComponent> tabbedOptions;
     ScopedPointer<ShapeButton> closeButton;
+
+    //==============================================================================
     PlumeProcessor& processor;
     
     //==============================================================================

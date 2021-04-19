@@ -39,12 +39,12 @@ void PlumeProgressBar::paint (Graphics& g)
         g.fillRect (barArea.reduced (0, height/3));
 
         // Bar progress
-        g.setColour (PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText));
+        g.setColour (getPlumeColour(topPanelMainText));
         g.fillRect (barArea.reduced (0, height/3).withWidth (int (progress*barArea.getWidth())));
         
         if (!smallBar)
         {
-            g.setColour (PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText));
+            g.setColour (getPlumeColour(topPanelMainText));
             g.setFont (PLUME::font::plumeFontBook.withHeight (10.0f));
             
             if (progress != 1.0f && juce_isfinite (progress.load()))

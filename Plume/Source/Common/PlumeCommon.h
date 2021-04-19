@@ -249,6 +249,20 @@ namespace PLUME
         static const String unlockInterface ("unlockInterface");
         static const String lockInterface ("lockInterface");
     }
+
+    namespace compatibility
+    {
+        static bool isTestVersion()
+        {
+            return String (JucePlugin_VersionString).upToFirstOccurrenceOf (".", false, true)
+                                                    .getIntValue() >= 100;
+        }
+    }
+
+    namespace auth
+    {
+        const String MACHINE_TOKEN ("50327c582d22471d2427faed42c9928dcd8b0e98 "); //std::getenv ("MACHINE_ENHANCIA_OAUTH");
+    }
     
     namespace path
     {
@@ -273,7 +287,8 @@ namespace PLUME
             tiltArrow,
             pitchBendArrow,
             rollArrow,
-            waveIcon
+            waveIcon,
+            plumeLogo
 		};
 
         extern const Path createPath (PathId pathToCreate);

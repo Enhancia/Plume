@@ -94,9 +94,6 @@ private:
     void endDragMode();
 
     //==============================================================================
-    Image backgroundImage = ImageFileFormat::loadFrom (PlumeData::homePageEnhancia_jpg,
-                                                       PlumeData::homePageEnhancia_jpgSize);
-
     OwnedArray<Component> gestureSlots;
     ScopedPointer<GestureSettingsComponent> gestureSettings;
     ScopedPointer<PlumeShapeButton> closeButton;
