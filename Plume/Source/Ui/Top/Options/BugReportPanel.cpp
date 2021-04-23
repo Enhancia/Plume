@@ -391,7 +391,7 @@ void BugReportPanel::getFilestoAttach (Array<File>& fileArrayToFill)
                             + "\\Enhancia\\Enhancia_Service_Reader\\Enhancia_Service_Reader_Log.txt");
     // Scanner Log File
     fileStrings.add (File::getSpecialLocation (File::userApplicationDataDirectory).getFullPathName()
-                     + "\\Enhancia\\Plume\\Logs\\scanLog.txt"));
+                     + "\\Enhancia\\Plume\\Logs\\scanLog.txt");
 
     #elif JUCE_MAC
 
