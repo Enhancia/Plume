@@ -124,6 +124,13 @@ public:
      *  \return True if the parameter is found in any of the gestures.
      */
     bool parameterIsMapped (int parameterId);
+
+    /**
+     *  \brief Helper method to know if a specific CC is already in use.
+     *
+     *  \return True if any of the gestures generate this CC.
+     */
+    bool isCCInUse (int controllerNumber);
      
     
     //==============================================================================
