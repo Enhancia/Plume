@@ -238,8 +238,8 @@ void GestureArray::addGestureCopyingOther (Gesture* other, int gestureId, String
             if (auto* vibrato = dynamic_cast<Vibrato*> (other))
             {
                 gestures.add (new Vibrato (gestureName, gestureId, parameters,
-                                           vibrato->gain.convertFrom0to1 (vibrato->gain.getValue()),
-                                           vibrato->threshold.convertFrom0to1 (vibrato->threshold.getValue()),
+                                           vibrato->gainDisplayRange.convertFrom0to1 (vibrato->gain.getValue()),
+                                           vibrato->thresholdDisplayRange.convertFrom0to1 (vibrato->threshold.getValue()),
                                            other->getDescription()));
             }
             break;
@@ -248,10 +248,10 @@ void GestureArray::addGestureCopyingOther (Gesture* other, int gestureId, String
             if (auto* pitchBend = dynamic_cast<PitchBend*> (other))
             {
                 gestures.add (new PitchBend (gestureName, gestureId, parameters,
-                                             pitchBend->rangeLeftLow.convertFrom0to1 (pitchBend->rangeLeftLow.getValue()),
-                                             pitchBend->rangeLeftHigh.convertFrom0to1 (pitchBend->rangeLeftHigh.getValue()),
-                                             pitchBend->rangeRightLow.convertFrom0to1 (pitchBend->rangeRightLow.getValue()),
-                                             pitchBend->rangeRightHigh.convertFrom0to1 (pitchBend->rangeRightHigh.getValue()),
+                                             pitchBend->pitchBendDisplayRange.convertFrom0to1 (pitchBend->rangeLeftLow.getValue()),
+                                             pitchBend->pitchBendDisplayRange.convertFrom0to1 (pitchBend->rangeLeftHigh.getValue()),
+                                             pitchBend->pitchBendDisplayRange.convertFrom0to1 (pitchBend->rangeRightLow.getValue()),
+                                             pitchBend->pitchBendDisplayRange.convertFrom0to1 (pitchBend->rangeRightHigh.getValue()),
                                              other->getDescription()));
             }
             break;
@@ -260,8 +260,8 @@ void GestureArray::addGestureCopyingOther (Gesture* other, int gestureId, String
             if (auto* tilt = dynamic_cast<Tilt*> (other))
             {
                 gestures.add (new Tilt (gestureName, gestureId, parameters,
-                                        tilt->rangeLow.convertFrom0to1 (tilt->rangeLow.getValue()),
-                                        tilt->rangeHigh.convertFrom0to1 (tilt->rangeHigh.getValue()),
+                                        tilt->tiltDisplayRange.convertFrom0to1 (tilt->rangeLow.getValue()),
+                                        tilt->tiltDisplayRange.convertFrom0to1 (tilt->rangeHigh.getValue()),
                                         other->getDescription()));
             }
             break;
@@ -280,8 +280,8 @@ void GestureArray::addGestureCopyingOther (Gesture* other, int gestureId, String
             if (auto* roll = dynamic_cast<Roll*> (other))
             {
                 gestures.add (new Roll (gestureName, gestureId, parameters,
-                                        roll->rangeLow.convertFrom0to1 (roll->rangeLow.getValue()),
-                                        roll->rangeHigh.convertFrom0to1 (roll->rangeHigh.getValue()),
+                                        roll->rollDisplayRange.convertFrom0to1 (roll->rangeLow.getValue()),
+                                        roll->rollDisplayRange.convertFrom0to1 (roll->rangeHigh.getValue()),
                                         other->getDescription()));
             }
             break;
