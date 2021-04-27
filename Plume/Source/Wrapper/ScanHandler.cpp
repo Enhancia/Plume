@@ -59,9 +59,14 @@ void ScanHandler::startScanProcess (const bool forceRescan,
     {
         if (file.isDirectory())
         {
-            fsp.add (file);
+            fsp.addIfNotAlreadyThere (file);
         }
     }
+
+    fsp.removeRedundantPaths();
+    createFilesToScanArray (fsp);
+
+    scanThread.copyFilesToScan (filesToScan);
 
     scanThread.startThread();
 
@@ -185,7 +190,6 @@ void ScanHandler::setPluginFormats (bool useVST, bool useVST3, bool useAUOnMac)
 
     if (useVST) formatManager->addFormat (new VSTPluginFormat());
 
-
   #if JUCE_MAC
     if (useAUOnMac) formatManager->addFormat (new AudioUnitPluginFormat());
   #endif
@@ -193,6 +197,33 @@ void ScanHandler::setPluginFormats (bool useVST, bool useVST3, bool useAUOnMac)
   #if JUCE_PLUGINHOST_VST3
     if (useVST3) formatManager->addFormat (new VST3PluginFormat());
   #endif
+}
+
+void ScanHandler::createFilesToScanArray (const FileSearchPath& directoriesToSearchIn)
+{
+    filesToScan.clear();
+
+    for (int formatNum = 0; formatNum < formatManager->getNumFormats(); formatNum++)
+    {
+        // Add all files or Ids (check to see if type didn't exist already)
+        auto filesOrIdsForGivenFormat = formatManager->getFormat (formatNum)->searchPathsForPlugins (fsp, true, true);
+
+        for (auto fileOrId : filesOrIdsForGivenFormat)
+        {
+            bool shouldAdd = true;
+
+            for (auto* fileToScanToCompareTo : filesToScan)
+                if ((fileOrId == fileToScanToCompareTo->fileOrIdentifier ||
+                    fileOrId.fromLastOccurrenceOf ("\\", false, false)
+                            .upToLastOccurrenceOf (".", false, false)
+                     == fileToScanToCompareTo->fileOrIdentifier.fromLastOccurrenceOf ("\\", false, false)
+                                                              .upToLastOccurrenceOf (".", false, false)) &&
+                    fileToScanToCompareTo->format == formatNum)
+                        shouldAdd = false;
+
+            if (shouldAdd) filesToScan.add (new FileToScan (fileOrId, formatNum));
+        }
+    }
 }
 
 String ScanHandler::getScanInfo()
