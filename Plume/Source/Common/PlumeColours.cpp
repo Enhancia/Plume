@@ -146,7 +146,14 @@ PlumeTheme PlumeTheme::createDefaultTheme()
                          0xff494949, //topPanelBackground
                          0xc0000000, //topPanelTransparentArea
                          0xffffffff, //topPanelMainText
-                         0x50ffffff //topPanelSubText
+                         0x50ffffff, //topPanelSubText
+
+                    // Popup Menu
+                         0xff22252e, //popupMenuOutline
+                         0xff323643, //popupMenuBackground
+                         0xff4a5063, //popupMenuSelectedBackground
+                         0xffe5e5e5, //popupMenuText
+                         0xffe5e5e5  //popupMenuSelectedText
                        }));
 }
 
@@ -245,7 +252,14 @@ PlumeTheme PlumeTheme::createRedTheme()
                          0xff604040, //topPanelBackground
                          0xc0000000, //topPanelTransparentArea
                          0xffffffff, //topPanelMainText
-                         0x50ffffff //topPanelSubText
+                         0x50ffffff, //topPanelSubText
+
+                    // Popup Menu
+                         0xff22252e, //popupMenuOutline
+                         0xff323643, //popupMenuBackground
+                         0xff4a5063, //popupMenuSelectedBackground
+                         0xffe5e5e5, //popupMenuText
+                         0xffe5e5e5  //popupMenuSelectedText
                        }));
 }
 
@@ -271,7 +285,7 @@ PlumeTheme PlumeTheme::createTestTheme()
                          0xffffffff, //presetsBoxRowText
                          0xffffffff, //presetsBoxRowTextHighlighted
                          0xfff8f8f9, //presetsBoxScrollBar
-                         0xfff3a536, //presetTypeToggleSelected
+                         0xffffffff, //presetTypeToggleSelected
                          0xff3b3f4b, //presetTypeToggleUnselected
                          0xff393c4e, //presetsSearchBarFill
  
@@ -340,6 +354,13 @@ PlumeTheme PlumeTheme::createTestTheme()
                          0xff363c4e, //topPanelBackground
                          0xc0000005, //topPanelTransparentArea
                          0xffffffff, //topPanelMainText
-                         0x50ffffff //topPanelSubText
+                         0x50ffffff, //topPanelSubText
+
+                    // Popup Menu
+                         0xff272a35, //popupMenuOutline
+                         0xff323643, //popupMenuBackground
+                         0xff4a5063, //popupMenuSelectedBackground
+                         0xffe5e5e5, //popupMenuText
+                         0xffe5e5e5  //popupMenuSelectedText
                        }));
 }

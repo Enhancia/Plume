@@ -45,6 +45,9 @@ public:
                         bool isMouseOver, bool isMouseDown) override;
 
     //==============================================================================
+    void drawPopupMenuBackground (Graphics& g, int width, int height);
+
+    //==============================================================================
     //Font getLabelFont (Label& lbl) override;
     Font getTextButtonFont (TextButton& bttn, int buttonHeight) override;
     Font getComboBoxFont (ComboBox& cb) override;
