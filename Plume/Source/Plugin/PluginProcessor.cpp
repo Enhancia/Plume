@@ -867,7 +867,8 @@ void PlumeProcessor::filterInputMidi (MidiBuffer& midiMessages)
 bool PlumeProcessor::messageShouldBeKept (const MidiMessage& midiMessage)
 {
     if (midiMessage.isPitchWheel() ||
-        (midiMessage.isController() && midiMessage.getControllerNumber() < 120))
+        (midiMessage.isController() && midiMessage.getControllerNumber() < 120
+                                    && gestureArray->isCCInUse (midiMessage.getControllerNumber())))
     {
         return false;
     }
