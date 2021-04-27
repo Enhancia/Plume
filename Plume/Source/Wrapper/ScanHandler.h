@@ -39,6 +39,16 @@ public:
     };
 
     //==============================================================================
+    struct FileToScan
+    {
+        FileToScan (String fileOrId, int formatId)
+            : fileOrIdentifier (fileOrId), format (formatId) {}
+        
+        String fileOrIdentifier; // File for VST or ID for AU
+        int format; // int corresponding to the id in current format manager
+    };
+
+    //==============================================================================
     ScanHandler (KnownPluginList& pluginsRef);
     ~ScanHandler();
 
@@ -56,6 +66,7 @@ public:
 
     //==============================================================================
     void setPluginFormats (bool useVST = true, bool useVST3 = true, bool useAUOnMac = true);
+    void createFilesToScanArray (const FileSearchPath& directoriesToSearchIn);
 
     //==============================================================================
     String getScanInfo();
@@ -86,26 +97,25 @@ private:
 
         void run() override
         {
-            numFilesToScan = countNumFilesToScan();
+            numFilesToScan = filesToScan.size();
             currentFileNum = 0;
 
-            // For each format
-            for (int formatNum = 0; (formatNum < formatManager->getNumFormats() && !threadShouldExit()); formatNum++)
-            {
-                DBG (" Scanning format : " << formatManager->getFormat (formatNum)->getName() << "\n");
-                
-                StringArray fileOrIds = formatManager->getFormat (formatNum)->searchPathsForPlugins (directoriesToSearch, true, true);
+            startLogEntry();
 
-                // For all candidate plugin files for this format
-                for (int fileNum = 0; (fileNum < fileOrIds.size() && !threadShouldExit()); fileNum++)
+            // For all candidate plugin files
+            for (int fileNum = 0; (fileNum < numFilesToScan && !threadShouldExit()); fileNum++)
+            {
+                const String fileOrIdentifier = filesToScan[fileNum]->fileOrIdentifier;
+                const int formatNum = filesToScan[fileNum]->format;
+
+                DBG ("   - Scanning file : " << fileOrIdentifier << " ( Progress : " << progress
+                                             << " | " << fileNum << "/" << numFilesToScan << " )");
+                Logger::writeToLog ("Scanning File : " + fileOrIdentifier
+                                                       + " ( Progress : " + String (fileNum)
+                                                       + "/" + String (numFilesToScan) + " )\n");
+
+                if (!pluginList.isListingUpToDate (fileOrIdentifier, *formatManager->getFormat (formatNum)))
                 {
-                    String fileOrIdentifier = fileOrIds[fileNum];
-                    DBG ("   - Scanning file : " << fileOrIdentifier << " ( Progress : " << progress
-                                                 << " | " << fileNum << "/" << numFilesToScan << " )");
-                    Logger::writeToLog ("Scanning File : " + fileOrIdentifier
-                                                           + " ( Progress : " + String (fileNum)
-                                                           + "/" + String (numFilesToScan) + " )\n");
-                    
                     if (launchScannerProgram (formatManager->getFormat(formatNum)->getName(), fileOrIdentifier))
                     {
                         int count = 0;
@@ -134,17 +144,13 @@ private:
                             {
                                 DBG ("Scanner ended with 0 - count " << count);
                                 
-                                if (!pluginList.isListingUpToDate (fileOrIdentifier, *formatManager->getFormat (formatNum)))
-                                {
-                                    OwnedArray<PluginDescription> found;
-                                    formatManager->getFormat(formatNum)->findAllTypesForFile (found, fileOrIdentifier);
+                                OwnedArray<PluginDescription> found;
+                                formatManager->getFormat(formatNum)->findAllTypesForFile (found, fileOrIdentifier);
 
-                                    for (auto* desc : found)
-                                    {
-                                        bool success = pluginList.addType (*desc); // Adds type with dbg alert
-                                        if (success) DBG ("     Successful!");
-                                        else DBG("     Failed to add to KPL...!");
-                                    }
+                                for (auto* desc : found)
+                                {
+                                    if (desc->name != "Plume")
+                                        pluginList.addType (*desc);
                                 }
                             }
                             else
@@ -158,12 +164,13 @@ private:
                             jassert (scannerProcess.kill()); // Force kill with dbg alert
                         }
                     }
-
-                    updateProgress (fileOrIdentifier);
                 }
+
+                updateProgress (fileOrIdentifier);
             }
 
             progress = 1.0f;
+            endLogEntry();
             DBG ("Thread just exited...");
         }
 
@@ -206,6 +213,15 @@ private:
             }
         }
 
+        void copyFilesToScan (const OwnedArray<FileToScan>& fileArrayToCopy)
+        {
+            filesToScan.clear();
+
+            for (auto* fileToScanToCopy : fileArrayToCopy)
+                filesToScan.add (new FileToScan (fileToScanToCopy->fileOrIdentifier,
+                                                 fileToScanToCopy->format));
+        }
+
         int countNumFilesToScan()
         {
             int numFilesTotal = 0;
@@ -243,8 +259,41 @@ private:
             return false;
         }
 
+        void startLogEntry()
+        {
+            if (PLUME::file::scanLog.existsAsFile() || PLUME::file::scanLog.create().wasOk())
+            {
+                Time time (Time::getCurrentTime());
+
+                PLUME::file::scanLog.appendText ("\n\r\n\r======= STARTING NEW PLUME PLUGIN SCAN : "
+                                                     + String (time.getYear()) + "/"
+                                                     + String (time.getMonth()) + "/"
+                                                     + String (time.getDayOfMonth()) + " - "
+                                                     + String (time.getHours()) + ":"
+                                                     + String (time.getMinutes()) + ":"
+                                                     + String (time.getSeconds()) + " =======\n\r");
+            }
+        }
+
+        void endLogEntry()
+        {
+            if (PLUME::file::scanLog.existsAsFile())
+            {
+                Time time (Time::getCurrentTime());
+
+                PLUME::file::scanLog.appendText ("======= SCAN FINISHED : "
+                                                     + String (time.getYear()) + "/"
+                                                     + String (time.getMonth()) + "/"
+                                                     + String (time.getDayOfMonth()) + " - "
+                                                     + String (time.getHours()) + ":"
+                                                     + String (time.getMinutes()) + ":"
+                                                     + String (time.getSeconds()) + " =======\n\r");
+            }
+        }
+
         std::atomic<float>& progress;
         std::unique_ptr<AudioPluginFormatManager> formatManager;
+        OwnedArray<FileToScan> filesToScan;
         FileSearchPath& directoriesToSearch;
         ChildProcess scannerProcess;
         KnownPluginList& pluginList;
@@ -266,6 +315,7 @@ private:
 
     //==============================================================================
     std::unique_ptr <AudioPluginFormatManager> formatManager;
+    OwnedArray<FileToScan> filesToScan;
     KnownPluginList& pluginList;
     FileSearchPath fsp;
     bool finished = false;
