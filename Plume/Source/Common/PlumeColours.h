@@ -108,6 +108,13 @@ enum PlumeColourID
     topPanelTransparentArea,
     topPanelMainText,
     topPanelSubText,
+            
+    // Popup Menu
+    popupMenuOutline,
+    popupMenuBackground,
+    popupMenuSelectedBackground,
+    popupMenuText,
+    popupMenuSelectedText,
     
     numColours
 };
