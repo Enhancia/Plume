@@ -385,6 +385,6 @@ void BugReportPanel::getFilestoAttach (Array<File>& fileArrayToFill)
     #if JUCE_WINDOWS
     fileArrayToFill.add (File::getSpecialLocation (File::globalApplicationsDirectoryX86).getChildFile ("\\Enhancia\\Enhancia_Service_Reader\\Enhancia_Service_Reader_Log.txt"));
     #elif JUCE_MAC
-    fileArrayToFill.add (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("/Caches/DaemonSeriaPort_MacOS/EnhanciaDaemonlog.txt");
+    fileArrayToFill.add (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("/Caches/DaemonSeriaPort_MacOS/EnhanciaDaemonlog.txt"));
     #endif
 }
