@@ -552,7 +552,7 @@ PluginDescription* PluginWrapper::getDescriptionToWrap (const PluginDescription&
     {
 		if (desc.uid == description.uid &&
 			desc.pluginFormatName == description.pluginFormatName &&
-			desc.name == description.name)
+			(desc.name == description.name || desc.descriptiveName == description.descriptiveName))
         {
             return new PluginDescription (desc);
         }
