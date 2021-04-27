@@ -357,7 +357,7 @@ PlumeTheme PlumeTheme::createTestTheme()
                          0x50ffffff, //topPanelSubText
 
                     // Popup Menu
-                         0xff272a35, //popupMenuOutline
+                         0xff22252e, //popupMenuOutline
                          0xff323643, //popupMenuBackground
                          0xff4a5063, //popupMenuSelectedBackground
                          0xffe5e5e5, //popupMenuText

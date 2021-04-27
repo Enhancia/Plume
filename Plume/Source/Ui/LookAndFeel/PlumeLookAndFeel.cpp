@@ -107,6 +107,8 @@ void PlumeLookAndFeel::drawPopupMenuBackground (Graphics& g, int width, int heig
     g.drawRect (0, 0, width, height);
 }
 
+int PlumeLookAndFeel::getPopupMenuBorderSize() { return 0; }
+
 void PlumeLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int width, int height,
                                          float sliderPos,
                                          float minSliderPos,
