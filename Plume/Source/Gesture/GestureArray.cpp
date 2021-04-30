@@ -179,6 +179,20 @@ bool GestureArray::parameterIsMapped (int parameterId)
     return false;
 }
 
+bool GestureArray::isCCInUse (const int controllerNumber)
+{
+    ScopedLock gestlock (gestureArrayLock);
+    
+    for (auto* g : gestures)
+    {
+        if (g->generatesMidi() && g->midiType == Gesture::controlChange
+                               && g->getCc() == controllerNumber)
+            return true;
+    }
+    
+    return false;
+}
+
 //==============================================================================
 void GestureArray::changeListenerCallback(ChangeBroadcaster*)
 {

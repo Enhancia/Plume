@@ -379,39 +379,12 @@ String BugReportPanel::createMultipartData (const String& boundary, const Array<
 
 void BugReportPanel::getFilestoAttach (Array<File>& fileArrayToFill)
 {
-    StringArray fileStrings;
-
+    fileArrayToFill.add (PLUME::file::plumeLog);
+    fileArrayToFill.add (PLUME::file::scanLog);
+    
     #if JUCE_WINDOWS
-
-    // Plume Log File
-    fileStrings.add (File::getSpecialLocation (File::userApplicationDataDirectory).getFullPathName()
-                            + "\\Enhancia\\Plume\\Logs\\plumeLog.txt");
-    // Daemon Log File
-    fileStrings.add (File::getSpecialLocation (File::globalApplicationsDirectoryX86).getFullPathName()
-                            + "\\Enhancia\\Enhancia_Service_Reader\\Enhancia_Service_Reader_Log.txt");
-    // Scanner Log File
-    fileStrings.add (File::getSpecialLocation (File::userApplicationDataDirectory).getFullPathName()
-                     + "\\Enhancia\\Plume\\Logs\\scanLog.txt");
-
+    fileArrayToFill.add (File::getSpecialLocation (File::globalApplicationsDirectoryX86).getChildFile ("\\Enhancia\\Enhancia_Service_Reader\\Enhancia_Service_Reader_Log.txt"));
     #elif JUCE_MAC
-
-    // Plume Log File
-    fileStrings.add (File::getSpecialLocation(File::userApplicationDataDirectory).getFullPathName()
-                            + "/Logs/Enhancia/Plume/Logs/plumeLog.txt");
-    // Daemon Log File
-    fileStrings.add (File::getSpecialLocation(File::userApplicationDataDirectory).getFullPathName()
-                            + "/Caches/DaemonSeriaPort_MacOS/EnhanciaDaemonlog.txt");
-    // Scanner Log File
-    fileStrings.add (File::getSpecialLocation (File::userApplicationDataDirectory).getFullPathName()
-                     + "Logs/Enhancia/Plume/Logs/scanLog.txt");
-
+    fileArrayToFill.add (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("/Caches/DaemonSeriaPort_MacOS/EnhanciaDaemonlog.txt"));
     #endif
-
-    for (auto fileString : fileStrings)
-    {
-        if (File (fileString).existsAsFile())
-        {
-            fileArrayToFill.add (File (fileString));
-        }
-    }
 }

@@ -362,48 +362,28 @@ void PresetHandler::initialiseDirectories()
 {
     //File defaultDir;
     DBG ("Plume " + String(JucePlugin_VersionString));
-  #if JUCE_WINDOWS
-    defaultDir = File::getSpecialLocation (File::globalApplicationsDirectoryX86).getChildFile ("Enhancia/")
-                                                                              .getChildFile ("Plume " +
-                                                                                             String(JucePlugin_VersionString))
-                                                                              .getChildFile ("Default_Presets/");
+    defaultDir = PLUME::file::defaultPresetDir;
 
     loadPresetDirectoryFromFile();
     if (!getUserDirectory().exists())
     {
-        defaultDir = File::getSpecialLocation (File::userDocumentsDirectory).getChildFile ("Enhancia/")
+        #if JUCE_WINDOWS
+        File f = File::getSpecialLocation (File::userDocumentsDirectory).getChildFile ("Enhancia/")
                                                                                  .getChildFile ("Plume/")
                                                                                  .getChildFile ("Presets/")
                                                                                  .getChildFile ("User/");
-        defaultDir.createDirectory();
-        setUserDirectory (defaultDir, false);
-    }
+        #elif JUCE_MAC
 
-  #elif JUCE_MAC
-    defaultDir = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Audio/")
-                                                                              .getChildFile ("Presets/")
-                                                                              .getChildFile ("Enhancia/")
-                                                                              .getChildFile ("Plume/")
-                                                                              .getChildFile ("Default/");
-
-    loadPresetDirectoryFromFile();
-    
-    if (!getUserDirectory().exists())
-    {
         File f = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Audio/")
                                                                                        .getChildFile ("Presets/")
                                                                                        .getChildFile ("Enhancia/")
                                                                                        .getChildFile ("Plume/")
                                                                                        .getChildFile ("User/");
+        #endif
+
         f.createDirectory();
         setUserDirectory (f, false);
     }
-  #else
-    return; //Should only compile on win or mac
-  #endif
-
-    
-    File f = getUserDirectory();
 
     storePresets();
 }

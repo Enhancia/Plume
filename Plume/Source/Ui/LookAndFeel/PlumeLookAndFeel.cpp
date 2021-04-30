@@ -52,10 +52,10 @@ void PlumeLookAndFeel::setColours()
 	setColour (ComboBox::outlineColourId, Colour (0x00000000)); // Necessary to not draw Label outlines due to an Error in the JUCE code..
 	
 	// PopupMenu
-	setColour (PopupMenu::backgroundColourId, Colour (0xff222242));
-	setColour (PopupMenu::textColourId, Colour (0xffe5e5e5));
-	setColour (PopupMenu::highlightedBackgroundColourId, Colour (0xaae5e5e5));
-	setColour (PopupMenu::highlightedTextColourId, Colour (0xff323232));
+	setColour (PopupMenu::backgroundColourId, getPlumeColour (popupMenuBackground));
+	setColour (PopupMenu::textColourId, getPlumeColour (popupMenuText));
+	setColour (PopupMenu::highlightedBackgroundColourId, getPlumeColour (popupMenuSelectedBackground));
+	setColour (PopupMenu::highlightedTextColourId, getPlumeColour (popupMenuSelectedText));
 }
 /*
 Font PlumeLookAndFeel::getLabelFont (Label& lbl)
@@ -99,6 +99,15 @@ void PlumeLookAndFeel::drawScrollbar (Graphics& g, ScrollBar& scrollbar,
     g.setColour (isMouseOver ? c.brighter (0.25f) : c);
     g.fillRect (thumbBounds.reduced (1).toFloat());
 }
+
+void PlumeLookAndFeel::drawPopupMenuBackground (Graphics& g, int width, int height)
+{
+    g.fillAll (findColour (PopupMenu::backgroundColourId));
+    g.setColour (getPlumeColour (popupMenuOutline));
+    g.drawRect (0, 0, width, height);
+}
+
+int PlumeLookAndFeel::getPopupMenuBorderSize() { return 0; }
 
 void PlumeLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int width, int height,
                                          float sliderPos,

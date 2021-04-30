@@ -24,7 +24,12 @@ PlumeProcessor::PlumeProcessor()
     TRACE_IN;
     
     // Logger
-    plumeLogger = FileLogger::createDefaultAppLogger ("Enhancia/Plume/Logs/",
+    plumeLogger = FileLogger::createDefaultAppLogger (
+                                                      #if JUCE_MAC
+                                                        "Enhancia/Plume/",
+                                                      #elif JUCE_WINDOWS
+                                                        "Enhancia/Plume/Logs/",
+                                                      #endif
                                                       "plumeLog.txt",
                                                       "Plume Log | Host application : "
                                                       + File::getSpecialLocation (File::hostApplicationPath)
@@ -867,7 +872,8 @@ void PlumeProcessor::filterInputMidi (MidiBuffer& midiMessages)
 bool PlumeProcessor::messageShouldBeKept (const MidiMessage& midiMessage)
 {
     if (midiMessage.isPitchWheel() ||
-        (midiMessage.isController() && midiMessage.getControllerNumber() < 120))
+        (midiMessage.isController() && midiMessage.getControllerNumber() < 120
+                                    && gestureArray->isCCInUse (midiMessage.getControllerNumber())))
     {
         return false;
     }

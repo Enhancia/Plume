@@ -257,7 +257,7 @@ void PlumePreset::getPluginFromFile (File& file)
         {
             if (wrap->getChildByName ("PLUGIN") != nullptr)
             {
-                plugin = wrap->getChildByName ("PLUGIN")->getStringAttribute ("name", "");
+                plugin = wrap->getChildByName ("PLUGIN")->getStringAttribute ("descriptiveName", "");
             }
         }
     }   
