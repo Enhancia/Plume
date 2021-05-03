@@ -22,7 +22,7 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc, Component& newPrst)  : p
     pluginNameLabel->setFont (PLUME::font::plumeFont.withHeight (PLUME::font::HEADER_LABEL_FONT_H));
     pluginNameLabel->setJustificationType (Justification::centred);
     pluginNameLabel->setEditable (false, false, false);
-    pluginNameLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
+    pluginNameLabel->setColour (Label::backgroundColourId, Colour (0));
     pluginNameLabel->setColour (Label::textColourId, getPlumeColour (headerText));
     pluginNameLabel->addMouseListener (this, false);
     
@@ -31,7 +31,7 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc, Component& newPrst)  : p
     presetNameLabel->setFont (PLUME::font::plumeFont.withHeight (PLUME::font::HEADER_LABEL_FONT_H));
     presetNameLabel->setJustificationType (Justification::centred);
     presetNameLabel->setEditable (false, false, false);
-    presetNameLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
+    presetNameLabel->setColour (Label::backgroundColourId, Colour (0));
     presetNameLabel->setColour (Label::textColourId, getPlumeColour (headerText));
     
     createButtons();
@@ -39,10 +39,12 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc, Component& newPrst)  : p
 	// Plugin List menu
     createPluginMenu (KnownPluginList::sortByManufacturer);
     
+    processor.getParameterTree().addParameterListener ("track_arm", this);
 }
 
 HeaderComponent::~HeaderComponent()
 {
+    processor.getParameterTree().removeParameterListener ("track_arm", this);
     pluginNameLabel = nullptr;
     presetNameLabel = nullptr;
     pluginListButton = nullptr;
@@ -111,6 +113,12 @@ void HeaderComponent::resized()
     using namespace PLUME::UI;
     
     auto area = getLocalBounds();
+
+    // Automation Area
+    {
+        auto automArea = area.removeFromLeft (getHeight()).translated (MARGIN, 0);
+        trackArmButton->setBounds (automArea);
+    }
 
     // Plugin Area
     {
@@ -194,6 +202,28 @@ void HeaderComponent::buttonClicked (Button* bttn)
     {
         setNextPreset();
     }
+    else if (bttn == trackArmButton.get())
+    {
+        RangedAudioParameter* trackArmParameter = processor.getParameterTree().getParameter ("track_arm");
+
+        if (trackArmParameter != nullptr)
+        {
+            DBG ("Before Change : " << trackArmParameter->getValue()
+                                    << " | Toggle : " << (trackArmButton->getToggleState() ? 1 : 0));
+            
+            trackArmParameter->beginChangeGesture();
+            trackArmParameter->setValueNotifyingHost (trackArmButton->getToggleState() ? 1.0f : 0.0f);
+            trackArmParameter->endChangeGesture();
+            
+            DBG("After Change : " << trackArmParameter->getValue());
+        }
+    }
+}
+
+
+void HeaderComponent::parameterChanged (const String &parameterID, float newValue)
+{
+    trackArmButton->setToggleState (newValue == 1.0f, dontSendNotification);
 }
 
 void HeaderComponent::pluginMenuCallback (int result, HeaderComponent* header)
@@ -251,14 +281,14 @@ void HeaderComponent::createButtons()
     arrowDown.lineTo (PLUME::UI::HEADER_HEIGHT - PLUME::UI::MARGIN, 2*PLUME::UI::MARGIN);
     
     addAndMakeVisible (pluginListButton = new PlumeShapeButton ("Plugin List Button",
-                                                                Colour(0x00000000),
+                                                                Colour(0),
                                                                 getPlumeColour (headerButtonStroke)));
     pluginListButton->setShape (arrowDown, false, false, false);
     pluginListButton->addListener (this);
 
     // Save Preset Button
     addAndMakeVisible (savePresetButton = new PlumeShapeButton ("Save Preset Button",
-                                                                Colour(0x00000000),
+                                                                Colour(0),
                                                                 getPlumeColour (headerButtonStroke)));
 
 
@@ -278,7 +308,7 @@ void HeaderComponent::createButtons()
     arrowRight.lineTo (0.0f, 10.0f);
 
     addAndMakeVisible (leftArrowButton = new PlumeShapeButton ("Change Preset Left Button",
-                                                                Colour(0x00000000),
+                                                                Colour(0),
                                                                 getPlumeColour (headerButtonStroke)));
 
 
@@ -286,12 +316,23 @@ void HeaderComponent::createButtons()
     leftArrowButton->addListener (this);
 
     addAndMakeVisible (rightArrowButton = new PlumeShapeButton ("Change Preset Right Button",
-                                                                Colour(0x00000000),
+                                                                Colour(0),
                                                                 getPlumeColour (headerButtonStroke)));
 
 
     rightArrowButton->setShape (arrowRight, false, true, false);
     rightArrowButton->addListener (this);
+
+    trackArmButton.reset (new PlumeShapeButton ("Arm Plume Button",
+                                                Colour (0),
+                                                Colour (0xffc00000),
+                                                getPlumeColour (headerButtonStroke)));
+    addAndMakeVisible (*trackArmButton);
+
+    trackArmButton->setShape (PLUME::path::createPath (PLUME::path::onOff), false, true, false);
+    trackArmButton->setClickingTogglesState (true);
+    trackArmButton->setToggleState (processor.getParameterTree().getParameter ("track_arm")->getValue() == 1.0f, dontSendNotification);  
+    trackArmButton->addListener (this);
 }
 
 void HeaderComponent::setPreviousPreset()

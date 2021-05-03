@@ -135,8 +135,7 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
     int armValue = parameters.getParameter ("track_arm")
                              ->convertFrom0to1 (parameters.getParameter ("track_arm")
                                                           ->getValue());
-    lastArm = armValue == int (PLUME::param::armed) ||
-             (armValue == int (PLUME::param::unknownArm) && isProbablyOnAnArmedTrack());
+    lastArm = (armValue == int (PLUME::param::armed));
 
     // Adds the gesture's MIDI messages to the buffer, and changes parameters if needed
     gestureArray->process (midiMessages, plumeBuffer);
@@ -458,7 +457,7 @@ AudioProcessorValueTreeState::ParameterLayout PlumeProcessor::initializeParamete
 
     layout.add (std::make_unique<AudioParameterInt> ("track_arm",
                                                      "track_arm",
-                                                     0, 2, 2));
+                                                     0, 1, 1));
 
     return layout;
 }

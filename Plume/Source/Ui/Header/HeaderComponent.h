@@ -20,7 +20,8 @@
 */
 class HeaderComponent    : public Component,
                            public PlumeComponent,
-                           public Button::Listener
+                           public Button::Listener,
+                           private AudioProcessorValueTreeState::Listener
 {
 public:
     //==============================================================================
@@ -43,6 +44,7 @@ public:
     void mouseEnter (const MouseEvent &event) override;
     void mouseExit (const MouseEvent &event) override;
     void buttonClicked (Button* bttn) override;
+    void parameterChanged (const String &parameterID, float newValue) override;
     
     //==============================================================================
     void createPluginMenu (KnownPluginList::SortMethod sort);
@@ -70,6 +72,7 @@ private:
     ScopedPointer<PlumeShapeButton> savePresetButton;
     ScopedPointer<PlumeShapeButton> leftArrowButton;
     ScopedPointer<PlumeShapeButton> rightArrowButton;
+    std::unique_ptr<PlumeShapeButton> trackArmButton;
     ScopedPointer<Label> pluginNameLabel;
     ScopedPointer<Label> presetNameLabel;
     
