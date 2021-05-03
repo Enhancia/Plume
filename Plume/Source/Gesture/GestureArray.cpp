@@ -424,11 +424,11 @@ bool GestureArray::isIdAvailable (int idToCheck)
 
 void GestureArray::moveGestureToId (int idToMoveFrom, int idToMoveTo)
 {
+    ScopedLock gestlock (gestureArrayLock);
+    
     Gesture* gestureToMove = getGesture (idToMoveFrom);
 
     if (gestureToMove == nullptr || !isIdAvailable(idToMoveTo)) return;
-
-    ScopedLock gestlock (gestureArrayLock);
 
     addGestureCopyingOther (gestureToMove, idToMoveTo);
     gestures.getLast()->swapParametersWithOtherGesture (*gestureToMove);
@@ -439,6 +439,8 @@ void GestureArray::moveGestureToId (int idToMoveFrom, int idToMoveTo)
 
 void GestureArray::duplicateGesture (int idToDuplicateFrom, bool prioritizeHigherId)
 {
+    ScopedLock gestlock (gestureArrayLock);
+    
     Gesture* gestureToMove = getGesture (idToDuplicateFrom);
     int idToDuplicateTo = findClosestIdToDuplicate (idToDuplicateFrom, prioritizeHigherId);
 
@@ -501,13 +503,21 @@ void GestureArray::swapGestures (int firstId, int secondId)
 	ScopedLock gestlock(gestureArrayLock);
 
     ScopedPointer<Gesture> secondGesture = gestures.removeAndReturn (gestures.indexOf (getGesture (secondId)));
-    
+    Array<float> secondGestureParameters = { parameters.getParameterAsValue (String (secondId) + PLUME::param::paramIds[0]).getValue(),
+                                             parameters.getParameterAsValue (String (secondId) + PLUME::param::paramIds[1]).getValue(),
+                                             parameters.getParameterAsValue (String (secondId) + PLUME::param::paramIds[2]).getValue(),
+                                             parameters.getParameterAsValue (String (secondId) + PLUME::param::paramIds[3]).getValue() };
+
     // Replaces second gesture with first
     moveGestureToId (firstId, secondId);
 
     // Copies second gesture to first Id
     addGestureCopyingOther (secondGesture, firstId);
     getGesture (firstId)->swapParametersWithOtherGesture (*secondGesture);
+    parameters.getParameterAsValue (String (firstId) + PLUME::param::paramIds[0]).setValue (secondGestureParameters[0]);
+    parameters.getParameterAsValue (String (firstId) + PLUME::param::paramIds[1]).setValue (secondGestureParameters[1]);
+    parameters.getParameterAsValue (String (firstId) + PLUME::param::paramIds[2]).setValue (secondGestureParameters[2]);
+    parameters.getParameterAsValue (String (firstId) + PLUME::param::paramIds[3]).setValue (secondGestureParameters[3]);
 }
 
 //==============================================================================
