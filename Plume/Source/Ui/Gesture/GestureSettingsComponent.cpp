@@ -60,23 +60,7 @@ void GestureSettingsComponent::update (const String& parameterThatChanged)
 {
     if (disabled) return;
 
-    if (parameterThatChanged.startsWith ("_midi"))
-    {
-        if (parameterThatChanged.endsWith ("n"))
-        {
-            midiParameterToggle->setToggleState (gesture.generatesMidi());
-            retractablePanel->update();
-        }
-        else if (parameterThatChanged.endsWith ("w"))
-        {
-            retractablePanel->updateMidiRange (MidiRangeTuner::lowThumb);
-        }
-        else if (parameterThatChanged.endsWith ("h"))
-        {
-            retractablePanel->updateMidiRange (MidiRangeTuner::highThumb);
-        }
-    }
-    else if (parameterThatChanged.compare ("_on") == 0)
+    if (parameterThatChanged.isEmpty())
     {
         update();
     }
@@ -327,6 +311,7 @@ void GestureSettingsComponent::createToggles()
     {
         gesture.setActive (muteButton->getToggleState());
         closeButton.setToggleState (gesture.isActive(), dontSendNotification);
+        update();
     };
 
     closeButton.setStrokeOffAndOnColours (getPlumeColour (mutedHighlight),
