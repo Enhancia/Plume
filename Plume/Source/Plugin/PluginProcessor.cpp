@@ -22,7 +22,9 @@ PlumeProcessor::PlumeProcessor()
        , parameters (*this, nullptr, "PARAMETERS", initializeParameters())
 {
     TRACE_IN;
-    
+    PluginHostType pluginHostType;
+    DBG ("Plugin host type : " << pluginHostType.type << " | Host Path : " << pluginHostType.getHostPath() << " | Plugin Type : " << pluginHostType.getPluginLoadedAs());
+
     // Logger
     plumeLogger = FileLogger::createDefaultAppLogger (
                                                       #if JUCE_MAC
@@ -31,16 +33,12 @@ PlumeProcessor::PlumeProcessor()
                                                         "Enhancia/Plume/Logs/",
                                                       #endif
                                                       "plumeLog.txt",
-                                                      "Plume Log | Host application : "
-                                                      + File::getSpecialLocation (File::hostApplicationPath)
-                                                            .getFullPathName()
-                                                      + " | OS :"
-                                                      #if JUCE_MAC
-                                                        " MAC "
-                                                      #elif JUCE_WINDOWS
-                                                        " Windows "
-                                                      #endif
-                                                      + " | Plume v" + JucePlugin_VersionString + " \n");
+                                                      "[Plume Log Entry]"
+                                                      "\n | Host application : id=" + String (pluginHostType.type)
+                                                      + " path=" + pluginHostType.getHostPath()
+                                                      + "\n | OS : " + SystemStats::getOperatingSystemName()
+                                                      + "\n | Plume v" + JucePlugin_VersionString
+                                                      + " (formatId=" + String (pluginHostType.getPluginLoadedAs()) + ")\n");
     
     Logger::setCurrentLogger (plumeLogger);
     
