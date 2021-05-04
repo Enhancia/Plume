@@ -102,10 +102,22 @@ void HeaderComponent::paint (Graphics& g)
     g.restoreState();
 
     // Plugin Name Area
+    g.saveState();
     g.reduceClipRegion (getLocalBounds().withLeft (pluginNameLabel->getX()));
     g.setColour (getPlumeColour (pluginDisplayBackground));
 
     g.fillRoundedRectangle (getLocalBounds().reduced (MARGIN_SMALL).toFloat(), 15.0f);
+    g.restoreState();
+
+    // Ring Path
+    g.setColour (getPlumeColour (headerText).withAlpha (0.9f));
+    Path ringPath = PLUME::path::createPath (PLUME::path::ring);
+
+    g.fillPath (ringPath,
+                ringPath.getTransformToScaleToFit (juce::Rectangle<float> (16.0f, 16.0f)
+                                                        .withCentre ({float (trackArmButton->getBounds().getRight()) + 15.0f,
+                                                                     float (trackArmButton->getBounds().getCentreY())}),
+                                                   true));
 }
 
 void HeaderComponent::resized()
@@ -116,7 +128,8 @@ void HeaderComponent::resized()
 
     // Automation Area
     {
-        auto automArea = area.removeFromLeft (getHeight()).translated (MARGIN, 0);
+        auto automArea = area.removeFromLeft (60).reduced (2*MARGIN, 3*MARGIN_SMALL)
+                                                 .translated (MARGIN_SMALL, 0);
         trackArmButton->setBounds (automArea);
     }
 
@@ -202,28 +215,12 @@ void HeaderComponent::buttonClicked (Button* bttn)
     {
         setNextPreset();
     }
-    else if (bttn == trackArmButton.get())
-    {
-        RangedAudioParameter* trackArmParameter = processor.getParameterTree().getParameter ("track_arm");
-
-        if (trackArmParameter != nullptr)
-        {
-            DBG ("Before Change : " << trackArmParameter->getValue()
-                                    << " | Toggle : " << (trackArmButton->getToggleState() ? 1 : 0));
-            
-            trackArmParameter->beginChangeGesture();
-            trackArmParameter->setValueNotifyingHost (trackArmButton->getToggleState() ? 1.0f : 0.0f);
-            trackArmParameter->endChangeGesture();
-            
-            DBG("After Change : " << trackArmParameter->getValue());
-        }
-    }
 }
 
 
 void HeaderComponent::parameterChanged (const String &parameterID, float newValue)
 {
-    trackArmButton->setToggleState (newValue == 1.0f, dontSendNotification);
+    trackArmButton->setToggleState (newValue == 1.0f);
 }
 
 void HeaderComponent::pluginMenuCallback (int result, HeaderComponent* header)
@@ -323,16 +320,25 @@ void HeaderComponent::createButtons()
     rightArrowButton->setShape (arrowRight, false, true, false);
     rightArrowButton->addListener (this);
 
-    trackArmButton.reset (new PlumeShapeButton ("Arm Plume Button",
-                                                Colour (0),
-                                                Colour (0xffc00000),
-                                                getPlumeColour (headerButtonStroke)));
+    trackArmButton.reset (new DualTextToggle ("Gesture Automation", "Gesture Automation",
+                                              getPlumeColour (presetDisplayBackground),
+                                              getPlumeColour (headerText).withAlpha (0.9f),
+                                              DualTextToggle::toggle));
     addAndMakeVisible (*trackArmButton);
+    trackArmButton->setToggleState (processor.getParameterTree().getParameter ("track_arm")->getValue() == 1.0f);
+    trackArmButton->setStateIndependentTextColour (getPlumeColour (headerText));
+    trackArmButton->setToggleThumbColour (getPlumeColour (tunerSliderBackground));
+    trackArmButton->onStateChange = [this]()
+    {
+        RangedAudioParameter* trackArmParameter = processor.getParameterTree().getParameter("track_arm");
 
-    trackArmButton->setShape (PLUME::path::createPath (PLUME::path::onOff), false, true, false);
-    trackArmButton->setClickingTogglesState (true);
-    trackArmButton->setToggleState (processor.getParameterTree().getParameter ("track_arm")->getValue() == 1.0f, dontSendNotification);  
-    trackArmButton->addListener (this);
+        if (trackArmParameter != nullptr)
+        {
+            trackArmParameter->beginChangeGesture();
+            trackArmParameter->setValueNotifyingHost(trackArmButton->getToggleState() ? 1.0f : 0.0f);
+            trackArmParameter->endChangeGesture();
+        }
+    };
 }
 
 void HeaderComponent::setPreviousPreset()

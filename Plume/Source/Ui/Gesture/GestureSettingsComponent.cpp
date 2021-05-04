@@ -306,7 +306,7 @@ void GestureSettingsComponent::createToggles()
                                                                  gesture.getHighlightColour()));
     midiParameterToggle->setStyle (DualTextToggle::toggleWithTopText);
     midiParameterToggle->setToggleState (gesture.generatesMidi());
-    midiParameterToggle->setStateUndependentTextColour (getPlumeColour (detailPanelMainText));
+    midiParameterToggle->setStateIndependentTextColour (getPlumeColour (detailPanelMainText));
     midiParameterToggle->setToggleThumbColour (getPlumeColour (tunerSliderBackground));
     midiParameterToggle->onStateChange = [this] ()
     {

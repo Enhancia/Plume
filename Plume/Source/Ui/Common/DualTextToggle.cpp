@@ -12,7 +12,7 @@
 
 //==============================================================================
 DualTextToggle::DualTextToggle (String falseStateText, String trueStateText, DualToggleStyle initialStyle)
-	: stateFalseText (falseStateText), stateTrueText (trueStateText)
+	: stateFalseText (falseStateText), stateTrueText (trueStateText), style (initialStyle)
 {
 }
 
@@ -20,7 +20,8 @@ DualTextToggle::DualTextToggle (String falseStateText, String trueStateText,
                     		    Colour falseStateColour, Colour trueStateColour,
                     		    DualToggleStyle initialStyle)
 	: stateFalseText (falseStateText), stateTrueText (trueStateText),
-	  stateFalseColour (falseStateColour), stateTrueColour (trueStateColour)
+	  stateFalseColour (falseStateColour), stateTrueColour (trueStateColour),
+	  style (initialStyle)
 {
 }
 
@@ -178,7 +179,7 @@ void DualTextToggle::setTrueStateColour (const Colour coulourToSet)
 	repaint();
 }
 
-void DualTextToggle::setStateUndependentTextColour (const Colour textColourToSet)
+void DualTextToggle::setStateIndependentTextColour (const Colour textColourToSet)
 {
 	textColour = textColourToSet;
 	repaint();

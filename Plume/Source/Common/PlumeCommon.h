@@ -293,7 +293,8 @@ namespace PLUME
             pitchBendArrow,
             rollArrow,
             waveIcon,
-            plumeLogo
+            plumeLogo,
+            ring
 		};
 
         extern const Path createPath (PathId pathToCreate);

@@ -14,6 +14,7 @@
 #include "../../Common/PlumeCommon.h"
 #include "../../Plugin/PluginProcessor.h"
 #include "../Gesture/GesturePanel.h"
+#include "../Common/DualTextToggle.h"
 
 //==============================================================================
 /*
@@ -54,7 +55,6 @@ public:
     void setPreviousPreset();
     void setNextPreset();
 
-
 private:
     //==============================================================================
 	static void pluginMenuCallback (int result, HeaderComponent* header);
@@ -72,7 +72,7 @@ private:
     ScopedPointer<PlumeShapeButton> savePresetButton;
     ScopedPointer<PlumeShapeButton> leftArrowButton;
     ScopedPointer<PlumeShapeButton> rightArrowButton;
-    std::unique_ptr<PlumeShapeButton> trackArmButton;
+    std::unique_ptr<DualTextToggle> trackArmButton;
     ScopedPointer<Label> pluginNameLabel;
     ScopedPointer<Label> presetNameLabel;
     
