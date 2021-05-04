@@ -198,6 +198,10 @@ void GestureComponent::createButton()
             if (auto* closeButton = dynamic_cast<Button*> (getParentComponent()
     														  ->findChildWithID ("Close Button")))
     			closeButton->setToggleState (gesture.isActive(), dontSendNotification);
+            
+            if (auto* gestureSettings = dynamic_cast<PlumeComponent*> (getParentComponent()
+                                                                         ->findChildWithID ("Gesture Settings")))
+                gestureSettings->update();
         }
 
         repaint();

@@ -252,8 +252,8 @@ void GestureArray::addGestureCopyingOther (Gesture* other, int gestureId, String
             if (auto* vibrato = dynamic_cast<Vibrato*> (other))
             {
                 gestures.add (new Vibrato (gestureName, gestureId, parameters,
-                                           vibrato->gain.convertFrom0to1 (vibrato->gain.getValue()),
-                                           vibrato->threshold.convertFrom0to1 (vibrato->threshold.getValue()),
+                                           vibrato->gainDisplayRange.convertFrom0to1 (vibrato->gain.getValue()),
+                                           vibrato->thresholdDisplayRange.convertFrom0to1 (vibrato->threshold.getValue()),
                                            other->getDescription()));
             }
             break;
@@ -262,10 +262,10 @@ void GestureArray::addGestureCopyingOther (Gesture* other, int gestureId, String
             if (auto* pitchBend = dynamic_cast<PitchBend*> (other))
             {
                 gestures.add (new PitchBend (gestureName, gestureId, parameters,
-                                             pitchBend->rangeLeftLow.convertFrom0to1 (pitchBend->rangeLeftLow.getValue()),
-                                             pitchBend->rangeLeftHigh.convertFrom0to1 (pitchBend->rangeLeftHigh.getValue()),
-                                             pitchBend->rangeRightLow.convertFrom0to1 (pitchBend->rangeRightLow.getValue()),
-                                             pitchBend->rangeRightHigh.convertFrom0to1 (pitchBend->rangeRightHigh.getValue()),
+                                             pitchBend->pitchBendDisplayRange.convertFrom0to1 (pitchBend->rangeLeftLow.getValue()),
+                                             pitchBend->pitchBendDisplayRange.convertFrom0to1 (pitchBend->rangeLeftHigh.getValue()),
+                                             pitchBend->pitchBendDisplayRange.convertFrom0to1 (pitchBend->rangeRightLow.getValue()),
+                                             pitchBend->pitchBendDisplayRange.convertFrom0to1 (pitchBend->rangeRightHigh.getValue()),
                                              other->getDescription()));
             }
             break;
@@ -274,8 +274,8 @@ void GestureArray::addGestureCopyingOther (Gesture* other, int gestureId, String
             if (auto* tilt = dynamic_cast<Tilt*> (other))
             {
                 gestures.add (new Tilt (gestureName, gestureId, parameters,
-                                        tilt->rangeLow.convertFrom0to1 (tilt->rangeLow.getValue()),
-                                        tilt->rangeHigh.convertFrom0to1 (tilt->rangeHigh.getValue()),
+                                        tilt->tiltDisplayRange.convertFrom0to1 (tilt->rangeLow.getValue()),
+                                        tilt->tiltDisplayRange.convertFrom0to1 (tilt->rangeHigh.getValue()),
                                         other->getDescription()));
             }
             break;
@@ -294,8 +294,8 @@ void GestureArray::addGestureCopyingOther (Gesture* other, int gestureId, String
             if (auto* roll = dynamic_cast<Roll*> (other))
             {
                 gestures.add (new Roll (gestureName, gestureId, parameters,
-                                        roll->rangeLow.convertFrom0to1 (roll->rangeLow.getValue()),
-                                        roll->rangeHigh.convertFrom0to1 (roll->rangeHigh.getValue()),
+                                        roll->rollDisplayRange.convertFrom0to1 (roll->rangeLow.getValue()),
+                                        roll->rollDisplayRange.convertFrom0to1 (roll->rangeHigh.getValue()),
                                         other->getDescription()));
             }
             break;
@@ -424,11 +424,11 @@ bool GestureArray::isIdAvailable (int idToCheck)
 
 void GestureArray::moveGestureToId (int idToMoveFrom, int idToMoveTo)
 {
+    ScopedLock gestlock (gestureArrayLock);
+    
     Gesture* gestureToMove = getGesture (idToMoveFrom);
 
     if (gestureToMove == nullptr || !isIdAvailable(idToMoveTo)) return;
-
-    ScopedLock gestlock (gestureArrayLock);
 
     addGestureCopyingOther (gestureToMove, idToMoveTo);
     gestures.getLast()->swapParametersWithOtherGesture (*gestureToMove);
@@ -439,6 +439,8 @@ void GestureArray::moveGestureToId (int idToMoveFrom, int idToMoveTo)
 
 void GestureArray::duplicateGesture (int idToDuplicateFrom, bool prioritizeHigherId)
 {
+    ScopedLock gestlock (gestureArrayLock);
+    
     Gesture* gestureToMove = getGesture (idToDuplicateFrom);
     int idToDuplicateTo = findClosestIdToDuplicate (idToDuplicateFrom, prioritizeHigherId);
 
@@ -501,13 +503,21 @@ void GestureArray::swapGestures (int firstId, int secondId)
 	ScopedLock gestlock(gestureArrayLock);
 
     ScopedPointer<Gesture> secondGesture = gestures.removeAndReturn (gestures.indexOf (getGesture (secondId)));
-    
+    Array<float> secondGestureParameters = { parameters.getParameterAsValue (String (secondId) + PLUME::param::paramIds[0]).getValue(),
+                                             parameters.getParameterAsValue (String (secondId) + PLUME::param::paramIds[1]).getValue(),
+                                             parameters.getParameterAsValue (String (secondId) + PLUME::param::paramIds[2]).getValue(),
+                                             parameters.getParameterAsValue (String (secondId) + PLUME::param::paramIds[3]).getValue() };
+
     // Replaces second gesture with first
     moveGestureToId (firstId, secondId);
 
     // Copies second gesture to first Id
     addGestureCopyingOther (secondGesture, firstId);
     getGesture (firstId)->swapParametersWithOtherGesture (*secondGesture);
+    parameters.getParameterAsValue (String (firstId) + PLUME::param::paramIds[0]).setValue (secondGestureParameters[0]);
+    parameters.getParameterAsValue (String (firstId) + PLUME::param::paramIds[1]).setValue (secondGestureParameters[1]);
+    parameters.getParameterAsValue (String (firstId) + PLUME::param::paramIds[2]).setValue (secondGestureParameters[2]);
+    parameters.getParameterAsValue (String (firstId) + PLUME::param::paramIds[3]).setValue (secondGestureParameters[3]);
 }
 
 //==============================================================================
