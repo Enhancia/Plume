@@ -443,7 +443,7 @@ void TwoRangeTuner::sliderValueChanged (Slider* sldr)
 
 void TwoRangeTuner::buttonClicked (Button* bttn)
 {
-    if (bttn == minLeftAngleButton)
+    if (bttn == maxLeftAngleButton)
     {
         if (gestureRange.convertFrom0to1 (value) > getRangeRightLow())
         {
@@ -454,11 +454,12 @@ void TwoRangeTuner::buttonClicked (Button* bttn)
             leftLowSlider->setValue (gestureRange.convertFrom0to1 (value), sendNotification);
         }
     }
-    else if (bttn == maxLeftAngleButton)
+    else if (bttn == minLeftAngleButton)
     {
         leftHighSlider->setValue (gestureRange.convertFrom0to1 (value), sendNotification);
     }
-     if (bttn == minRightAngleButton)
+    
+    else if (bttn == minRightAngleButton)
     {
         rightLowSlider->setValue (gestureRange.convertFrom0to1 (value), sendNotification);
     }
