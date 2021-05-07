@@ -12,7 +12,7 @@
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
 #include "../../../Common/PlumeCommon.h"
-#include "../Common/PlumeShapeButton.h"
+#include "../../Common/PlumeShapeButton.h"
 
 //==============================================================================
 /*
@@ -24,9 +24,10 @@ public:
     //==============================================================================
     enum SpecificReturnValue
     {
-        outdatedFirmware = 1,
-        noUploadQuitting,
-        upgradePending,
+        missingPlugin = 1,
+        missingScript,
+        scanRequired,
+        mappingOverwrite,
         unknown
     };
 
@@ -61,7 +62,7 @@ private:
     std::unique_ptr<Label> bodyText;
     std::unique_ptr<Label> titleLabel;
     std::unique_ptr<TextButton> okButton;
-    std::unique_ptr<DashShapeButton> closeButton;
+    std::unique_ptr<PlumeShapeButton> closeButton;
 
     int modalReturnValue = 0;
 

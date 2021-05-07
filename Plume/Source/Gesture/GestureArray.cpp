@@ -342,6 +342,7 @@ void GestureArray::addParameterToMapModeGesture (AudioProcessorParameter& param)
     if (parameterIsMapped (param.getParameterIndex()))
     {
         //cancelMapMode();
+        sendActionMessage (PLUME::commands::mappingOverwrite);
         return;
     }
     

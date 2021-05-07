@@ -136,30 +136,37 @@ PlumeAlertPanel* PlumeAlertPanel::createSpecificAlertPanel (SpecificReturnValue 
 {
     switch (panelType)
     {
-        case outdatedFirmware:
-            return new PlumeAlertPanel ("Your Neova firmware is outdated!",
-                                       "Please upgrade your Neova firmware "
-                                       "to use it with this Dashboard Version.",
+        case missingPlugin:
+            return new PlumeAlertPanel ("Missing plugin",
+                                       "The preset you just loaded uses a plugin that is not in your plugin list.\n"
+                                       "If you own this plugin, rescan your plugins so that Plume can load it with the preset."
+                                       "Only the gestures were loaded.",
                                        int (panelType),
                                        true,
-                                       "Upgrade Firmware");
-        case noUploadQuitting:
-            return new PlumeAlertPanel ("Upload changes to Neova?",
-                                       "You have configuration changes that have not "
-                                       "been uploaded to Neova.\n\nAre you sure you want to quit?",
+                                       "Ok");
+        case missingScript:
+            return new PlumeAlertPanel ("Missing DAW script",
+                                       "Your DAW supports using a custom script to improve your Plume experience.",
                                        int (panelType),
                                        true,
-                                       "Quit Anyways");
-        case upgradePending:
-            return new PlumeAlertPanel ("Interrupt Upgrade ?",
-                                       "Your Neova firmware is currently upgrading.\n\n"
-                                       "Are you sure you want to quit?",
+                                       "Ok");
+        case scanRequired:
+            return new PlumeAlertPanel ("Plugin Scan required.",
+                                       "You don't have plugins to use yet!"
+                                       "Please perform a plugin scan to use them with Plume.",
                                        int (panelType),
                                        true,
-                                       "Quit Anyways");
+                                       "Ok");
+        case mappingOverwrite:
+            return new PlumeAlertPanel ("Already mapped",
+                                       "This plugin parameter was already assigned to another gesture!"
+                                       "Please clear the mapping to assign this parameter to this gesture.",
+                                       int (panelType),
+                                       true,
+                                       "Ok");
         default:
-            return new PlumeAlertPanel ("Unknown Alert",
-                                       "Something went wrong I guess?\nPlease contact Enhancia about your issue!",
+            return new PlumeAlertPanel ("Something went wrong ..",
+                                       "Please contact Enhancia about your issue!",
                                        0,
                                        false,
                                        "Ok");

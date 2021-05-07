@@ -114,6 +114,12 @@
           <FILE id="QhDpZl" name="MovingCursor.h" compile="0" resource="0" file="Source/Ui/Common/MovingCursor.h"/>
         </GROUP>
         <GROUP id="{B4604567-1941-DD36-C775-AB9FE7EF3408}" name="Top">
+          <GROUP id="{5F9D9692-6474-8003-BDE0-1C4AC52A9AF4}" name="AlertPanel">
+            <FILE id="THNAUC" name="PlumeAlertPanel.cpp" compile="1" resource="0"
+                  file="Source/Ui/Top/AlertPanel/PlumeAlertPanel.cpp"/>
+            <FILE id="m0kd32" name="PlumeAlertPanel.h" compile="0" resource="0"
+                  file="Source/Ui/Top/AlertPanel/PlumeAlertPanel.h"/>
+          </GROUP>
           <GROUP id="{3B670344-8B9E-60BC-E91B-56E589C27872}" name="NewGesture">
             <FILE id="ip2Hp8" name="NewGesturePanel.cpp" compile="1" resource="0"
                   file="Source/Ui/Top/NewGesture/NewGesturePanel.cpp"/>
@@ -283,7 +289,7 @@
     </GROUP>
   </MAINGROUP>
   <LIVE_SETTINGS>
-    <WINDOWS buildEnabled="0"/>
+    <WINDOWS buildEnabled="1"/>
     <OSX/>
   </LIVE_SETTINGS>
   <EXPORTFORMATS>

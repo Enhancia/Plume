@@ -541,7 +541,16 @@ void PluginWrapper::addPluginsToMenu (PopupMenu& menu, KnownPluginList::SortMeth
 {
     ScopedLock plLock (pluginListLock);
     
-    pluginList->addToMenu (menu, sort);
+    if (pluginList->getNumTypes() == 0)
+    {
+        /*
+        if (auto* processor = dynamic_cast<ActionBroadcaster*> (getOwner()))
+        {
+
+        }*/
+        getOwner().sendActionMessage (PLUME::commands::scanRequired);
+    }
+    else pluginList->addToMenu (menu, sort);
 }
 
 PluginDescription* PluginWrapper::getDescriptionToWrap (const PluginDescription& description)
