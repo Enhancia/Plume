@@ -63,6 +63,7 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
         DBG ("Error: Couldn't find the plugin for the specified description..\n" <<
 			 "Specified description = Name : " << description.name << " | Id : " <<
 			 description.uid << " | Format : " << description.pluginFormatName << "\n");
+        getOwner().sendActionMessage (PLUME::commands::missingPlugin);
         return false;
     }
     

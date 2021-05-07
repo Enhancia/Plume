@@ -29,8 +29,12 @@ PlumeAlertPanel::~PlumeAlertPanel()
 
 void PlumeAlertPanel::paint (Graphics& g)
 {
+    // transparent area
+    g.setColour (PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelTransparentArea));
+    g.fillRect (getBounds());
+
     // options panel area
-    g.setColour (getPlumeColour(topPanelBackground).withAlpha (0.95f));
+    g.setColour (getPlumeColour(topPanelBackground));
     g.fillRoundedRectangle (panelArea.toFloat(), 10.0f);
     
     // options panel outline
