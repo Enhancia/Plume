@@ -338,15 +338,16 @@ void GestureArray::removeGesture (const String gestureName)
 
 void GestureArray::addParameterToMapModeGesture (AudioProcessorParameter& param)
 {
+    ScopedLock gestlock (gestureArrayLock);
+
     // Does nothing if the parameter is already mapped to any gesture
     if (parameterIsMapped (param.getParameterIndex()))
     {
-        //cancelMapMode();
+        cancelMapMode();
         sendActionMessage (PLUME::commands::mappingOverwrite);
         return;
     }
     
-    ScopedLock gestlock (gestureArrayLock);
     
     // else adds the parameter and cancels mapMode
     for (auto* g : gestures)

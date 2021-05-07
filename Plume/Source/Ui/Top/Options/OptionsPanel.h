@@ -42,6 +42,9 @@ public:
     void visibilityChanged() override;
     void paintProductInformations (Graphics& g, juce::Rectangle<int> area);
 
+    //==============================================================================
+    TabbedPanelComponent& getOptions();
+    
 private:
     //==============================================================================
     Image enhanciaLogo = ImageFileFormat::loadFrom (PlumeData::BRANDPopupgrey_png,

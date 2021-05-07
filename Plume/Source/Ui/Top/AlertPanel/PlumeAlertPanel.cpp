@@ -143,7 +143,7 @@ PlumeAlertPanel* PlumeAlertPanel::createSpecificAlertPanel (SpecificReturnValue 
         case missingPlugin:
             return new PlumeAlertPanel ("Missing plugin",
                                        "The preset you just loaded uses a plugin that is not in your plugin list.\n"
-                                       "If you own this plugin, rescan your plugins so that Plume can load it with the preset."
+                                       "If you own this plugin, rescan your plugins so that Plume can load it with the preset.\n"
                                        "Only the gestures were loaded.",
                                        int (panelType),
                                        true,
@@ -156,15 +156,15 @@ PlumeAlertPanel* PlumeAlertPanel::createSpecificAlertPanel (SpecificReturnValue 
                                        "Ok");
         case scanRequired:
             return new PlumeAlertPanel ("Plugin Scan required.",
-                                       "You don't have plugins to use yet!"
+                                       "You don't have plugins to use yet!\n"
                                        "Please perform a plugin scan to use them with Plume.",
                                        int (panelType),
                                        true,
-                                       "Ok");
+                                       "Scan");
         case mappingOverwrite:
-            return new PlumeAlertPanel ("Already mapped",
-                                       "This plugin parameter was already assigned to another gesture!"
-                                       "Please clear the mapping to assign this parameter to this gesture.",
+            return new PlumeAlertPanel ("Parameter is already mapped.",
+                                       "This plugin parameter was already assigned to another gesture!\n"
+                                       "Clear the parameter before assigning it again.",
                                        int (panelType),
                                        true,
                                        "Ok");

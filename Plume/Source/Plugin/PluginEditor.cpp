@@ -243,6 +243,7 @@ void PlumeEditor::actionListenerCallback (const String &message)
     }
     else if (message.compare(PLUME::commands::mappingOverwrite) == 0)
     {
+        processor.getWrapper().clearWrapperEditor();
         createAndShowAlertPanel(PlumeAlertPanel::mappingOverwrite);
     }
 }
@@ -435,8 +436,16 @@ void PlumeEditor::executePanelAction (const int panelReturnValue)
 {
     switch (panelReturnValue)
     {
-        case PlumeAlertPanel::missingPlugin:
-            //do something
+        case PlumeAlertPanel::scanRequired:
+            optionsPanel->setVisible (true);
+            optionsPanel->getOptions().switchToTab (0);
+            if (auto* scannerButton = dynamic_cast<TextButton*> (optionsPanel->getOptions().findChildWithID ("panel0")
+                                                          ->findChildWithID ("PluginScanner")
+                                                          ->findChildWithID ("PluginScannerButton")))
+            {
+                scannerButton->triggerClick();
+            }
+
             break;
         default: // modalResult 0 or unknown
             break;

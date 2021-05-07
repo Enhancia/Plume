@@ -15,8 +15,11 @@ ScannerComponent::ScannerComponent (PlumeProcessor& proc, int buttonWidth)   : p
                                                                                buttonW (buttonWidth),
                                                                                scanButton (new TextButton ("Scan Button"))
 {
+    setComponentID ("PluginScanner");
+    
     // Scan Button
     addAndMakeVisible (scanButton);
+    scanButton->setComponentID ("PluginScannerButton");
     scanButton->setButtonText ("Scan");
     scanButton->addListener (this);
 	
