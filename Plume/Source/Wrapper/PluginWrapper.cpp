@@ -393,11 +393,6 @@ Array<File> PluginWrapper::createFileList()
     {
         if (fileToAdd.exists()) dirs.add (fileToAdd);
     };
-
-    if (useDefaultPaths)
-    {
-        addFileToDirectories (directories, File::getSpecialLocation (File::currentExecutableFile).getParentDirectory());
-    }
     
     // Adds OS specific paths if they exist
   #if JUCE_WINDOWS
