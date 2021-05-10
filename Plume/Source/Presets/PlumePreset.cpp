@@ -101,16 +101,6 @@ bool PlumePreset::operator== (const PlumePreset& other) noexcept
     return (getFile() == other.getFile());
 }
 
-int PlumePreset::compareElements (PlumePreset& preset1, PlumePreset& preset2)
-{
-    return preset1.getName().compareNatural (preset2.getName());
-}
-
-int PlumePreset::compareElements (PlumePreset* preset1, PlumePreset* preset2)
-{
-    return preset1->getName().compareNatural (preset2->getName());
-}
-
 //==============================================================================
 bool PlumePreset::setFile (const File& newFile)
 {

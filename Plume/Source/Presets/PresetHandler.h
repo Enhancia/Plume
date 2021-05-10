@@ -30,6 +30,12 @@ public:
 
     struct PresetSearchSettings
     {
+        enum SortMethod
+        {
+            alphabetical =0,
+            alphabeticalReversed
+        };
+
 		PresetSearchSettings(int type = -1, int filter = -1, String pluginName = String(), String name = String())
 			: presetType (type), filterType (filter), plugin (pluginName), nameSearch (name)
         {
@@ -45,10 +51,24 @@ public:
             return *this;
         }
         
+        const int compareElements (PlumePreset* preset1, PlumePreset* preset2) const
+        {
+            switch (sortMethod)
+            {
+                case alphabetical:
+                    return preset1->getName().compareNatural (preset2->getName());
+                case alphabeticalReversed:
+                    return preset2->getName().compareNatural (preset1->getName());
+            }
+
+            return 0;
+        }
+        
         int presetType;
         int filterType;
         String plugin;
         String nameSearch;
+        SortMethod sortMethod = alphabetical;
     };
     
     //==============================================================================

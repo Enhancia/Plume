@@ -490,7 +490,7 @@ void PresetHandler::updateSearchedPresets()
         {
             if (preset->matchesSettings (settings.filterType, settings.plugin, settings.nameSearch))
             {
-                searchedPresets.addSorted (*preset, preset);
+                searchedPresets.addSorted (settings, preset);
             }
         }
     }
@@ -501,7 +501,7 @@ void PresetHandler::updateSearchedPresets()
         {
             if (preset->matchesSettings (settings.filterType, settings.plugin, settings.nameSearch))
             {
-                searchedPresets.addSorted (*preset, preset);
+                searchedPresets.addSorted (settings, preset);
             }
         }
     }
