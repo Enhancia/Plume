@@ -479,6 +479,7 @@ const PresetHandler::PresetSearchSettings PresetHandler::getCurrentSettings()
     return settings;
 }
 
+
 void PresetHandler::updateSearchedPresets()
 {
     searchedPresets.clear();
@@ -489,7 +490,7 @@ void PresetHandler::updateSearchedPresets()
         {
             if (preset->matchesSettings (settings.filterType, settings.plugin, settings.nameSearch))
             {
-                searchedPresets.add (preset);
+                searchedPresets.addSorted (*preset, preset);
             }
         }
     }
@@ -500,7 +501,7 @@ void PresetHandler::updateSearchedPresets()
         {
             if (preset->matchesSettings (settings.filterType, settings.plugin, settings.nameSearch))
             {
-                searchedPresets.add (preset);
+                searchedPresets.addSorted (*preset, preset);
             }
         }
     }

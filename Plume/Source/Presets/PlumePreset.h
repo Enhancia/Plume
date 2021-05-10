@@ -52,6 +52,9 @@ public:
 
 	PlumePreset& operator= (const PlumePreset& other) noexcept;
 	bool operator== (const PlumePreset& other) noexcept;
+    static int compareElements (PlumePreset& preset1, PlumePreset& preset2);
+    static int compareElements (PlumePreset* preset1, PlumePreset* preset2);
+    
 	//==============================================================================
 	static String getFilterTypeString (int filterTypeId);
 	static void addPresetInfoXml (XmlElement& presetXml, String name, String author, String version,
