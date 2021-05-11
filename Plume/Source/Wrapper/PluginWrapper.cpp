@@ -529,6 +529,8 @@ void PluginWrapper::clearCustomDirectories()
 
 void PluginWrapper::startScanProcess (bool dontRescanIfAlreadyInList, bool resetBlackList)
 {
+    getOrCreateDeadsManPedalFile();
+    
     scanHandler->startScanProcess (!dontRescanIfAlreadyInList,
                                    createFileList());
 }
