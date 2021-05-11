@@ -29,7 +29,8 @@
  *
  */
 class GestureArray	: public ChangeListener,
-                      public ChangeBroadcaster
+                      public ChangeBroadcaster,
+                      public ActionBroadcaster
 {
 public:
     GestureArray(DataReader& reader, AudioProcessorValueTreeState& params, bool& lastArmValue);

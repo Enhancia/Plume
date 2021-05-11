@@ -23,8 +23,13 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	setBroughtToFrontOnMouseClick (true);
 
 	// Creates the Top Panels
-    updaterPanel.reset (new UpdaterPanel (processor.getUpdater()));
+    alertPanel.reset (PlumeAlertPanel::createSpecificAlertPanel (PlumeAlertPanel::unknown));
+    addAndMakeVisible (*alertPanel);
+    alertPanel->setVisible (false);
+    alertPanel->setAlwaysOnTop (true);
 
+    updaterPanel.reset (new UpdaterPanel (processor.getUpdater()));
+    
     addAndMakeVisible(optionsPanel = new OptionsPanel (processor, *updaterPanel));
     optionsPanel->setVisible(false);
     optionsPanel->setAlwaysOnTop(true);
@@ -67,6 +72,7 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 
     // Adds itself as a change listener for plume's processor
     processor.addActionListener (this);
+    processor.getGestureArray().addActionListener (this);
     if (auto* infoPanel = dynamic_cast<InfoPanel*> (sideBar->findChildWithID ("infoPanel")))
         PlumeComponent::listenToAllChildrenPlumeComponents (this, infoPanel, false);
 
@@ -132,6 +138,7 @@ PlumeEditor::~PlumeEditor()
   #endif
 
     processor.removeActionListener (this);
+    processor.getGestureArray().removeActionListener (this);
     gesturePanel = nullptr;
     resizableCorner = nullptr;
     optionsPanel = nullptr;
@@ -156,6 +163,7 @@ void PlumeEditor::resized()
     bugReportPanel->setBounds (area);
     updaterPanel->setBounds (area);
     newPresetPanel->setBounds (area);
+    alertPanel->setBounds (area);
 
 	if (!sideBarButton->getToggleState())
 	{
@@ -209,19 +217,34 @@ void PlumeEditor::actionListenerCallback (const String &message)
     {
         updateFullInterface();
     }
-    
     else if (message.compare (PLUME::commands::lockInterface) == 0)
     {
         //gesturePanel.reset();
         //gesturePanel->stopTimer();
     }
-    
     else if (message.compare (PLUME::commands::unlockInterface) == 0)
     {
         if (!gesturePanel->isTimerRunning())
         {
             gesturePanel->startTimerHz (PLUME::UI::FRAMERATE);
         }
+    }
+    else if (message.compare (PLUME::commands::scanRequired) == 0)
+    {
+        createAndShowAlertPanel (PlumeAlertPanel::scanRequired);
+    }
+    else if (message.compare (PLUME::commands::missingScript) == 0)
+    {
+        createAndShowAlertPanel (PlumeAlertPanel::missingScript);
+    }
+    else if (message.compare (PLUME::commands::missingPlugin) == 0)
+    {
+        createAndShowAlertPanel (PlumeAlertPanel::missingPlugin);
+    }
+    else if (message.compare(PLUME::commands::mappingOverwrite) == 0)
+    {
+        processor.getWrapper().clearWrapperEditor();
+        createAndShowAlertPanel(PlumeAlertPanel::mappingOverwrite);
     }
 }
 
@@ -366,3 +389,65 @@ void PlumeEditor::registerEditorHWND()
     plumeHWNDIsSet = true;
 }
 #endif
+
+void PlumeEditor::createAndShowAlertPanel (const String& title, const String& message,
+                                                   const String& buttonText, const bool hasCloseButton,
+                                                   int returnValue)
+{
+    if (alertPanel->isCurrentlyModal()) alertPanel->exitModalState (0);
+
+    alertPanel.reset (new PlumeAlertPanel (title, message, returnValue, hasCloseButton, buttonText));
+    addAndMakeVisible (*alertPanel);
+
+    alertPanel->setVisible (true);
+    alertPanel->setAlwaysOnTop (true);
+    alertPanel->setLookAndFeel (&plumeLookAndFeel);
+    alertPanel->setBounds (getLocalBounds());
+
+    alertPanel->enterModalState (true, ModalCallbackFunction::forComponent (alertPanelCallback, this), false);
+}
+
+void PlumeEditor::createAndShowAlertPanel (PlumeAlertPanel::SpecificReturnValue returnValue)
+{
+    alertPanel.reset (PlumeAlertPanel::createSpecificAlertPanel (returnValue));
+    addAndMakeVisible (*alertPanel);
+
+    alertPanel->setVisible (true);
+    alertPanel->setAlwaysOnTop (true);
+    alertPanel->setLookAndFeel (&plumeLookAndFeel);
+    alertPanel->setBounds (getLocalBounds());
+
+    alertPanel->enterModalState (true, ModalCallbackFunction::forComponent (alertPanelCallback, this), false);
+}
+
+void PlumeEditor::closePendingAlertPanel()
+{
+    if (alertPanel->isCurrentlyModal()) alertPanel->exitModalState (0);
+    alertPanel.reset (nullptr);
+}
+
+void PlumeEditor::alertPanelCallback (int modalResult, PlumeEditor* interf)
+{
+    interf->closePendingAlertPanel();
+    interf->executePanelAction (modalResult);
+}
+
+void PlumeEditor::executePanelAction (const int panelReturnValue)
+{
+    switch (panelReturnValue)
+    {
+        case PlumeAlertPanel::scanRequired:
+            optionsPanel->setVisible (true);
+            optionsPanel->getOptions().switchToTab (0);
+            if (auto* scannerButton = dynamic_cast<TextButton*> (optionsPanel->getOptions().findChildWithID ("panel0")
+                                                          ->findChildWithID ("PluginScanner")
+                                                          ->findChildWithID ("PluginScannerButton")))
+            {
+                scannerButton->triggerClick();
+            }
+
+            break;
+        default: // modalResult 0 or unknown
+            break;
+    }
+}

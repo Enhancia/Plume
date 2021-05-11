@@ -253,6 +253,10 @@ namespace PLUME
         static const String updateInterface ("updateInterface");
         static const String unlockInterface ("unlockInterface");
         static const String lockInterface ("lockInterface");
+        static const String scanRequired ("scanRequired");
+        static const String missingScript ("missingScript");
+        static const String missingPlugin ("missingPlugin");
+        static const String mappingOverwrite ("mappingOverwrite");
     }
 
     namespace compatibility

@@ -63,6 +63,7 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
         DBG ("Error: Couldn't find the plugin for the specified description..\n" <<
 			 "Specified description = Name : " << description.name << " | Id : " <<
 			 description.uid << " | Format : " << description.pluginFormatName << "\n");
+        getOwner().sendActionMessage (PLUME::commands::missingPlugin);
         return false;
     }
     
@@ -541,7 +542,16 @@ void PluginWrapper::addPluginsToMenu (PopupMenu& menu, KnownPluginList::SortMeth
 {
     ScopedLock plLock (pluginListLock);
     
-    pluginList->addToMenu (menu, sort);
+    if (pluginList->getNumTypes() == 0)
+    {
+        /*
+        if (auto* processor = dynamic_cast<ActionBroadcaster*> (getOwner()))
+        {
+
+        }*/
+        getOwner().sendActionMessage (PLUME::commands::scanRequired);
+    }
+    else pluginList->addToMenu (menu, sort);
 }
 
 PluginDescription* PluginWrapper::getDescriptionToWrap (const PluginDescription& description)

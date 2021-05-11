@@ -24,6 +24,7 @@
 #include "../Ui/Top/NewPreset/NewPresetPanel.h"
 #include "../Ui/Top/NewGesture/NewGesturePanel.h"
 #include "../Ui/Top/UpdaterPanel/UpdaterPanel.h"
+#include "../Ui/Top/AlertPanel/PlumeAlertPanel.h"
 
 //==============================================================================
 /**
@@ -110,6 +111,32 @@ public:
     void updateFullInterface();
     
     void setInterfaceUpdates (bool shouldUpdate);
+
+    //==============================================================================
+    /** 
+        \brief  Modal alert panel creator.
+
+        This method will create a floating alert panel above the interface, that can be close either by
+        calling closePendingAlertPanel() or by using its button, provided a button was created using the
+        buttonText attribute.
+
+        \param title      Title text, written on the upper part of the panel.
+        \param message    Core text, written on the center of the panel.
+        \param buttonText Text button. Provide an empty String to create no button instead.
+    */
+    void createAndShowAlertPanel (const String& title, const String& message,
+                                                       const String& buttonText = String(),
+                                                       const bool hasCloseButton = true,
+                                                       int returnValue = 0);
+
+    void createAndShowAlertPanel (PlumeAlertPanel::SpecificReturnValue returnValue);
+
+    /** 
+        \brief  Modal alert panel destructor.
+
+        Call this method to end the modal alert panel.
+    */
+    void closePendingAlertPanel();
     
 private:
     //==============================================================================
@@ -123,8 +150,29 @@ private:
     ScopedPointer<NewPresetPanel> newPresetPanel;
     ScopedPointer<NewGesturePanel> newGesturePanel;
     std::unique_ptr<UpdaterPanel> updaterPanel;
+    std::unique_ptr<PlumeAlertPanel> alertPanel; /**< \brief Interface's modal alert panel. */
     
-    
+    //==============================================================================
+    /** 
+        \brief  Modal alert panel callback.
+
+        Callback method upon clicking the button or closing the panel.
+        Will properly end the modal loop and delete the component.
+
+        \param modalResult   Result from the modal loop.
+        \param interf        Pointer to the interface.
+    */
+    static void alertPanelCallback (int modalResult, PlumeEditor* interf);
+
+    /** 
+        \brief  Modal alert panel action.
+
+        Executes a panel-specific action depending on the modal result from the DashAlertPanel.
+
+        \param panelReturnValue Result from the modal loop.
+    */
+    void executePanelAction (const int panelReturnValue);
+
     //==============================================================================
     void createSideBarButtonPath(); //TODO mettre dans common avec les autres chemins
 

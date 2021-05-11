@@ -148,6 +148,11 @@ void OptionsPanel::visibilityChanged()
 {
 }
 
+TabbedPanelComponent& OptionsPanel::getOptions()
+{
+    return *tabbedOptions;
+}
+
 void OptionsPanel::paintProductInformations(Graphics& g, juce::Rectangle<int> area)
 {
     using namespace PLUME::UI;
