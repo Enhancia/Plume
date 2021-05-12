@@ -77,6 +77,8 @@ int PitchBend::getMidiValue()
             "\nSend bool     : " << (send ? "Y" : "N") <<
             "\nbLast bool     : " << (pbLast ? "Y" : "N"));
     }*/
+    const int midiRangeHigh   = (midiType == Gesture::pitch) ? 16383 : 127;
+    const int midiRangeMiddle = (midiType == Gesture::pitch) ? 8192 : 64;
 
     // Right side
     if (getGestureValue() >= rangeRightStart && getGestureValue() < 140.0f)
@@ -89,10 +91,11 @@ int PitchBend::getMidiValue()
         pbLast = true;
         
         // if the range is empty just returns the max value
-        if (rangeRightLow.getValue() == rangeRightHigh.getValue()) return 16383;
+        if (rangeRightLow.getValue() == rangeRightHigh.getValue()) return midiRangeMiddle;
         
         // Normal case, maps to an interval from neutral to max pitch
-        return Gesture::map (getGestureValue(), rangeRightStart, rangeRightEnd, 8192, 16383);
+        if (!getMidiReverse()) return Gesture::map (getGestureValue(), rangeRightStart, rangeRightEnd, midiRangeMiddle, midiRangeHigh);
+        else   return midiRangeHigh - Gesture::map (getGestureValue(), rangeRightStart, rangeRightEnd, midiRangeMiddle, midiRangeHigh);
     }
     
     // Left side
@@ -109,7 +112,8 @@ int PitchBend::getMidiValue()
         if (rangeLeftLow.getValue() == rangeLeftHigh.getValue()) return 0;
         
         // Normal case, maps to an interval from min pitch to neutral
-        return Gesture::map (getGestureValue(), rangeLeftStart, rangeLeftEnd, 0, 8191);
+        if (!getMidiReverse()) return Gesture::map (getGestureValue(), rangeLeftStart, rangeLeftEnd, 0, midiRangeMiddle);
+        else   return midiRangeHigh - Gesture::map (getGestureValue(), rangeLeftStart, rangeLeftEnd, 0, midiRangeMiddle);
     }
     
     // If back to central zone
@@ -121,11 +125,11 @@ int PitchBend::getMidiValue()
 
         send = true;
         pbLast = false;
-        return 8192;
+        return midiRangeMiddle;
     }
     
     send = false;
-    return 8192;
+    return midiRangeMiddle;
 }
 
 bool PitchBend::shouldSend()
