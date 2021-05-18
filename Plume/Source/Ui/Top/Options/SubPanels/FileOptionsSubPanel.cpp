@@ -32,7 +32,7 @@ FileOptionsSubPanel::FileOptionsSubPanel (PlumeProcessor& proc)   : processor (p
     // Preset section
     addSeparatorRow ("Preset Sources");
 
-    addButtonRow ("Rescan Presets", "prscanB", "Scan", "Scan Finished !");
+    addButtonRow ("Scan Presets (Hold Alt to force rescan)", "prscanB", "Scan", "Scan Finished !");
     addScannerRow ("User Presets Folder", "presetDir", TRANS("Select your custom preset directory:"),
                    File::getSpecialLocation (File::userHomeDirectory), String(),
                    processor.getPresetHandler().getUserDirectory().getFullPathName(),
