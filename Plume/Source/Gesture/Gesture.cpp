@@ -159,7 +159,12 @@ int Gesture::getRescaledMidiValue()
 
 void Gesture::setGestureValue (float newVal)
 {
-	if (isActive()) value.setValueNotifyingHost (range.convertTo0to1 (newVal));
+	if (isActive())
+    {
+        value.beginChangeGesture();
+        value.setValueNotifyingHost (range.convertTo0to1 (newVal));
+        value.endChangeGesture();
+    }
 }
 
 float Gesture::getGestureValue() const
