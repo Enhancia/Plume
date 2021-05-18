@@ -39,6 +39,12 @@ void PlumeUpdater::checkForNewAvailableVersion()
                         < latestVerTemp.upToFirstOccurrenceOf (".", false, false).getIntValue())
                 {
                     availableVersion = fetchFileURL (*repo);
+                    return;
+                }
+                else if (currentVerTemp.upToFirstOccurrenceOf (".", false, false).getIntValue()
+                          > latestVerTemp.upToFirstOccurrenceOf (".", false, false).getIntValue())
+                {
+                    return;
                 }
 
                 currentVerTemp = currentVerTemp.fromFirstOccurrenceOf (".", false, false);
