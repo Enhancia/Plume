@@ -504,7 +504,7 @@ void GestureArray::swapGestures (int firstId, int secondId)
 
 	ScopedLock gestlock(gestureArrayLock);
 
-    ScopedPointer<Gesture> secondGesture = gestures.removeAndReturn (gestures.indexOf (getGesture (secondId)));
+    Gesture* secondGesture = gestures.removeAndReturn (gestures.indexOf (getGesture (secondId)));
     Array<float> secondGestureParameters = { parameters.getParameterAsValue (String (secondId) + PLUME::param::paramIds[0]).getValue(),
                                              parameters.getParameterAsValue (String (secondId) + PLUME::param::paramIds[1]).getValue(),
                                              parameters.getParameterAsValue (String (secondId) + PLUME::param::paramIds[2]).getValue(),
@@ -520,6 +520,8 @@ void GestureArray::swapGestures (int firstId, int secondId)
     parameters.getParameterAsValue (String (firstId) + PLUME::param::paramIds[1]).setValue (secondGestureParameters[1]);
     parameters.getParameterAsValue (String (firstId) + PLUME::param::paramIds[2]).setValue (secondGestureParameters[2]);
     parameters.getParameterAsValue (String (firstId) + PLUME::param::paramIds[3]).setValue (secondGestureParameters[3]);
+
+    delete secondGesture;
 }
 
 //==============================================================================

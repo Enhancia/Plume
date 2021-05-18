@@ -18,22 +18,22 @@ SideBarComponent::SideBarComponent (PlumeProcessor& proc, Component& optsPanel)
     setComponentID ("sideBar");
     
     // Option button
-    addAndMakeVisible (optionsButton = new ShapeButton ("Options Button",
+    addAndMakeVisible (*(optionsButton = std::make_unique<ShapeButton> ("Options Button",
                                                         getPlumeColour (sideBarButtonFill),
 		                                                getPlumeColour (sideBarButtonFill).withAlpha (0.7f),
 		                                                getPlumeColour (sideBarButtonFill).interpolatedWith (Colour (0xff0000ff),
 														                                                     0.5f)
-																						  .withAlpha (0.7f)));
+																						  .withAlpha (0.7f))));
     optionsButton->setShape (PLUME::path::createPath (PLUME::path::options), false, true, false);
     optionsButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFill), 1.5f);
     optionsButton->addMouseListener (this, false);
 	optionsButton->addListener (this);
 
     // Info Panel
-    addAndMakeVisible (hideInfoButton = new ShapeButton ("Hide Info Button",
+    addAndMakeVisible (*(hideInfoButton = std::make_unique<ShapeButton> ("Hide Info Button",
                                                          Colour (0x00000000),
                                                          Colour (0x00000000),
-                                                         Colour (0x00000000)));
+                                                         Colour (0x00000000))));
     hideInfoButton->setOutline (Colour (0x50ffffff), 1.0f);
     hideInfoButton->setToggleState (infoHidden, dontSendNotification); // side bar visible at first
     hideInfoButton->setClickingTogglesState (true);
@@ -42,11 +42,11 @@ SideBarComponent::SideBarComponent (PlumeProcessor& proc, Component& optsPanel)
     hideInfoButton->addMouseListener (this, false);
     hideInfoButton->addListener (this);
 
-    addAndMakeVisible (infoPanel = new InfoPanel (*hideInfoButton));
-    infoPanel->toBehind (hideInfoButton);
+    addAndMakeVisible (*(infoPanel = std::make_unique<InfoPanel> (*hideInfoButton)));
+    infoPanel->toBehind (hideInfoButton.get());
 
     // Preset Component
-    addAndMakeVisible (presetComponent = new PresetComponent (processor));
+    addAndMakeVisible (*(presetComponent = std::make_unique<PresetComponent> (processor)));
 }
 
 SideBarComponent::~SideBarComponent()
@@ -121,13 +121,13 @@ void SideBarComponent::resized()
 
 void SideBarComponent::buttonClicked (Button* bttn)
 {
-    if (bttn == optionsButton)
+    if (bttn == optionsButton.get())
     {
 		// Displays options
 		optionsPanel.setVisible (true);
     }
 
-    else if (bttn == hideInfoButton)
+    else if (bttn == hideInfoButton.get())
     {
         createHideInfoButtonPath();
         hideInfoButton->setOutline (Colour (0x50ffffff), 1.0f);
@@ -138,12 +138,12 @@ void SideBarComponent::buttonClicked (Button* bttn)
 
 void SideBarComponent::mouseEnter (const MouseEvent &event)
 {
-    if (event.eventComponent == hideInfoButton)
+    if (event.eventComponent == hideInfoButton.get())
     {
         hideInfoButton->setOutline (Colour (0x10ffffff),  1.0f);
     }
 
-    else if (event.eventComponent == optionsButton)
+    else if (event.eventComponent == optionsButton.get())
     {
         optionsButton->setOutline (getPlumeColour (sideBarButtonFill).withAlpha (0.5f),
                                     1.5f);
@@ -152,12 +152,12 @@ void SideBarComponent::mouseEnter (const MouseEvent &event)
 
 void SideBarComponent::mouseExit (const MouseEvent &event)
 {
-    if (event.eventComponent == hideInfoButton)
+    if (event.eventComponent == hideInfoButton.get())
     {
         hideInfoButton->setOutline (Colour (0x50ffffff), 1.0f);
     }
 
-    else if (event.eventComponent == optionsButton)
+    else if (event.eventComponent == optionsButton.get())
     {
         optionsButton->setOutline (PLUME::UI::currentTheme.getColour (PLUME::colour::sideBarButtonFill),
                                     1.5f);
@@ -166,7 +166,7 @@ void SideBarComponent::mouseExit (const MouseEvent &event)
 
 void SideBarComponent::addInfoPanelAsMouseListener (Component* componentToListen)
 {
-    componentToListen->addMouseListener (infoPanel, true);
+    componentToListen->addMouseListener (infoPanel.get(), true);
 }
 
 void SideBarComponent::createHideInfoButtonPath()

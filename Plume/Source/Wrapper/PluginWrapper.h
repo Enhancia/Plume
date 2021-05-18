@@ -124,17 +124,17 @@ private:
     String pluginBeingScanned;
     
     //==============================================================================
-    ScopedPointer<WrapperProcessor> wrapperProcessor;
+    std::unique_ptr<WrapperProcessor> wrapperProcessor;
     std::unique_ptr<AudioPluginInstance> wrappedInstance;
-    ScopedPointer<WrapperEditorWindow> wrapperEditor;
-    ScopedPointer<AudioProcessorEditor> wrapEd;
+    std::unique_ptr<WrapperEditorWindow> wrapperEditor;
+    std::unique_ptr<AudioProcessorEditor> wrapEd;
 
     //==============================================================================
     ValueTree customDirectories;
-    ScopedPointer<KnownPluginList> pluginList;
+    std::unique_ptr<KnownPluginList> pluginList;
     CriticalSection pluginListLock;
 
-    ScopedPointer<AudioPluginFormatManager> formatManager;
+    std::unique_ptr<AudioPluginFormatManager> formatManager;
     std::unique_ptr<ScanHandler> scanHandler;
  
     PlumeProcessor& owner;

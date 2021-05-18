@@ -15,18 +15,18 @@ RetractableMapAndMidiPanel::RetractableMapAndMidiPanel (Gesture& gest, GestureAr
 														PluginWrapper& wrap, Colour gestureColour)
     : gesture (gest), gestureArray (gestArr), wrapper (wrap)
 {
-	addAndMakeVisible (parametersBanner = new MapperBanner (gesture, gestureArray, wrapper));
-	addAndMakeVisible (parametersBody = new MapperComponent (gesture, gestureArray, wrapper));
-	addAndMakeVisible (midiBanner = new MidiBanner (gesture));
-	addAndMakeVisible (midiBody = new MidiModeComponent (gesture, gestureArray));
+	addAndMakeVisible (*(parametersBanner = std::make_unique<MapperBanner> (gesture, gestureArray, wrapper)));
+	addAndMakeVisible (*(parametersBody = std::make_unique<MapperComponent> (gesture, gestureArray, wrapper)));
+	addAndMakeVisible (*(midiBanner = std::make_unique<MidiBanner> (gesture)));
+	addAndMakeVisible (*(midiBody = std::make_unique<MidiModeComponent> (gesture, gestureArray)));
 
-	parametersRetractable.setComponents (parametersBanner, parametersBody);
-	midiRetractable.setComponents (midiBanner, midiBody);
+	parametersRetractable.setComponents (parametersBanner.get(), parametersBody.get());
+	midiRetractable.setComponents (midiBanner.get(), midiBody.get());
 
-	addAndMakeVisible (hideBodyButton = new ShapeButton ("Hide Body Button",
+	addAndMakeVisible (*(hideBodyButton = std::make_unique<ShapeButton> ("Hide Body Button",
                                                          Colour (0x00000000),
                                                          Colour (0x00000000),
-                                                         Colour (0x00000000)));
+                                                         Colour (0x00000000))));
 	initializeHideBodyButton();
 
 	setPanelMode (parameterMode);
@@ -109,7 +109,7 @@ void RetractableMapAndMidiPanel::resized (Retractable& retractableToResize)
 
 void RetractableMapAndMidiPanel::buttonClicked (Button* bttn)
 {
-	if (bttn == hideBodyButton)
+	if (bttn == hideBodyButton.get())
 	{
 		setRetracted (hideBodyButton->getToggleState());
 	}

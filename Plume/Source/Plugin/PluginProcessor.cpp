@@ -26,7 +26,7 @@ PlumeProcessor::PlumeProcessor()
     DBG ("Plugin host type : " << pluginHostType.type << " | Host Path : " << pluginHostType.getHostPath() << " | Plugin Type : " << pluginHostType.getPluginLoadedAs());
 
     // Logger
-    plumeLogger = FileLogger::createDefaultAppLogger (
+    plumeLogger.reset (FileLogger::createDefaultAppLogger (
                                                       #if JUCE_MAC
                                                         "Enhancia/Plume/",
                                                       #elif JUCE_WINDOWS
@@ -38,9 +38,9 @@ PlumeProcessor::PlumeProcessor()
                                                       + " path=" + pluginHostType.getHostPath()
                                                       + "\n | OS : " + SystemStats::getOperatingSystemName()
                                                       + "\n | Plume v" + JucePlugin_VersionString
-                                                      + " (formatId=" + String (pluginHostType.getPluginLoadedAs()) + ")\n");
+                                                      + " (formatId=" + String (pluginHostType.getPluginLoadedAs()) + ")\n"));
     
-    Logger::setCurrentLogger (plumeLogger);
+    Logger::setCurrentLogger (plumeLogger.get());
     
     // Parameters
     initializeParameters();
@@ -48,22 +48,22 @@ PlumeProcessor::PlumeProcessor()
     initializeMidiSequences();
     
     // Objects
-    dataReader = new DataReader();
-    gestureArray = new GestureArray (*dataReader, parameters, getLastArmRef());
-    wrapper = new PluginWrapper (*this, *gestureArray, parameters.state.getChildWithName(PLUME::treeId::general)
-		                                                         .getChildWithName(PLUME::treeId::pluginDirs));
-    presetHandler = new PresetHandler (parameters.state.getChildWithName (PLUME::treeId::general)
-		                                               .getChildWithName (PLUME::treeId::presetDir));
+    dataReader.reset (new DataReader());
+    gestureArray.reset (new GestureArray (*dataReader, parameters, getLastArmRef()));
+    wrapper.reset (new PluginWrapper (*this, *gestureArray, parameters.state.getChildWithName(PLUME::treeId::general)
+		                                                         .getChildWithName(PLUME::treeId::pluginDirs)));
+    presetHandler.reset (new PresetHandler (parameters.state.getChildWithName (PLUME::treeId::general)
+		                                               .getChildWithName (PLUME::treeId::presetDir)));
     updater.reset (new PlumeUpdater());
     
-    dataReader->addChangeListener (gestureArray);
+    dataReader->addChangeListener (gestureArray.get());
 
 }
 
 PlumeProcessor::~PlumeProcessor()
 {
     TRACE_IN;
-    dataReader->removeChangeListener(gestureArray);
+    dataReader->removeChangeListener(gestureArray.get());
     dataReader->connectionLost();
     dataReader = nullptr;
     
@@ -163,7 +163,7 @@ PluginWrapper& PlumeProcessor::getWrapper()
 
 DataReader* PlumeProcessor::getDataReader()
 {
-    return dataReader;
+    return dataReader.get();
 }
 
 GestureArray& PlumeProcessor::getGestureArray()

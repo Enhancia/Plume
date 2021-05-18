@@ -14,18 +14,21 @@
 OptionsPanel::OptionsPanel (PlumeProcessor& proc, UpdaterPanel& updtrPanel)
     : processor (proc)
 {
-    addAndMakeVisible (tabbedOptions = new TabbedPanelComponent());
 
+    tabbedOptions.reset (new TabbedPanelComponent());
+    addAndMakeVisible (*tabbedOptions);
+    
     tabbedOptions->addTab (new FileOptionsSubPanel (processor), "File");
     tabbedOptions->addTab (new AboutPanel(), "About");
     tabbedOptions->addTab (new UpdaterSubPanel (processor.getUpdater(), updtrPanel), "Update");
     tabbedOptions->setTabAlert (2, processor.getUpdater().hasNewAvailableVersion());
 
     // Close button
-    addAndMakeVisible (closeButton = new ShapeButton ("Close Options Button",
+    closeButton.reset (new ShapeButton ("Close Options Button",
                                                        Colour(0),
                                                        Colour(0),
                                                        Colour(0)));
+    addAndMakeVisible (*closeButton);
 
     Path p;
     p.startNewSubPath (0, 0);
@@ -112,7 +115,7 @@ void OptionsPanel::resized()
 //==============================================================================
 void OptionsPanel::buttonClicked (Button* bttn)
 {
-    if (bttn == closeButton)
+    if (bttn == closeButton.get())
     {
         setVisible (false);
     }
@@ -129,7 +132,7 @@ void OptionsPanel::mouseUp (const MouseEvent& event)
 
 void OptionsPanel::mouseEnter (const MouseEvent &event)
 {
-    if (event.eventComponent == closeButton)
+    if (event.eventComponent == closeButton.get())
     {
         closeButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::topPanelMainText)
                                                       .withAlpha (0.4f), 1.0f);
@@ -138,7 +141,7 @@ void OptionsPanel::mouseEnter (const MouseEvent &event)
 
 void OptionsPanel::mouseExit (const MouseEvent &event)
 {
-    if (event.eventComponent == closeButton)
+    if (event.eventComponent == closeButton.get())
     {
         closeButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::topPanelMainText), 1.0f);
     }

@@ -32,7 +32,7 @@ public:
 
 private:
     //==============================================================================
-    ScopedPointer<ScannerComponent> scanner;
+    std::unique_ptr<ScannerComponent> scanner;
     
     //==============================================================================
     PlumeProcessor& processor;

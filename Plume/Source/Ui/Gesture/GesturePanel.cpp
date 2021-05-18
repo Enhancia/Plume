@@ -133,7 +133,7 @@ void GesturePanel::timerCallback()
 
 void GesturePanel::buttonClicked (Button* bttn)
 {
-    if (bttn == closeButton)
+    if (bttn == closeButton.get())
     {
         unselectCurrentGesture();
     }
@@ -593,7 +593,7 @@ void GesturePanel::setSettingsVisible (bool shouldBeVisible)
 
     if (shouldBeVisible && gestureSettings != nullptr)
     {
-        addAndMakeVisible (gestureSettings, 0);
+        addAndMakeVisible (*gestureSettings, 0);
         closeButton->setVisible (true);
         settingsVisible = true;
         resized();
@@ -612,11 +612,11 @@ void GesturePanel::setSettingsVisible (bool shouldBeVisible)
 
 void GesturePanel::createAndAddCloseButton()
 {
-    addAndMakeVisible (closeButton = new PlumeShapeButton ("Close Settings Button",
+    closeButton.reset (new PlumeShapeButton ("Close Settings Button",
                                                                 getPlumeColour (plumeBackground),
                                                                 Colour (0xff00ff00),
-                                                                Colour (0xffff0000)),
-                      -1);
+                                                                Colour (0xffff0000)));
+    addAndMakeVisible (*closeButton, -1);
     closeButton->setComponentID ("Close Button");
 
     Path p;

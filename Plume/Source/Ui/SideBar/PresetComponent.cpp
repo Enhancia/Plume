@@ -18,23 +18,28 @@ PresetComponent::PresetComponent (PlumeProcessor& p)  : processor (p)
     setComponentID ("presetComponent");
     
     // PresetBox
-    addAndMakeVisible (presetBox = new PresetBox (TRANS ("presetBox"), processor));
+    presetBox.reset (new PresetBox (TRANS ("presetBox"), processor));
+    addAndMakeVisible (*presetBox);
     presetBox->updateContent();
     
     // ComboBox
-    addAndMakeVisible (pluginSelectBox = new ComboBox ("pluginSelectBox"));
+    pluginSelectBox.reset (new ComboBox ("pluginSelectBox"));
+    addAndMakeVisible (*pluginSelectBox);
     createComboBox();
     
     // FilterBox
-    addAndMakeVisible (filterBox = new FilterBox (TRANS ("filterBox"), processor));
+    filterBox.reset (new FilterBox (TRANS ("filterBox"), processor));
+    addAndMakeVisible (*filterBox);
     filterBox->updateContent();
     filterBox->selectRow (0);
     
     // Type toggle
-    addAndMakeVisible (typeToggle = new TypeToggleComponent (processor));
-    
+    typeToggle.reset (new TypeToggleComponent (processor));
+    addAndMakeVisible (*typeToggle);
+
     // Search Bar
-    addAndMakeVisible (searchBar = new PresetSearchBar (processor));
+    searchBar.reset (new PresetSearchBar (processor));
+    addAndMakeVisible (*searchBar);
 }
 
 PresetComponent::~PresetComponent()
@@ -135,7 +140,7 @@ void PresetComponent::comboBoxChanged (ComboBox* cmbx)
 
 void PresetComponent::savePreset()
 {
-    ScopedPointer<XmlElement> presetXml = new XmlElement (processor.getPresetHandler().getCurrentPresetName());
+    auto presetXml = std::make_unique<XmlElement> (processor.getPresetHandler().getCurrentPresetName());
 	processor.createPluginXml (*presetXml);
 	processor.createGestureXml (*presetXml);
 	    

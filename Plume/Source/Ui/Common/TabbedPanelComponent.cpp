@@ -133,7 +133,7 @@ void TabbedPanelComponent::addTab (Component* panel, String tabName)
 {
     tabs.add (new Tab (panel, tabName));
     addAndMakeVisible (tabs.getLast()->button.get());
-    addChildAndSetID (tabs.getLast()->panel, "panel" + String(tabs.size() - 1));
+    addChildAndSetID (tabs.getLast()->panel.get(), "panel" + String(tabs.size() - 1));
     findChildWithID ("panel" + String(tabs.size() - 1))->setVisible (false);
     tabs.getLast()->button->addListener (this);
 
@@ -163,7 +163,7 @@ Component* TabbedPanelComponent::getComponentFromTab (const int tabNumber)
 {
     if (tabNumber < 0 || tabNumber >= tabs.size()) return nullptr;
 
-    return tabs[tabNumber]->panel;
+    return tabs[tabNumber]->panel.get();
 }
 
 Component* TabbedPanelComponent::getComponentFromTab (const String tabName)
@@ -172,7 +172,7 @@ Component* TabbedPanelComponent::getComponentFromTab (const String tabName)
     {
         if (tab->name == tabName)
         {
-            return tab->panel;
+            return tab->panel.get();
         }
     }
 

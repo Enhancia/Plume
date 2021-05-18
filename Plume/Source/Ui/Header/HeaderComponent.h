@@ -68,13 +68,13 @@ private:
     Component& newPresetPanel;
     
     PopupMenu pluginListMenu;
-    ScopedPointer<ShapeButton> pluginListButton;
-    ScopedPointer<PlumeShapeButton> savePresetButton;
-    ScopedPointer<PlumeShapeButton> leftArrowButton;
-    ScopedPointer<PlumeShapeButton> rightArrowButton;
+    std::unique_ptr<ShapeButton> pluginListButton;
+    std::unique_ptr<PlumeShapeButton> savePresetButton;
+    std::unique_ptr<PlumeShapeButton> leftArrowButton;
+    std::unique_ptr<PlumeShapeButton> rightArrowButton;
     std::unique_ptr<DualTextToggle> trackArmButton;
-    ScopedPointer<Label> pluginNameLabel;
-    ScopedPointer<Label> presetNameLabel;
+    std::unique_ptr<Label> pluginNameLabel;
+    std::unique_ptr<Label> presetNameLabel;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (HeaderComponent)

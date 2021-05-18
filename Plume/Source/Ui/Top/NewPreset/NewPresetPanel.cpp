@@ -23,8 +23,11 @@ NewPresetPanel::NewPresetPanel (PlumeProcessor& proc)   : processor (proc)
     createLabels();
     createBox();
     
-    addAndMakeVisible (cancelButton = new TextButton ("cancelButton"));
-    addAndMakeVisible (saveButton = new TextButton ("saveButton"));
+    cancelButton.reset (new TextButton ("cancelButton"));
+    addAndMakeVisible (*cancelButton);
+    saveButton.reset (new TextButton ("saveButton"));
+    addAndMakeVisible (*saveButton);
+    
     cancelButton->setButtonText ("Cancel");
     saveButton->setButtonText ("Save");
     cancelButton->addListener (this);
@@ -143,11 +146,11 @@ void NewPresetPanel::visibilityChanged()
 
 void NewPresetPanel::buttonClicked (Button* bttn)
 {
-    if (bttn == cancelButton)
+    if (bttn == cancelButton.get())
     {
         // TODO alert are you sure??
     }
-    else if (bttn == saveButton)
+    else if (bttn == saveButton.get())
     {
         if (nameLabel->getText() == "Preset Name...")
         {
@@ -164,7 +167,7 @@ void NewPresetPanel::buttonClicked (Button* bttn)
 void NewPresetPanel::labelTextChanged (Label* lbl)
 {
 	using namespace PLUME;
-    if (lbl == nameLabel)
+    if (lbl == nameLabel.get())
     {
         if (lbl->getText().isEmpty())
         {
@@ -178,7 +181,7 @@ void NewPresetPanel::labelTextChanged (Label* lbl)
         }
     }
     
-    else if (lbl == authorLabel)
+    else if (lbl == authorLabel.get())
     {
         if (lbl->getText().isEmpty())
         {
@@ -192,7 +195,7 @@ void NewPresetPanel::labelTextChanged (Label* lbl)
         }
     }
     
-    else if (lbl == verLabel)
+    else if (lbl == verLabel.get())
     {
         if (lbl->getText().isEmpty() || !lbl->getText().containsOnly ("0123456789."))
         {
@@ -209,7 +212,7 @@ void NewPresetPanel::labelTextChanged (Label* lbl)
 
 void NewPresetPanel::editorShown (Label* lbl, TextEditor& ed)
 {
-    if (lbl == nameLabel && lbl->getText() == "Preset Name...")
+    if (lbl == nameLabel.get() && lbl->getText() == "Preset Name...")
     {
         lbl->setColour (Label::outlineColourId, Colour (0x000000));
         
@@ -217,13 +220,13 @@ void NewPresetPanel::editorShown (Label* lbl, TextEditor& ed)
         ed.setText ("", false);
     }
     
-    if (lbl == authorLabel && lbl->getText() == "Author Name...")
+    if (lbl == authorLabel.get() && lbl->getText() == "Author Name...")
     {
         // The user doesn't have to manually remove "Preset Name :"
         ed.setText ("", false);
     }
     
-    if (lbl == verLabel && lbl->getText() == "1.0")
+    if (lbl == verLabel.get() && lbl->getText() == "1.0")
     {
         // The user doesn't have to manually remove "Preset Name :"
         ed.setText ("", false);
@@ -253,16 +256,20 @@ void NewPresetPanel::update()
 
 void NewPresetPanel::createLabels()
 {
-    addAndMakeVisible (nameLabel = new Label ("name", "Preset Name..."));
+    nameLabel.reset (new Label ("name", "Preset Name..."));
+    addAndMakeVisible (*nameLabel);
     setLabelProperties (*nameLabel);
     
-    addAndMakeVisible (authorLabel = new Label ("author", "Author Name..."));
+    authorLabel.reset (new Label ("author", "Author Name..."));
+    addAndMakeVisible (*authorLabel);
     setLabelProperties (*authorLabel);
     
-    addAndMakeVisible (verLabel = new Label ("version", "1.0"));
+    verLabel.reset (new Label ("version", "1.0"));
+    addAndMakeVisible (*verLabel);
     setLabelProperties (*verLabel);
     
-    addAndMakeVisible (pluginLabel = new Label ("plugin", "None"));
+    pluginLabel.reset (new Label ("plugin", "None"));
+    addAndMakeVisible (*pluginLabel);
     setLabelProperties (*pluginLabel, false);
 }
 
@@ -288,7 +295,8 @@ void NewPresetPanel::setLabelProperties (Label& labelToSet, bool editable)
 
 void NewPresetPanel::createBox()
 {
-    addAndMakeVisible (typeBox = new ComboBox ("typeBox"));
+    typeBox.reset (new ComboBox ("typeBox"));
+    addAndMakeVisible (*typeBox);
     
     typeBox->setJustificationType (Justification::centredLeft);
     typeBox->setColour (ComboBox::outlineColourId, Colour (0x8000000));
@@ -311,7 +319,7 @@ void NewPresetPanel::createBox()
 
 void NewPresetPanel::createUserPreset()
 {
-    ScopedPointer<XmlElement> presetXml = new XmlElement ("PLUME");
+    auto presetXml = std::make_unique<XmlElement> ("PLUME");
 	processor.createPluginXml (*presetXml);
 	processor.createGestureXml (*presetXml);
     PlumePreset::addPresetInfoXml (*presetXml, nameLabel->getText() == "Preset Name..." ? "" : nameLabel->getText(),

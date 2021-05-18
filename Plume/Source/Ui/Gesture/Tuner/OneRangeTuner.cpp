@@ -50,8 +50,8 @@ void OneRangeTuner::resized()
     resizeSliders();
     resizeButtons();
 
-    updateLabelBounds (rangeLabelMin);
-    updateLabelBounds (rangeLabelMax);
+    updateLabelBounds (rangeLabelMin.get());
+    updateLabelBounds (rangeLabelMax.get());
 
     repaint();
 }
@@ -141,7 +141,7 @@ void OneRangeTuner::updateComponents (OneRangeTuner::DraggableObject thumbThatSh
 
                 // Allows the DAW to update the value without using slider->setValue() with a notification
                 // The latter causes crashes on Ableton Live
-                sliderValueChanged (highSlider);
+                sliderValueChanged (highSlider.get());
             }
 
             lowSlider->setValue (double (getRangeLow()), dontSendNotification);
@@ -158,7 +158,7 @@ void OneRangeTuner::updateComponents (OneRangeTuner::DraggableObject thumbThatSh
 
                 // Allows the DAW to update the value without using slider->setValue() with a notification
                 // The latter causes crashes on Ableton Live
-                sliderValueChanged (lowSlider);
+                sliderValueChanged (lowSlider.get());
             }
 
             highSlider->setValue (double (getRangeHigh()), dontSendNotification);
@@ -232,8 +232,8 @@ void OneRangeTuner::labelTextChanged (Label* lbl)
     // checks that the string is numbers only (and unit)
     if (lbl->getText().containsOnly ("-0123456789"+valueUnit) == false)
     {
-        if (lbl == rangeLabelMin)       lbl->setText (String (int (getRangeLow())) + valueUnit, dontSendNotification);
-        else if (lbl == rangeLabelMax)  lbl->setText (String (int (getRangeHigh())) + valueUnit, dontSendNotification);
+        if (lbl == rangeLabelMin.get())       lbl->setText (String (int (getRangeLow())) + valueUnit, dontSendNotification);
+        else if (lbl == rangeLabelMax.get())  lbl->setText (String (int (getRangeHigh())) + valueUnit, dontSendNotification);
 
         return;
     }
@@ -250,23 +250,23 @@ void OneRangeTuner::labelTextChanged (Label* lbl)
     else if (val > parameterMax.getRange().getEnd()) val = parameterMax.getRange().getEnd();
         
     // Sets slider and labels accordingly
-    if (lbl == rangeLabelMin)
+    if (lbl == rangeLabelMin.get())
     {
         if ( val > getRangeHigh()) val = getRangeHigh();
             
         setRangeLow (val);
         lowSlider->setValue (getRangeLow(), dontSendNotification);
-        updateLabelBounds (rangeLabelMin);
+        updateLabelBounds (rangeLabelMin.get());
         lbl->setText (String (int (getRangeLow())) + valueUnit, dontSendNotification);
     }
     
-    else if (lbl == rangeLabelMax)
+    else if (lbl == rangeLabelMax.get())
     {
         if ( val < getRangeLow()) val = getRangeLow();
             
         setRangeHigh (val);
         highSlider->setValue (getRangeHigh(), dontSendNotification);
-        updateLabelBounds (rangeLabelMax);
+        updateLabelBounds (rangeLabelMax.get());
         lbl->setText (String (int (getRangeHigh())) + valueUnit, dontSendNotification);
     }
 }
@@ -280,11 +280,11 @@ void OneRangeTuner::sliderValueChanged (Slider* sldr)
 {
     //ScopedLock sliderLock (rangeUpdateLock);
     
-    if (sldr == lowSlider)
+    if (sldr == lowSlider.get())
     {
         // min value changed by user
         setRangeLow (float (lowSlider->getValue()));
-        updateLabelBounds (rangeLabelMin);
+        updateLabelBounds (rangeLabelMin.get());
         rangeLabelMin->setText (String (int (getRangeLow())) + valueUnit, dontSendNotification);
         
         // in case the other thumb is dragged along..
@@ -292,16 +292,16 @@ void OneRangeTuner::sliderValueChanged (Slider* sldr)
         {
             setRangeHigh (float (lowSlider->getValue()), true);
             highSlider->setValue (double (getRangeLow()), dontSendNotification);
-            updateLabelBounds (rangeLabelMax);
+            updateLabelBounds (rangeLabelMax.get());
             rangeLabelMax->setText (String (float (sldr->getValue())) + valueUnit, dontSendNotification);
         }
     }
 
     // max value changed by user
-    else if (sldr == highSlider)
+    else if (sldr == highSlider.get())
     {
         setRangeHigh (float (highSlider->getValue()));
-        updateLabelBounds (rangeLabelMax);
+        updateLabelBounds (rangeLabelMax.get());
         rangeLabelMax->setText (String (int (getRangeHigh())) + valueUnit, dontSendNotification);
         
         // in case the other thumb is dragged along..
@@ -309,7 +309,7 @@ void OneRangeTuner::sliderValueChanged (Slider* sldr)
         {
             setRangeLow (float (highSlider->getValue()), true);
             lowSlider->setValue (double (getRangeLow()), dontSendNotification);
-            updateLabelBounds (rangeLabelMin);
+            updateLabelBounds (rangeLabelMin.get());
             rangeLabelMin->setText (String (float (sldr->getValue())) + valueUnit, dontSendNotification);
         }
     }
@@ -317,12 +317,12 @@ void OneRangeTuner::sliderValueChanged (Slider* sldr)
 
 void OneRangeTuner::buttonClicked (Button* bttn)
 {
-    if (bttn == minAngleButton)
+    if (bttn == minAngleButton.get())
     {
         lowSlider->setValue (gestureRange.convertFrom0to1 (value), sendNotification);
     }
 
-    else if (bttn == maxAngleButton)
+    else if (bttn == maxAngleButton.get())
     {
         highSlider->setValue (gestureRange.convertFrom0to1 (value), sendNotification);
     }
@@ -350,13 +350,13 @@ void OneRangeTuner::handleSingleClick (const MouseEvent& e)
     if (objectBeingDragged == lowThumb)
     {
         rangeLow.beginChangeGesture();
-        lowSlider->mouseDown (e.getEventRelativeTo (lowSlider));
+        lowSlider->mouseDown (e.getEventRelativeTo (lowSlider.get()));
         rangeLabelMin->setVisible (true);
     }
     else if (objectBeingDragged == highThumb)
     {
         rangeHigh.beginChangeGesture();
-        highSlider->mouseDown (e.getEventRelativeTo (highSlider));
+        highSlider->mouseDown (e.getEventRelativeTo (highSlider.get()));
         rangeLabelMax->setVisible (true);
     }
     else if (objectBeingDragged == middleArea)
@@ -371,8 +371,8 @@ void OneRangeTuner::handleSingleClick (const MouseEvent& e)
                                                        : tunerStyle == tilt ? Slider::RotaryHorizontalVerticalDrag
                                                                             : Slider::RotaryHorizontalDrag);
 
-        lowSlider->mouseDown (e.getEventRelativeTo (lowSlider));
-        highSlider->mouseDown (e.getEventRelativeTo (highSlider));
+        lowSlider->mouseDown (e.getEventRelativeTo (lowSlider.get()));
+        highSlider->mouseDown (e.getEventRelativeTo (highSlider.get()));
         rangeLabelMin->setVisible (true);
         rangeLabelMax->setVisible (true);
     }
@@ -402,26 +402,26 @@ void OneRangeTuner::mouseDrag (const MouseEvent& e)
 
     if (objectBeingDragged == lowThumb)
     {
-        lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider));
+        lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider.get()));
     }
     else if (objectBeingDragged == highThumb)
     {
-        highSlider->mouseDrag (e.getEventRelativeTo (highSlider));
+        highSlider->mouseDrag (e.getEventRelativeTo (highSlider.get()));
     }
     else
     {
         if (tunerStyle == tilt)
         {
-            lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider));
-            highSlider->mouseDrag (e.getEventRelativeTo (highSlider));
+            lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider.get()));
+            highSlider->mouseDrag (e.getEventRelativeTo (highSlider.get()));
         }
         else
         {
             // Inverts the drag for the y axis
             auto invertedYEvent = e.withNewPosition(juce::Point<int> (e.x, e.getMouseDownY() - e.getDistanceFromDragStartY()));
 
-            lowSlider->mouseDrag (invertedYEvent.getEventRelativeTo (lowSlider));
-            highSlider->mouseDrag (invertedYEvent.getEventRelativeTo (highSlider));
+            lowSlider->mouseDrag (invertedYEvent.getEventRelativeTo (lowSlider.get()));
+            highSlider->mouseDrag (invertedYEvent.getEventRelativeTo (highSlider.get()));
         }
     }
 
@@ -433,12 +433,12 @@ void OneRangeTuner::mouseUp (const MouseEvent& e)
     if (objectBeingDragged == lowThumb)
     {
         rangeLow.endChangeGesture();
-        lowSlider->mouseUp (e.getEventRelativeTo (lowSlider));
+        lowSlider->mouseUp (e.getEventRelativeTo (lowSlider.get()));
     }
     else if (objectBeingDragged == highThumb)
     {
         rangeHigh.endChangeGesture();
-        highSlider->mouseUp (e.getEventRelativeTo (highSlider));
+        highSlider->mouseUp (e.getEventRelativeTo (highSlider.get()));
     }
     else if (objectBeingDragged == middleArea)
     {
@@ -448,8 +448,8 @@ void OneRangeTuner::mouseUp (const MouseEvent& e)
         lowSlider->setSliderStyle (Slider::Rotary);
         highSlider->setSliderStyle (Slider::Rotary);
 
-        lowSlider->mouseUp (e.getEventRelativeTo (lowSlider));
-        highSlider->mouseUp (e.getEventRelativeTo (highSlider));
+        lowSlider->mouseUp (e.getEventRelativeTo (lowSlider.get()));
+        highSlider->mouseUp (e.getEventRelativeTo (highSlider.get()));
     }
 
     if (objectBeingDragged != none)
@@ -475,8 +475,8 @@ MouseCursor OneRangeTuner::getMouseCursor()
 
 void OneRangeTuner::createSliders()
 {
-    addAndMakeVisible (lowSlider = new Slider ("Range Low Slider"));
-    addAndMakeVisible (highSlider = new Slider ("Range High Slider"));
+    addAndMakeVisible (*(lowSlider = std::make_unique<Slider> ("Range Low Slider")));
+    addAndMakeVisible (*(highSlider = std::make_unique<Slider> ("Range High Slider")));
     
     auto setSliderSettings = [this] (Slider& slider, float valueToSet)
     {
@@ -498,8 +498,8 @@ void OneRangeTuner::createSliders()
     
 void OneRangeTuner::createLabels()
 {
-    addAndMakeVisible (rangeLabelMin = new Label ("Min Label", TRANS (String(int(getRangeLow())) + valueUnit)));
-    addAndMakeVisible (rangeLabelMax = new Label ("Max Label", TRANS (String(int(getRangeHigh())) + valueUnit)));
+    addAndMakeVisible (*(rangeLabelMin = std::make_unique<Label> ("Min Label", TRANS (String(int(getRangeLow())) + valueUnit))));
+    addAndMakeVisible (*(rangeLabelMax = std::make_unique<Label> ("Max Label", TRANS (String(int(getRangeHigh())) + valueUnit))));
 
     auto setLabelSettings = [this] (Label& label)
     {
@@ -523,8 +523,8 @@ void OneRangeTuner::createLabels()
 
 void OneRangeTuner::createButtons()
 {
-    addAndMakeVisible (minAngleButton = new TextButton ("Min Angle Button"));
-    addAndMakeVisible (maxAngleButton = new TextButton ("Max Angle Button"));
+    addAndMakeVisible (*(minAngleButton = std::make_unique<TextButton> ("Min Angle Button")));
+    addAndMakeVisible (*(maxAngleButton = std::make_unique<TextButton> ("Max Angle Button")));
 
     auto setButtonSettings = [this] (TextButton& button)
     {
@@ -532,7 +532,7 @@ void OneRangeTuner::createButtons()
         button.setColour (TextButton::buttonOnColourId , tunerColour);
         button.setColour (TextButton::textColourOffId , getPlumeColour (detailPanelMainText));
         button.setColour (TextButton::textColourOnId , getPlumeColour (detailPanelMainText));
-        button.setButtonText (&button == minAngleButton ? "MIN ANGLE" : "MAX ANGLE");
+        button.setButtonText (&button == minAngleButton.get() ? "MIN ANGLE" : "MAX ANGLE");
         button.addListener (this);
     };
 
@@ -719,7 +719,7 @@ void OneRangeTuner::updateLabelBounds (Label* labelToUpdate)
 {
     if (labelToUpdate == nullptr) return;
 
-    if (labelToUpdate == rangeLabelMin)
+    if (labelToUpdate == rangeLabelMin.get())
     {
         auto radius = sliderRadius - 20;
         auto angle = getThumbAngleRadians (lowThumb);
@@ -728,7 +728,7 @@ void OneRangeTuner::updateLabelBounds (Label* labelToUpdate)
                                           sliderCentre.y + radius * std::sin (angle - MathConstants<float>::halfPi));
 
     }
-    else if (labelToUpdate == rangeLabelMax)
+    else if (labelToUpdate == rangeLabelMax.get())
     {
         auto radius = sliderRadius + 15;
         auto angle = getThumbAngleRadians (highThumb);

@@ -161,7 +161,7 @@ public:
 
     //==============================================================================
     void storePresets();
-    XmlElement* getPresetXmlToLoad (int selectedPreset);
+    std::unique_ptr<XmlElement> getPresetXmlToLoad (int selectedPreset);
     bool savePreset (XmlElement& presetXml);
     bool createNewUserPreset (XmlElement& presetXml);
     bool renamePreset (String newName, const int id);

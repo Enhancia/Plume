@@ -104,8 +104,8 @@ private:
     PlumeProcessor& processor;
     
     //==============================================================================
-    ScopedPointer<ShapeButton> closeButton;
-    ScopedPointer<TextEditor> descriptionTextEditor;
+    std::unique_ptr<ShapeButton> closeButton;
+    std::unique_ptr<TextEditor> descriptionTextEditor;
     OwnedArray<GestureTypeSelector> gestureSelectors;
 
     //==============================================================================

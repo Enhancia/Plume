@@ -13,19 +13,20 @@
 //==============================================================================
 ScannerComponent::ScannerComponent (PlumeProcessor& proc, int buttonWidth)   : processor (proc),
                                                                                buttonW (buttonWidth),
-                                                                               scanButton (new TextButton ("Scan Button"))
+                                                                               scanButton (std::make_unique<TextButton> ("Scan Button"))
 {
     setComponentID ("PluginScanner");
     
     // Scan Button
-    addAndMakeVisible (scanButton);
+    addAndMakeVisible (*scanButton);
     scanButton->setComponentID ("PluginScannerButton");
     scanButton->setButtonText ("Scan");
     scanButton->addListener (this);
 	
-	addAndMakeVisible (bar = new PlumeProgressBar (processor.getWrapper().getScanner().getProgressRef(),
+    bar.reset (new PlumeProgressBar (processor.getWrapper().getScanner().getProgressRef(),
                                                    processor.getWrapper().getScanner().getProgressStringRef(),
                                                    ""));
+	addAndMakeVisible (*bar);
 }
 
 ScannerComponent::~ScannerComponent()
@@ -50,7 +51,7 @@ void ScannerComponent::resized()
 
 void ScannerComponent::buttonClicked (Button* bttn)
 {
-    if (bttn == scanButton)
+    if (bttn == scanButton.get())
     {
         if (processor.getWrapper().getScanner().isScanRunning())
         {

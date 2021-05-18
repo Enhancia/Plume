@@ -96,7 +96,7 @@ private:
 
     //==============================================================================
     const int NUM_ROWS = 2, NUM_COLUMNS = 3;
-    ScopedPointer<TextButton> mapButton;
+    std::unique_ptr<TextButton> mapButton;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MapperBanner)

@@ -23,7 +23,7 @@ PluginWrapper::PluginWrapper (PlumeProcessor& p, GestureArray& gArr, ValueTree p
     hasOpenedEditor = false;
     
     // Creates the objects to wrap the plugin
-    formatManager = new AudioPluginFormatManager();
+    formatManager.reset (new AudioPluginFormatManager());
     formatManager->addFormat (new VSTPluginFormat());
   #if JUCE_MAC
     formatManager->addFormat (new AudioUnitPluginFormat());
@@ -32,7 +32,7 @@ PluginWrapper::PluginWrapper (PlumeProcessor& p, GestureArray& gArr, ValueTree p
     formatManager->addFormat (new VST3PluginFormat());
   #endif
     
-    pluginList = new KnownPluginList();
+    pluginList.reset (new KnownPluginList());
     scanHandler.reset (new ScanHandler (*pluginList));
     loadPluginListFromFile();
 }
@@ -56,7 +56,7 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
 {
     ScopedLock plLock (pluginListLock);
 
-    ScopedPointer<PluginDescription> descToWrap = getDescriptionToWrap (description);
+    PluginDescription* descToWrap = getDescriptionToWrap (description);
     
     if (descToWrap == nullptr)
     {
@@ -102,7 +102,7 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
     //Creates the wrapped processor object using the instance
     wrappedInstance->enableAllBuses();
     
-    wrapperProcessor = new WrapperProcessor (*wrappedInstance, *this);
+    wrapperProcessor.reset (new WrapperProcessor (*wrappedInstance, *this));
     wrapperProcessor->prepareToPlay (owner.getSampleRate(), owner.getBlockSize());
     hasWrappedInstance = true;
 	
@@ -159,7 +159,7 @@ bool PluginWrapper::wrapPlugin (int pluginMenuId)
     //Creates the wrapped processor object using the instance
     wrappedInstance->enableAllBuses();
     
-    wrapperProcessor = new WrapperProcessor (*wrappedInstance, *this);
+    wrapperProcessor.reset (new WrapperProcessor (*wrappedInstance, *this));
     wrapperProcessor->prepareToPlay (owner.getSampleRate(), owner.getBlockSize());
     hasWrappedInstance = true;
 	
@@ -258,7 +258,7 @@ void PluginWrapper::createWrapperEditor (const Component* componentWhichWindowTo
         
     if (wrapperEditor == nullptr)
     {
-        wrapperEditor = new WrapperEditorWindow (*wrapperProcessor, componentWhichWindowToAttachTo);
+        wrapperEditor.reset (new WrapperEditorWindow (*wrapperProcessor, componentWhichWindowToAttachTo));
 		wrapperEditor->toFront (true);
         return;
     }
@@ -270,7 +270,7 @@ WrapperEditorWindow* PluginWrapper::getWrapperEditorWindow()
 {
     if (hasWrappedInstance)
     {
-        return wrapperEditor;
+        return wrapperEditor.get();
     }
 
 	return nullptr;
@@ -561,7 +561,7 @@ PluginDescription* PluginWrapper::getDescriptionToWrap (const PluginDescription&
 			desc.pluginFormatName == description.pluginFormatName &&
 			(desc.name == description.name || desc.descriptiveName == description.descriptiveName))
         {
-            return new PluginDescription (desc);
+            return &desc;
         }
     }
     
@@ -578,7 +578,7 @@ void PluginWrapper::savePluginListToFile()
         getOrCreatePluginListFile();
     }
     
-    ScopedPointer<XmlElement> listXml = new XmlElement ("PLUME_PLUGINLIST_CONFIG");
+    auto listXml = std::make_unique<XmlElement> ("PLUME_PLUGINLIST_CONFIG");
     
     // Writes plugin list data into the file
     listXml->addChildElement (new XmlElement (*pluginList->createXml()));

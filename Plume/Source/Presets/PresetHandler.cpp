@@ -182,7 +182,7 @@ bool PresetHandler::canSavePreset()
 	return (currentPreset.presetType && currentPreset.isValid());
 }
 
-XmlElement* PresetHandler::getPresetXmlToLoad (int selectedPreset)
+std::unique_ptr<XmlElement> PresetHandler::getPresetXmlToLoad (int selectedPreset)
 {
 	if (selectedPreset < 0 || selectedPreset > getNumSearchedPresets()) return nullptr;
 
@@ -192,7 +192,7 @@ XmlElement* PresetHandler::getPresetXmlToLoad (int selectedPreset)
 	    
 	if (std::unique_ptr<XmlElement> elem = doc.getDocumentElement())
     {
-        return new XmlElement (*elem);
+        return elem;
     }
     else
     {
