@@ -17,15 +17,15 @@ FileOptionsSubPanel::FileOptionsSubPanel (PlumeProcessor& proc)   : processor (p
     addSeparatorRow ("Plugin Sources");
 
     addRow ("Rescan Plugins", new ScannerComponent (processor, 4*PLUME::UI::SUBPANEL_ROW_HEIGHT), 20);
-    addToggleRow ("Use System Plugin Folder", "sysT", true);
-    addToggleRow ("Use Custom Plugin Folder", "cusT", !processor.getWrapper().getCustomDirectory (0).isEmpty());
+    addToggleRow ("Use System Plugin Folder", "sysT", processor.getWrapper().usesDefaultPaths());
+    addToggleRow ("Use Custom Plugin Folder", "cusT", processor.getWrapper().usesCustomPaths());
 
     addScannerRow ("Custom Plugin Folder", "pluginDir", TRANS("Select your custom plugin directory:"),
                    File::getSpecialLocation (File::userHomeDirectory), String(),
                    processor.getWrapper().getCustomDirectory (0), true);
 
   #if JUCE_MAC
-    addToggleRow ("Use Audio Units", "auT", true);
+    addToggleRow ("Use Audio Units", "auT", processor.getWrapper().usesAudioUnits());
   #endif
 
 
