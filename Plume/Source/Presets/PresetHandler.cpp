@@ -548,46 +548,25 @@ void PresetHandler::deleteDirectoryArborescence (File& dir)
 
 void PresetHandler::savePresetDirectoryToFile()
 {
-    // Create file if it doesn't exist yet
-    File presetDirFile;
-    
-  #if JUCE_WINDOWS
-    presetDirFile = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/")
-                                                                                  .getChildFile ("Plume/");
-  #elif JUCE_MAC
-    presetDirFile = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/")
-                                                                                  .getChildFile ("Plume/");
-  #endif
-  
-    presetDirFile = presetDirFile.getChildFile ("plumepr.cfg");
-  
-    if (!presetDirFile.exists())
+    using namespace PLUME::file;
+
+    if (!presetDir.exists())
     {
-        presetDirFile.create();
+        presetDir.create();
     }
     
 	std::unique_ptr<XmlElement> presetDirXml = userDirValue.createXml();
-    presetDirXml->writeToFile (presetDirFile, StringRef());
+    presetDirXml->writeToFile (presetDir, StringRef());
     presetDirXml->deleteAllChildElements();
 }
 
 void PresetHandler::loadPresetDirectoryFromFile()
 {
-    File presetDirFile;
-    
-  #if JUCE_WINDOWS
-    presetDirFile = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/")
-                                                                                  .getChildFile ("Plume/");
-  #elif JUCE_MAC
-    presetDirFile = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/")
-                                                                                  .getChildFile ("Plume/");
-  #endif
+    using namespace PLUME::file;
   
-    presetDirFile = presetDirFile.getChildFile ("plumepr.cfg");
-  
-    if (presetDirFile.exists())
+    if (presetDir.exists())
     {
-		std::unique_ptr<XmlElement> presetDirXml = XmlDocument::parse (presetDirFile);
+		std::unique_ptr<XmlElement> presetDirXml = XmlDocument::parse (presetDir);
         
         if (presetDirXml != nullptr)
         {

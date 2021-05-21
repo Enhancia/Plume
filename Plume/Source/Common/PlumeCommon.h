@@ -230,14 +230,16 @@ namespace PLUME
     {
       #if JUCE_WINDOWS
         static const File pluginList       (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/Plume/plumepl.cfg"));
+        static const File presetDir        (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/Plume/plumepr.cfg"));
         static const File deadMansPedal    (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/Plume/plumedmp.cfg"));
         static const File plumeLog         (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/Plume/Logs/plumeLog.txt"));
         static const File scanLog          (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/Plume/Logs/scanLog.txt"));
         static const File defaultPresetDir (File::getSpecialLocation (File::globalApplicationsDirectoryX86).getChildFile ("Enhancia/Plume/Presets/"));
         static const File scannerExe       (File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("Enhancia/utilities/PluginScanner.exe"));
       #elif JUCE_MAC
-        static const File pluginList       (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/Plume/plumepl.cfg"));
-        static const File deadMansPedal    (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/Plume/plumedmp.cfg"));
+        static const File pluginList       (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/Enhancia/Plume/plumepl.cfg"));
+        static const File presetDir        (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/Enhancia/Plume/plumepr.cfg"));
+        static const File deadMansPedal    (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/Enhancia/Plume/plumedmp.cfg"));
 
         static const File plumeLog         (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Logs/Enhancia/Plume/plumeLog.txt"));
         static const File scanLog          (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Logs/Enhancia/Plume/scanLog.txt"));
