@@ -568,7 +568,7 @@ void GestureArray::addMergedPitchMessage (MidiBuffer& midiMessages, MidiBuffer& 
             {
 				if (Vibrato* vib = dynamic_cast <Vibrato*> (g))
 				{
-					gestValue = vib->getMidiValue();
+					gestValue = vib->getRescaledMidiValue();
 
 					if (vib->getSend())
 					{
@@ -583,7 +583,7 @@ void GestureArray::addMergedPitchMessage (MidiBuffer& midiMessages, MidiBuffer& 
             {
 				if (PitchBend* pb = dynamic_cast <PitchBend*> (g))
 				{
-					gestValue = pb->getMidiValue();
+					gestValue = pb->getRescaledMidiValue();
 
 					if (pb->getSend())
 					{
