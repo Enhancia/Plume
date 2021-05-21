@@ -34,7 +34,7 @@ PlumePreset::PlumePreset (File pathToPreset, PresetType pType, String pName)
                                          version ("1.0")
 {
     presetType = (int) pType;
-    filterType = custom;
+    filterType = other;
     
     if (pathToPreset.exists())
     {
@@ -72,7 +72,7 @@ PlumePreset::PlumePreset (File pathToPreset, PresetType pType, String pName)
 PlumePreset::PlumePreset() : name (""), author (""), plugin (""), version ("1.0")
 {
     presetType = (int) PresetType::userPreset;
-    filterType = (int) FilterType::custom;
+    filterType = (int) FilterType::other;
 }
 
 PlumePreset::~PlumePreset()
@@ -83,7 +83,7 @@ PlumePreset::PlumePreset (const PlumePreset& other) : name (""), author (""), pl
 
 {
 	presetType = (int)PresetType::userPreset;
-	filterType = (int)FilterType::custom;
+	filterType = (int)FilterType::other;
 
     File f = other.getFile();
     loadPresetFromFile (f);
@@ -127,15 +127,17 @@ String PlumePreset::getFilterTypeString (int filterTypeId)
 {
     switch (filterTypeId)
     {
-        case arp:        return "Arp";
+        case arp:        return "Sequence / Arp";
 		case bass:       return "Bass";
-		case harsh:      return "Harsh";
+		case brassWinds: return "Brass & Winds";
+        case strings:    return "Strings";
 		case keys:       return "Keys";
 		case lead:       return "Lead";
 		case pad:        return "Pad";
-		case percussion: return "Percussion";
-		case sfx:        return "Sfx";
-		default:         return "Custom";
+		case percussive: return "Percussive";
+		case sfx:        return "SFX / Experiment";
+
+		default:         return "Other";
     }
 }
 
@@ -225,7 +227,7 @@ void PlumePreset::loadPresetInfoFromFile()
             version = info->getStringAttribute ("version", "1.0");
             plugin = info->getStringAttribute ("plugin", "");
             presetType = info->getIntAttribute ("type", 1);
-            filterType = info->getIntAttribute ("filter", PlumePreset::FilterType::custom);
+            filterType = info->getIntAttribute ("filter", PlumePreset::FilterType::other);
         }
         
         xml = nullptr;

@@ -21,13 +21,14 @@ public:
 	{
 		arp = 0,
 		bass,
-		custom,
-		harsh,
+		brassWinds,
+		strings,
 		keys,
 		lead,
 		pad,
-		percussion,
+		percussive,
 		sfx,
+		other,
 		
 		numFilters
 	};
@@ -42,7 +43,7 @@ public:
 	};
 
 	//==============================================================================
-	PlumePreset (String name, File pathToPreset, PresetType pType =userPreset, FilterType category =custom,
+	PlumePreset (String name, File pathToPreset, PresetType pType =userPreset, FilterType category =other,
 	             String auth ="", String ver ="1.0", String plug = "");
 	PlumePreset (File pathToPreset, PresetType pType=userPreset, String pName = "");
 	PlumePreset();

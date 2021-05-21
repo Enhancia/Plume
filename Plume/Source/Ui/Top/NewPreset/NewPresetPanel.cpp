@@ -248,7 +248,7 @@ void NewPresetPanel::update()
     verLabel->setText ((useCurrentPresetInfo && currentPreset.getVersion().isNotEmpty()) ? currentPreset.getVersion() : "1.0", dontSendNotification);
     pluginLabel->setText (processor.getWrapper().getWrappedPluginName(), dontSendNotification);
     
-    typeBox->setSelectedId (useCurrentPresetInfo ? currentPreset.getFilter()+1 : (int) PlumePreset::custom+1, dontSendNotification);
+    typeBox->setSelectedId (useCurrentPresetInfo ? currentPreset.getFilter()+1 : (int) PlumePreset::other+1, dontSendNotification);
 }
 
 void NewPresetPanel::createLabels()
@@ -306,7 +306,7 @@ void NewPresetPanel::createBox()
         typeBox->addItem (PlumePreset::getFilterTypeString (i), i+1);
     }
     
-    typeBox->setSelectedId (PlumePreset::custom+1, dontSendNotification);
+    typeBox->setSelectedId (PlumePreset::other+1, dontSendNotification);
 }
 
 void NewPresetPanel::createUserPreset()
