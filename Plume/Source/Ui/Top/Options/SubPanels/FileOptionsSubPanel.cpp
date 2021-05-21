@@ -16,7 +16,7 @@ FileOptionsSubPanel::FileOptionsSubPanel (PlumeProcessor& proc)   : processor (p
     // Plugin section
     addSeparatorRow ("Plugin Sources");
 
-    addRow ("Rescan Plugins", new ScannerComponent (processor, 4*PLUME::UI::SUBPANEL_ROW_HEIGHT), 20);
+    addRow ("Scan Plugins (Hold Alt to force rescan)", new ScannerComponent (processor, 4*PLUME::UI::SUBPANEL_ROW_HEIGHT), 20);
     addToggleRow ("Use System Plugin Folder", "sysT", true);
     addToggleRow ("Use Custom Plugin Folder", "cusT", !processor.getWrapper().getCustomDirectory (0).isEmpty());
 
@@ -32,7 +32,7 @@ FileOptionsSubPanel::FileOptionsSubPanel (PlumeProcessor& proc)   : processor (p
     // Preset section
     addSeparatorRow ("Preset Sources");
 
-    addButtonRow ("Scan Presets (Hold Alt to force rescan)", "prscanB", "Scan", "Scan Finished !");
+    addButtonRow ("Scan Presets", "prscanB", "Scan", "Scan Finished !");
     addScannerRow ("User Presets Folder", "presetDir", TRANS("Select your custom preset directory:"),
                    File::getSpecialLocation (File::userHomeDirectory), String(),
                    processor.getPresetHandler().getUserDirectory().getFullPathName(),
