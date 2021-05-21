@@ -103,6 +103,9 @@ public:
     void setDefaultPathUsage (bool shouldUseDefaultPaths);
     void setCustomPathUsage (bool shouldUseCustomPath);
     void setAuUsage (bool shouldUseAudioUnits);
+    bool usesDefaultPaths();
+    bool usesCustomPaths();
+    bool usesAudioUnits();
     
 private:
     //==============================================================================

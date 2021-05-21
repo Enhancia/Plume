@@ -461,11 +461,13 @@ Array<File> PluginWrapper::createFileList()
 void PluginWrapper::setDefaultPathUsage (bool shouldUseDefaultPaths)
 {
     useDefaultPaths = shouldUseDefaultPaths;
+    savePluginListToFile();
 }
 
 void PluginWrapper::setCustomPathUsage (bool shouldUseCustomPath)
 {
     useCustomPaths = shouldUseCustomPath;
+    savePluginListToFile();
 }
 
 void PluginWrapper::setAuUsage (bool                    
@@ -476,7 +478,24 @@ void PluginWrapper::setAuUsage (bool
 {
   #if JUCE_MAC
     useAudioUnits = shouldUseAudioUnits;
+    savePluginListToFile();
   #endif
+}
+bool PluginWrapper::usesDefaultPaths()
+{
+    return useDefaultPaths;
+}
+bool PluginWrapper::usesCustomPaths()
+{
+    return useCustomPaths;
+}
+bool PluginWrapper::usesAudioUnits()
+{
+    #if JUCE_MAC
+    return useAudioUnits;
+    #else
+    return false;
+    #endif
 }
 
 void PluginWrapper::addCustomDirectory (File newDir)
@@ -585,7 +604,14 @@ void PluginWrapper::savePluginListToFile()
     
     XmlElement* userDirs = listXml->createNewChildElement ("USER_DIRECTORIES");
     userDirs->addChildElement (new XmlElement (*customDirectories.createXml()));
-    
+
+    XmlElement* searchSettings = listXml->createNewChildElement ("SETTINGS");
+    searchSettings->setAttribute ("use_custom", useCustomPaths  ? 1 : 0);
+    searchSettings->setAttribute ("use_system", useDefaultPaths ? 1 : 0);
+  #if JUCE_MAC
+    searchSettings->setAttribute ("use_au",     useAudioUnits   ? 1 : 0);
+  #endif
+
     listXml->writeToFile (PLUME::file::pluginList, StringRef());
     listXml->deleteAllChildElements();
 }
@@ -634,6 +660,15 @@ void PluginWrapper::loadPluginListFromFile()
 	    customDirectories.copyPropertiesAndChildrenFrom (ValueTree::fromXml (*listXml->getChildByName ("USER_DIRECTORIES")
 	                                                                                ->getChildByName (PLUME::treeId::pluginDirs)),
 	                                                                        nullptr);
+    }
+
+    if (auto* settings = listXml->getChildByName ("SETTINGS"))
+    {
+        useDefaultPaths = settings->getBoolAttribute ("use_system", true);
+        useCustomPaths = settings->getBoolAttribute ("use_custom", true);
+        #if JUCE_MAC
+        useAudioUnits = settings->getBoolAttribute ("use_au", true);
+        #endif
     }
     
     if (listXml->getChildByName ("KNOWNPLUGINS") != nullptr)

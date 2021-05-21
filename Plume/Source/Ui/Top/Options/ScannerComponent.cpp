@@ -122,7 +122,7 @@ void ScannerComponent::cancelScan()
 
 void ScannerComponent::scanFinished()
 {
-    //bar->setShouldDisplayProgress (false);
+    bar->setShouldDisplayProgress (false);
     bar->repaint();
     scanButton->setButtonText ("Scan");
     processor.getWrapper().handleScanFinished();
