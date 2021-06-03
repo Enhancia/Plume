@@ -36,10 +36,15 @@ GestureComponent::~GestureComponent()
 
 const String GestureComponent::getInfoString()
 {
-    return gesture.getName() + " | " + gesture.getTypeString (true) + "\n\n" +
-           "State : " + (gesture.isActive() ? "Enabled" : "Disabled") +
-           " | Mode : " + (gesture.generatesMidi() ? "MIDI\n" : "Parameters\n")
-           + "\n" + gesture.getDescription();
+    if (auto* gesturePtr = gestureArray.getGesture (id))
+    {
+        return gesturePtr->getName() + " | " + gesturePtr->getTypeString (true) + "\n\n" +
+               "State : " + (gesturePtr->isActive() ? "Enabled" : "Disabled") +
+               " | Mode : " + (gesturePtr->generatesMidi() ? "MIDI\n" : "Parameters\n")
+               + "\n" + gesturePtr->getDescription();
+    }
+    else return "";
+
 }
 
 void GestureComponent::update()

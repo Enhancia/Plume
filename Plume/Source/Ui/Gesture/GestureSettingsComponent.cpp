@@ -110,12 +110,17 @@ void GestureSettingsComponent::paint (Graphics& g)
     using namespace PLUME::UI;
 
     // Enhancia Text
+    Logger::writeToLog ("DBG factory crash 0 ( disabled ? " + String(disabled ? "Y)" : "N)"));
 
     // Background
     paintBackground (g);
 
+    Logger::writeToLog ("DBG factory crash 1 ( disabled ? " + String(disabled ? "Y)" : "N)"));
+
     // HeaderText
     auto headerArea = getLocalBounds().removeFromTop (this->HEADER_HEIGHT);
+
+    Logger::writeToLog ("DBG factory crash 2 ( disabled ? " + String(disabled ? "Y)" : "N)"));
 
     //Advanced Settings text
     g.setColour (getPlumeColour (detailPanelSubText));
@@ -124,12 +129,18 @@ void GestureSettingsComponent::paint (Graphics& g)
                 headerArea.removeFromLeft (getWidth()/3).reduced (MARGIN, MARGIN_SMALL),
                 Justification::bottomLeft, false);
 
+    Logger::writeToLog ("DBG factory crash 3 ( disabled ? " + String(disabled ? "Y)" : "N)"));
+
     // Gesture Name text
-    g.setColour (getPlumeColour (detailPanelMainText));                    
-    g.setFont (PLUME::font::plumeFontBold.withHeight (15.0f));
-    g.drawText (gesture.getName().toUpperCase(),
-                headerArea.removeFromLeft (getWidth()/3).reduced (MARGIN, 0),
-                Justification::centred, false);
+    if (auto* gesturePtr = gestureArray.getGesture (gestureId))
+    {
+        g.setColour (getPlumeColour (detailPanelMainText));                    
+        g.setFont (PLUME::font::plumeFontBold.withHeight (15.0f));
+        g.drawText (gesturePtr->getName().toUpperCase(),
+                    headerArea.removeFromLeft (getWidth()/3).reduced (MARGIN, 0),
+                    Justification::centred, false);
+    }
+    Logger::writeToLog ("DBG factory crash 4 ( disabled ? " + String(disabled ? "Y)" : "N)"));
 }
 
 void GestureSettingsComponent::paintBackground (Graphics& g)
