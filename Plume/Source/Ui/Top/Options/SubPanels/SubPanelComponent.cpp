@@ -259,6 +259,7 @@ void SubPanelComponent::ScannerRowComponent::buttonClicked (Button* bttn)
 			if (chooser->browseForDirectory())
 			{
 				lastFile = chooser->getResult();
+				PLUME::log::writeToLog ("Changed " + getComponentID() + " : " + lastFile.getFullPathName(), PLUME::log::options);
 				sendChangeMessage();
 				repaint();
 			}
@@ -268,6 +269,7 @@ void SubPanelComponent::ScannerRowComponent::buttonClicked (Button* bttn)
 			if (chooser->browseForFileToOpen())
 			{
 				lastFile = chooser->getResult();
+				PLUME::log::writeToLog ("Changed " + getComponentID() + " : " + lastFile.getFullPathName(), PLUME::log::options);
 				sendChangeMessage();
 				repaint();
 			}

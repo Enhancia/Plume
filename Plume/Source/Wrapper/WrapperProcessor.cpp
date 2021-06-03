@@ -50,20 +50,17 @@ WrapperProcessor::WrapperProcessor(AudioPluginInstance& wrappedPlugin, PluginWra
       plugin (wrappedPlugin),
       owner (ownerWrapper)
 {
-    TRACE_IN;
     initWrappedParameters();
 }
 
 WrapperProcessor::~WrapperProcessor()
 {
-    TRACE_IN;
     auto& params = plugin.getParameters();
     
     for (auto* param : params)
     {
         param->removeListener (&getOwnerWrapper());
     }
-	TRACE_OUT;
 }
 
 //==============================================================================
@@ -96,7 +93,6 @@ void WrapperProcessor::initWrappedParameters()
 
 AudioProcessorParameter& WrapperProcessor::getWrappedParameter (int id)
 {
-    TRACE_IN;
     auto& params = plugin.getParameters();
     
     return *(params[id]);

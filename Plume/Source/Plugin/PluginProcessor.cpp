@@ -21,7 +21,6 @@ PlumeProcessor::PlumeProcessor()
 #endif
        , parameters (*this, nullptr, "PARAMETERS", initializeParameters())
 {
-    TRACE_IN;
     PluginHostType pluginHostType;
     DBG ("Plugin host type : " << pluginHostType.type << " | Host Path : " << pluginHostType.getHostPath() << " | Plugin Type : " << pluginHostType.getPluginLoadedAs());
 
@@ -62,7 +61,7 @@ PlumeProcessor::PlumeProcessor()
 
 PlumeProcessor::~PlumeProcessor()
 {
-    TRACE_IN;
+    PLUME::log::writeToLog ("Removing Plume instance.", PLUME::log::general);
     dataReader->removeChangeListener(gestureArray);
     dataReader->connectionLost();
     dataReader = nullptr;
@@ -200,7 +199,6 @@ AudioProcessorEditor* PlumeProcessor::createEditor()
 //==============================================================================
 void PlumeProcessor::getStateInformation (MemoryBlock& destData)
 {
-    TRACE_IN;
     std::unique_ptr<XmlElement> wrapperData (new XmlElement ("PLUME"));
     
     // Adds plugin and gestures data, and saves them in a binary file
@@ -217,8 +215,7 @@ void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     suspendProcessing (true);
     
-    TRACE_IN;
-	std::unique_ptr<XmlElement> wrapperData = getXmlFromBinary (data, sizeInBytes);
+    	std::unique_ptr<XmlElement> wrapperData = getXmlFromBinary (data, sizeInBytes);
     
 	if (wrapperData == nullptr)
 	{

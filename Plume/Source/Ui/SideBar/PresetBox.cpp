@@ -299,7 +299,9 @@ void PresetBox::deletePreset (const int row)
     bool shouldUpdateHeader = (processor.getPresetHandler().getCurrentPresetName()
                             == processor.getPresetHandler().getTextForPresetId (row));
     
-	if (processor.getPresetHandler().deletePresetForId(row))
+    PLUME::log::writeToLog ("Deleting preset : " + processor.getPresetHandler().getPresetForId (row).getName(), PLUME::log::presets);
+	
+    if (processor.getPresetHandler().deletePresetForId(row))
 	{
 		updateContent();
 
@@ -342,6 +344,8 @@ void PresetBox::setPreset (const int row)
     // Gets the preset Xml and loads it using the processor
     if (ScopedPointer<XmlElement> presetXml = processor.getPresetHandler().getPresetXmlToLoad (row))
     {
+        PLUME::log::writeToLog ("Loading preset (from preset list) : " + processor.getPresetHandler().getPresetForId (row).getName(), PLUME::log::presets);
+
         MemoryBlock presetData;
         AudioProcessor::copyXmlToBinary (*presetXml, presetData);
             
@@ -374,6 +378,10 @@ void PresetBox::createUserPreset (const String& presetName)
 void PresetBox::renamePreset (const String& newName)
 {
     const int currentPresetId = processor.getPresetHandler().getCurrentPresetIdInSearchList();
+
+    PLUME::log::writeToLog ("Renaming preset : " + processor.getPresetHandler().getPresetForId (presetIdToEdit).getName()
+                                                 + " => " + newName, PLUME::log::presets);
+
     processor.getPresetHandler().renamePreset (newName, presetIdToEdit);
     
     if (presetIdToEdit == currentPresetId) setPreset (currentPresetId);
