@@ -23,6 +23,7 @@ GestureComponent::GestureComponent (Gesture& gest, GestureArray& gestArray,
       draggedGesture (draggedGestureReference),
       draggedOverSlot (draggedOverSlotReference)
 {
+    setComponentID ("gestComp" + String(id));
     createLabel();
     createButton();
 }
@@ -188,7 +189,7 @@ void GestureComponent::createButton()
 {
     addAndMakeVisible (muteButton = new PlumeShapeButton ("Mute Button",
                                                           getPlumeColour (plumeBackground),
-                                                          getPlumeColour (mutedHighlight),
+                                                          Gesture::getHighlightColour (gesture.type, false),
                                                           Gesture::getHighlightColour (gesture.type)));
 
     muteButton->setShape (PLUME::path::createPath (PLUME::path::onOff), false, true, false);

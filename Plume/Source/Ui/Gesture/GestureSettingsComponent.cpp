@@ -301,7 +301,7 @@ void GestureSettingsComponent::createToggles()
 
     addAndMakeVisible (muteButton = new PlumeShapeButton ("Mute Button",
                                                           getPlumeColour (plumeBackground),
-                                                          getPlumeColour (mutedHighlight),
+                                                          Gesture::getHighlightColour (gesture.type, false),
                                                           Gesture::getHighlightColour (gesture.type)));
 
     muteButton->setShape (PLUME::path::createPath (PLUME::path::onOff), false, true, false);
@@ -312,9 +312,13 @@ void GestureSettingsComponent::createToggles()
         gesture.setActive (muteButton->getToggleState());
         closeButton.setToggleState (gesture.isActive(), dontSendNotification);
         update();
+        if (auto* gestComp = dynamic_cast<PlumeComponent*> (getParentComponent()->findChildWithID ("gestComp" + String (gestureId))))
+        {
+            gestComp->update();
+        }
     };
 
-    closeButton.setStrokeOffAndOnColours (getPlumeColour (mutedHighlight),
+    closeButton.setStrokeOffAndOnColours (Gesture::getHighlightColour (gesture.type, false),
                                           Gesture::getHighlightColour(gesture.type));
     closeButton.setToggleState (gesture.isActive(), dontSendNotification);
 }
