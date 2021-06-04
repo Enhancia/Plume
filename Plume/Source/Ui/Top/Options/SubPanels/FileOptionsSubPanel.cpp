@@ -16,7 +16,12 @@ FileOptionsSubPanel::FileOptionsSubPanel (PlumeProcessor& proc)   : processor (p
     // Plugin section
     addSeparatorRow ("Plugin Sources");
     
-    addRow ("Scan Plugins (Hold Alt to force rescan)", new ScannerComponent (processor, 4*PLUME::UI::SUBPANEL_ROW_HEIGHT), 20);
+    #if JUCE_WINDOWS
+    addRow ("Scan Plugins (hold alt to force rescan)", new ScannerComponent (processor, 4*PLUME::UI::SUBPANEL_ROW_HEIGHT), 20);
+    #elif JUCE_MAC
+    addRow ("Scan Plugins (hold ctrl to force rescan)", new ScannerComponent (processor, 4*PLUME::UI::SUBPANEL_ROW_HEIGHT), 20);
+    #endif
+
     addToggleRow ("Use System Plugin Folder", "sysT", processor.getWrapper().usesDefaultPaths());
     addToggleRow ("Use Custom Plugin Folder", "cusT", processor.getWrapper().usesCustomPaths());
 
