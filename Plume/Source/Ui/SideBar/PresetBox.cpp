@@ -377,6 +377,8 @@ void PresetBox::renamePreset (const String& newName)
     processor.getPresetHandler().renamePreset (newName, presetIdToEdit);
     
     if (presetIdToEdit == currentPresetId) setPreset (currentPresetId);
+
+    repaint();
 }
 
 void PresetBox::prepareGesturePanelToPresetChange()
