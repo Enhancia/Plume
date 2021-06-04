@@ -27,9 +27,11 @@ GestureArray::~GestureArray()
 //==============================================================================
 void GestureArray::initializeGestures()
 {
-    addGesture ("Vibrato", Gesture::vibrato, 0);
-    addGesture ("Pitch Bend", Gesture::pitchBend, 1);
-    addGesture ("Tilt", Gesture::tilt, 2);
+    // Uncomment those lines to add gestures by default when opening Plume
+
+    //addGesture ("Vibrato", Gesture::vibrato, 0);
+    //addGesture ("Pitch Bend", Gesture::pitchBend, 1);
+    //addGesture ("Tilt", Gesture::tilt, 2);
     //addGesture ("Roll", Gesture::roll, 3);
 }
 //==============================================================================
