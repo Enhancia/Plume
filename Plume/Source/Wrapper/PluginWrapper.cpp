@@ -17,7 +17,6 @@
 PluginWrapper::PluginWrapper (PlumeProcessor& p, GestureArray& gArr, ValueTree pluginDirs)
     : owner (p), gestArray (gArr), customDirectories (pluginDirs)
 {
-    TRACE_IN;
     // Initializes the booleans
     hasWrappedInstance = false;
     hasOpenedEditor = false;
@@ -39,8 +38,7 @@ PluginWrapper::PluginWrapper (PlumeProcessor& p, GestureArray& gArr, ValueTree p
 
 PluginWrapper::~PluginWrapper()
 {
-    TRACE_IN;
-    removeAllChangeListeners();
+        removeAllChangeListeners();
     clearWrapperEditor();
 
 	wrapperProcessor = nullptr;
@@ -58,36 +56,40 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
 
     ScopedPointer<PluginDescription> descToWrap = getDescriptionToWrap (description);
     
+    
     if (descToWrap == nullptr)
     {
-        DBG ("Error: Couldn't find the plugin for the specified description..\n" <<
-			 "Specified description = Name : " << description.name << " | Id : " <<
-			 description.uid << " | Format : " << description.pluginFormatName << "\n");
+        PLUME::log::writeToLog ("Failed to find the plugin to wrap..  "
+                                "Specified description for wrapping : " + description.name
+                                + " (Id : " + String (description.uid) + " | Format : "
+                                            + description.pluginFormatName + ")",
+                                PLUME::log::pluginWrapping, PLUME::log::error);
+
         getOwner().sendActionMessage (PLUME::commands::missingPlugin);
         return false;
     }
     
     if (descToWrap->name == "Plume")
     {
-        DBG ("Can't wrap yourself my dude..");
-        
+        PLUME::log::writeToLog ("Plume tried to wrap itself..", PLUME::log::pluginWrapping, PLUME::log::error);
         return false;
     }
     
     if (!(descToWrap)->isInstrument)
     {
-        DBG ("Specified plugin is not an instrument!!");
-        
+        PLUME::log::writeToLog ("Attempted to wrap a non-instrument plugin : " + descToWrap->name, PLUME::log::pluginWrapping, PLUME::log::error);
         return false;
     }
+
         
     if (hasWrappedInstance)
 	{
 		unwrapPlugin();
 	}
+
+    PLUME::log::writeToLog ("Attempting to load plugin : " + descToWrap->name, PLUME::log::pluginWrapping);
 	
     String errorMsg;
-    DBG ("\n[create Plugin Instance]");
     wrappedInstance = formatManager->createPluginInstance (*descToWrap,
                                                            owner.getSampleRate(),
 														   owner.getBlockSize(),
@@ -95,7 +97,8 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
                                                              
     if (wrappedInstance == nullptr)
     {
-        DBG ("Error: Failed to create an instance of the plugin, error message:\n\n" << errorMsg);
+        PLUME::log::writeToLog ("Failed to load plugin.. Error message : " + errorMsg,
+                                PLUME::log::pluginWrapping, PLUME::log::error);
         return false;
     }
     
@@ -117,23 +120,23 @@ bool PluginWrapper::wrapPlugin (int pluginMenuId)
     
     if (pluginList->getType (pluginId) == nullptr)
     {
-        DBG ("Error: Couldn't find the plugin at the specified Id..\nSize of the plugin list: " << pluginList->getNumTypes()
-                                                                                                << " | Specified id : "
-                                                                                                << pluginId
-                                                                                                << "\n");
+        PLUME::log::writeToLog ("Failed to find the plugin to wrap..  "
+                                "Specified id for wrapping : " + String (pluginId)
+                                + " (List size : " + String (pluginList->getNumTypes()) + ")",
+                                PLUME::log::pluginWrapping, PLUME::log::error);
         return false;
     }
     
     if (pluginList->getType (pluginId)->name == "Plume")
     {
-        DBG ("Can't wrap yourself..");
+        PLUME::log::writeToLog ("Plume tried to wrap itself..", PLUME::log::pluginWrapping, PLUME::log::error);
         
         return false;
     }
     
     if (!(pluginList->getType (pluginId)->isInstrument))
     {
-        DBG ("Specified plugin is not an instrument..");
+        PLUME::log::writeToLog ("Attempted to wrap a non-instrument plugin : " + pluginList->getType(pluginId)->name, PLUME::log::pluginWrapping, PLUME::log::error);
         
         return false;
     }
@@ -143,8 +146,9 @@ bool PluginWrapper::wrapPlugin (int pluginMenuId)
 		unwrapPlugin();
 	}
 	
+    PLUME::log::writeToLog ("Attempting to load plugin : " + pluginList->getType(pluginId)->name, PLUME::log::pluginWrapping);
+    
     String errorMsg;
-    DBG ("\n[create Plugin Instance]");
     wrappedInstance = formatManager->createPluginInstance (*pluginList->getType (pluginId),
                                                            owner.getSampleRate(),
 														   owner.getBlockSize(),
@@ -152,7 +156,8 @@ bool PluginWrapper::wrapPlugin (int pluginMenuId)
                                                              
     if (wrappedInstance == nullptr)
     {
-        DBG ("Error: Failed to create an instance of the plugin, error message:\n\n" << errorMsg);
+        PLUME::log::writeToLog ("Failed to load plugin.. Error message : " + errorMsg,
+                                PLUME::log::pluginWrapping, PLUME::log::error);
         return false;
     }
     
@@ -168,7 +173,6 @@ bool PluginWrapper::wrapPlugin (int pluginMenuId)
 
 void PluginWrapper::unwrapPlugin()
 {
-    TRACE_IN;
     if (hasWrappedInstance == false)
     {
         return;
@@ -239,8 +243,6 @@ bool PluginWrapper::isWrapping()
 //==============================================================================
 void PluginWrapper::createWrapperEditor (const Component* componentWhichWindowToAttachTo)
 {
-    TRACE_IN;
-    
     jassert (wrapperProcessor != nullptr);
     
     if (wrapperProcessor == nullptr)
@@ -549,6 +551,8 @@ void PluginWrapper::clearCustomDirectories()
 
 void PluginWrapper::startScanProcess (bool dontRescanIfAlreadyInList, bool resetBlackList)
 {
+    PLUME::log::writeToLog ("Starting plugin scan.", PLUME::log::pluginScan);
+
     getOrCreateDeadsManPedalFile();
     
     scanHandler->startScanProcess (!dontRescanIfAlreadyInList,
@@ -715,8 +719,7 @@ void PluginWrapper::fillInPluginDescription (PluginDescription& pd)
 
 void PluginWrapper::addParametersToGestureFromXml (XmlElement& gesture, int gestureNum)
 {
-    TRACE_IN;
-    
+        
     if (hasWrappedInstance)
     {
         forEachXmlChildElement (gesture, paramXml)

@@ -15,8 +15,8 @@
 PlumeEditor::PlumeEditor (PlumeProcessor& p)
     : AudioProcessorEditor (&p), ComponentMovementWatcher (this), processor (p)
 {
-    TRACE_IN;
-	setComponentID ("plumeEditor");
+    PLUME::log::writeToLog ("Creating Plume interface", PLUME::log::ui);
+    setComponentID ("plumeEditor");
 
 	setLookAndFeel (&plumeLookAndFeel);
 	setMouseClickGrabsKeyboardFocus(false);
@@ -113,8 +113,7 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 
 PlumeEditor::~PlumeEditor()
 {
-    TRACE_IN;
-
+    PLUME::log::writeToLog ("Deleting Plume interface", PLUME::log::ui);
 	if (processor.getWrapper().isWrapping())
 	{
 		processor.getWrapper().clearWrapperEditor();
@@ -211,8 +210,7 @@ void PlumeEditor::componentPeerChanged()
 //==============================================================================
 void PlumeEditor::actionListenerCallback (const String &message)
 {
-    TRACE_IN;
-    
+        
     if (message.compare (PLUME::commands::updateInterface) == 0)
     {
         updateFullInterface();
@@ -308,7 +306,7 @@ PlumeProcessor& PlumeEditor::getProcessor()
 //==============================================================================
 void PlumeEditor::updateFullInterface()
 {
-    TRACE_IN;
+    PLUME::log::writeToLog ("Updating full interface display.", PLUME::log::ui);
     removeChildComponent (gesturePanel);
     auto gpbounds = gesturePanel->getBounds();
 

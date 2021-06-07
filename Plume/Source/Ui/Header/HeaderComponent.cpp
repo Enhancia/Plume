@@ -406,6 +406,9 @@ void HeaderComponent::prepareGesturePanelAndLoadPreset (const int presetId)
     // Gets the preset Xml and loads it using the processor
     if (ScopedPointer<XmlElement> presetXml = processor.getPresetHandler().getPresetXmlToLoad (presetId))
     {
+
+        PLUME::log::writeToLog ("Loading preset (using top arrows) : " + processor.getPresetHandler().getPresetForId (presetId).getName(), PLUME::log::presets);
+
         MemoryBlock presetData;
         AudioProcessor::copyXmlToBinary (*presetXml, presetData);
 

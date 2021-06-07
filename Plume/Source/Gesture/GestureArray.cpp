@@ -13,14 +13,12 @@
 GestureArray::GestureArray(DataReader& reader, AudioProcessorValueTreeState& params, bool& lastArmValue)
     : dataReader (reader), parameters (params), armValue (lastArmValue)
 {
-    TRACE_IN;
     initializeGestures();
     cancelMapMode();
 }
 
 GestureArray::~GestureArray()
 {
-    TRACE_IN;
     gestures.clear();
 }
 
@@ -110,11 +108,6 @@ void GestureArray::updateAllValues()
             }
         }
     }
-    
-    else
-    {
-	    DBG ("couldn't get the float values. No value was updated.");
-    }
 }
 
 //==============================================================================
@@ -130,8 +123,7 @@ Gesture* GestureArray::getGesture (const String nameToSearch)
             return g;
         }
     }
-    
-    DBG ("Gesture " << nameToSearch << " doesn't exist");
+
     return nullptr;
 }
 
@@ -155,7 +147,6 @@ Gesture* GestureArray::getGesture (const int idToSearch)
         }
     }
 
-    DBG ("Gesture n°" << idToSearch << " doesn't exist");
     return nullptr;
 }
 
@@ -209,6 +200,8 @@ void GestureArray::addGesture (String gestureName, int gestureType, int gestureI
         jassertfalse;
         return;
     }
+
+    PLUME::log::writeToLog ("New Gesture : " + Gesture::getTypeString (gestureType, true) + " in Id " + String (gestureId), PLUME::log::gesture);
 
     switch (gestureType)
     {
@@ -378,14 +371,12 @@ void GestureArray::addAndSetParameter (AudioProcessorParameter& param, int gestu
 
 void GestureArray::clearAllGestures()
 {
-    TRACE_IN;
     gestures.clear();
     shouldMergePitch = false;
 }
 
 void GestureArray::clearAllParameters()
 {
-    TRACE_IN;
     ScopedLock gestlock (gestureArrayLock);
     
     for (auto* g : gestures)
@@ -405,8 +396,6 @@ void GestureArray::cancelMapMode()
     }
     mapModeOn = false;
     sendChangeMessage();
-    
-    TRACE_OUT;
 }
 
 bool GestureArray::isIdAvailable (int idToCheck)

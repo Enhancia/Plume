@@ -65,7 +65,6 @@ void UpdaterPanel::timerCallback()
 	if (updater.getDownloadState() == PlumeUpdater::downloadFinished)
 	{
 		stopTimer();
-
 		updateComponentsForSpecificStep (downloadFinished);
 		
 		return;
@@ -247,11 +246,13 @@ void UpdaterPanel::updateComponentsForSpecificStep (downloadProgress downloadSte
 
 				if (updater.wasSuccessful())
 				{
+					PLUME::log::writeToLog ("Finished downloading installer.", PLUME::log::update);
 					bottomButton->setButtonText ("Start Installer");
 					bodyText->setText ("Successfully downloaded installer!", dontSendNotification);
 				}
 				else
 				{
+					PLUME::log::writeToLog ("Failed to download installer.", PLUME::log::update, PLUME::log::error);
 					bottomButton->setButtonText ("Close");
 					bodyText->setText ("Failed to download installer...", dontSendNotification);
 				}

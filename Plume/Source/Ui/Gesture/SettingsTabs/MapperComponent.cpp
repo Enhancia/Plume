@@ -22,15 +22,13 @@
 MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr, PluginWrapper& wrap)
     :   gesture (gest), gestureArray (gestArr), wrapper (wrap)
 {
-    TRACE_IN;
-
+    
     initializeParamCompArray();
 }
 
 MapperComponent::~MapperComponent()
 {
-    TRACE_IN;
-    paramCompArray.clear();
+        paramCompArray.clear();
 }
 
 //==============================================================================
@@ -72,8 +70,7 @@ void MapperComponent::updateComponents()
 
 void MapperComponent::initializeParamCompArray()
 {
-    TRACE_IN;
-    ScopedLock paramComplock (paramCompArrayLock);
+        ScopedLock paramComplock (paramCompArrayLock);
     paramCompArray.clear();
     
 	int i = 0;
@@ -89,8 +86,7 @@ void MapperComponent::initializeParamCompArray()
 
 void MapperComponent::updateParamCompArray()
 {
-    TRACE_IN;
-    ScopedLock paramComplock (paramCompArrayLock);
+        ScopedLock paramComplock (paramCompArrayLock);
     
     if (paramCompArray.size() < gesture.getParameterArray().size()) // Parameters were added
     {
@@ -173,8 +169,7 @@ void MapperComponent::resizeArray (juce::Rectangle<int> bounds, const int numCol
 MapperBanner::MapperBanner (Gesture& gest, GestureArray& gestArr, PluginWrapper& wrap)
     :   gesture (gest), gestureArray (gestArr), wrapper (wrap)
 {
-    TRACE_IN;
-    
+        
     // map button
     addAndMakeVisible (mapButton = new TextButton ("Map Button"));
     mapButton->setButtonText ("MAP");

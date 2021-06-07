@@ -67,19 +67,16 @@ public:
         MappedParameter(AudioProcessorParameter& p, Range<float> pRange, bool rev = false)
             : parameter (p), range(pRange), reversed (rev)
         {
-            TRACE_IN;
-        }
+                    }
 
         MappedParameter (const MappedParameter& other)
             : parameter (other.parameter), range(other.range), reversed (other.reversed)
         {
-            TRACE_IN;
-        }
+                    }
         
         ~MappedParameter()
         {
-            TRACE_IN;
-        }
+                    }
         
         AudioProcessorParameter& parameter; /**< \brief Reference to a mapped Parameter from the wrapped Plugin. */
         Range<float> range; /**< \brief Range of values from the parameter that the Gesture controls. */

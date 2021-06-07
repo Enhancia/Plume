@@ -37,8 +37,7 @@ DataReader::DataReader(): InterprocessConnection (true, 0x6a6d626e)
 
 DataReader::~DataReader()
 {
-    TRACE_IN;
-    
+        
     disconnect();
 
     data = nullptr;
@@ -99,8 +98,7 @@ bool DataReader::getRawDataAsFloatArray(Array<float>& arrayToFill)
 //==============================================================================
 void  DataReader::sendString(uint8_t* data, int data_size)
 {
-    TRACE_IN;
-    bool test = sendMessage(MemoryBlock(data, data_size));
+        bool test = sendMessage(MemoryBlock(data, data_size));
     DBG("Send string return :" + String(int(test)));
 }
 

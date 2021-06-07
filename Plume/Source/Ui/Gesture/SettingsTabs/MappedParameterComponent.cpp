@@ -16,8 +16,7 @@ MappedParameterComponent::MappedParameterComponent (Gesture& gest,  GestureArray
     : gesture (gest), gestureArray (gestArr), mappedParameter (mappedParam), wrapper (wrap),
       paramId (id), highlightColour (gest.getHighlightColour())
 {
-    TRACE_IN;
-    // Creates the close button
+        // Creates the close button
     Image close = ImageFileFormat::loadFrom (PlumeData::Close_png, PlumeData::Close_pngSize);
 
     addAndMakeVisible (closeButton = new ImageButton ("Close Button"));
@@ -47,8 +46,7 @@ MappedParameterComponent::MappedParameterComponent (Gesture& gest,  GestureArray
 
 MappedParameterComponent::~MappedParameterComponent()
 {
-    TRACE_IN;
-    lowSlider->setLookAndFeel (nullptr);
+        lowSlider->setLookAndFeel (nullptr);
     lowSlider = nullptr;
 
     highSlider->setLookAndFeel (nullptr);

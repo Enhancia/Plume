@@ -18,7 +18,6 @@ GestureSettingsComponent::GestureSettingsComponent (Gesture& gest, GestureArray&
                             : gesture (gest), gestureArray (gestArray),
                               wrapper (wrap), closeButton (closeBttn), gestureId (gest.id)
 {
-    TRACE_IN;
     setComponentID ("Gesture Settings");
 
     createTuner();
@@ -28,7 +27,6 @@ GestureSettingsComponent::GestureSettingsComponent (Gesture& gest, GestureArray&
 
 GestureSettingsComponent::~GestureSettingsComponent()
 {
-    TRACE_IN;
     gestureArray.cancelMapMode();
     disabled = true;
     gestTuner = nullptr;
@@ -310,6 +308,10 @@ void GestureSettingsComponent::createToggles()
     muteButton->onClick = [this] ()
     {
         gesture.setActive (muteButton->getToggleState());
+
+        PLUME::log::writeToLog ("Gesture " + gesture.getName() + " (Id " + String (gesture.id) + (muteButton->getToggleState() ? ") Muting." : ") Unmuting."),
+                                PLUME::log::gesture);
+
         closeButton.setToggleState (gesture.isActive(), dontSendNotification);
         update();
         if (auto* gestComp = dynamic_cast<PlumeComponent*> (getParentComponent()->findChildWithID ("gestComp" + String (gestureId))))

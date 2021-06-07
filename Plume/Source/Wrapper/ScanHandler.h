@@ -108,12 +108,6 @@ private:
                 const String fileOrIdentifier = filesToScan[fileNum]->fileOrIdentifier;
                 const int formatNum = filesToScan[fileNum]->format;
 
-                DBG ("   - Scanning file : " << fileOrIdentifier << " ( Progress : " << progress
-                                             << " | " << fileNum << "/" << numFilesToScan << " )");
-                Logger::writeToLog ("Scanning File : " + fileOrIdentifier
-                                                       + " ( Progress : " + String (fileNum)
-                                                       + "/" + String (numFilesToScan) + " )\n");
-
                 if (!pluginList.isListingUpToDate (fileOrIdentifier, *formatManager->getFormat (formatNum)))
                 {
                     if (launchScannerProgram (formatManager->getFormat(formatNum)->getName(), fileOrIdentifier))
@@ -122,7 +116,6 @@ private:
                         while (scannerProcess.isRunning() && count < timerLimit
                                                           && !threadShouldExit())
                         {
-                            if ((count % 5) == 0) DBG ("Code during scan : " << String (scannerProcess.getExitCode()));
                             count++;
                             wait (10);
                         }
@@ -132,35 +125,32 @@ private:
                                                         || exitCode == 2*/)
                         {
                             const int exitCode = scannerProcess.getExitCode();
-                            Logger::writeToLog ("Exit code : " + String (exitCode) + " ( count : " + String (count) + " )\n");
 
                             if (!readDmp().isEmpty())
                             {
+                                PLUME::log::writeToLog ("Adding plugin to blacklist, it crashed during scan : " + fileOrIdentifier, PLUME::log::pluginScan);
                                 pluginList.addToBlacklist (fileOrIdentifier);
                                 clearDmp();
-                                DBG ("     Crashed... Added to blacklist");
                             }
                             else if (exitCode == 0)
                             {
-                                DBG ("Scanner ended with 0 - count " << count);
-                                
                                 OwnedArray<PluginDescription> found;
                                 formatManager->getFormat(formatNum)->findAllTypesForFile (found, fileOrIdentifier);
 
                                 for (auto* desc : found)
                                 {
                                     if (desc->name != "Plume")
-                                        pluginList.addType (*desc);
+                                    pluginList.addType (*desc);
                                 }
                             }
                             else
                             {
-                                DBG ("Error : scanner ended with code " << exitCode);
+                                PLUME::log::writeToLog ("Failed to scan plugin (code " + String (exitCode) + ") : " + fileOrIdentifier, PLUME::log::pluginScan, PLUME::log::error);
                             }
                         }
                         else // Scanner process still running..
                         {
-                            Logger::writeToLog ("Scanner Timeout\n");
+                            PLUME::log::writeToLog ("Failed to scan plugin (timeout) : " + fileOrIdentifier, PLUME::log::pluginScan, PLUME::log::error);
                             jassert (scannerProcess.kill()); // Force kill with dbg alert
                         }
                     }
@@ -171,7 +161,6 @@ private:
 
             progress = 1.0f;
             endLogEntry();
-            DBG ("Thread just exited...");
         }
 
         bool launchScannerProgram (const String& formatString, const String& fileToScan)

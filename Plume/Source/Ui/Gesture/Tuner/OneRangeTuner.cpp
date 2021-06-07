@@ -101,7 +101,6 @@ void OneRangeTuner::resizeButtons()
     
 void OneRangeTuner::updateComponents()
 {
-    Logger::writeToLog ("One Range Tuner Update GENERAL");
     if (rangeLow.getValue() < rangeHigh.getValue())
     {
         // Sets slider value

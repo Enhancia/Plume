@@ -12,8 +12,7 @@
 
 PresetComponent::PresetComponent (PlumeProcessor& p)  : processor (p)
 {
-    TRACE_IN;
-    
+        
     setName ("Preset List");
     setComponentID ("presetComponent");
     
@@ -39,8 +38,7 @@ PresetComponent::PresetComponent (PlumeProcessor& p)  : processor (p)
 
 PresetComponent::~PresetComponent()
 {
-    TRACE_IN;
-    presetBox = nullptr;
+        presetBox = nullptr;
     filterBox = nullptr;
 	typeToggle = nullptr;
 	pluginSelectBox = nullptr;

@@ -198,7 +198,10 @@ void GestureComponent::createButton()
     muteButton->onClick = [this] ()
     { 
         gesture.setActive (muteButton->getToggleState());
-        
+
+        PLUME::log::writeToLog ("Gesture " + gesture.getName() + " (Id " + String (gesture.id) + (muteButton->getToggleState() ? ") Muting." : ") Unmuting."),
+                                PLUME::log::gesture);
+
         if (selected)
         {
             if (auto* closeButton = dynamic_cast<Button*> (getParentComponent()
@@ -316,6 +319,7 @@ EmptyGestureSlotComponent::EmptyGestureSlotComponent (const int slotId,
                    draggedOverSlot (draggedOverSlotReference)
 {
 }
+
 EmptyGestureSlotComponent::~EmptyGestureSlotComponent()
 {
 }
@@ -324,6 +328,7 @@ const String EmptyGestureSlotComponent::getInfoString()
 {
     return String();
 }
+
 void EmptyGestureSlotComponent::update()
 {
 }

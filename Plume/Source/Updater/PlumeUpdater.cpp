@@ -79,6 +79,9 @@ void PlumeUpdater::progress (URL::DownloadTask* task,
 
 void PlumeUpdater::startDownloadProcess()
 {
+    PLUME::log::writeToLog ("Starting downloading update.",
+                            PLUME::log::update);
+
     if (fileToDownloadURL.isEmpty())
     {
         state = downloadFinished;

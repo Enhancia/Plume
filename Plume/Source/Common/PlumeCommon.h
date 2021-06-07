@@ -25,10 +25,6 @@
 #include "../Ui/Common/DualTextToggle.h"
 #include "../Ui/Common/PlumeShapeButton.h"
 
-// Preprocessor expressions
-#define TRACE_IN  Logger::writeToLog ("[+] Entering: " + String(__FUNCTION__) + "\n")
-#define TRACE_OUT Logger::writeToLog ("[-]  Leaving: " + String(__FUNCTION__) + "\n")
-
 namespace PLUME
 {
     const int NUM_GEST = 8;
@@ -304,6 +300,76 @@ namespace PLUME
 		};
 
         extern const Path createPath (PathId pathToCreate);
+    }
+
+    namespace log
+    {
+        enum LogLevel
+        {
+            trace =0,
+            debug,
+            info,
+            warning,
+            error,
+            fatal
+        };
+
+        enum LogCategory
+        {
+            general =0,
+            gesture,
+            presets,
+            ui,
+            options,
+            update,
+            pluginScan,
+            pluginWrapping,
+            wrappedInterface
+        };
+        
+        const String levelStrings[] = {
+            "TRACE:  ",
+            "DEBUG:  ",
+            "INFO:   ",
+            "WARNING:",
+            "ERROR:  ",
+            "FATAL:  "
+        };
+
+        const String categoryStrings[] = {
+            "general: ",
+            "gesture: ",
+            "presets: ",
+            "interface: ",
+            "options: ",
+            "update: ",
+            "pluginScan: ",
+            "pluginWrapping: ",
+            "wrappedInterface: "
+        };
+
+        static void writeToLog (const String& message, const LogCategory category=general, const LogLevel level=info)
+        {
+          #if !JUCE_DEBUG
+            if (int (level) > int (info)) // cuts TRACE and DEBUG entries on production build
+          #endif
+            {
+                String logString;
+                const Time logTime (Time::getCurrentTime());
+
+                logString += "[" + logTime.toISO8601(true) + "] ";
+
+                if (auto* currentThread = Thread::getCurrentThread())
+                {
+                    logString += "[" + currentThread->getThreadName() + "] ";
+                }
+                
+                logString += levelStrings[int(level)] + categoryStrings[int(category)]
+                          +  message;
+
+                Logger::writeToLog (logString);
+            }
+        }
     }
 
   #if JUCE_WINDOWS
