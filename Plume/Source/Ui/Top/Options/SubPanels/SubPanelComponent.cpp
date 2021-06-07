@@ -216,8 +216,8 @@ SubPanelComponent::ScannerRowComponent::ScannerRowComponent  (const String& scan
 	setComponentID (scannerID);
 	lastFile = initialStoredFile;
 
-	chooser = new FileChooser (dialogBoxTitle, initialFileOrDirectory, filePatternsAllowed);
-	addAndMakeVisible (scanButton = new TextButton ("scanButton"));
+	chooser.reset (new FileChooser (dialogBoxTitle, initialFileOrDirectory, filePatternsAllowed));
+	addAndMakeVisible (*(scanButton = std::make_unique<TextButton> ("scanButton")));
 	scanButton->setButtonText ("Browse");
 	scanButton->setColour (TextButton::textColourOffId,
 		                   getPlumeColour(topPanelMainText));
@@ -252,7 +252,7 @@ void SubPanelComponent::ScannerRowComponent::resized()
 
 void SubPanelComponent::ScannerRowComponent::buttonClicked (Button* bttn)
 {
-	if (bttn == scanButton)
+	if (bttn == scanButton.get())
 	{
 		if (searchDirectories)
 		{

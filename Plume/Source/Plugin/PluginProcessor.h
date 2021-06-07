@@ -228,11 +228,11 @@ private:
     String sequenceTypeToString (const midiSequenceId sequenceType);
 
     //==============================================================================
-    ScopedPointer<FileLogger> plumeLogger; /**< \brief Logger object. Allows to write logs for testing purposes. */
-    ScopedPointer<PluginWrapper> wrapper; /**< \brief PluginWrapper object. Handles the plugin wrapping. */
-    ScopedPointer<DataReader> dataReader; /**< \brief DataReader object. Recieves the data from the ring. */
-    ScopedPointer<GestureArray> gestureArray; /**< \brief GestureArray object. Stores all current gesture objects. */
-    ScopedPointer<PresetHandler> presetHandler; /**< \brief PresetHandler object. Stores preset directories and lists of all presets. */
+    std::unique_ptr<FileLogger> plumeLogger; /**< \brief Logger object. Allows to write logs for testing purposes. */
+    std::unique_ptr<PluginWrapper> wrapper; /**< \brief PluginWrapper object. Handles the plugin wrapping. */
+    std::unique_ptr<DataReader> dataReader; /**< \brief DataReader object. Recieves the data from the ring. */
+    std::unique_ptr<GestureArray> gestureArray; /**< \brief GestureArray object. Stores all current gesture objects. */
+    std::unique_ptr<PresetHandler> presetHandler; /**< \brief PresetHandler object. Stores preset directories and lists of all presets. */
     std::unique_ptr<PlumeUpdater> updater; /**< \brief Plume Updater object. Downloads new Plume installer and launches it. */
     
     //==============================================================================

@@ -41,9 +41,9 @@ private:
     void scanFinished();
     
     //==============================================================================
-    ScopedPointer<TextButton> scanButton;
-    ScopedPointer<TextButton> cancelButton;
-    ScopedPointer<PlumeProgressBar> bar;
+    std::unique_ptr<TextButton> scanButton;
+    std::unique_ptr<TextButton> cancelButton;
+    std::unique_ptr<PlumeProgressBar> bar;
     
     PlumeProcessor& processor;
     

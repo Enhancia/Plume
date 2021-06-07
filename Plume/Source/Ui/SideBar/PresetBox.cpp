@@ -22,7 +22,7 @@ PresetBox::PresetBox (const String& componentName, PlumeProcessor& p)  : ListBox
     setRowHeight (16);
     
     // Sub components
-    editLabel = new Label ("editLabel", "NewPreset");
+    editLabel.reset (new Label ("editLabel", "NewPreset"));
     editLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
     editLabel->setColour (Label::textColourId, getPlumeColour (presetsBoxRowText));
     editLabel->setFont (PLUME::font::plumeFont.withHeight (float (getRowHeight())/2));
@@ -120,9 +120,9 @@ Component* PresetBox::refreshComponentForRow (int rowNumber,
     if (rowNumber == presetIdToEdit)
     {
         editLabel->setVisible (true);
-        return editLabel;
+        return editLabel.get();
     }
-    else if (existingComponentToUpdate == editLabel)
+    else if (existingComponentToUpdate == editLabel.get())
     {
         editLabel->setVisible (false);
         return nullptr;
@@ -173,6 +173,7 @@ void PresetBox::backgroundClicked (const MouseEvent& event)
 
 void PresetBox::deleteKeyPressed (int lastRowSelected)
 {
+    ignoreUnused(lastRowSelected);
     //deletePreset (lastRowSelected);
 }
 
@@ -183,6 +184,7 @@ void PresetBox::returnKeyPressed (int lastRowSelected)
 
 void PresetBox::selectedRowsChanged (int lastRowSelected)
 {
+    ignoreUnused (lastRowSelected);
     if (auto* infoText = dynamic_cast<TextEditor*> (getParentComponent() // presetComp
                                                     ->getParentComponent() // sideBarComp
                                                     ->findChildWithID("infoPanel")
@@ -257,7 +259,7 @@ void PresetBox::startNewPresetEntry()
     updateContent();
     scrollToEnsureRowIsOnscreen (presetIdToEdit);
     
-    if (getComponentForRowNumber (presetIdToEdit) == editLabel)
+    if (getComponentForRowNumber (presetIdToEdit) == editLabel.get())
     {
         // Gives the focus to the label and waits for the callback
         editLabel->showEditor();
@@ -279,7 +281,7 @@ void PresetBox::startRenameEntry (const int row)
     editLabel->setText (processor.getPresetHandler().getTextForPresetId (row), dontSendNotification);
     updateContent();
     
-    if (getComponentForRowNumber (presetIdToEdit) == editLabel)
+    if (getComponentForRowNumber (presetIdToEdit) == editLabel.get())
     {
         // Gives the focus to the label and waits for the callback
         editLabel->showEditor();
@@ -342,7 +344,7 @@ void PresetBox::handleMenuResult (const int row, const int menuResult)
 void PresetBox::setPreset (const int row)
 {
     // Gets the preset Xml and loads it using the processor
-    if (ScopedPointer<XmlElement> presetXml = processor.getPresetHandler().getPresetXmlToLoad (row))
+    if (std::unique_ptr<XmlElement> presetXml = processor.getPresetHandler().getPresetXmlToLoad (row))
     {
         PLUME::log::writeToLog ("Loading preset (from preset list) : " + processor.getPresetHandler().getPresetForId (row).getName(), PLUME::log::presets);
 
@@ -365,7 +367,9 @@ void PresetBox::setPreset (const int row)
 
 void PresetBox::createUserPreset (const String& presetName)
 {
-    ScopedPointer<XmlElement> presetXml = new XmlElement ("PLUME");
+    ignoreUnused(presetName);
+
+    auto presetXml = std::make_unique<XmlElement> ("PLUME");
 	processor.createPluginXml (*presetXml);
 	processor.createGestureXml (*presetXml);
 	

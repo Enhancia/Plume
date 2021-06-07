@@ -171,7 +171,7 @@ MapperBanner::MapperBanner (Gesture& gest, GestureArray& gestArr, PluginWrapper&
 {
         
     // map button
-    addAndMakeVisible (mapButton = new TextButton ("Map Button"));
+    addAndMakeVisible (*(mapButton = std::make_unique<TextButton> ("Map Button")));
     mapButton->setButtonText ("MAP");
     mapButton->setColour (TextButton::buttonColourId, gesture.getHighlightColour());
     mapButton->setColour (TextButton::buttonOnColourId, gesture.getHighlightColour()
@@ -203,7 +203,7 @@ void MapperBanner::resized()
 
 void MapperBanner::buttonClicked (Button* bttn)
 {
-    if (bttn == mapButton)
+    if (bttn == mapButton.get())
     {
         // Map: clears mapMode for every other gesture, puts it on for the right one and changes the button color.
         if (gesture.mapModeOn == false && gesture.getParameterArray().size() < PLUME::MAX_PARAMETER)

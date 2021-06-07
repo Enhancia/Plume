@@ -15,7 +15,7 @@ DescriptionPanel::DescriptionPanel (Gesture& g)	: gesture (g)
 {
 	setComponentID ("descriptionPanel");
 
-    addAndMakeVisible (descriptionLabel = new Label ("Description Panel Text Editor"));
+    addAndMakeVisible (*(descriptionLabel = std::make_unique<Label> ("Description Panel Text Editor")));
     descriptionLabel->setColour (Label::textColourId, Colours::black);
     descriptionLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
     descriptionLabel->setColour (Label::outlineColourId, Colour (0x20000000));

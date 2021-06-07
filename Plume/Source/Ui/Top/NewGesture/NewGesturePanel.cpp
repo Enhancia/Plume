@@ -134,7 +134,7 @@ void NewGesturePanel::mouseUp (const MouseEvent &event)
 }
 void NewGesturePanel::buttonClicked (Button* bttn)
 {
-	if (bttn == closeButton)
+	if (bttn == closeButton.get())
 	{
 		hidePanel (true);
 	}
@@ -213,9 +213,9 @@ void NewGesturePanel::unselectGestureType()
 //==============================================================================
 void NewGesturePanel::createCloseButton()
 {
-    addAndMakeVisible (closeButton = new ShapeButton ("Close Settings Button", Colour(0x00000000),
+    addAndMakeVisible (*(closeButton = std::make_unique<ShapeButton> ("Close Settings Button", Colour(0x00000000),
                                                                                Colour(0x00000000),
-                                                                               Colour(0x00000000)));
+                                                                               Colour(0x00000000))));
 
     Path p;
     p.startNewSubPath (0, 0);
@@ -258,7 +258,7 @@ void NewGesturePanel::resizeGestureSelectorButtons (juce::Rectangle<int> buttons
 
 void NewGesturePanel::createAndAddTextEditor()
 {
-	addAndMakeVisible (descriptionTextEditor = new TextEditor ("Gesture Description Text Editor"));
+	addAndMakeVisible (*(descriptionTextEditor = std::make_unique<TextEditor> ("Gesture Description Text Editor")));
     descriptionTextEditor->setMultiLine (true, true);
     descriptionTextEditor->setReturnKeyStartsNewLine (true);
     descriptionTextEditor->setReadOnly (true);
@@ -340,7 +340,8 @@ void NewGesturePanel::GestureTypeSelector::setHighlighted (bool shouldBeHighligh
 
 void NewGesturePanel::GestureTypeSelector::drawGesturePath (Graphics& g, juce::Rectangle<int> area)
 {
-    g.setColour (Colour (0xfff3f3f3));
+    ignoreUnused (area, g);
+
     /*
     // Icon Fill
     Path iconFill;

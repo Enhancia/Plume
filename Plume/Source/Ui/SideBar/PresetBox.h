@@ -82,7 +82,7 @@ private:
     PlumeProcessor& processor;
     int presetIdToEdit = -1;
     bool newPresetEntry = false;
-    ScopedPointer<Label> editLabel;
+    std::unique_ptr<Label> editLabel;
     PopupMenu rightClickMenu;
     
     //==============================================================================

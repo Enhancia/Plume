@@ -38,7 +38,7 @@ public:
 
 private:
     Gesture& gesture;
-    ScopedPointer<Label> descriptionLabel;
+    std::unique_ptr<Label> descriptionLabel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DescriptionPanel)
 };

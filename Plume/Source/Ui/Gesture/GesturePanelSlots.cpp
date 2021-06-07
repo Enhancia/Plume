@@ -175,7 +175,7 @@ void GestureComponent::startNameEntry()
 
 void GestureComponent::createLabel()
 {
-    addAndMakeVisible (gestureNameLabel = new Label ("gestureNameLabel", gesture.getName().toUpperCase()));
+    addAndMakeVisible (*(gestureNameLabel = std::make_unique<Label> ("gestureNameLabel", gesture.getName().toUpperCase())));
     gestureNameLabel->setEditable (false, false, false);
     gestureNameLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
     gestureNameLabel->setColour (Label::textColourId, getPlumeColour (basePanelMainText));
@@ -187,10 +187,10 @@ void GestureComponent::createLabel()
 
 void GestureComponent::createButton()
 {
-    addAndMakeVisible (muteButton = new PlumeShapeButton ("Mute Button",
+    addAndMakeVisible (*(muteButton = std::make_unique<PlumeShapeButton> ("Mute Button",
                                                           getPlumeColour (plumeBackground),
                                                           Gesture::getHighlightColour (gesture.type, false),
-                                                          Gesture::getHighlightColour (gesture.type)));
+                                                          Gesture::getHighlightColour (gesture.type))));
 
     muteButton->setShape (PLUME::path::createPath (PLUME::path::onOff), false, true, false);
     muteButton->setToggleState (gesture.isActive(), dontSendNotification);
@@ -251,6 +251,8 @@ void GestureComponent::paintParameterSlotDisplay  (Graphics& g, juce::Rectangle<
 
 void GestureComponent::drawGesturePath (Graphics& g, juce::Rectangle<int> area)
 {
+    ignoreUnused (area, g);
+
     /*
     g.setColour (Colour (0xfff3f3f3));
 

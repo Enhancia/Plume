@@ -107,13 +107,13 @@ private:
     Colour highlightColour;
 
     //==============================================================================
-    ScopedPointer<ImageButton> closeButton;
-    ScopedPointer<TextButton> reverseButton;
-    ScopedPointer<Label> paramNameLabel;
-    ScopedPointer<Label> rangeLabelMin;
-    ScopedPointer<Label> rangeLabelMax;
-    ScopedPointer<Slider> lowSlider;
-    ScopedPointer<Slider> highSlider;
+    std::unique_ptr<ImageButton> closeButton;
+    std::unique_ptr<TextButton> reverseButton;
+    std::unique_ptr<Label> paramNameLabel;
+    std::unique_ptr<Label> rangeLabelMin;
+    std::unique_ptr<Label> rangeLabelMax;
+    std::unique_ptr<Slider> lowSlider;
+    std::unique_ptr<Slider> highSlider;
 
     PLUME::UI::TestTunerLookAndFeel sliderLookAndFeel;
     

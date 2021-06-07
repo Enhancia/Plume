@@ -15,7 +15,7 @@ InfoPanel::InfoPanel (Button& hideButton) : hideInfoButton (hideButton)
 {
 	setComponentID ("infoPanel");
 
-    addAndMakeVisible (textEditor = new TextEditor ("Info Panel Text Editor"));
+    addAndMakeVisible (*(textEditor = std::make_unique<TextEditor> ("Info Panel Text Editor")));
     textEditor->setComponentID ("infoText");
     textEditor->setMultiLine (true, true);
     textEditor->setReturnKeyStartsNewLine (true);

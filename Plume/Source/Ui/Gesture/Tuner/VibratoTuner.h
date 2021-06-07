@@ -85,10 +85,10 @@ private:
     const NormalisableRange<float> parameterMaxThreshold;
 
     
-    ScopedPointer<Slider> gainSlider;
-    ScopedPointer<Slider> thresholdSlider;
-    ScopedPointer<Label> gainLabel;
-    ScopedPointer<Label> thresholdLabel;
+    std::unique_ptr<Slider> gainSlider;
+    std::unique_ptr<Slider> thresholdSlider;
+    std::unique_ptr<Label> gainLabel;
+    std::unique_ptr<Label> thresholdLabel;
     
     PLUME::UI::TestTunerLookAndFeel vibratoTunerLookAndFeel;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VibratoTuner)
