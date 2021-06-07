@@ -478,6 +478,7 @@ void PluginWrapper::setAuUsage (bool
 {
   #if JUCE_MAC
     useAudioUnits = shouldUseAudioUnits;
+    scanHandler->setPluginFormats (true, true, shouldUseAudioUnits);
     savePluginListToFile();
   #endif
 }
