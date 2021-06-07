@@ -35,7 +35,7 @@ public:
 private:
     //==============================================================================
     bool alerted = false;
-    ScopedPointer<TextEditor> textEditor;
+    std::unique_ptr<TextEditor> textEditor;
     Button& hideInfoButton;
     
     //==============================================================================

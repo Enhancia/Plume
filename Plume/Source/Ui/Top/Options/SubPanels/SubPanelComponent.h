@@ -131,7 +131,7 @@ private:
         int feedbackCount = 0;
         const int feedbackMax = 25;
         String feedbackString;
-        ScopedPointer<Component> comp;
+        std::unique_ptr<Component> comp;
     };
 
     //==============================================================================
@@ -157,8 +157,8 @@ private:
     private:
         String reducePathName (String pathToReduce, int numFoldersLeft, int numFoldersRight);
 
-        ScopedPointer<FileChooser> chooser;
-        ScopedPointer<TextButton> scanButton;
+        std::unique_ptr<FileChooser> chooser;
+        std::unique_ptr<TextButton> scanButton;
         File lastFile;
         const bool searchDirectories;
 

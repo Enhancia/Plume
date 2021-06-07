@@ -239,7 +239,14 @@ void BugReportPanel::updateComponentsForSpecificStep (ReportStep stepToUpgradeTo
             messageEditor->setVisible (true);
             break;
         case reportSentOk:
+            PLUME::log::writeToLog ("Bug report sent succesfully.", PLUME::log::options);
+            bottomButton->setButtonText ("Ok");
+            nameLabel->setVisible (false);
+            mailLabel->setVisible (false);
+            messageEditor->setVisible (false);
+            break;
         case reportSentError:
+            PLUME::log::writeToLog ("Failed to send bug report...", PLUME::log::options, PLUME::log::error);
             bottomButton->setButtonText ("Ok");
             nameLabel->setVisible (false);
             mailLabel->setVisible (false);

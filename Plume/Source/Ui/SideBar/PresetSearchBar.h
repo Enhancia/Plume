@@ -40,8 +40,8 @@ public:
 
 private:
     //==============================================================================
-    ScopedPointer<Label> searchLabel;
-    ScopedPointer<PlumeShapeButton> cancelButton;
+    std::unique_ptr<Label> searchLabel;
+    std::unique_ptr<PlumeShapeButton> cancelButton;
     
     //==============================================================================
     PlumeProcessor& processor;

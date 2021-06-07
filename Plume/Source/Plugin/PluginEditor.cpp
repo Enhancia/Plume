@@ -15,8 +15,8 @@
 PlumeEditor::PlumeEditor (PlumeProcessor& p)
     : AudioProcessorEditor (&p), ComponentMovementWatcher (this), processor (p)
 {
-    TRACE_IN;
-	setComponentID ("plumeEditor");
+    PLUME::log::writeToLog ("Creating Plume interface", PLUME::log::ui);
+    setComponentID ("plumeEditor");
 
 	setLookAndFeel (&plumeLookAndFeel);
 	setMouseClickGrabsKeyboardFocus(false);
@@ -30,11 +30,13 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 
     updaterPanel.reset (new UpdaterPanel (processor.getUpdater()));
     
-    addAndMakeVisible(optionsPanel = new OptionsPanel (processor, *updaterPanel));
+    optionsPanel.reset (new OptionsPanel (processor, *updaterPanel));
+    addAndMakeVisible(*optionsPanel);
     optionsPanel->setVisible(false);
     optionsPanel->setAlwaysOnTop(true);
 
-    addAndMakeVisible (newGesturePanel = new NewGesturePanel (processor));
+    newGesturePanel.reset (new NewGesturePanel (processor));
+    addAndMakeVisible (*newGesturePanel);
     newGesturePanel->hidePanel();
 
     bugReportPanel.reset (new BugReportPanel());
@@ -46,24 +48,28 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     updaterPanel->setVisible (false);
     updaterPanel->setAlwaysOnTop (true);
 
-	addAndMakeVisible (newPresetPanel = new NewPresetPanel (processor));
+    newPresetPanel.reset (new NewPresetPanel (processor));
+	addAndMakeVisible (*newPresetPanel);
 	newPresetPanel->setVisible (false);
 	newPresetPanel->setAlwaysOnTop (true);
 
     // Creates the main components
-    addAndMakeVisible (header = new HeaderComponent (processor, *newPresetPanel));
-    addAndMakeVisible (sideBar = new SideBarComponent (processor, *optionsPanel));
+    header.reset (new HeaderComponent (processor, *newPresetPanel));
+    addAndMakeVisible (*header);
+    sideBar.reset (new SideBarComponent (processor, *optionsPanel));
+    addAndMakeVisible (*sideBar);
     sideBar->addInfoPanelAsMouseListener (this);
     
-    
-	addAndMakeVisible (gesturePanel = new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
-	                                                    processor.getParameterTree(), *newGesturePanel,
+    gesturePanel.reset (new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
+                                                        processor.getParameterTree(), *newGesturePanel,
                                                         PLUME::UI::FRAMERATE));
+	addAndMakeVisible (*gesturePanel);
                                                         
 	// SideBarButton
 	bool sideBarHidden = false;
 
-	addAndMakeVisible (sideBarButton = new HideSideBarButton());
+	sideBarButton.reset (new HideSideBarButton());
+    addAndMakeVisible (*sideBarButton);
                                                         
 	sideBarButton->setToggleState (sideBarHidden, dontSendNotification); // side bar visible at first
     sideBarButton->setClickingTogglesState (true);
@@ -78,7 +84,8 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 
 	// Base size and resize settings
 	setResizable (true, false);
-	addAndMakeVisible (resizableCorner = new ResizableCornerComponent (this, getConstrainer()));
+	resizableCorner.reset (new ResizableCornerComponent (this, getConstrainer()));
+    addAndMakeVisible (*resizableCorner);
 
 	setSize(PLUME::UI::DEFAULT_WINDOW_WIDTH, PLUME::UI::DEFAULT_WINDOW_HEIGHT);
 	setResizeLimits (getWidth(), getHeight(), getWidth()*3, getHeight()*3);
@@ -113,8 +120,7 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 
 PlumeEditor::~PlumeEditor()
 {
-    TRACE_IN;
-
+    PLUME::log::writeToLog ("Deleting Plume interface", PLUME::log::ui);
 	if (processor.getWrapper().isWrapping())
 	{
 		processor.getWrapper().clearWrapperEditor();
@@ -211,8 +217,7 @@ void PlumeEditor::componentPeerChanged()
 //==============================================================================
 void PlumeEditor::actionListenerCallback (const String &message)
 {
-    TRACE_IN;
-    
+        
     if (message.compare (PLUME::commands::updateInterface) == 0)
     {
         updateFullInterface();
@@ -308,14 +313,14 @@ PlumeProcessor& PlumeEditor::getProcessor()
 //==============================================================================
 void PlumeEditor::updateFullInterface()
 {
-    TRACE_IN;
+    PLUME::log::writeToLog ("Updating full interface display.", PLUME::log::ui);
     removeChildComponent (gesturePanel);
     auto gpbounds = gesturePanel->getBounds();
 
     gesturePanel.reset (new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
                                           processor.getParameterTree(), *newGesturePanel,
                                           PLUME::UI::FRAMERATE));
-    addAndMakeVisible (gesturePanel, 0);
+    addAndMakeVisible (*gesturePanel, 0);
 	gesturePanel->setBounds(gpbounds);
     
 	header->update();

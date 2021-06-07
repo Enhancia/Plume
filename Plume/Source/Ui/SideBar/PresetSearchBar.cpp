@@ -11,9 +11,9 @@
 #include "PresetSearchBar.h"
 
 //==============================================================================
-PresetSearchBar::PresetSearchBar (PlumeProcessor& proc) : processor (proc), searchLabel (new Label ("searchLabel", "Search..."))
+PresetSearchBar::PresetSearchBar (PlumeProcessor& proc) : processor (proc), searchLabel (std::make_unique<Label> ("searchLabel", "Search..."))
 {
-    addAndMakeVisible (searchLabel);
+    addAndMakeVisible (*searchLabel);
     searchLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
     searchLabel->setColour (Label::textColourId, getPlumeColour (presetsBoxRowText));
     searchLabel->setFont (PLUME::font::plumeFont.withHeight (PLUME::font::SIDEBAR_LABEL_FONT_H));
@@ -22,9 +22,9 @@ PresetSearchBar::PresetSearchBar (PlumeProcessor& proc) : processor (proc), sear
     searchLabel->setMouseCursor (MouseCursor (MouseCursor::IBeamCursor));
     searchLabel->addListener (this);
     
-    addAndMakeVisible (cancelButton = new PlumeShapeButton ("Cancel Button",
+    addAndMakeVisible (*(cancelButton = std::make_unique<PlumeShapeButton> ("Cancel Button",
                                                             Colour (0x00000000),
-                                                            getPlumeColour (sideBarButtonFill)));
+                                                            getPlumeColour (sideBarButtonFill))));
 	
 	Path p;
 	p.startNewSubPath (0, 0);

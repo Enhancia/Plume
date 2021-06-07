@@ -18,7 +18,8 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc, Component& newPrst)  : p
     setComponentID ("header");
     
     // Plugin Name
-    addAndMakeVisible (pluginNameLabel = new Label ("Plugin Name Label", processor.getWrapper().getWrappedPluginName()));
+    pluginNameLabel.reset (new Label ("Plugin Name Label", processor.getWrapper().getWrappedPluginName()));
+    addAndMakeVisible (*pluginNameLabel);
     pluginNameLabel->setFont (PLUME::font::plumeFont.withHeight (PLUME::font::HEADER_LABEL_FONT_H));
     pluginNameLabel->setJustificationType (Justification::centred);
     pluginNameLabel->setEditable (false, false, false);
@@ -27,7 +28,8 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc, Component& newPrst)  : p
     pluginNameLabel->addMouseListener (this, false);
     
     // Preset Name
-    addAndMakeVisible (presetNameLabel = new Label ("Preset Name Label", processor.getPresetHandler().getCurrentPresetName()));
+    presetNameLabel.reset (new Label ("Preset Name Label", processor.getPresetHandler().getCurrentPresetName()));
+    addAndMakeVisible (*presetNameLabel);
     presetNameLabel->setFont (PLUME::font::plumeFont.withHeight (PLUME::font::HEADER_LABEL_FONT_H));
     presetNameLabel->setJustificationType (Justification::centred);
     presetNameLabel->setEditable (false, false, false);
@@ -157,7 +159,7 @@ void HeaderComponent::resized()
 //==============================================================================
 void HeaderComponent::mouseUp (const MouseEvent &event)
 {
-	if (event.eventComponent == pluginNameLabel)
+	if (event.eventComponent == pluginNameLabel.get())
 	{
 		if (processor.getWrapper().isWrapping())
 		{
@@ -172,7 +174,7 @@ void HeaderComponent::mouseUp (const MouseEvent &event)
 
 void HeaderComponent::mouseEnter (const MouseEvent &event)
 {
-    if (event.eventComponent == pluginNameLabel && processor.getWrapper().isWrapping())
+    if (event.eventComponent == pluginNameLabel.get() && processor.getWrapper().isWrapping())
 	{
         pluginNameLabel->setColour (Label::textColourId,
                                     getPlumeColour (headerText).withAlpha (0.5f));
@@ -181,7 +183,7 @@ void HeaderComponent::mouseEnter (const MouseEvent &event)
 
 void HeaderComponent::mouseExit (const MouseEvent &event)
 {
-    if (event.eventComponent == pluginNameLabel)
+    if (event.eventComponent == pluginNameLabel.get())
 	{
         pluginNameLabel->setColour (Label::textColourId,
                                     getPlumeColour (headerText));
@@ -190,7 +192,7 @@ void HeaderComponent::mouseExit (const MouseEvent &event)
 
 void HeaderComponent::buttonClicked (Button* bttn) 
 {
-    if (bttn == pluginListButton)
+    if (bttn == pluginListButton.get())
     {
         if (processor.getWrapper().getList().getNumTypes() == 0)
         {
@@ -210,15 +212,15 @@ void HeaderComponent::buttonClicked (Button* bttn)
                                           ModalCallbackFunction::forComponent (pluginMenuCallback, this));
         }
     }
-    else if (bttn == savePresetButton)
+    else if (bttn == savePresetButton.get())
     {
         newPresetPanel.setVisible (true);
     }
-    else if (bttn == leftArrowButton)
+    else if (bttn == leftArrowButton.get())
     {
         setPreviousPreset();
     }
-    else if (bttn == rightArrowButton)
+    else if (bttn == rightArrowButton.get())
     {
         setNextPreset();
     }
@@ -284,16 +286,18 @@ void HeaderComponent::createButtons()
     arrowDown.lineTo (PLUME::UI::HEADER_HEIGHT/2, PLUME::UI::HEADER_HEIGHT - PLUME::UI::MARGIN);
     arrowDown.lineTo (PLUME::UI::HEADER_HEIGHT - PLUME::UI::MARGIN, 2*PLUME::UI::MARGIN);
     
-    addAndMakeVisible (pluginListButton = new PlumeShapeButton ("Plugin List Button",
+    pluginListButton.reset (new PlumeShapeButton ("Plugin List Button",
                                                                 Colour(0),
                                                                 getPlumeColour (headerButtonStroke)));
+    addAndMakeVisible (*pluginListButton);
     pluginListButton->setShape (arrowDown, false, false, false);
     pluginListButton->addListener (this);
 
     // Save Preset Button
-    addAndMakeVisible (savePresetButton = new PlumeShapeButton ("Save Preset Button",
+    savePresetButton.reset (new PlumeShapeButton ("Save Preset Button",
                                                                 Colour(0),
                                                                 getPlumeColour (headerButtonStroke)));
+    addAndMakeVisible (*savePresetButton);
 
 
     savePresetButton->setShape (PLUME::path::createPath (PLUME::path::floppyDisk), false, true, false);
@@ -311,17 +315,19 @@ void HeaderComponent::createButtons()
     arrowRight.lineTo (5.0f, 5.0f);
     arrowRight.lineTo (0.0f, 10.0f);
 
-    addAndMakeVisible (leftArrowButton = new PlumeShapeButton ("Change Preset Left Button",
+    leftArrowButton.reset (new PlumeShapeButton ("Change Preset Left Button",
                                                                 Colour(0),
                                                                 getPlumeColour (headerButtonStroke)));
+    addAndMakeVisible (*leftArrowButton);
 
 
     leftArrowButton->setShape (arrowLeft, false, true, false);
     leftArrowButton->addListener (this);
 
-    addAndMakeVisible (rightArrowButton = new PlumeShapeButton ("Change Preset Right Button",
+    rightArrowButton.reset (new PlumeShapeButton ("Change Preset Right Button",
                                                                 Colour(0),
                                                                 getPlumeColour (headerButtonStroke)));
+    addAndMakeVisible (*rightArrowButton);
 
 
     rightArrowButton->setShape (arrowRight, false, true, false);
@@ -404,8 +410,11 @@ void HeaderComponent::prepareGesturePanelAndLoadPreset (const int presetId)
     // Sets Preset
 
     // Gets the preset Xml and loads it using the processor
-    if (ScopedPointer<XmlElement> presetXml = processor.getPresetHandler().getPresetXmlToLoad (presetId))
+    if (std::unique_ptr<XmlElement> presetXml = processor.getPresetHandler().getPresetXmlToLoad (presetId))
     {
+
+        PLUME::log::writeToLog ("Loading preset (using top arrows) : " + processor.getPresetHandler().getPresetForId (presetId).getName(), PLUME::log::presets);
+
         MemoryBlock presetData;
         AudioProcessor::copyXmlToBinary (*presetXml, presetData);
 

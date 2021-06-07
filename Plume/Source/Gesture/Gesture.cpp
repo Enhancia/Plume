@@ -18,7 +18,6 @@ Gesture::Gesture (String gestName, int gestType, int gestId, const NormalisableR
 	       		  value    (*(plumeParameters.getParameter (valueId))),
 	       		  valueRef (plumeParameters.getRawParameterValue (valueId))
 {
-    TRACE_IN;
     mapped = false;
     setGestureValue (defaultValue);
     setMidiLow (defaultMidiRange.getStart(), false);
@@ -397,7 +396,9 @@ bool Gesture::affectsPitch()
 
 void Gesture::addParameter (AudioProcessorParameter& param, Range<float> r, bool rev)
 {
-    TRACE_IN;
+    PLUME::log::writeToLog ("Gesture " + name + " (Id " + String (id) + ") : Adding parameter " + param.getName (50),
+                            PLUME::log::gesture);
+
     ScopedLock paramlock (parameterArrayLock);
     
     if (parameterArray.size() < PLUME::MAX_PARAMETER)
@@ -411,7 +412,9 @@ void Gesture::addParameter (AudioProcessorParameter& param, Range<float> r, bool
 
 void Gesture::deleteParameter (int paramId)
 {
-    TRACE_IN;
+    PLUME::log::writeToLog ("Gesture " + name + " (Id " + String (id) + ") : removing parameter " + parameterArray[paramId]->parameter.getName (50),
+                            PLUME::log::gesture);
+
     ScopedLock paramlock (parameterArrayLock);
     
     parameterArray.remove (paramId);
@@ -425,7 +428,9 @@ void Gesture::replaceParameter (int paramId,
                                 AudioProcessorParameter& param,
                                 Range<float> r, bool rev)
 {
-    TRACE_IN;
+    PLUME::log::writeToLog ("Gesture " + name + " (Id " + String (id) + ") : replacing parameter " + parameterArray[paramId]->parameter.getName (50) + " with " + param.getName (50),
+                            PLUME::log::gesture);
+
     ScopedLock paramlock (parameterArrayLock);
     
     parameterArray.set (paramId, new MappedParameter (param, r, rev));
@@ -435,7 +440,6 @@ void Gesture::replaceParameter (int paramId,
 
 void Gesture::clearAllParameters (bool sendNotification)
 {
-    TRACE_IN;
     ScopedLock paramlock (parameterArrayLock);
     
 	mapped = false;

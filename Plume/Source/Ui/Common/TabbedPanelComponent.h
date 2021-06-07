@@ -96,7 +96,7 @@ private:
 
         std::unique_ptr<TabButton> button;
         const String name;
-        ScopedPointer<Component> panel;
+        std::unique_ptr<Component> panel;
         bool alert = false;
     };
 

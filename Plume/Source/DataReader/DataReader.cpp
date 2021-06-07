@@ -18,7 +18,7 @@ DataReader::DataReader(): InterprocessConnection (true, 0x6a6d626e)
     connected = false;
     
     // Data initialization
-    data = new StringArray (StringArray::fromTokens ("0 0 0 0 0 0 0", " ", String()));
+    data.reset (new StringArray (StringArray::fromTokens ("0 0 0 0 0 0 0", " ", String())));
     
     #if JUCE_MAC
         statutPipe = std::make_unique<StatutPipe> ();
@@ -27,22 +27,14 @@ DataReader::DataReader(): InterprocessConnection (true, 0x6a6d626e)
         // Pipe creation
         connectToExistingPipe();
     #endif
-    
-    // Label creation
-    addAndMakeVisible (connectedLabel = new Label ("connectedLabel", TRANS ("Disconnected")));
-    connectedLabel->setColour (Label::textColourId, Colour (0xaaff0000));
-    connectedLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
-    connectedLabel->setBounds (10, 5, 100, 40);
 }
 
 DataReader::~DataReader()
 {
-    TRACE_IN;
-    
+        
     disconnect();
 
     data = nullptr;
-    connectedLabel = nullptr;
   #if JUCE_MAC
     statutPipe = nullptr;
   #endif
@@ -99,8 +91,7 @@ bool DataReader::getRawDataAsFloatArray(Array<float>& arrayToFill)
 //==============================================================================
 void  DataReader::sendString(uint8_t* data, int data_size)
 {
-    TRACE_IN;
-    bool test = sendMessage(MemoryBlock(data, data_size));
+        bool test = sendMessage(MemoryBlock(data, data_size));
     DBG("Send string return :" + String(int(test)));
 }
 
@@ -143,9 +134,6 @@ void DataReader::connectionMade()
         String test = "Start";
         sendMessage(MemoryBlock(test.toUTF8(), test.getNumBytesAsUTF8()));
     #endif
-    
-    connectedLabel->setColour (Label::textColourId, Colour (0xaa00ff00));
-    connectedLabel->setText (TRANS ("<Connected>" /* : pipe " + String(pipeNumber)*/), dontSendNotification);
 }
 
 void DataReader::connectionLost()
@@ -156,9 +144,6 @@ void DataReader::connectionLost()
         String test = "Stop";
         sendMessage(MemoryBlock(test.toUTF8(), test.getNumBytesAsUTF8()));
     #endif
-    
-    connectedLabel->setColour (Label::textColourId, Colour (0xaaff0000));
-    connectedLabel->setText (TRANS ("Disconnected"), dontSendNotification);
 }
 
 void DataReader::messageReceived (const MemoryBlock &message)

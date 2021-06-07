@@ -23,6 +23,7 @@ GestureComponent::GestureComponent (Gesture& gest, GestureArray& gestArray,
       draggedGesture (draggedGestureReference),
       draggedOverSlot (draggedOverSlotReference)
 {
+    setComponentID ("gestComp" + String(id));
     createLabel();
     createButton();
 }
@@ -36,10 +37,15 @@ GestureComponent::~GestureComponent()
 
 const String GestureComponent::getInfoString()
 {
-    return gesture.getName() + " | " + gesture.getTypeString (true) + "\n\n" +
-           "State : " + (gesture.isActive() ? "Enabled" : "Disabled") +
-           " | Mode : " + (gesture.generatesMidi() ? "MIDI\n" : "Parameters\n")
-           + "\n" + gesture.getDescription();
+    if (auto* gesturePtr = gestureArray.getGesture (id))
+    {
+        return gesturePtr->getName() + " | " + gesturePtr->getTypeString (true) + "\n\n" +
+               "State : " + (gesturePtr->isActive() ? "Enabled" : "Disabled") +
+               " | Mode : " + (gesturePtr->generatesMidi() ? "MIDI\n" : "Parameters\n")
+               + "\n" + gesturePtr->getDescription();
+    }
+    else return "";
+
 }
 
 void GestureComponent::update()
@@ -169,7 +175,7 @@ void GestureComponent::startNameEntry()
 
 void GestureComponent::createLabel()
 {
-    addAndMakeVisible (gestureNameLabel = new Label ("gestureNameLabel", gesture.getName().toUpperCase()));
+    addAndMakeVisible (*(gestureNameLabel = std::make_unique<Label> ("gestureNameLabel", gesture.getName().toUpperCase())));
     gestureNameLabel->setEditable (false, false, false);
     gestureNameLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
     gestureNameLabel->setColour (Label::textColourId, getPlumeColour (basePanelMainText));
@@ -181,10 +187,10 @@ void GestureComponent::createLabel()
 
 void GestureComponent::createButton()
 {
-    addAndMakeVisible (muteButton = new PlumeShapeButton ("Mute Button",
+    addAndMakeVisible (*(muteButton = std::make_unique<PlumeShapeButton> ("Mute Button",
                                                           getPlumeColour (plumeBackground),
-                                                          getPlumeColour (mutedHighlight),
-                                                          Gesture::getHighlightColour (gesture.type)));
+                                                          Gesture::getHighlightColour (gesture.type, false),
+                                                          Gesture::getHighlightColour (gesture.type))));
 
     muteButton->setShape (PLUME::path::createPath (PLUME::path::onOff), false, true, false);
     muteButton->setToggleState (gesture.isActive(), dontSendNotification);
@@ -192,7 +198,10 @@ void GestureComponent::createButton()
     muteButton->onClick = [this] ()
     { 
         gesture.setActive (muteButton->getToggleState());
-        
+
+        PLUME::log::writeToLog ("Gesture " + gesture.getName() + " (Id " + String (gesture.id) + (muteButton->getToggleState() ? ") Muting." : ") Unmuting."),
+                                PLUME::log::gesture);
+
         if (selected)
         {
             if (auto* closeButton = dynamic_cast<Button*> (getParentComponent()
@@ -242,6 +251,8 @@ void GestureComponent::paintParameterSlotDisplay  (Graphics& g, juce::Rectangle<
 
 void GestureComponent::drawGesturePath (Graphics& g, juce::Rectangle<int> area)
 {
+    ignoreUnused (area, g);
+
     /*
     g.setColour (Colour (0xfff3f3f3));
 
@@ -310,6 +321,7 @@ EmptyGestureSlotComponent::EmptyGestureSlotComponent (const int slotId,
                    draggedOverSlot (draggedOverSlotReference)
 {
 }
+
 EmptyGestureSlotComponent::~EmptyGestureSlotComponent()
 {
 }
@@ -318,6 +330,7 @@ const String EmptyGestureSlotComponent::getInfoString()
 {
     return String();
 }
+
 void EmptyGestureSlotComponent::update()
 {
 }

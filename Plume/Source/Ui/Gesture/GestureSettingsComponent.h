@@ -76,12 +76,12 @@ private:
     PluginWrapper& wrapper;
     const int HEADER_HEIGHT = 30;
 
-    ScopedPointer<Tuner> gestTuner;
-    ScopedPointer<MapperComponent> gestMapper;
-    ScopedPointer<DualTextToggle> midiParameterToggle;
-    ScopedPointer<PlumeShapeButton> muteButton;
-    ScopedPointer<RetractableMapAndMidiPanel> retractablePanel;
-    ScopedPointer<DescriptionPanel> descriptionPanel;
+    std::unique_ptr<Tuner> gestTuner;
+    std::unique_ptr<MapperComponent> gestMapper;
+    std::unique_ptr<DualTextToggle> midiParameterToggle;
+    std::unique_ptr<PlumeShapeButton> muteButton;
+    std::unique_ptr<RetractableMapAndMidiPanel> retractablePanel;
+    std::unique_ptr<DescriptionPanel> descriptionPanel;
     PlumeShapeButton& closeButton;
     
     //==============================================================================

@@ -47,13 +47,13 @@ private:
     //==============================================================================
     juce::Rectangle<int> panelArea;
     
-    ScopedPointer<Label> nameLabel;
-    ScopedPointer<Label> authorLabel;
-    ScopedPointer<Label> verLabel;
-    ScopedPointer<Label> pluginLabel;
-    ScopedPointer<ComboBox> typeBox;
-    ScopedPointer<TextButton> cancelButton;
-    ScopedPointer<TextButton> saveButton;
+    std::unique_ptr<Label> nameLabel;
+    std::unique_ptr<Label> authorLabel;
+    std::unique_ptr<Label> verLabel;
+    std::unique_ptr<Label> pluginLabel;
+    std::unique_ptr<ComboBox> typeBox;
+    std::unique_ptr<TextButton> cancelButton;
+    std::unique_ptr<TextButton> saveButton;
     
     PlumeProcessor& processor;
     

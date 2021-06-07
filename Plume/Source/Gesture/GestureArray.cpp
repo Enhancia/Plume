@@ -13,23 +13,23 @@
 GestureArray::GestureArray(DataReader& reader, AudioProcessorValueTreeState& params, bool& lastArmValue)
     : dataReader (reader), parameters (params), armValue (lastArmValue)
 {
-    TRACE_IN;
     initializeGestures();
     cancelMapMode();
 }
 
 GestureArray::~GestureArray()
 {
-    TRACE_IN;
     gestures.clear();
 }
 
 //==============================================================================
 void GestureArray::initializeGestures()
 {
-    addGesture ("Vibrato", Gesture::vibrato, 0);
-    addGesture ("Pitch Bend", Gesture::pitchBend, 1);
-    addGesture ("Tilt", Gesture::tilt, 2);
+    // Uncomment those lines to add gestures by default when opening Plume
+
+    //addGesture ("Vibrato", Gesture::vibrato, 0);
+    //addGesture ("Pitch Bend", Gesture::pitchBend, 1);
+    //addGesture ("Tilt", Gesture::tilt, 2);
     //addGesture ("Roll", Gesture::roll, 3);
 }
 //==============================================================================
@@ -108,11 +108,6 @@ void GestureArray::updateAllValues()
             }
         }
     }
-    
-    else
-    {
-	    DBG ("couldn't get the float values. No value was updated.");
-    }
 }
 
 //==============================================================================
@@ -128,8 +123,7 @@ Gesture* GestureArray::getGesture (const String nameToSearch)
             return g;
         }
     }
-    
-    DBG ("Gesture " << nameToSearch << " doesn't exist");
+
     return nullptr;
 }
 
@@ -153,7 +147,6 @@ Gesture* GestureArray::getGesture (const int idToSearch)
         }
     }
 
-    DBG ("Gesture n°" << idToSearch << " doesn't exist");
     return nullptr;
 }
 
@@ -207,6 +200,8 @@ void GestureArray::addGesture (String gestureName, int gestureType, int gestureI
         jassertfalse;
         return;
     }
+
+    PLUME::log::writeToLog ("New Gesture : " + Gesture::getTypeString (gestureType, true) + " in Id " + String (gestureId), PLUME::log::gesture);
 
     switch (gestureType)
     {
@@ -376,14 +371,12 @@ void GestureArray::addAndSetParameter (AudioProcessorParameter& param, int gestu
 
 void GestureArray::clearAllGestures()
 {
-    TRACE_IN;
     gestures.clear();
     shouldMergePitch = false;
 }
 
 void GestureArray::clearAllParameters()
 {
-    TRACE_IN;
     ScopedLock gestlock (gestureArrayLock);
     
     for (auto* g : gestures)
@@ -403,8 +396,6 @@ void GestureArray::cancelMapMode()
     }
     mapModeOn = false;
     sendChangeMessage();
-    
-    TRACE_OUT;
 }
 
 bool GestureArray::isIdAvailable (int idToCheck)
@@ -504,7 +495,7 @@ void GestureArray::swapGestures (int firstId, int secondId)
 
 	ScopedLock gestlock(gestureArrayLock);
 
-    ScopedPointer<Gesture> secondGesture = gestures.removeAndReturn (gestures.indexOf (getGesture (secondId)));
+    Gesture* secondGesture = gestures.removeAndReturn (gestures.indexOf (getGesture (secondId)));
     Array<float> secondGestureParameters = { parameters.getParameterAsValue (String (secondId) + PLUME::param::paramIds[0]).getValue(),
                                              parameters.getParameterAsValue (String (secondId) + PLUME::param::paramIds[1]).getValue(),
                                              parameters.getParameterAsValue (String (secondId) + PLUME::param::paramIds[2]).getValue(),
@@ -520,6 +511,8 @@ void GestureArray::swapGestures (int firstId, int secondId)
     parameters.getParameterAsValue (String (firstId) + PLUME::param::paramIds[1]).setValue (secondGestureParameters[1]);
     parameters.getParameterAsValue (String (firstId) + PLUME::param::paramIds[2]).setValue (secondGestureParameters[2]);
     parameters.getParameterAsValue (String (firstId) + PLUME::param::paramIds[3]).setValue (secondGestureParameters[3]);
+
+    delete secondGesture;
 }
 
 //==============================================================================

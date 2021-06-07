@@ -55,11 +55,11 @@ private:
     void createComboBox();
     
     //==============================================================================
-    ScopedPointer<PresetBox> presetBox;
-    ScopedPointer<FilterBox> filterBox;
-    ScopedPointer<TypeToggleComponent> typeToggle;
-    ScopedPointer<ComboBox> pluginSelectBox;
-    ScopedPointer<PresetSearchBar> searchBar;
+    std::unique_ptr<PresetBox> presetBox;
+    std::unique_ptr<FilterBox> filterBox;
+    std::unique_ptr<TypeToggleComponent> typeToggle;
+    std::unique_ptr<ComboBox> pluginSelectBox;
+    std::unique_ptr<PresetSearchBar> searchBar;
     
     //==============================================================================
     PlumeProcessor& processor;

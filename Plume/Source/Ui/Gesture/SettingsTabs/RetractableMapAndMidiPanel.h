@@ -90,11 +90,11 @@ private:
     Retractable parametersRetractable;
     Retractable midiRetractable;
 
-    ScopedPointer<MapperBanner> parametersBanner;
-    ScopedPointer<MapperComponent> parametersBody;
-    ScopedPointer<MidiBanner> midiBanner;
-    ScopedPointer<MidiModeComponent> midiBody;
-    ScopedPointer<ShapeButton> hideBodyButton;
+    std::unique_ptr<MapperBanner> parametersBanner;
+    std::unique_ptr<MapperComponent> parametersBody;
+    std::unique_ptr<MidiBanner> midiBanner;
+    std::unique_ptr<MidiModeComponent> midiBody;
+    std::unique_ptr<ShapeButton> hideBodyButton;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RetractableMapAndMidiPanel)

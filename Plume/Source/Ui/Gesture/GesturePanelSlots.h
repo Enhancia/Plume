@@ -67,8 +67,8 @@ private:
     //==============================================================================
     Gesture& gesture;
     GestureArray& gestureArray;
-    ScopedPointer<Label> gestureNameLabel;
-    ScopedPointer<PlumeShapeButton> muteButton;
+    std::unique_ptr<Label> gestureNameLabel;
+    std::unique_ptr<PlumeShapeButton> muteButton;
     
     bool on = gesture.isActive(), selected = false, highlighted = false, solo = false;
 

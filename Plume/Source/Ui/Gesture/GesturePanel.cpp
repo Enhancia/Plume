@@ -22,7 +22,6 @@ GesturePanel::GesturePanel (GestureArray& gestArray, PluginWrapper& wrap,
                               parameters (params), newGesturePanel (newGest),
                               freq (freqHz)
 {
-    TRACE_IN;
     setComponentID ("gesturePanel");
     setWantsKeyboardFocus (true);
 
@@ -38,13 +37,11 @@ GesturePanel::GesturePanel (GestureArray& gestArray, PluginWrapper& wrap,
 
 GesturePanel::~GesturePanel()
 {
-    TRACE_IN;
     //setComponentEffect (nullptr);
     stopTimer();
     unselectCurrentGesture();
     newGesturePanel.hidePanel (true);
     removeListenerForAllParameters();
-    TRACE_OUT;
 }
 
 //==============================================================================
@@ -133,7 +130,7 @@ void GesturePanel::timerCallback()
 
 void GesturePanel::buttonClicked (Button* bttn)
 {
-    if (bttn == closeButton)
+    if (bttn == closeButton.get())
     {
         unselectCurrentGesture();
     }
@@ -222,6 +219,9 @@ void GesturePanel::handleLeftClickUp (const MouseEvent& event)
         {
             if (!gestureComponent->isSelected())
             {
+                PLUME::log::writeToLog ("Gesture " + String (gestureComponent->getGesture().getName()) + " (Id " + String (gestureComponent->id) + ") : Selecting",
+                                        PLUME::log::gesture);
+
                 selectGestureExclusive (*gestureComponent);
             }
         }
@@ -231,12 +231,10 @@ void GesturePanel::handleLeftClickUp (const MouseEvent& event)
             {
                 if (auto* slotUnderMouse = dynamic_cast<EmptyGestureSlotComponent*> (componentUnderMouse))
                 {
-                    DBG ("Moving gesture " << gestureComponent->id << " to slot " << slotUnderMouse->id);
                     moveGestureToId (gestureComponent->id, slotUnderMouse->id);
                 }
                 else if (auto* gestureComponentUnderMouse = dynamic_cast<GestureComponent*> (componentUnderMouse))
                 {
-                    DBG ("Swapping gestures " << gestureComponent->id << " and " << gestureComponentUnderMouse->id);
                     swapGestures (gestureComponent->id, gestureComponentUnderMouse->id);
                 }
             }
@@ -382,6 +380,9 @@ void GesturePanel::updateSlotIfNeeded (int slotToCheck)
 
 void GesturePanel::moveGestureToId (int idToMoveFrom, int idToMoveTo)
 {
+    PLUME::log::writeToLog ("Gesture " + gestureArray.getGesture (idToMoveFrom)->getName() + " (Id " + String (idToMoveFrom) + ") : Moving to id " + String (idToMoveTo),
+                            PLUME::log::gesture);
+
     bool mustChangeSelection = (selectedGesture == idToMoveFrom);
     
     if (mustChangeSelection) unselectCurrentGesture();
@@ -397,6 +398,10 @@ void GesturePanel::moveGestureToId (int idToMoveFrom, int idToMoveTo)
 
 void GesturePanel::swapGestures (int firstId, int secondId)
 {
+    PLUME::log::writeToLog ("Gesture " + gestureArray.getGesture (firstId)->getName() + " (Id " + String (firstId) + ") : Swapping with Gesture "
+                                       + gestureArray.getGesture (secondId)->getName() + " (Id " + String (secondId) + ")",
+                            PLUME::log::gesture);
+
     bool mustChangeSelection = (selectedGesture == firstId || selectedGesture == secondId);
     int idToSelect;
 
@@ -438,6 +443,9 @@ void GesturePanel::renameGestureInSlot (int slotNumber)
 
 void GesturePanel::removeGestureAndGestureComponent (int gestureId)
 {
+    PLUME::log::writeToLog ("Gesture " + gestureArray.getGesture (gestureId)->getName() + " (Id " + String (gestureId) + ") : Deleting",
+                            PLUME::log::gesture);
+
     if (gestureId < 0 || gestureId > PLUME::NUM_GEST) return;
     stopTimer();
 
@@ -476,7 +484,7 @@ void GesturePanel::switchGestureSelectionState (GestureComponent& gestureCompone
 void GesturePanel::selectGestureExclusive (GestureComponent& gestureComponentToSelect)
 {
     gestureComponentToSelect.setSelected (true);
-
+    
     for (auto* slot : gestureSlots)
     {
         if (auto* gestureComponent = dynamic_cast<GestureComponent*> (slot))
@@ -567,6 +575,7 @@ void GesturePanel::handleMenuResult (int gestureId, const int menuResult)
             break;
             
         case 2: // Duplicate
+            PLUME::log::writeToLog ("Gesture " + gestureArray.getGesture (gestureId)->getName() + " (Id " + String (gestureId) + ") : Duplicating", PLUME::log::gesture);
             gestureArray.duplicateGesture (gestureId);
             update();
             selectGestureExclusive (gestureId);
@@ -593,7 +602,7 @@ void GesturePanel::setSettingsVisible (bool shouldBeVisible)
 
     if (shouldBeVisible && gestureSettings != nullptr)
     {
-        addAndMakeVisible (gestureSettings, 0);
+        addAndMakeVisible (*gestureSettings, 0);
         closeButton->setVisible (true);
         settingsVisible = true;
         resized();
@@ -612,11 +621,11 @@ void GesturePanel::setSettingsVisible (bool shouldBeVisible)
 
 void GesturePanel::createAndAddCloseButton()
 {
-    addAndMakeVisible (closeButton = new PlumeShapeButton ("Close Settings Button",
+    closeButton.reset (new PlumeShapeButton ("Close Settings Button",
                                                                 getPlumeColour (plumeBackground),
                                                                 Colour (0xff00ff00),
-                                                                Colour (0xffff0000)),
-                      -1);
+                                                                Colour (0xffff0000)));
+    addAndMakeVisible (*closeButton, -1);
     closeButton->setComponentID ("Close Button");
 
     Path p;
@@ -692,8 +701,6 @@ void GesturePanel::startDragMode (int slotBeingDragged)
     {
         slot->repaint();
     }
-
-
 }
 
 void GesturePanel::endDragMode()

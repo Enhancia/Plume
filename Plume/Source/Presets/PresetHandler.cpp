@@ -182,7 +182,7 @@ bool PresetHandler::canSavePreset()
 	return (currentPreset.presetType && currentPreset.isValid());
 }
 
-XmlElement* PresetHandler::getPresetXmlToLoad (int selectedPreset)
+std::unique_ptr<XmlElement> PresetHandler::getPresetXmlToLoad (int selectedPreset)
 {
 	if (selectedPreset < 0 || selectedPreset > getNumSearchedPresets()) return nullptr;
 
@@ -192,7 +192,7 @@ XmlElement* PresetHandler::getPresetXmlToLoad (int selectedPreset)
 	    
 	if (std::unique_ptr<XmlElement> elem = doc.getDocumentElement())
     {
-        return new XmlElement (*elem);
+        return elem;
     }
     else
     {
@@ -232,6 +232,8 @@ bool PresetHandler::createNewUserPreset (XmlElement& presetXml)
     if (XmlElement* info = presetXml.getChildByName ("INFO"))
     {
         const String presetName = info->getStringAttribute ("name");
+        PLUME::log::writeToLog ("Creating new User preset : " + presetName, PLUME::log::presets);
+        
         const String fileName = File::createLegalFileName (presetName);
 
         // If the file is succesfully created, changes current preset and saves
@@ -322,7 +324,7 @@ void PresetHandler::resetPreset()
     currentPreset = PlumePreset();
 }
 
-PlumePreset PresetHandler::getPresetForId(int id)
+PlumePreset PresetHandler::getPresetForId (int id)
 {
 	if (id >= getNumSearchedPresets() || id < 0) return PlumePreset();
     
@@ -483,6 +485,9 @@ const PresetHandler::PresetSearchSettings PresetHandler::getCurrentSettings()
 void PresetHandler::updateSearchedPresets()
 {
     searchedPresets.clear();
+
+    PLUME::log::writeToLog ("Updating preset list",
+                            PLUME::log::presets);
     
     if (settings.presetType == -1 || settings.presetType == PlumePreset::defaultPreset)
     {
