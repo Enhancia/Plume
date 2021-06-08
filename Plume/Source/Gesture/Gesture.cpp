@@ -77,7 +77,7 @@ void Gesture::addEventAndMergeCCToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
     
     for (MidiBuffer::Iterator i (midiMessages); i.getNextEvent (m, time);)
     {
-        if (m.isController()) // checks if right event
+        if (m.isController() && m.getControllerValue() == ccValue) // checks if right event
         {
             // Creates a cc message with the new value
             int newVal = m.getControllerValue() + midiValue;
