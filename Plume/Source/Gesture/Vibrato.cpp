@@ -155,8 +155,6 @@ void Vibrato::updateValue (const Array<float> rawData)
 
     const int roundedVarianceNew = roundToInt (range.convertTo0to1 (rawData[PLUME::data::variance]) * 100);
     const int roundedVarianceLast = roundToInt (value.getValue() * 100);
-
-    DBG ("Vibrato values : " << roundedVarianceLast << " | " << roundedVarianceNew);
     
     if (roundedVarianceNew != roundedVarianceLast)
     {
