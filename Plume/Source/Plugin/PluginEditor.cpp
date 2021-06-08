@@ -23,11 +23,6 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	setBroughtToFrontOnMouseClick (true);
 
 	// Creates the Top Panels
-    alertPanel.reset (PlumeAlertPanel::createSpecificAlertPanel (PlumeAlertPanel::unknown));
-    addAndMakeVisible (*alertPanel);
-    alertPanel->setVisible (false);
-    alertPanel->setAlwaysOnTop (true);
-
     updaterPanel.reset (new UpdaterPanel (processor.getUpdater()));
     
     optionsPanel.reset (new OptionsPanel (processor, *updaterPanel));
@@ -169,7 +164,9 @@ void PlumeEditor::resized()
     bugReportPanel->setBounds (area);
     updaterPanel->setBounds (area);
     newPresetPanel->setBounds (area);
-    alertPanel->setBounds (area);
+    
+    if (alertPanel)
+        alertPanel->setBounds (area);
 
 	if (!sideBarButton->getToggleState())
 	{
@@ -235,17 +232,14 @@ void PlumeEditor::actionListenerCallback (const String &message)
         }
     }
     else if (message.compare (PLUME::commands::scanRequired) == 0)
-    {
         createAndShowAlertPanel (PlumeAlertPanel::scanRequired);
-    }
+
     else if (message.compare (PLUME::commands::missingScript) == 0)
-    {
         createAndShowAlertPanel (PlumeAlertPanel::missingScript);
-    }
+
     else if (message.compare (PLUME::commands::missingPlugin) == 0)
-    {
         createAndShowAlertPanel (PlumeAlertPanel::missingPlugin);
-    }
+
     else if (message.compare(PLUME::commands::mappingOverwrite) == 0)
     {
         processor.getWrapper().clearWrapperEditor();
@@ -399,7 +393,7 @@ void PlumeEditor::createAndShowAlertPanel (const String& title, const String& me
                                                    const String& buttonText, const bool hasCloseButton,
                                                    int returnValue)
 {
-    if (alertPanel->isCurrentlyModal()) alertPanel->exitModalState (0);
+    if (alertPanel) return;
 
     alertPanel.reset (new PlumeAlertPanel (title, message, returnValue, hasCloseButton, buttonText));
     addAndMakeVisible (*alertPanel);
@@ -414,6 +408,8 @@ void PlumeEditor::createAndShowAlertPanel (const String& title, const String& me
 
 void PlumeEditor::createAndShowAlertPanel (PlumeAlertPanel::SpecificReturnValue returnValue)
 {
+    if (alertPanel) return;
+
     alertPanel.reset (PlumeAlertPanel::createSpecificAlertPanel (returnValue));
     addAndMakeVisible (*alertPanel);
 
