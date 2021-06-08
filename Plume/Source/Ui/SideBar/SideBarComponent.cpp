@@ -84,7 +84,7 @@ void SideBarComponent::paint (Graphics& g)
     // Plume. text
     g.setColour (currentTheme.getColour(PLUME::colour::sideBarMainText));
     g.setFont (PLUME::font::plumeFontBold.withHeight (24.0f));
-    g.drawText ("Plume (Alpha)", area.removeFromTop (HEADER_HEIGHT).reduced (MARGIN),
+    g.drawText ("Plume (Vibrato val)", area.removeFromTop (HEADER_HEIGHT).reduced (MARGIN),
                 Justification::centredRight, true);
 }
 
