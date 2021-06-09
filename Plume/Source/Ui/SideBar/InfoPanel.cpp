@@ -57,13 +57,6 @@ void InfoPanel::paint (Graphics& g)
     g.setColour (getPlumeColour (infoPanelBackground));
     g.setFont (PLUME::font::plumeFontBold.withHeight (25.0f));
     g.fillPath (infoPath);
-
-    // Version Text
-    g.setColour (getPlumeColour (infoPanelSubText));
-    g.setFont (PLUME::font::plumeFont.withHeight (9.0f));
-    g.drawText ("Plume " + String(JucePlugin_VersionString),
-                getLocalBounds().reduced (MARGIN, MARGIN_SMALL),
-                Justification::bottomRight, true);
 }
 
 void InfoPanel::resized()

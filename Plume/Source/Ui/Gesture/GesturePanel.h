@@ -96,7 +96,6 @@ private:
     //==============================================================================
     OwnedArray<Component> gestureSlots;
     std::unique_ptr<GestureSettingsComponent> gestureSettings;
-    std::unique_ptr<PlumeShapeButton> closeButton;
     //DropShadowEffect shadowEffect;
 
     //==============================================================================

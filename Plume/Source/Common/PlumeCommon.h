@@ -42,7 +42,7 @@ namespace PLUME
         const int SIDEBAR_WIDTH = 220;
         const int INFO_HEIGHT = 60;
         const int PRESET_BUTTONS_HEIGHT = 30;
-        const int PRESET_SEARCHBAR_HEIGHT = 22;
+        const int PRESET_SEARCHBAR_HEIGHT = 28;
         const int HEADER_HEIGHT = 40;
         const int GESTURE_DETAIL_WIDTH = 300;
         const int OPTIONS_HEIGHT = 30;

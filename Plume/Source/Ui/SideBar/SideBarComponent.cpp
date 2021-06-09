@@ -79,13 +79,18 @@ void SideBarComponent::paint (Graphics& g)
                                             .toFloat(),
                             10.0f);
     
-    auto area = getLocalBounds();
+    auto area = getLocalBounds().removeFromTop (HEADER_HEIGHT).reduced (MARGIN);
     
-    // Plume. text
+    // ALPHA text
+    g.setColour (currentTheme.getColour(PLUME::colour::sideBarSubText));
+    g.setFont (PLUME::font::plumeFontLight.withHeight (14.0f));
+    g.drawText ("ALPHA", area.removeFromRight (45).reduced (MARGIN_SMALL),
+                Justification::topLeft, true);
+    
+    // Plume text
     g.setColour (currentTheme.getColour(PLUME::colour::sideBarMainText));
-    g.setFont (PLUME::font::plumeFontBold.withHeight (24.0f));
-    g.drawText ("Plume (Alpha)", area.removeFromTop (HEADER_HEIGHT).reduced (MARGIN),
-                Justification::centredRight, true);
+    g.setFont (PLUME::font::plumeFont.withHeight (24.0f));
+    g.drawText ("Plume", area, Justification::centredRight, true);
 }
 
 void SideBarComponent::resized()
@@ -99,8 +104,6 @@ void SideBarComponent::resized()
     optionsButton->setBounds (buttonsArea.removeFromLeft (buttonsArea.getWidth()/2).reduced (MARGIN));
     
     // Presets
-	area.removeFromTop (MARGIN);
-
     if (!hideInfoButton->getToggleState())
     {
         infoPanel->setBounds (area.removeFromBottom (120).reduced (MARGIN));

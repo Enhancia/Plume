@@ -275,7 +275,7 @@ PlumeTheme PlumeTheme::createTestTheme()
                          0xff21252f, //sideBarObjectFillBackground
                          0xff2c303e, //sideBarObjectFill
                          0xffffffff, //sideBarMainText
-                         0xffffffff, //sideBarSubText
+                         0x70ffffff, //sideBarSubText
                          0xffffffff, //sideBarButtonFill
  
                          // Presets
@@ -285,7 +285,7 @@ PlumeTheme PlumeTheme::createTestTheme()
                          0xffffffff, //presetsBoxRowText
                          0xffffffff, //presetsBoxRowTextHighlighted
                          0xfff8f8f9, //presetsBoxScrollBar
-                         0xffffffff, //presetTypeToggleSelected
+                         0xffffa21d, //presetTypeToggleSelected
                          0xff3b3f4b, //presetTypeToggleUnselected
                          0xff393c4e, //presetsSearchBarFill
  

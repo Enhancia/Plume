@@ -132,7 +132,7 @@ TypeToggleComponent::Toggle::~Toggle()
 void TypeToggleComponent::Toggle::paint (Graphics& g)
 {
     g.setColour (state ? backgroundOnColour : backgroundOffColour);
-    g.fillRect (getLocalBounds().withTop (getLocalBounds().getBottom() - 3));
+    g.fillRect (getLocalBounds().withTop (getLocalBounds().getBottom() - 2));
 
     g.setColour (state ? textOnColour : textOffColour);
     g.setFont (PLUME::font::plumeFontBold.withHeight (PLUME::font::SIDEBAR_LABEL_FONT_H + 2.0f));

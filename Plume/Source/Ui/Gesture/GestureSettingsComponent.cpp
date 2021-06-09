@@ -13,10 +13,9 @@
 #include "GestureSettingsComponent.h"
 
 //==============================================================================
-GestureSettingsComponent::GestureSettingsComponent (Gesture& gest, GestureArray& gestArray,
-                                                    PluginWrapper& wrap, PlumeShapeButton& closeBttn)
+GestureSettingsComponent::GestureSettingsComponent (Gesture& gest, GestureArray& gestArray, PluginWrapper& wrap)
                             : gesture (gest), gestureArray (gestArray),
-                              wrapper (wrap), closeButton (closeBttn), gestureId (gest.id)
+                              wrapper (wrap), gestureId (gest.id)
 {
     setComponentID ("Gesture Settings");
 
@@ -182,13 +181,7 @@ void GestureSettingsComponent::resized()
     auto area = getLocalBounds();
     auto headerArea = area.removeFromTop (HEADER_HEIGHT).reduced (MARGIN_SMALL);
 
-    closeButton.setBounds (getBoundsInParent().removeFromTop (HEADER_HEIGHT)
-                                              .reduced (MARGIN_SMALL)
-                                              .removeFromRight (25)
-                                              .withSizeKeepingCentre (18, 18));
-    headerArea.removeFromRight (25);
-
-    muteButton->setBounds (headerArea.removeFromRight (30).withSizeKeepingCentre (18, 18));
+    muteButton->setBounds (headerArea.removeFromRight (20).withSizeKeepingCentre (18, 18));
 
     retractablePanel->setBounds (area.removeFromBottom (getHeight()/2 - HEADER_HEIGHT));
     area.removeFromBottom (MARGIN);
@@ -316,18 +309,12 @@ void GestureSettingsComponent::createToggles()
 
         PLUME::log::writeToLog ("Gesture " + gesture.getName() + " (Id " + String (gesture.id) + (muteButton->getToggleState() ? ") Muting." : ") Unmuting."),
                                 PLUME::log::gesture);
-
-        closeButton.setToggleState (gesture.isActive(), dontSendNotification);
         update();
         if (auto* gestComp = dynamic_cast<PlumeComponent*> (getParentComponent()->findChildWithID ("gestComp" + String (gestureId))))
         {
             gestComp->update();
         }
     };
-
-    closeButton.setStrokeOffAndOnColours (Gesture::getHighlightColour (gesture.type, false),
-                                          Gesture::getHighlightColour(gesture.type));
-    closeButton.setToggleState (gesture.isActive(), dontSendNotification);
 }
 
 void GestureSettingsComponent::createPanels()

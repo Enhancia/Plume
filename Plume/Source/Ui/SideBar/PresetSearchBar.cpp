@@ -50,20 +50,17 @@ void PresetSearchBar::paint (Graphics& g)
 
     // background
     g.setColour (getPlumeColour (presetsSearchBarFill));
-    g.fillRoundedRectangle (getLocalBounds().withSizeKeepingCentre (getWidth(), jmin (getHeight(), 30))
-                                            .toFloat(),
-                            jmin (getHeight(), 30)/2.0f);
+    g.fillRoundedRectangle (barArea.toFloat(),
+                            barArea.getHeight()/2.0f);
 
     // magnifying glass draw
     Path magnifGlass = PLUME::path::createPath (PLUME::path::magnifyingGlass);
 
-    auto magnifBounds = getLocalBounds().withSize (20, jmin (getHeight(), 30))
-                                        .withX (MARGIN_SMALL)
-                                        .reduced (3);
+    auto magnifBounds = barArea.withX (MARGIN_SMALL).reduced (3);
 
     magnifGlass.scaleToFit (magnifBounds.getX(),
                             magnifBounds.getY(),
-                            magnifBounds.getWidth(),
+                            magnifBounds.getHeight(),
                             magnifBounds.getHeight(),
                             true);
 
@@ -74,10 +71,10 @@ void PresetSearchBar::paint (Graphics& g)
 void PresetSearchBar::resized()
 {
     using namespace PLUME::UI;
-    auto area = getLocalBounds().withHeight (jmin (getHeight(), 30));
+    barArea = getLocalBounds().withSizeKeepingCentre (getWidth(), jmin (getHeight()*3/4, 30));
     
-    cancelButton->setBounds (area.removeFromRight (20 + MARGIN_SMALL).reduced (3));
-    searchLabel->setBounds (area.withTrimmedLeft (20 + MARGIN_SMALL));
+    cancelButton->setBounds (barArea.withLeft (getRight() - 20 - MARGIN_SMALL).reduced (3));
+    searchLabel->setBounds (barArea.withTrimmedLeft (20 + MARGIN_SMALL));
 }
 
 

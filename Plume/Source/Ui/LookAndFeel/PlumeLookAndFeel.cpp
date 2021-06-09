@@ -43,7 +43,7 @@ void PlumeLookAndFeel::setColours()
 	setColour (Slider::backgroundColourId, Colour (0xff101010));
 
 	// TextButton
-	setColour (TextButton::buttonColourId, Colour (0xff505050));
+    setColour (TextButton::buttonColourId, getPlumeColour (tunerButtonFill));
 
 	// ComboBox
 	setColour (ComboBox::backgroundColourId, Colour (0x00000000));

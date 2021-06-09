@@ -83,9 +83,9 @@ void PresetComponent::resized()
     auto area = getLocalBounds();
     
     typeToggle->setBounds (area.removeFromTop (PRESET_BUTTONS_HEIGHT)
-                               .reduced (2*MARGIN, 0));
+                               .reduced (MARGIN, 0));
 
-    searchBar->setBounds (area.removeFromTop (PRESET_SEARCHBAR_HEIGHT).reduced (MARGIN, MARGIN_SMALL));
+    searchBar->setBounds (area.removeFromTop (PRESET_SEARCHBAR_HEIGHT).reduced (MARGIN, 3));
     
     filterBox->setBounds (area.removeFromTop (80 + MARGIN)
                               .withTrimmedBottom (MARGIN_SMALL)

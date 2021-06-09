@@ -85,23 +85,7 @@ void HeaderComponent::paint (Graphics& g)
                                                         .withRight (rightArrowButton->getX() +
                                                                     rightArrowButton->getWidth())
                                                         .toFloat(),
-                            presetNameLabel->getHeight()/3.0f);
-
-    // Arrow buttons background
-    g.saveState();
-    g.excludeClipRegion (juce::Rectangle<int> (1, getHeight())
-                             .withLeft (leftArrowButton->getBounds().getRight())
-                             .withRight (rightArrowButton->getBounds().getX()));
-
-    g.setColour (getPlumeColour (presetDisplayArrowsBackground));
-    g.fillRoundedRectangle (presetNameLabel->getBounds().reduced (0, 6)
-                                                        .withLeft (leftArrowButton->getX())
-                                                        .withRight (rightArrowButton->getX() +
-                                                                    rightArrowButton->getWidth())
-                                                        .toFloat(),
-                            presetNameLabel->getHeight()/3.0f);
-
-    g.restoreState();
+                            4.0f);
 
     // Plugin Name Area
     g.saveState();
@@ -137,7 +121,7 @@ void HeaderComponent::resized()
 
     // Plugin Area
     {
-        auto pluginArea = area.removeFromRight (getWidth()/4);
+        auto pluginArea = area.removeFromRight (getWidth()/5);
 
         pluginListButton->setBounds (pluginArea.removeFromRight (getHeight()).reduced (MARGIN));
     
@@ -146,12 +130,14 @@ void HeaderComponent::resized()
 
     // Preset Area
     {
-        auto presetArea = getLocalBounds().withSizeKeepingCentre (250, area.getHeight());
+        auto presetArea = getLocalBounds().withSizeKeepingCentre (290, area.getHeight());
         
+        presetArea.removeFromLeft (20).reduced (0, MARGIN_SMALL); // autom button
+        savePresetButton->setBounds (presetArea.removeFromRight (20).reduced (0, MARGIN_SMALL));
+
         leftArrowButton->setBounds (presetArea.removeFromLeft (HEADER_HEIGHT).reduced (MARGIN));
         rightArrowButton->setBounds (presetArea.removeFromRight (HEADER_HEIGHT).reduced (MARGIN));
         presetNameLabel->setBounds (presetArea.reduced (0, MARGIN_SMALL));
-        savePresetButton->setBounds (presetArea.removeFromRight (20).reduced (0, MARGIN));
     }
 
 }
@@ -291,6 +277,8 @@ void HeaderComponent::createButtons()
                                                                 getPlumeColour (headerButtonStroke)));
     addAndMakeVisible (*pluginListButton);
     pluginListButton->setShape (arrowDown, false, false, false);
+    pluginListButton->setBorderSize (BorderSize<int> (PLUME::UI::HEADER_HEIGHT/2, PLUME::UI::HEADER_HEIGHT/3,
+                                                      PLUME::UI::HEADER_HEIGHT/2, PLUME::UI::HEADER_HEIGHT/3));
     pluginListButton->addListener (this);
 
     // Save Preset Button
@@ -322,6 +310,7 @@ void HeaderComponent::createButtons()
 
 
     leftArrowButton->setShape (arrowLeft, false, true, false);
+    leftArrowButton->setBorderSize (BorderSize<int> (PLUME::UI::HEADER_HEIGHT/5));
     leftArrowButton->addListener (this);
 
     rightArrowButton.reset (new PlumeShapeButton ("Change Preset Right Button",
@@ -331,6 +320,7 @@ void HeaderComponent::createButtons()
 
 
     rightArrowButton->setShape (arrowRight, false, true, false);
+    rightArrowButton->setBorderSize (BorderSize<int> (PLUME::UI::HEADER_HEIGHT/5));
     rightArrowButton->addListener (this);
 
     trackArmButton.reset (new DualTextToggle ("Gesture Automation", "Gesture Automation",
