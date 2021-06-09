@@ -152,5 +152,12 @@ std::atomic<float>& Vibrato::getIntensityReference()
 void Vibrato::updateValue (const Array<float> rawData)
 {
     if (isActive()) setIntensityValue (rawData[PLUME::data::acceleration]);
-    setGestureValue (rawData[PLUME::data::variance]);
+
+    const int roundedVarianceNew = roundToInt (range.convertTo0to1 (rawData[PLUME::data::variance]) * 100);
+    const int roundedVarianceLast = roundToInt (value.getValue() * 100);
+    
+    if (roundedVarianceNew != roundedVarianceLast)
+    {
+        setGestureValue (rawData[PLUME::data::variance]);
+    }
 }

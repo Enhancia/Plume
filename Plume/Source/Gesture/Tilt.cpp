@@ -79,5 +79,9 @@ float Tilt::getValueForMappedParameter (Range<float> paramRange, bool reversed =
 //==============================================================================
 void Tilt::updateValue (const Array<float> rawData)
 {
-    setGestureValue (-rawData[PLUME::data::tilt]);
+    const int roundedNew = roundToInt (range.convertTo0to1 (-rawData[PLUME::data::tilt]) * 100);
+    const int roundedLast = roundToInt (value.getValue() * 100);
+    
+    if (roundedNew != roundedLast)
+        setGestureValue (-rawData[PLUME::data::tilt]);
 }
