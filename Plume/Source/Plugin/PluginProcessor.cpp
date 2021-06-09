@@ -127,7 +127,7 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
     checkAndUpdateRecordingStatus();
 
     filterInputMidi (midiMessages);
-    checkForSignedMidi (midiMessages);
+    //checkForSignedMidi (midiMessages);
     
     // Adds the gesture's MIDI messages to the buffer, and changes parameters if needed
     int armValue = parameters.getParameter ("track_arm")
@@ -147,7 +147,7 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
         // Calls the wrapper processor's processBlock method
         if (!(wrapper->getWrapperProcessor().isSuspended()))
         {
-            wrapper->getWrapperProcessor().processBlock(buffer, midiMessages);
+            wrapper->getWrapperProcessor().processBlock (buffer, midiMessages);
         }
     }
     
