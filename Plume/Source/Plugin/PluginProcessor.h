@@ -257,6 +257,6 @@ private:
     uint8_t data[1024];
 
     //==============================================================================
-    //JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeProcessor)
-    JUCE_HEAVYWEIGHT_LEAK_DETECTOR (PlumeProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeProcessor)
+    //JUCE_HEAVYWEIGHT_LEAK_DETECTOR (PlumeProcessor)
 };
