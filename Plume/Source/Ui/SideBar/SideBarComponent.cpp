@@ -30,14 +30,11 @@ SideBarComponent::SideBarComponent (PlumeProcessor& proc, Component& optsPanel)
 	optionsButton->addListener (this);
 
     // Info Panel
-    addAndMakeVisible (*(hideInfoButton = std::make_unique<ShapeButton> ("Hide Info Button",
-                                                         Colour (0x00000000),
-                                                         Colour (0x00000000),
-                                                         Colour (0x00000000))));
-    hideInfoButton->setOutline (Colour (0x50ffffff), 1.0f);
+    addAndMakeVisible (*(hideInfoButton = std::make_unique<PlumeShapeButton> ("Hide Info Button",
+                                                         Colour (0),
+                                                         getPlumeColour (sideBarMainText).withAlpha (0.9f))));
     hideInfoButton->setToggleState (infoHidden, dontSendNotification); // side bar visible at first
     hideInfoButton->setClickingTogglesState (true);
-    hideInfoButton->setBorderSize (BorderSize<int> (2));
     createHideInfoButtonPath();
     hideInfoButton->addMouseListener (this, false);
     hideInfoButton->addListener (this);
@@ -112,18 +109,18 @@ void SideBarComponent::resized()
         infoPanel->setBounds (area.removeFromBottom (120)
                                   .withTrimmedBottom (MARGIN)
                                   .reduced (MARGIN, MARGIN_SMALL));
-        hideInfoButton->setBounds (infoPanel->getBounds().withTrimmedTop (2*MARGIN)
-                                                         .withSize (10, 10)
-                                                         .withX (infoPanel->getBounds().getCentreX() - 5));
+        hideInfoButton->setBounds (infoPanel->getBounds().withHeight(20)
+                                                         .translated (0, MARGIN)
+                                                         .withSizeKeepingCentre (50, 30));
     }
     else 
     {
         infoPanel->setBounds (area.removeFromBottom (30 + 2*MARGIN)
                                   .withTrimmedBottom (MARGIN)
                                   .reduced (MARGIN, MARGIN_SMALL));
-        hideInfoButton->setBounds (infoPanel->getBounds().withTrimmedTop (MARGIN)
-                                                         .withSize (10, 10)
-                                                         .withX (infoPanel->getBounds().getCentreX() - 5));
+        hideInfoButton->setBounds (infoPanel->getBounds().withHeight(20)
+                                                         .translated (0, MARGIN_SMALL)
+                                                         .withSizeKeepingCentre (50, 30));
     }
 
     presetComponent->setBounds (area.reduced (MARGIN, 0));
@@ -187,16 +184,17 @@ void SideBarComponent::createHideInfoButtonPath()
     
     if (hideInfoButton->getToggleState())
     {
-        p.startNewSubPath (0, HEADER_HEIGHT);
-        p.lineTo (HEADER_HEIGHT/2, 0);
-        p.lineTo (HEADER_HEIGHT, HEADER_HEIGHT);
+        p.startNewSubPath (0, 5);
+        p.lineTo (5, 0);
+        p.lineTo (10, 5);
     }
     else
     {
         p.startNewSubPath (0,0);
-        p.lineTo (HEADER_HEIGHT/2, HEADER_HEIGHT);
-        p.lineTo (HEADER_HEIGHT, 0);
+        p.lineTo (1, 1);
+        p.lineTo (2, 0);
     }
     
     hideInfoButton->setShape (p, false, true, false);
+    hideInfoButton->setBorderSize (BorderSize<int> (13, 18, 13, 18));
 }

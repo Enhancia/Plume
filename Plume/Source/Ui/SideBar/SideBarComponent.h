@@ -57,7 +57,7 @@ private:
     std::unique_ptr<PresetComponent> presetComponent;
     std::unique_ptr<InfoPanel> infoPanel;
     std::unique_ptr<ShapeButton> optionsButton;
-    std::unique_ptr<ShapeButton> hideInfoButton;
+    std::unique_ptr<PlumeShapeButton> hideInfoButton;
 
     bool infoHidden = false;
 
