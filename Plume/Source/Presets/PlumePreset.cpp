@@ -182,9 +182,11 @@ const int PlumePreset::getFilter() const
 
 const String PlumePreset::getDescription() const
 {
+    const String bullet = " " + String::charToString (juce_wchar(0x2022));
+    
     return name + " - " + author + " (v" + version + ") :\n\n"
-         + "  Plugin   : " + (plugin.isEmpty() ? "-" : plugin) + "\n"
-         + "  Category : " + getFilterTypeString (filterType);
+         + bullet + " Plugin   : " + (plugin.isEmpty() ? "-" : plugin) + "\n"
+         + bullet + " Category : " + getFilterTypeString (filterType);
 }
 
 const String PlumePreset::getFilterString() const
