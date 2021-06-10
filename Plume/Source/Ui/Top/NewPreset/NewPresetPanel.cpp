@@ -83,7 +83,7 @@ void NewPresetPanel::paint (Graphics& g)
     
     // Text
     g.setColour (currentTheme.getColour (PLUME::colour::topPanelMainText));
-    g.setFont (PLUME::font::plumeFontBook.withHeight (13.0f));
+    g.setFont (PLUME::font::plumeFont.withHeight (13.0f));
     
     g.drawText ("Name :", 
                 textArea.removeFromTop (OPTIONS_HEIGHT + MARGIN).withTrimmedBottom (MARGIN),
