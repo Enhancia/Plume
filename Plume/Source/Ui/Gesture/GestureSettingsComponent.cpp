@@ -36,8 +36,10 @@ GestureSettingsComponent::~GestureSettingsComponent()
 //==============================================================================
 const String GestureSettingsComponent::getInfoString()
 {
+    const String bullet = " " + String::charToString (juce_wchar(0x2022));
+
     return "Gesture settings:\n\n"
-           "- Use this panel to configure the selected gesture.";
+           + bullet + " Use this panel to configure the selected gesture.";
 }
 
 void GestureSettingsComponent::update()

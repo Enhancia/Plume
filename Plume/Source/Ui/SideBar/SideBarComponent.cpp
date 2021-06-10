@@ -58,9 +58,11 @@ SideBarComponent::~SideBarComponent()
 //==============================================================================
 const String SideBarComponent::getInfoString()
 {
+    const String bullet = " " + String::charToString (juce_wchar(0x2022));
+    
     return "Hideable side bar :\n\n"
-           "- Click on the arrow on the header to hide or show the side bar.\n"
-           "- The top left hand corner has an option button to configure the plugin.";
+           + bullet + " Click on the arrow on the header to hide or show the side bar.\n"
+           + bullet + " The top left hand corner has an option button to configure the plugin.";
 }
 
 void SideBarComponent::update()
@@ -107,14 +109,18 @@ void SideBarComponent::resized()
     // Presets
     if (!hideInfoButton->getToggleState())
     {
-        infoPanel->setBounds (area.removeFromBottom (120).reduced (MARGIN));
+        infoPanel->setBounds (area.removeFromBottom (120)
+                                  .withTrimmedBottom (MARGIN)
+                                  .reduced (MARGIN, MARGIN_SMALL));
         hideInfoButton->setBounds (infoPanel->getBounds().withTrimmedTop (2*MARGIN)
                                                          .withSize (10, 10)
                                                          .withX (infoPanel->getBounds().getCentreX() - 5));
     }
     else 
     {
-        infoPanel->setBounds (area.removeFromBottom (30 + 2*MARGIN).reduced (MARGIN));
+        infoPanel->setBounds (area.removeFromBottom (30 + 2*MARGIN)
+                                  .withTrimmedBottom (MARGIN)
+                                  .reduced (MARGIN, MARGIN_SMALL));
         hideInfoButton->setBounds (infoPanel->getBounds().withTrimmedTop (MARGIN)
                                                          .withSize (10, 10)
                                                          .withX (infoPanel->getBounds().getCentreX() - 5));

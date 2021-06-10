@@ -290,11 +290,11 @@ namespace PLUME
             handFingerDown,
             handTilt,
             handRoll,
-            vibratoRipple,
-            tiltArrow,
-            pitchBendArrow,
-            rollArrow,
-            waveIcon,
+            vibrato,
+            tilt,
+            pitchBend,
+            roll,
+            wave,
             plumeLogo,
             ring
 		};

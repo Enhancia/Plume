@@ -58,11 +58,11 @@ void PresetComponent::paint (Graphics& g)
     g.setColour (getPlumeColour (sideBarObjectFillBackground));
 
     g.fillRoundedRectangle (getLocalBounds().withBottom (filterBox->getBounds().getBottom() + 1).toFloat(),
-                            8.0f);
+                            6.0f);
 
     // Bottom background
     g.fillRoundedRectangle (getLocalBounds().withTop (presetBox->getBounds().getY() - 1).toFloat(),
-                            8.0f);
+                            6.0f);
     // SearchBarFill
     g.saveState();
     g.reduceClipRegion (searchBar->getBounds().expanded (MARGIN, MARGIN_SMALL));
@@ -100,10 +100,12 @@ void PresetComponent::resized()
 //==============================================================================
 const String PresetComponent::getInfoString()
 {
+    const String bullet = " " + String::charToString (juce_wchar(0x2022));
+    
     return "Preset List :\n\n"
-           "- Manages all your presets.\n"
-           "- Use the upper part to filter the presets you want. \n"
-           "- Double click a preset to load it.";
+           + bullet + " Manages all your presets.\n"
+           + bullet + " Use the upper part to filter the presets you want. \n"
+           + bullet + " Double click a preset to load it.";
 }
 
 void PresetComponent::update()

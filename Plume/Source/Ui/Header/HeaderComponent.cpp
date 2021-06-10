@@ -56,9 +56,11 @@ HeaderComponent::~HeaderComponent()
 //==============================================================================
 const String HeaderComponent::getInfoString()
 {
-    return "Header :\n\n"
-           "- Click on the arrow to display all the available plugins to use.\n"
-           "- Click on the plugin name to open its interface.\n";
+    const String bullet = " " + String::charToString (juce_wchar(0x2022));
+
+    return "Header :\n\n" 
+            + bullet + " Click on the arrow to display all the available plugins to use.\n"
+            + bullet + " Click on the plugin name to open its interface.\n";
 }
 
 void HeaderComponent::update()
@@ -280,8 +282,8 @@ void HeaderComponent::createButtons()
     // Plugin List Button
     Path arrowDown;
     arrowDown.startNewSubPath (0.0f, 0.0f);
-    arrowDown.lineTo (5.0f, 6.0f);
-    arrowDown.lineTo (10.0f, 0.0f);
+    arrowDown.lineTo (3.0f, 3.0f);
+    arrowDown.lineTo (6.0f, 0.0f);
     
     pluginListButton.reset (new PlumeShapeButton ("Plugin List Button",
                                                   Colour(0),
@@ -299,7 +301,6 @@ void HeaderComponent::createButtons()
 
 
     savePresetButton->setShape (PLUME::path::createPath (PLUME::path::floppyDisk), false, true, false);
-    savePresetButton->setPaintMode (PlumeShapeButton::fill);
     savePresetButton->addListener (this);
 
     // Preset Change buttons

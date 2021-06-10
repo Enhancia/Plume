@@ -47,9 +47,11 @@ GesturePanel::~GesturePanel()
 //==============================================================================
 const String GesturePanel::getInfoString()
 {
+    const String bullet = " " + String::charToString (juce_wchar(0x2022));
+    
     return "Gesture Panel: \n\n"
-           "- Click on a gesture to access to its settings.\n"
-           "- Click on a \"+\" button to add a gesture in a slot.";
+           + bullet + " Click on a gesture to access to its settings.\n"
+           + bullet + " Click on a \"+\" button to add a gesture in a slot.";
 }
 
 void GesturePanel::update()

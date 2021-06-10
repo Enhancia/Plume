@@ -93,8 +93,10 @@ void NewGesturePanel::resized()
 // PlumeComponent Methods
 const String NewGesturePanel::getInfoString()
 {
+    const String bullet = " " + String::charToString (juce_wchar(0x2022));
+    
 	return "Gesture creation Panel:\n\n"
-		   "- Select a gesture type and add a custom name and description.";
+		   + bullet + " Select a gesture type and add a custom name and description.";
 }
 void NewGesturePanel::update()
 {

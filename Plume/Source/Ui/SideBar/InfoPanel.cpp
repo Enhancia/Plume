@@ -42,9 +42,9 @@ void InfoPanel::paint (Graphics& g)
     g.setColour (getPlumeColour (infoPanelBackground));
 
     if (!hideInfoButton.getToggleState())
-        g.fillRoundedRectangle (getLocalBounds().withTrimmedTop (MARGIN).toFloat(), 10.0f);
+        g.fillRoundedRectangle (getLocalBounds().withTrimmedTop (MARGIN).toFloat(), 6.0f);
     else
-        g.fillRoundedRectangle (getLocalBounds().withTrimmedLeft (10).toFloat(), 10.0f);
+        g.fillRoundedRectangle (getLocalBounds().withTrimmedLeft (10).toFloat(), 6.0f);
 
 
     // Info Icon
