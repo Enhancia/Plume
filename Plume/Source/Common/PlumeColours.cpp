@@ -91,6 +91,7 @@ PlumeTheme PlumeTheme::createDefaultTheme()
                          // General
                          0xfff8f8f8, //headerBackground
                          0xff393939, //headerText
+                         0xff424656, //headerButtonBackground 
                          0xff393939, //headerButtonStroke
  
                          // Plugin Display
@@ -197,6 +198,7 @@ PlumeTheme PlumeTheme::createRedTheme()
                          // General
                          0xfff8f8f8, //headerBackground
                          0xff532323, //headerText
+                         0xff424656, //headerButtonBackground
                          0xff532323, //headerButtonStroke
  
                          // Plugin Display
@@ -299,6 +301,7 @@ PlumeTheme PlumeTheme::createTestTheme()
                          // General
                          0xff363c4e, //headerBackground
                          0xffffffff, //headerText
+                         0xff4a5063, //headerButtonBackground 
                          0xffffffff, //headerButtonStroke 
  
                          // Plugin Display

@@ -72,7 +72,7 @@ private:
     std::unique_ptr<PlumeShapeButton> savePresetButton;
     std::unique_ptr<PlumeShapeButton> leftArrowButton;
     std::unique_ptr<PlumeShapeButton> rightArrowButton;
-    std::unique_ptr<DualTextToggle> trackArmButton;
+    std::unique_ptr<PlumeShapeButton> trackArmButton;
     std::unique_ptr<Label> pluginNameLabel;
     std::unique_ptr<Label> presetNameLabel;
     
