@@ -180,6 +180,7 @@ void OptionsPanel::paintProductInformations(Graphics& g, juce::Rectangle<int> ar
     
     // Plume text
     g.setColour (currentTheme.getColour(PLUME::colour::sideBarMainText));
+
     g.setFont (PLUME::font::plumeFontMedium.withHeight (36.0f));
     g.drawText ("Plume", logoArea, Justification::centredLeft, true);
 

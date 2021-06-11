@@ -83,12 +83,12 @@ void TwoRangeTuner::resizeButtons()
 {
     using namespace PLUME::UI;
 
-    auto buttonsAreaLeft = getLocalBounds().withRight (getLocalBounds().getX() + 80)
-                                           .withHeight (70)
+    auto buttonsAreaLeft = getLocalBounds().withRight (getLocalBounds().getX() + 70)
+                                           .withHeight (60)
                                            .reduced (MARGIN);
 
-    auto buttonsAreaRight = getLocalBounds().withLeft (getLocalBounds().getRight() - 80)
-                                            .withHeight (70)
+    auto buttonsAreaRight = getLocalBounds().withLeft (getLocalBounds().getRight() - 70)
+                                            .withHeight (60)
                                             .reduced (MARGIN);
 
     maxLeftAngleButton->setBounds (buttonsAreaLeft.removeFromTop (buttonsAreaLeft.getHeight()/2).withTrimmedBottom (MARGIN/2));
