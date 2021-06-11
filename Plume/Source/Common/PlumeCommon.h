@@ -83,12 +83,14 @@ namespace PLUME
         {
             regular =0,
             bold,
+            medium,
             book,
             light
         };
         
         extern const Font plumeFont;
         extern const Font plumeFontBold;
+        extern const Font plumeFontMedium;
         extern const Font plumeFontBook;
         extern const Font plumeFontLight;
 

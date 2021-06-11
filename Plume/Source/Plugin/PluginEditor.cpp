@@ -153,6 +153,29 @@ void PlumeEditor::paint (Graphics& g)
 {
     // Background
     g.fillAll (getPlumeColour (plumeBackground));
+    paintShadows (g);
+}
+
+void PlumeEditor::paintShadows (Graphics& g)
+{
+    Path shadowPath;
+
+    // Header Shadow
+    {
+        auto headerShadowBounds = header->getBounds();
+
+        shadowPath.addRoundedRectangle (headerShadowBounds.toFloat(), 3.0f);
+    }
+
+    // Sidebar Button Shadow
+    {
+        auto sideBarShadowBounds = sideBar->getBounds();
+
+        shadowPath.addRoundedRectangle (sideBarShadowBounds.toFloat(), 3.0f);
+    }
+
+    DropShadow shadow (Colour (0x30000000), 10, {2, 3});
+    shadow.drawForPath (g, shadowPath);
 }
 
 void PlumeEditor::resized()
@@ -179,7 +202,7 @@ void PlumeEditor::resized()
 	header->setBounds (area.removeFromTop (HEADER_HEIGHT));
     newGesturePanel->setBounds (area);
 
-    area.reduce (sideBarButton->getWidth(), sideBarButton->getWidth());
+    area.reduce (sideBarButton->getWidth(), 0);
 	gesturePanel->setBounds (area);
 
 	resizableCorner->setBounds (getWidth() - 20, getHeight() - 20, 20, 20);

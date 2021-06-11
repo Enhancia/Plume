@@ -62,8 +62,10 @@ void VibratoTuner::paint (Graphics& g)
 
 void VibratoTuner::resized()
 {
-	auto area = getLocalBounds().reduced (getLocalBounds().getWidth()/5,
+	tunerArea = getLocalBounds().reduced (getLocalBounds().getWidth()/5,
 										  getLocalBounds().getHeight()/5);
+
+	auto area = tunerArea;
 
 	gainSlider->setBounds (area.removeFromRight (area.getWidth()*2 / 3));
 	thresholdSlider->setBounds (area.withSizeKeepingCentre (area.getWidth(), (gainSlider->getHeight() / 2) + 10));
@@ -102,11 +104,16 @@ void VibratoTuner::updateComponents()
 
 void VibratoTuner::updateDisplay()
 {
-	computeSmoothIntensity (2.0f);
+	computeSmoothIntensity (1.5f);
 
 	if (smoothIntensity > getIntensity() || getIntensity() != lastIntensity || value != lastValue)
 	{
-		repaint();
+		// intensity value repaint
+		repaint (thresholdSlider->getBounds().withSizeKeepingCentre (10, thresholdSlider->getHeight())
+											 .translated (-10, 0));
+		
+		// vibrato value repaint
+		repaint (gainSlider->getBounds().withSizeKeepingCentre (gainSlider->getWidth(), 10));
 	}
 }
 

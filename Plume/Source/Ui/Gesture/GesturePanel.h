@@ -71,6 +71,9 @@ public:
 
 private:
     //==============================================================================
+    void paintShadows (Graphics& g);
+
+    //==============================================================================
     void switchGestureSelectionState (GestureComponent& gestureComponentToSwitch);
     void selectGestureExclusive (const int idToSelect);
     void selectGestureExclusive (GestureComponent& gestureComponentToSelect);

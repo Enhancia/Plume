@@ -124,7 +124,7 @@ void GestureSettingsComponent::paint (Graphics& g)
     if (auto* gesturePtr = gestureArray.getGesture (gestureId))
     {
         g.setColour (getPlumeColour (detailPanelMainText));                    
-        g.setFont (PLUME::font::plumeFontBold.withHeight (15.0f));
+        g.setFont (PLUME::font::plumeFontMedium.withHeight (15.0f));
         g.drawText (gesturePtr->getName().toUpperCase(),
                     headerArea.removeFromLeft (getWidth()/3).reduced (MARGIN, 0),
                     Justification::centred, false);

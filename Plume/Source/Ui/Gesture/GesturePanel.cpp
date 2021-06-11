@@ -83,8 +83,9 @@ void GesturePanel::update()
 }
 
 //==============================================================================
-void GesturePanel::paint (Graphics&)
+void GesturePanel::paint (Graphics& g)
 {
+    paintShadows (g);
 }
 
 void GesturePanel::paintOverChildren (Graphics&)
@@ -100,6 +101,32 @@ void GesturePanel::paintOverChildren (Graphics&)
         //g.drawImage (gestureComponentImage, Rectangle_that_is_the_size_of_the_image);
     }
     */
+}
+
+void GesturePanel::paintShadows (Graphics& g)
+{
+    Path shadowPath;
+
+    if (gestureSettings)
+    {
+        // Gesture Settings
+        auto gestureSettingsArea = gestureSettings->getBounds();
+
+        shadowPath.addRoundedRectangle (gestureSettingsArea.toFloat(), 10.0f);
+    }
+    {
+        // Gesture Components
+        for (int slot=0; slot < PLUME::NUM_GEST; slot++)
+        {
+            if (auto* gestureComp = dynamic_cast<GestureComponent*> (gestureSlots[slot]))
+            {
+                shadowPath.addRoundedRectangle (gestureComp->getBounds().toFloat(), 10.0f);
+            }
+        }
+    }
+
+    DropShadow shadow (Colour (0x30000000), 10, {2, 3});
+    shadow.drawForPath (g, shadowPath);
 }
 
 void GesturePanel::resized()
@@ -336,7 +363,7 @@ void GesturePanel::updateSlotIfNeeded (int slotToCheck)
             addAndMakeVisible (gestureSlots[slotToCheck]);
             gestureSlots[slotToCheck]->addMouseListener (this, false);
             resized();
-            repaint();
+            repaint (gestureSlots[slotToCheck]->getBounds().expanded (13));
         }
     }
     // 2nd check, if a gesture was created (slot is empty but should be a gestureComponent)
@@ -363,7 +390,7 @@ void GesturePanel::updateSlotIfNeeded (int slotToCheck)
 			}
 
             resized();
-            repaint();
+            repaint (gestureSlots[slotToCheck]->getBounds().expanded (13));
         }
     }
 }

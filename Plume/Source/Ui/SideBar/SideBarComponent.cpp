@@ -83,14 +83,14 @@ void SideBarComponent::paint (Graphics& g)
     
     // ALPHA text
     g.setColour (currentTheme.getColour(PLUME::colour::sideBarSubText));
-    g.setFont (PLUME::font::plumeFontLight.withHeight (14.0f));
-    g.drawText ("ALPHA", area.removeFromRight (PLUME::font::plumeFontLight.withHeight (14.0f).getStringWidth ("ALPHA") + 2*MARGIN_SMALL)
+    g.setFont (PLUME::font::plumeFont.withHeight (14.0f));
+    g.drawText ("ALPHA", area.removeFromRight (PLUME::font::plumeFont.withHeight (14.0f).getStringWidth ("ALPHA") + 2*MARGIN_SMALL)
                              .reduced (MARGIN_SMALL),
                 Justification::topLeft, true);
     
     // Plume text
     g.setColour (currentTheme.getColour(PLUME::colour::sideBarMainText));
-    g.setFont (PLUME::font::plumeFont.withHeight (24.0f));
+    g.setFont (PLUME::font::plumeFontMedium.withHeight (24.0f));
     g.drawText ("Plume", area, Justification::centredRight, true);
 }
 

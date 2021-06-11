@@ -90,6 +90,9 @@ namespace PLUME
             else if (type == book)
                 return Font (Typeface::createSystemTypefaceFor (PlumeData::Ahmet_Altun__HalisGRBook_otf,
                                                                 PlumeData::Ahmet_Altun__HalisGRBook_otfSize));
+            else if (type == medium)
+                return Font (Typeface::createSystemTypefaceFor (PlumeData::Ahmet_Altun__HalisGRMedium_otf,
+                                                                PlumeData::Ahmet_Altun__HalisGRMedium_otfSize));
             else if (type == bold)
                 return Font (Typeface::createSystemTypefaceFor (PlumeData::Ahmet_Altun__HalisGRBold_otf,
                                                                 PlumeData::Ahmet_Altun__HalisGRBold_otfSize));
@@ -101,6 +104,7 @@ namespace PLUME
         }
         
         const Font plumeFont = getPlumeFont();
+        const Font plumeFontMedium = getPlumeFont (medium);
         const Font plumeFontBold = getPlumeFont (bold);
         const Font plumeFontBook = getPlumeFont (book);
         const Font plumeFontLight = getPlumeFont (light);

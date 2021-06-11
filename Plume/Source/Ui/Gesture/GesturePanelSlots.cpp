@@ -181,7 +181,7 @@ void GestureComponent::createLabel()
     gestureNameLabel->setEditable (false, false, false);
     gestureNameLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
     gestureNameLabel->setColour (Label::textColourId, getPlumeColour (basePanelMainText));
-    gestureNameLabel->setFont (PLUME::font::plumeFontBold.withHeight (15.0f));
+    gestureNameLabel->setFont (PLUME::font::plumeFontMedium.withHeight (15.0f).withExtraKerningFactor (0.06f));
     gestureNameLabel->setJustificationType (Justification::centred);
     gestureNameLabel->setInterceptsMouseClicks (false, false);
     gestureNameLabel->addListener (this);
@@ -357,6 +357,16 @@ void EmptyGestureSlotComponent::paint (Graphics& g)
     // Plus Icon
     g.strokePath (plusIcon, {2.0f, PathStrokeType::mitered, PathStrokeType::rounded});
 
+    // Shadow
+    Path shadowPath;
+    shadowPath.addRectangle (getLocalBounds().expanded (3));
+    shadowPath.addRoundedRectangle (getLocalBounds().reduced (5).toFloat(), 6.0f);
+    shadowPath.setUsingNonZeroWinding (false);
+
+    g.saveState();
+    g.reduceClipRegion (outline);
+    DropShadow (Colour (0x30000000), 15, {0, 0}).drawForPath (g, shadowPath);
+    g.restoreState();
     
     // Outline
     if (dragMode && draggedGesture != id && draggedOverSlot == id)
