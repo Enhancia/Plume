@@ -68,7 +68,7 @@ private:
     Component& newPresetPanel;
     
     PopupMenu pluginListMenu;
-    std::unique_ptr<ShapeButton> pluginListButton;
+    std::unique_ptr<PlumeShapeButton> pluginListButton;
     std::unique_ptr<PlumeShapeButton> savePresetButton;
     std::unique_ptr<PlumeShapeButton> leftArrowButton;
     std::unique_ptr<PlumeShapeButton> rightArrowButton;

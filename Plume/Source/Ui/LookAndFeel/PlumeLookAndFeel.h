@@ -59,6 +59,9 @@ public:
                                const Colour &   backgroundColour,
                                bool  shouldDrawButtonAsHighlighted,
                                bool  shouldDrawButtonAsDown ) override;
+
+    void drawComboBox (Graphics& g, int width, int height, bool,
+                       int, int, int, int, ComboBox& box) override;
     
 private:
 	  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlumeLookAndFeel)

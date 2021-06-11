@@ -37,7 +37,7 @@ namespace PLUME
         const int DEFAULT_WINDOW_HEIGHT = 550;
     
         // Display panels values
-        const int MARGIN = 8;
+        const int MARGIN = 6;
         const int MARGIN_SMALL = 4;
         const int SIDEBAR_WIDTH = 220;
         const int INFO_HEIGHT = 60;

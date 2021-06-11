@@ -290,7 +290,8 @@ void HeaderComponent::createButtons()
                                                   getPlumeColour (headerButtonStroke)));
     addAndMakeVisible (*pluginListButton);
     pluginListButton->setShape (arrowDown, false, true, false);
-    pluginListButton->setBorderSize (BorderSize<int> (PLUME::UI::HEADER_HEIGHT/5));
+    pluginListButton->setBorderSize (BorderSize<int> (12, 12,
+                                                      12, 12));
     pluginListButton->addListener (this);
 
     // Save Preset Button
@@ -318,7 +319,7 @@ void HeaderComponent::createButtons()
                                                  Colour(0),
                                                  getPlumeColour (headerButtonStroke)));
     leftArrowButton->setShape (arrowLeft, false, true, false);
-    leftArrowButton->setBorderSize (BorderSize<int> (PLUME::UI::HEADER_HEIGHT/5));
+    leftArrowButton->setBorderSize (BorderSize<int> (PLUME::UI::HEADER_HEIGHT/4));
     leftArrowButton->addListener (this);
     addAndMakeVisible (*leftArrowButton);
 
@@ -326,7 +327,7 @@ void HeaderComponent::createButtons()
                                                   Colour(0),
                                                   getPlumeColour (headerButtonStroke)));
     rightArrowButton->setShape (arrowRight, false, true, false);
-    rightArrowButton->setBorderSize (BorderSize<int> (PLUME::UI::HEADER_HEIGHT/5));
+    rightArrowButton->setBorderSize (BorderSize<int> (PLUME::UI::HEADER_HEIGHT/4));
     rightArrowButton->addListener (this);
     addAndMakeVisible (*rightArrowButton);
 

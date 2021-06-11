@@ -25,6 +25,7 @@ SideBarComponent::SideBarComponent (PlumeProcessor& proc, Component& optsPanel)
 														                                                     0.5f)
 																						  .withAlpha (0.7f))));
     optionsButton->setShape (PLUME::path::createPath (PLUME::path::options), false, true, false);
+    optionsButton->setBorderSize (BorderSize<int> (3));
     optionsButton->setOutline (PLUME::UI::currentTheme.getColour(PLUME::colour::sideBarButtonFill), 1.5f);
     optionsButton->addMouseListener (this, false);
 	optionsButton->addListener (this);
