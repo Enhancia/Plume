@@ -166,14 +166,25 @@ void OptionsPanel::paintProductInformations(Graphics& g, juce::Rectangle<int> ar
 
     // Plume Text
     auto plumeTextArea = area.reduced (MARGIN*2, area.getHeight()/6);
+    auto logoArea = plumeTextArea.removeFromTop (plumeTextArea.getHeight()*4/5)
+                                 .withSizeKeepingCentre (PLUME::font::plumeFont.withHeight (21.0f)
+                                                                               .getStringWidth ("ALPHA") +
+                                                         PLUME::font::plumeFontMedium.withHeight (36.0f)
+                                                                               .getStringWidth ("Plume") + MARGIN_SMALL,
+                                                         PLUME::UI::HEADER_HEIGHT);
 
-    g.setColour (currentTheme.getColour(PLUME::colour::topPanelMainText));
-    g.setFont(PLUME::font::plumeFontBook.withHeight (26.0f).withExtraKerningFactor (0.3f));
-    g.drawText ("PLUME", plumeTextArea.removeFromTop (plumeTextArea.getHeight()*4/5),
-                                   Justification::centred);
+    // ALPHA text
+    g.setColour (currentTheme.getColour(PLUME::colour::sideBarSubText));
+    g.setFont (PLUME::font::plumeFont.withHeight (21.0f));
+    g.drawText ("ALPHA", logoArea, Justification::topRight, true);
+    
+    // Plume text
+    g.setColour (currentTheme.getColour(PLUME::colour::sideBarMainText));
+    g.setFont (PLUME::font::plumeFontMedium.withHeight (36.0f));
+    g.drawText ("Plume", logoArea, Justification::centredLeft, true);
 
     g.setColour (currentTheme.getColour(PLUME::colour::topPanelSubText));
     g.setFont (PLUME::font::plumeFont.withHeight (12.0f));
     g.drawText (String ("v " + String (JucePlugin_VersionString)),
-                plumeTextArea, Justification::centredBottom);
+                plumeTextArea, Justification::centred);
 }
