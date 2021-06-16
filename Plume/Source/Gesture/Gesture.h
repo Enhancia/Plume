@@ -527,6 +527,10 @@ protected:
 	
     //==============================================================================
 	RangedAudioParameter& value; /**< \brief Float parameter that holds the gesture's raw value in the [0.0f 1.0f]. Should be normalized using "range". */
+    bool isBeingChanged = false;
+    float lastValue = -1.0f;
+
+    //==============================================================================
 	bool on; /**< \brief Boolean parameter that represents if the gesture is active or not] range. */
     bool midiReverse; /**< \brief Boolean parameter that represents if the gesture midi reverse is active or not. */
 	bool midiOnParameterOff; /**< \brief Boolean parameter that represents if the gesture is set to midi mode or not. */

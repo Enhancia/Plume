@@ -160,9 +160,24 @@ void Gesture::setGestureValue (float newVal)
 {
 	if (isActive())
     {
-        value.beginChangeGesture();
-        value.setValueNotifyingHost (range.convertTo0to1 (newVal));
-        value.endChangeGesture();
+        if (newVal != lastValue)
+        {
+            if (!isBeingChanged)
+            {
+                value.beginChangeGesture();
+                isBeingChanged = true;
+            }
+
+            value.setValueNotifyingHost (range.convertTo0to1 (newVal));
+        }
+        else
+        {
+            if (isBeingChanged)
+            {
+                value.endChangeGesture();
+                isBeingChanged = false;
+            }
+        }
     }
 }
 
