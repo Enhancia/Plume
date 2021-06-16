@@ -160,22 +160,26 @@ void Gesture::setGestureValue (float newVal)
 {
 	if (isActive())
     {
-        if (newVal != lastValue)
+        const int roundedNew = roundToInt (range.convertTo0to1 (newVal) * 100);
+        const int roundedLast = roundToInt (lastValue * 100);
+
+        if (roundedNew != roundedLast)
         {
-            if (!isBeingChanged)
+            if (!wasBeingChanged)
             {
                 value.beginChangeGesture();
-                isBeingChanged = true;
+                wasBeingChanged = true;
             }
 
             value.setValueNotifyingHost (range.convertTo0to1 (newVal));
+            lastValue = range.convertTo0to1 (newVal);
         }
         else
         {
-            if (isBeingChanged)
+            if (wasBeingChanged)
             {
                 value.endChangeGesture();
-                isBeingChanged = false;
+                wasBeingChanged = false;
             }
         }
     }

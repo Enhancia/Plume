@@ -225,11 +225,7 @@ bool PitchBend::getSend()
 //==============================================================================
 void PitchBend::updateValue (const Array<float> rawData)
 {
-    const int roundedNew = roundToInt (range.convertTo0to1 (-rawData[PLUME::data::roll]) * 100);
-    const int roundedLast = roundToInt (value.getValue() * 100);
-    
-    if (roundedNew != roundedLast)
-        setGestureValue (rawData[PLUME::data::roll]);
+    setGestureValue (rawData[PLUME::data::roll]);
 }
 
 

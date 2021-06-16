@@ -58,6 +58,8 @@ private:
     // Booleans that represent the state of the vibrato
     bool send = false; /**< \brief Boolean to know if the gesture should send midi */
     bool vibLast = false; /**< \brief Boolean to know if the gesture sent midi in the last buffer*/
+    float lastIntensity = -1.0f;
+    bool wasBeingChangedIntensity = false;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Vibrato)

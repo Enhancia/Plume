@@ -527,7 +527,7 @@ protected:
 	
     //==============================================================================
 	RangedAudioParameter& value; /**< \brief Float parameter that holds the gesture's raw value in the [0.0f 1.0f]. Should be normalized using "range". */
-    bool isBeingChanged = false;
+    bool wasBeingChanged = false;
     float lastValue = -1.0f;
 
     //==============================================================================

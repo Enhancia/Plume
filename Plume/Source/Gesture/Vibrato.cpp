@@ -138,9 +138,31 @@ bool Vibrato::getSend()
 //==============================================================================
 void Vibrato::setIntensityValue (float newVal)
 {
-    intensity.beginChangeGesture();
-    intensity.setValueNotifyingHost (intensityRange.convertTo0to1 (newVal));
-    intensity.endChangeGesture();
+    if (isActive())
+    {
+        const int roundedNew = roundToInt (intensityRange.convertTo0to1 (newVal) * 100);
+        const int roundedLast = roundToInt (lastIntensity * 100);
+
+        if (roundedNew != roundedLast)
+        {
+            if (!wasBeingChangedIntensity)
+            {
+                intensity.beginChangeGesture();
+                wasBeingChangedIntensity = true;
+            }
+
+            intensity.setValueNotifyingHost (intensityRange.convertTo0to1 (newVal));
+            lastIntensity = intensityRange.convertTo0to1 (newVal);
+        }
+        else
+        {
+            if (wasBeingChangedIntensity)
+            {
+                intensity.endChangeGesture();
+                wasBeingChangedIntensity = false;
+            }
+        }
+    }
 }
 
 std::atomic<float>& Vibrato::getIntensityReference()
@@ -151,13 +173,6 @@ std::atomic<float>& Vibrato::getIntensityReference()
 //==============================================================================
 void Vibrato::updateValue (const Array<float> rawData)
 {
-    if (isActive()) setIntensityValue (rawData[PLUME::data::acceleration]);
-
-    const int roundedVarianceNew = roundToInt (range.convertTo0to1 (rawData[PLUME::data::variance]) * 100);
-    const int roundedVarianceLast = roundToInt (value.getValue() * 100);
-    
-    if (roundedVarianceNew != roundedVarianceLast)
-    {
-        setGestureValue (rawData[PLUME::data::variance]);
-    }
+    setIntensityValue (rawData[PLUME::data::acceleration]);
+    setGestureValue (rawData[PLUME::data::variance]);
 }
