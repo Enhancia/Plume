@@ -439,7 +439,6 @@ public:
     const int type; /**< \brief Type of Gesture. Int value from gestureType enum */
     const int id; /**< \brief Int that represents the number of the gesture */
     
-    bool useDefaultMidi = true;
     bool mapModeOn = false; /**< \brief Boolean that indicates if the gesture looks for a new parameter to map */
     int midiType = Gesture::controlChange; /**< \brief Integer value that represents the midi type the gesture should provide if it is in midi map mode */
     float midiHigh; /**< \brief Holds the lower end of the range of values that the midi message should access. Between 0.0 and 1.0*/
@@ -538,6 +537,7 @@ protected:
 	
     OwnedArray<MappedParameter> parameterArray;  /**< \brief Array of all the MappedParameter that the gesture controls. */
     CriticalSection parameterArrayLock;
+    CriticalSection gestureValueLock;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Gesture)

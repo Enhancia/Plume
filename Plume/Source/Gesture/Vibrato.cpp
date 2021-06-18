@@ -68,7 +68,7 @@ int Vibrato::getMidiValue()
         send = true;
 
         const float normalizedValue = (getGestureValue()/(2*9.80665f)*gainVal/200.0f*0.5f + 0.5f);
-        return Gesture::normalizeMidi (normalizedValue, 0.0f, 1.0f, useDefaultMidi);
+        return Gesture::normalizeMidi (normalizedValue, 0.0f, 1.0f, (midiType == Gesture::pitch));
     }
     
     // Vibrato back to neutral
@@ -77,13 +77,13 @@ int Vibrato::getMidiValue()
         vibLast = false;
         send = true;
         
-        if (!useDefaultMidi) return 64;
+        if (!(midiType == Gesture::pitch)) return 64;
         else                return 8192;
     }
     
     // No vibrato
     send = false;
-    if (!useDefaultMidi) return 64;
+    if (!(midiType == Gesture::pitch)) return 64;
     else                return 8192;
 }
 
@@ -173,6 +173,7 @@ std::atomic<float>& Vibrato::getIntensityReference()
 //==============================================================================
 void Vibrato::updateValue (const Array<float> rawData)
 {
+    DBG ("Vibrato val : " << rawData[PLUME::data::acceleration] << "\nIntensity val: " << rawData[PLUME::data::variance] << "\n");
     setIntensityValue (rawData[PLUME::data::acceleration]);
     setGestureValue (rawData[PLUME::data::variance]);
 }

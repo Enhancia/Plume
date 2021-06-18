@@ -158,6 +158,8 @@ int Gesture::getRescaledMidiValue()
 
 void Gesture::setGestureValue (float newVal)
 {
+    ScopedLock valuelock (gestureValueLock);
+
 	if (isActive())
     {
         const int roundedNew = roundToInt (range.convertTo0to1 (newVal) * 100);
