@@ -173,6 +173,7 @@ std::atomic<float>& Vibrato::getIntensityReference()
 //==============================================================================
 void Vibrato::updateValue (const Array<float> rawData)
 {
+    DBG ("Vibrato val : " << rawData[PLUME::data::acceleration] << "\nIntensity val: " << rawData[PLUME::data::variance] << "\n");
     setIntensityValue (rawData[PLUME::data::acceleration]);
     setGestureValue (rawData[PLUME::data::variance]);
 }
