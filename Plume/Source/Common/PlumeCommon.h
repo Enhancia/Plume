@@ -56,17 +56,17 @@ namespace PLUME
         const float VIBRATO_DISPLAY_MAX  = 100.0f;
         const float VIBRATO_THRESH_DISPLAY_MAX = 100.0f;
     
-        const float PITCHBEND_DISPLAY_MIN = -90.0f;
-        const float PITCHBEND_DISPLAY_MAX =  90.0f;
+        const float PITCHBEND_DISPLAY_MIN = -80.0f;
+        const float PITCHBEND_DISPLAY_MAX =  80.0f;
     
-        const float TILT_DISPLAY_MIN = -90.0f;
-        const float TILT_DISPLAY_MAX =  90.0f;
+        const float TILT_DISPLAY_MIN = -80.0f;
+        const float TILT_DISPLAY_MAX =  80.0f;
     
-        const float ROLL_DISPLAY_MIN = -90.0f;
-        const float ROLL_DISPLAY_MAX =  90.0f;
+        const float ROLL_DISPLAY_MIN = -80.0f;
+        const float ROLL_DISPLAY_MAX =  80.0f;
     
-        const float WAVE_DISPLAY_MIN = -90.0f;
-        const float WAVE_DISPLAY_MAX =  90.0f;
+        const float WAVE_DISPLAY_MIN = -80.0f;
+        const float WAVE_DISPLAY_MAX =  80.0f;
         
         // Theme
         using namespace PLUME::colour;
