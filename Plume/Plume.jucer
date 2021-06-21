@@ -296,8 +296,8 @@
     <XCODE_MAC targetFolder="Builds/MacOSX" smallIcon="AnkEeB" bigIcon="AnkEeB"
                extraLinkerFlags="-framework SystemConfiguration">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug"/>
-        <CONFIGURATION isDebug="0" name="Release"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="Plume Tests"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="Plume Tests"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_video" path="../../../../Programmes/JUCE/modules"/>
@@ -319,7 +319,7 @@
     </XCODE_MAC>
     <VS2019 targetFolder="Builds/VisualStudio2019" smallIcon="AnkEeB" bigIcon="AnkEeB">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="Plume Tests"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="Plume Tests"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
