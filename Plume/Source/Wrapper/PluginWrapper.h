@@ -121,7 +121,7 @@ private:
     bool useDefaultPaths = true;
     bool useCustomPaths = true;
   #if JUCE_MAC
-    bool useAudioUnits = true;
+    bool useAudioUnits = false;
   #endif
     float scanProgress = 0.0f;
     String pluginBeingScanned;

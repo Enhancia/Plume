@@ -81,6 +81,16 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
         return false;
     }
 
+    // TO DELETE when implementing AU
+    #if JUCE_MAC
+
+    if (!(descToWrap)->pluginFormatName == AudioUnitPluginFormat::getFormatName())
+    {
+        PLUME::log::writeToLog ("Attempted to wrap a AudioUnit plugin : " + descToWrap->name, PLUME::log::pluginWrapping, PLUME::log::error);
+        return false;
+    }
+
+    #endif
         
     if (hasWrappedInstance)
 	{
@@ -479,9 +489,11 @@ void PluginWrapper::setAuUsage (bool
                                 )
 {
   #if JUCE_MAC
+    /* TO UNCOMMENT when implementing AU
     useAudioUnits = shouldUseAudioUnits;
     scanHandler->setPluginFormats (true, true, shouldUseAudioUnits);
     savePluginListToFile();
+    */
   #endif
 }
 bool PluginWrapper::usesDefaultPaths()
