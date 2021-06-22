@@ -299,7 +299,6 @@ void GestureArray::addGestureCopyingOther (Gesture* other, int gestureId, String
     gestures.getLast()->setActive (other->isActive());
     gestures.getLast()->setGeneratesMidi (other->generatesMidi());
     gestures.getLast()->midiType = other->midiType;
-    gestures.getLast()->useDefaultMidi = other->useDefaultMidi;
     gestures.getLast()->setCc (other->getCc());
     gestures.getLast()->setMidiLow (other->getMidiLow());
     gestures.getLast()->setMidiHigh (other->getMidiHigh());

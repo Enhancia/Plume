@@ -77,7 +77,7 @@ void Gesture::addEventAndMergeCCToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
     
     for (MidiBuffer::Iterator i (midiMessages); i.getNextEvent (m, time);)
     {
-        if (m.isController()) // checks if right event
+        if (m.isController() && m.getControllerValue() == ccValue) // checks if right event
         {
             // Creates a cc message with the new value
             int newVal = m.getControllerValue() + midiValue;
@@ -158,11 +158,32 @@ int Gesture::getRescaledMidiValue()
 
 void Gesture::setGestureValue (float newVal)
 {
+    ScopedLock valuelock (gestureValueLock);
+
 	if (isActive())
     {
-        value.beginChangeGesture();
-        value.setValueNotifyingHost (range.convertTo0to1 (newVal));
-        value.endChangeGesture();
+        const int roundedNew = roundToInt (range.convertTo0to1 (newVal) * 100);
+        const int roundedLast = roundToInt (lastValue * 100);
+
+        if (roundedNew != roundedLast)
+        {
+            if (!wasBeingChanged)
+            {
+                value.beginChangeGesture();
+                wasBeingChanged = true;
+            }
+
+            value.setValueNotifyingHost (range.convertTo0to1 (newVal));
+            lastValue = range.convertTo0to1 (newVal);
+        }
+        else
+        {
+            if (wasBeingChanged)
+            {
+                value.endChangeGesture();
+                wasBeingChanged = false;
+            }
+        }
     }
 }
 

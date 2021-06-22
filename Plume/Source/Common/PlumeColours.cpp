@@ -91,6 +91,7 @@ PlumeTheme PlumeTheme::createDefaultTheme()
                          // General
                          0xfff8f8f8, //headerBackground
                          0xff393939, //headerText
+                         0xff424656, //headerButtonBackground 
                          0xff393939, //headerButtonStroke
  
                          // Plugin Display
@@ -197,6 +198,7 @@ PlumeTheme PlumeTheme::createRedTheme()
                          // General
                          0xfff8f8f8, //headerBackground
                          0xff532323, //headerText
+                         0xff424656, //headerButtonBackground
                          0xff532323, //headerButtonStroke
  
                          // Plugin Display
@@ -275,7 +277,7 @@ PlumeTheme PlumeTheme::createTestTheme()
                          0xff21252f, //sideBarObjectFillBackground
                          0xff2c303e, //sideBarObjectFill
                          0xffffffff, //sideBarMainText
-                         0xffffffff, //sideBarSubText
+                         0x70ffffff, //sideBarSubText
                          0xffffffff, //sideBarButtonFill
  
                          // Presets
@@ -285,7 +287,7 @@ PlumeTheme PlumeTheme::createTestTheme()
                          0xffffffff, //presetsBoxRowText
                          0xffffffff, //presetsBoxRowTextHighlighted
                          0xfff8f8f9, //presetsBoxScrollBar
-                         0xffffffff, //presetTypeToggleSelected
+                         0xffffa21d, //presetTypeToggleSelected
                          0xff3b3f4b, //presetTypeToggleUnselected
                          0xff393c4e, //presetsSearchBarFill
  
@@ -299,6 +301,7 @@ PlumeTheme PlumeTheme::createTestTheme()
                          // General
                          0xff363c4e, //headerBackground
                          0xffffffff, //headerText
+                         0xff4a5063, //headerButtonBackground 
                          0xffffffff, //headerButtonStroke 
  
                          // Plugin Display

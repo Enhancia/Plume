@@ -47,9 +47,11 @@ GesturePanel::~GesturePanel()
 //==============================================================================
 const String GesturePanel::getInfoString()
 {
+    const String bullet = " " + String::charToString (juce_wchar(0x2022));
+    
     return "Gesture Panel: \n\n"
-           "- Click on a gesture to access to its settings.\n"
-           "- Click on a \"+\" button to add a gesture in a slot.";
+           + bullet + " Click on a gesture to access to its settings.\n"
+           + bullet + " Click on a \"+\" button to add a gesture in a slot.";
 }
 
 void GesturePanel::update()
@@ -75,17 +77,15 @@ void GesturePanel::update()
     {
         gestureSettings->update();
         gestureSettings->updateMappedParameters();
-
-        closeButton->setToggleState (gestureArray.getGesture (selectedGesture)->isActive(),
-                                     dontSendNotification);
     }
 
     startTimerHz (freq);
 }
 
 //==============================================================================
-void GesturePanel::paint (Graphics&)
+void GesturePanel::paint (Graphics& g)
 {
+    paintShadows (g);
 }
 
 void GesturePanel::paintOverChildren (Graphics&)
@@ -103,6 +103,32 @@ void GesturePanel::paintOverChildren (Graphics&)
     */
 }
 
+void GesturePanel::paintShadows (Graphics& g)
+{
+    Path shadowPath;
+
+    if (gestureSettings)
+    {
+        // Gesture Settings
+        auto gestureSettingsArea = gestureSettings->getBounds();
+
+        shadowPath.addRoundedRectangle (gestureSettingsArea.toFloat(), 10.0f);
+    }
+    {
+        // Gesture Components
+        for (int slot=0; slot < PLUME::NUM_GEST; slot++)
+        {
+            if (auto* gestureComp = dynamic_cast<GestureComponent*> (gestureSlots[slot]))
+            {
+                shadowPath.addRoundedRectangle (gestureComp->getBounds().toFloat(), 10.0f);
+            }
+        }
+    }
+
+    DropShadow shadow (Colour (0x30000000), 10, {2, 3});
+    shadow.drawForPath (g, shadowPath);
+}
+
 void GesturePanel::resized()
 {
     using namespace PLUME::UI;
@@ -113,10 +139,6 @@ void GesturePanel::resized()
     if (settingsVisible)
     {
         gestureSettings->setBounds (area.reduced (MARGIN, MARGIN_SMALL));
-        /*
-        closeButton->setBounds (gestureSettings->getBounds().withLeft (gestureSettings->getRight() - MARGIN - 30)
-                                                            .withBottom (gestureSettings->getY() + 30)
-                                                            .reduced (5));*/
     }
 }
 
@@ -130,10 +152,6 @@ void GesturePanel::timerCallback()
 
 void GesturePanel::buttonClicked (Button* bttn)
 {
-    if (bttn == closeButton.get())
-    {
-        unselectCurrentGesture();
-    }
 }
 
 void GesturePanel::mouseUp (const MouseEvent &event)
@@ -345,7 +363,7 @@ void GesturePanel::updateSlotIfNeeded (int slotToCheck)
             addAndMakeVisible (gestureSlots[slotToCheck]);
             gestureSlots[slotToCheck]->addMouseListener (this, false);
             resized();
-            repaint();
+            repaint (gestureSlots[slotToCheck]->getBounds().expanded (13));
         }
     }
     // 2nd check, if a gesture was created (slot is empty but should be a gestureComponent)
@@ -372,7 +390,7 @@ void GesturePanel::updateSlotIfNeeded (int slotToCheck)
 			}
 
             resized();
-            repaint();
+            repaint (gestureSlots[slotToCheck]->getBounds().expanded (13));
         }
     }
 }
@@ -498,7 +516,7 @@ void GesturePanel::selectGestureExclusive (GestureComponent& gestureComponentToS
     }
 
     gestureSettings.reset (new GestureSettingsComponent (gestureComponentToSelect.getGesture(),
-                                                         gestureArray, wrapper, *closeButton));
+                                                         gestureArray, wrapper));
 
     selectedGesture = gestureComponentToSelect.id;
     setSettingsVisible (true);
@@ -592,7 +610,6 @@ void GesturePanel::setSettingsVisible (bool shouldBeVisible)
     if (!shouldBeVisible)
     {
         gestureSettings->setVisible (false);
-        closeButton->setVisible (false);
         settingsVisible = false;
         resized();
         repaint();
@@ -603,7 +620,6 @@ void GesturePanel::setSettingsVisible (bool shouldBeVisible)
     if (shouldBeVisible && gestureSettings != nullptr)
     {
         addAndMakeVisible (*gestureSettings, 0);
-        closeButton->setVisible (true);
         settingsVisible = true;
         resized();
         repaint();
@@ -621,22 +637,6 @@ void GesturePanel::setSettingsVisible (bool shouldBeVisible)
 
 void GesturePanel::createAndAddCloseButton()
 {
-    closeButton.reset (new PlumeShapeButton ("Close Settings Button",
-                                                                getPlumeColour (plumeBackground),
-                                                                Colour (0xff00ff00),
-                                                                Colour (0xffff0000)));
-    addAndMakeVisible (*closeButton, -1);
-    closeButton->setComponentID ("Close Button");
-
-    Path p;
-    p.startNewSubPath (0, 0);
-    p.lineTo (PLUME::UI::MARGIN_SMALL, PLUME::UI::MARGIN_SMALL);
-    p.startNewSubPath (0, PLUME::UI::MARGIN_SMALL);
-    p.lineTo (PLUME::UI::MARGIN_SMALL, 0);
-
-    closeButton->setShape (p, false, true, false);
-    closeButton->setToggleState (true, dontSendNotification);
-    closeButton->addListener (this);
 }
 
 void GesturePanel::removeListenerForAllParameters()

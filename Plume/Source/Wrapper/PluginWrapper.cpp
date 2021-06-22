@@ -81,6 +81,16 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
         return false;
     }
 
+    // TO DELETE when implementing AU
+    #if JUCE_MAC
+
+    if (descToWrap->pluginFormatName.compare (AudioUnitPluginFormat::getFormatName()) == 0)
+    {
+        PLUME::log::writeToLog ("Attempted to wrap a AudioUnit plugin : " + descToWrap->name, PLUME::log::pluginWrapping, PLUME::log::error);
+        return false;
+    }
+
+    #endif
         
     if (hasWrappedInstance)
 	{
@@ -140,6 +150,17 @@ bool PluginWrapper::wrapPlugin (int pluginMenuId)
         
         return false;
     }
+    
+    // TO DELETE when implementing AU
+    #if JUCE_MAC
+
+    if (pluginList->getType (pluginId)->pluginFormatName.compare (AudioUnitPluginFormat::getFormatName()) == 0)
+    {
+        PLUME::log::writeToLog ("Attempted to wrap a AudioUnit plugin : " + pluginList->getType (pluginId)->name, PLUME::log::pluginWrapping, PLUME::log::error);
+        return false;
+    }
+
+    #endif
         
     if (hasWrappedInstance)
 	{
@@ -479,9 +500,11 @@ void PluginWrapper::setAuUsage (bool
                                 )
 {
   #if JUCE_MAC
+    /* TO UNCOMMENT when implementing AU
     useAudioUnits = shouldUseAudioUnits;
     scanHandler->setPluginFormats (true, true, shouldUseAudioUnits);
     savePluginListToFile();
+    */
   #endif
 }
 bool PluginWrapper::usesDefaultPaths()

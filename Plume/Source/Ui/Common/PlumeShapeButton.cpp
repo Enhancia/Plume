@@ -58,7 +58,7 @@ PlumeShapeButton::~PlumeShapeButton()
 void PlumeShapeButton::resized()
 {
 	ShapeButton::resized();
-	if (usePlumeBorders) setBorderSize (BorderSize<int> (jmin (getHeight(), getWidth())/4));
+	if (usePlumeBorders) ShapeButton::setBorderSize (BorderSize<int> (jmin (getHeight(), getWidth())/4));
 }
 
 void PlumeShapeButton::paintButton (Graphics& g, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown)

@@ -37,12 +37,12 @@ namespace PLUME
         const int DEFAULT_WINDOW_HEIGHT = 550;
     
         // Display panels values
-        const int MARGIN = 8;
+        const int MARGIN = 6;
         const int MARGIN_SMALL = 4;
         const int SIDEBAR_WIDTH = 220;
         const int INFO_HEIGHT = 60;
         const int PRESET_BUTTONS_HEIGHT = 30;
-        const int PRESET_SEARCHBAR_HEIGHT = 22;
+        const int PRESET_SEARCHBAR_HEIGHT = 28;
         const int HEADER_HEIGHT = 40;
         const int GESTURE_DETAIL_WIDTH = 300;
         const int OPTIONS_HEIGHT = 30;
@@ -56,17 +56,17 @@ namespace PLUME
         const float VIBRATO_DISPLAY_MAX  = 100.0f;
         const float VIBRATO_THRESH_DISPLAY_MAX = 100.0f;
     
-        const float PITCHBEND_DISPLAY_MIN = -90.0f;
-        const float PITCHBEND_DISPLAY_MAX =  90.0f;
+        const float PITCHBEND_DISPLAY_MIN = -80.0f;
+        const float PITCHBEND_DISPLAY_MAX =  80.0f;
     
-        const float TILT_DISPLAY_MIN = -90.0f;
-        const float TILT_DISPLAY_MAX =  90.0f;
+        const float TILT_DISPLAY_MIN = -80.0f;
+        const float TILT_DISPLAY_MAX =  80.0f;
     
-        const float ROLL_DISPLAY_MIN = -90.0f;
-        const float ROLL_DISPLAY_MAX =  90.0f;
+        const float ROLL_DISPLAY_MIN = -80.0f;
+        const float ROLL_DISPLAY_MAX =  80.0f;
     
-        const float WAVE_DISPLAY_MIN = -90.0f;
-        const float WAVE_DISPLAY_MAX =  90.0f;
+        const float WAVE_DISPLAY_MIN = -80.0f;
+        const float WAVE_DISPLAY_MAX =  80.0f;
         
         // Theme
         using namespace PLUME::colour;
@@ -83,12 +83,14 @@ namespace PLUME
         {
             regular =0,
             bold,
+            medium,
             book,
             light
         };
         
         extern const Font plumeFont;
         extern const Font plumeFontBold;
+        extern const Font plumeFontMedium;
         extern const Font plumeFontBook;
         extern const Font plumeFontLight;
 
@@ -290,11 +292,11 @@ namespace PLUME
             handFingerDown,
             handTilt,
             handRoll,
-            vibratoRipple,
-            tiltArrow,
-            pitchBendArrow,
-            rollArrow,
-            waveIcon,
+            vibrato,
+            tilt,
+            pitchBend,
+            roll,
+            wave,
             plumeLogo,
             ring
 		};

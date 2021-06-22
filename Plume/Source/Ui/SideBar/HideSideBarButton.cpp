@@ -36,17 +36,23 @@ void HideSideBarButton::drawArrowPath (Graphics& g, bool shouldDrawButtonAsHighl
     if (getToggleState())
     {
         p.startNewSubPath (0,0);
-        p.lineTo (HEADER_HEIGHT - 2*MARGIN, HEADER_HEIGHT/2 - MARGIN);
-        p.lineTo (0, HEADER_HEIGHT - 2*MARGIN);
+        p.lineTo (4, 3);
+        p.lineTo (0, 6);
     }
     else
     {
-        p.startNewSubPath (HEADER_HEIGHT - 2*MARGIN, 0);
-        p.lineTo (0, HEADER_HEIGHT/2 - MARGIN);
-        p.lineTo (HEADER_HEIGHT - 2*MARGIN, HEADER_HEIGHT - 2*MARGIN);
+        p.startNewSubPath (4, 0);
+        p.lineTo (0, 3);
+        p.lineTo (4, 6);
     }
     
-    p.scaleToFit (getWidth()/3.0f, getHeight()/3.0f, getWidth()/3.0f, getHeight()/3.0f, true);
+    auto arrowArea = getLocalBounds().withSizeKeepingCentre (3, 6);
+
+    p.scaleToFit (arrowArea.getX(),
+                  arrowArea.getY(),
+                  arrowArea.getWidth(),
+                  arrowArea.getHeight(),
+                  true);
 
     if (shouldDrawButtonAsDown)
     {

@@ -47,8 +47,10 @@ DescriptionPanel::~DescriptionPanel()
 
 const String DescriptionPanel::getInfoString()
 {
+    const String bullet = " " + String::charToString (juce_wchar(0x2022));
+    
 	return "Description Editor:\n\n"
-           "- Use this area to write a short description for the gesture.";
+           + bullet + " Use this area to write a short description for the gesture.";
 }
 
 void DescriptionPanel::update()

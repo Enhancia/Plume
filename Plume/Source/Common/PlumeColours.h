@@ -52,6 +52,7 @@ enum PlumeColourID
         // General
         headerBackground,
         headerText,
+        headerButtonBackground,
         headerButtonStroke,
 
        // Plugin Display

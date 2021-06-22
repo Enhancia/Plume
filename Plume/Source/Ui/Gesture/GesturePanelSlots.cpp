@@ -61,10 +61,15 @@ void GestureComponent::paint (Graphics& g)
     g.setColour (getPlumeColour (basePanelBackground));
     g.fillRoundedRectangle (getLocalBounds().toFloat(), 10.0f);
 
+    // Gesture Image
+    Path roundedRectangleBackground;
+    roundedRectangleBackground.addRoundedRectangle (selected ? getLocalBounds().toFloat().reduced (1.0f)
+                                                             : getLocalBounds().toFloat(),
+                                                    10.0f);
+
     g.saveState();
-    g.reduceClipRegion (0, 0, getWidth(), 30);
-    g.setColour (getPlumeColour (basePanelHeaderFill));
-    g.fillRoundedRectangle (getLocalBounds().toFloat(), 10.0f);
+    g.reduceClipRegion (roundedRectangleBackground);
+    drawGesturePath (g, getLocalBounds());
     g.restoreState();
 
     // Outline
@@ -98,9 +103,6 @@ void GestureComponent::paint (Graphics& g)
     {
         paintParameterSlotDisplay (g, stateArea, 1, 6, PLUME::UI::MARGIN);
     }
-    
-    // Gesture Image
-    drawGesturePath (g, area);
 
     // Highlight
     if (!selected && highlighted)
@@ -114,7 +116,7 @@ void GestureComponent::resized()
 {
     auto headerArea = getLocalBounds().removeFromTop (30);
 
-    gestureNameLabel->setBounds (headerArea.withSizeKeepingCentre (getWidth()*2/3, 25));
+    gestureNameLabel->setBounds (getLocalBounds().withSizeKeepingCentre (getWidth()*2/3, 25));
     muteButton->setBounds (headerArea.removeFromRight (30 + PLUME::UI::MARGIN)
                                      .withSizeKeepingCentre (18, 18));
 }
@@ -179,7 +181,7 @@ void GestureComponent::createLabel()
     gestureNameLabel->setEditable (false, false, false);
     gestureNameLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
     gestureNameLabel->setColour (Label::textColourId, getPlumeColour (basePanelMainText));
-    gestureNameLabel->setFont (PLUME::font::plumeFontBold.withHeight (15.0f));
+    gestureNameLabel->setFont (PLUME::font::plumeFontMedium.withHeight (15.0f).withExtraKerningFactor (0.06f));
     gestureNameLabel->setJustificationType (Justification::centred);
     gestureNameLabel->setInterceptsMouseClicks (false, false);
     gestureNameLabel->addListener (this);
@@ -251,60 +253,50 @@ void GestureComponent::paintParameterSlotDisplay  (Graphics& g, juce::Rectangle<
 
 void GestureComponent::drawGesturePath (Graphics& g, juce::Rectangle<int> area)
 {
-    ignoreUnused (area, g);
+    Path gesturePath;
 
-    /*
-    g.setColour (Colour (0xfff3f3f3));
-
-    // Icon Fill
-    Path iconFill;
-
-    if (gesture.type == Gesture::tilt) iconFill = PLUME::path::createPath (PLUME::path::handTilt);
-    else if (gesture.type == Gesture::roll) iconFill = PLUME::path::createPath (PLUME::path::handRoll);
-    else iconFill = PLUME::path::createPath (PLUME::path::handFingerDown);
-
-    auto areaFloat = (gesture.type == Gesture::tilt || gesture.type == Gesture::roll)
-                          ? area.reduced (area.getWidth()/8, area.getHeight()/4).toFloat()
-                          : area.reduced (area.getWidth()/4, area.getHeight()/8).toFloat();
-
-	iconFill.scaleToFit (areaFloat.getX(), areaFloat.getY(),
-                         areaFloat.getWidth(), areaFloat.getHeight(), true);
-
-    g.fillPath (iconFill);
-*/
-    // Icon stroke
-    /*
-    Path iconStroke;
-
-    if (gesture.type == Gesture::tilt)
+    switch (gesture.type)
     {
-        iconStroke = PLUME::path::createPath (PLUME::path::tiltArrow);
-        areaFloat = areaFloat.withTrimmedLeft (areaFloat.getWidth()*2/3)
-                             .withTrimmedBottom (areaFloat.getHeight()/2);
-    }
-    else if (gesture.type == Gesture::roll)
-    {
-        iconStroke = PLUME::path::createPath (PLUME::path::rollArrow);
-        areaFloat = areaFloat.withTrimmedRight (areaFloat.getWidth()/2)
-                             .withTrimmedBottom (areaFloat.getHeight()/2);
-    }
-    else if (gesture.type == Gesture::pitchBend)
-    {
-        iconStroke = PLUME::path::createPath (PLUME::path::pitchBendArrow);
-        areaFloat = areaFloat.withTrimmedTop (areaFloat.getHeight()*2/3)
-                             .translated (areaFloat.getWidth()/12, 0);
-    }
-    else if (gesture.type == Gesture::vibrato)
-    {
-        iconStroke = PLUME::path::createPath (PLUME::path::vibratoRipple);
-        areaFloat = areaFloat.withTrimmedTop (areaFloat.getHeight()*2/3)
-                             .translated (areaFloat.getWidth()/12, 0);
-    }
-    else return;
+        case (int (Gesture::tilt)):
+            gesturePath = PLUME::path::createPath (PLUME::path::tilt);
+            break;
 
-    iconStroke.scaleToFit (areaFloat.getX(), areaFloat.getY(),
-                           areaFloat.getWidth(), areaFloat.getHeight(), true);
-    g.strokePath (iconStroke, PathStrokeType (1.0f));*/
+        case (int (Gesture::vibrato)):
+            gesturePath = PLUME::path::createPath (PLUME::path::vibrato);
+            break;
+
+        case (int (Gesture::pitchBend)):
+            gesturePath = PLUME::path::createPath (PLUME::path::pitchBend);
+            break;
+
+        case (int (Gesture::roll)):
+            gesturePath = PLUME::path::createPath (PLUME::path::roll);
+            break;
+
+        default:
+            return;
+    }
+
+    gesturePath.scaleToFit (area.toFloat().getX(),
+                            area.toFloat().getY(),
+                            area.toFloat().getWidth(),
+                            area.toFloat().getHeight(),
+                            false);
+
+    Colour pathColour (0xff808080);
+    ColourGradient gesturePathGradient (pathColour.withAlpha (0.4f),
+                                        {area.toFloat().getX(),
+                                         area.toFloat().getY() + area.toFloat().getHeight() },
+                                        pathColour.withAlpha (0.4f),
+                                        {area.toFloat().getX() + area.toFloat().getWidth(),
+                                         area.toFloat().getY()},
+                                        false);
+
+    gesturePathGradient.addColour (0.35, pathColour.withAlpha (0.0f));
+    gesturePathGradient.addColour (0.65, pathColour.withAlpha (0.0f));
+
+    g.setGradientFill (gesturePathGradient);
+    g.strokePath (gesturePath, PathStrokeType (2.0f));
 }
 
 //==============================================================================
@@ -365,6 +357,16 @@ void EmptyGestureSlotComponent::paint (Graphics& g)
     // Plus Icon
     g.strokePath (plusIcon, {2.0f, PathStrokeType::mitered, PathStrokeType::rounded});
 
+    // Shadow
+    Path shadowPath;
+    shadowPath.addRectangle (getLocalBounds().expanded (3));
+    shadowPath.addRoundedRectangle (getLocalBounds().reduced (5).toFloat(), 6.0f);
+    shadowPath.setUsingNonZeroWinding (false);
+
+    g.saveState();
+    g.reduceClipRegion (outline);
+    DropShadow (Colour (0x30000000), 15, {0, 0}).drawForPath (g, shadowPath);
+    g.restoreState();
     
     // Outline
     if (dragMode && draggedGesture != id && draggedOverSlot == id)

@@ -43,7 +43,7 @@ void PlumeLookAndFeel::setColours()
 	setColour (Slider::backgroundColourId, Colour (0xff101010));
 
 	// TextButton
-	setColour (TextButton::buttonColourId, Colour (0xff505050));
+    setColour (TextButton::buttonColourId, getPlumeColour (tunerButtonFill));
 
 	// ComboBox
 	setColour (ComboBox::backgroundColourId, Colour (0x00000000));
@@ -98,6 +98,72 @@ void PlumeLookAndFeel::drawScrollbar (Graphics& g, ScrollBar& scrollbar,
     auto c = scrollbar.findColour (ScrollBar::ColourIds::thumbColourId);
     g.setColour (isMouseOver ? c.brighter (0.25f) : c);
     g.fillRect (thumbBounds.reduced (1).toFloat());
+}
+
+void PlumeLookAndFeel::drawButtonBackground (Graphics& g,
+                                             Button& button,
+                                             const Colour& backgroundColour,
+                                             bool shouldDrawButtonAsHighlighted,
+                                             bool shouldDrawButtonAsDown)
+{
+    const int width = button.getWidth();
+    const int height = button.getHeight();
+
+    const float outlineThickness = button.isEnabled() ? ((shouldDrawButtonAsDown || shouldDrawButtonAsHighlighted) ? 1.2f : 0.7f) : 0.4f;
+    const float halfThickness = outlineThickness * 0.5f;
+
+    const float indentL = button.isConnectedOnLeft()   ? 0.1f : halfThickness;
+    const float indentR = button.isConnectedOnRight()  ? 0.1f : halfThickness;
+    const float indentT = button.isConnectedOnTop()    ? 0.1f : halfThickness;
+    const float indentB = button.isConnectedOnBottom() ? 0.1f : halfThickness;
+
+    const Colour baseColour (backgroundColour.darker (shouldDrawButtonAsDown ? 0.1f : 0.0f)
+                                             .brighter (shouldDrawButtonAsHighlighted ? 0.05f : 0.0f)
+                                             .withMultipliedAlpha (button.isEnabled() ? 1.0f : 0.5f));
+
+    // Button panel outline
+    auto gradOut = ColourGradient::horizontal (Colour (0x10ffffff),
+                                               indentL, 
+                                               Colour (0x10ffffff),
+                                               width - indentL - indentR);
+    gradOut.addColour (0.5, Colour (0x35ffffff));
+
+    g.setColour (baseColour);
+    g.fillRoundedRectangle (indentL,
+                            indentT,
+                            width - indentL - indentR,
+                            height - indentT - indentB, 
+                            6.0f);
+
+    g.setGradientFill (gradOut);
+    g.drawRoundedRectangle (indentL,
+                            indentT,
+                            width - indentL - indentR,
+                            height - indentT - indentB, 
+                            6.0f,
+                            outlineThickness);
+}
+
+void PlumeLookAndFeel::drawComboBox (Graphics& g, int width, int height, bool,
+                                     int, int, int, int, ComboBox& box)
+{
+    auto cornerSize = box.findParentComponentOfClass<ChoicePropertyComponent>() != nullptr ? 0.0f : 3.0f;
+    juce::Rectangle<int> boxBounds (0, 0, width, height);
+
+    g.setColour (box.findColour (ComboBox::backgroundColourId));
+    g.fillRoundedRectangle (boxBounds.toFloat(), cornerSize);
+
+    g.setColour (box.findColour (ComboBox::outlineColourId));
+    g.drawRoundedRectangle (boxBounds.toFloat().reduced (0.5f, 0.5f), cornerSize, 1.0f);
+
+    juce::Rectangle<int> arrowZone (width - 30, 0, 20, height);
+    Path path;
+    path.startNewSubPath ((float) arrowZone.getCentreX() - 3.0f, (float) arrowZone.getCentreY() - 1.0f);
+    path.lineTo ((float) arrowZone.getCentreX(), (float) arrowZone.getCentreY() + 2.0f);
+    path.lineTo ((float) arrowZone.getCentreX() + 3.0f, (float) arrowZone.getCentreY() - 1.0f);
+
+    g.setColour (box.findColour (ComboBox::arrowColourId).withAlpha ((box.isEnabled() ? 0.9f : 0.2f)));
+    g.strokePath (path, PathStrokeType (1.0f));
 }
 
 void PlumeLookAndFeel::drawPopupMenuBackground (Graphics& g, int width, int height)

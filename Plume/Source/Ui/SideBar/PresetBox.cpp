@@ -66,9 +66,11 @@ const String PresetBox::getInfoString()
 {
     if (getSelectedRow() == -1)
     {
+        const String bullet = " " + String::charToString (juce_wchar(0x2022));
+    
         return "Preset List :\n\n"
-            "- Use your left click and arrows to navigate between presets.\n"
-            "- Press Enter or delete to load or delete the currently selected preset.\n";
+            + bullet + " Use your left click and arrows to navigate between presets.\n"
+            + bullet + " Press Enter or delete to load or delete the currently selected preset.\n";
     }
     else
     {    

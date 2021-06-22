@@ -71,6 +71,7 @@ private:
     //==============================================================================
     const std::atomic<float>& value;
     float lastValue = -1.0f;
+    juce::Rectangle<int> tunerArea;
     const NormalisableRange<float> gestureRange;
 
     const std::atomic<float>& intensity;

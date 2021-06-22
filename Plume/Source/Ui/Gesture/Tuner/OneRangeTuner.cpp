@@ -46,7 +46,7 @@ void OneRangeTuner::paint (Graphics& g)
 void OneRangeTuner::resized()
 {
     // Sets bounds and changes the slider and labels position
-    sliderBounds = getLocalBounds().reduced (30);
+    sliderBounds = getLocalBounds().reduced (PLUME::UI::MARGIN).translated (0, jmax (20, getHeight()/8));
     resizeSliders();
     resizeButtons();
 
@@ -92,11 +92,12 @@ void OneRangeTuner::resizeButtons()
 {
     using namespace PLUME::UI;
 
-    auto buttonsArea = getLocalBounds().reduced (0, 2*MARGIN)
-									   .withLeft (getLocalBounds().getRight() - 70);
+    auto buttonsArea = getLocalBounds().withLeft (getLocalBounds().getRight() - 70)
+                                       .withHeight (60)
+                                       .reduced (MARGIN);
 
-    maxAngleButton->setBounds (buttonsArea.removeFromTop (35).reduced (MARGIN/2));
-    minAngleButton->setBounds (buttonsArea.removeFromTop (35).reduced (MARGIN/2));
+    maxAngleButton->setBounds (buttonsArea.removeFromTop (buttonsArea.getHeight()/2).withTrimmedBottom (MARGIN/2));
+    minAngleButton->setBounds (buttonsArea.withTrimmedTop (MARGIN/2));
 }
     
 void OneRangeTuner::updateComponents()
@@ -173,7 +174,19 @@ void OneRangeTuner::updateDisplay()
 {
     if (getValueAngle() != previousCursorAngle)
     {
-        repaint();
+        switch (tunerStyle)
+        {
+            case tilt:
+                repaint (lowSlider->getBounds().withTrimmedBottom (lowSlider->getHeight()*6/10)
+                                               .withTrimmedRight (lowSlider->getWidth()*4/10)
+                                               .translated (0, -10));
+                break;
+
+            case roll:
+                repaint (lowSlider->getBounds().withTrimmedBottom (lowSlider->getHeight()*6/10)
+                                               .translated (0, -15));
+                break;
+        }
     }
 }
 
@@ -720,7 +733,7 @@ void OneRangeTuner::updateLabelBounds (Label* labelToUpdate)
 
     if (labelToUpdate == rangeLabelMin.get())
     {
-        auto radius = sliderRadius - 20;
+        auto radius = sliderRadius + 15;
         auto angle = getThumbAngleRadians (lowThumb);
 
         rangeLabelMin->setCentrePosition (sliderCentre.x + radius * std::cos (angle - MathConstants<float>::halfPi),

@@ -71,6 +71,9 @@ public:
 
 private:
     //==============================================================================
+    void paintShadows (Graphics& g);
+
+    //==============================================================================
     void switchGestureSelectionState (GestureComponent& gestureComponentToSwitch);
     void selectGestureExclusive (const int idToSelect);
     void selectGestureExclusive (GestureComponent& gestureComponentToSelect);
@@ -96,7 +99,6 @@ private:
     //==============================================================================
     OwnedArray<Component> gestureSlots;
     std::unique_ptr<GestureSettingsComponent> gestureSettings;
-    std::unique_ptr<PlumeShapeButton> closeButton;
     //DropShadowEffect shadowEffect;
 
     //==============================================================================

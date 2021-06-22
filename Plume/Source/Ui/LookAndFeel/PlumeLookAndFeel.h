@@ -52,14 +52,16 @@ public:
     //Font getLabelFont (Label& lbl) override;
     Font getTextButtonFont (TextButton& bttn, int buttonHeight) override;
     Font getComboBoxFont (ComboBox& cb) override;
-    
-    //void drawPopupMenuBackground (Graphics&, int width, int height) override;
-	  /*
-    void drawPopupMenuItem (Graphics&, const Rectangle<int>& area,
-                            bool isSeparator, bool isActive, bool isHighlighted, bool isTicked, bool hasSubMenu,
-                            const String& text, const String& shortcutKeyText,
-                            const Drawable* icon, const Colour* textColour) override;
-	  */
+
+    //==============================================================================
+    void drawButtonBackground (Graphics& g,
+                               Button& buttonToDraw,
+                               const Colour &   backgroundColour,
+                               bool  shouldDrawButtonAsHighlighted,
+                               bool  shouldDrawButtonAsDown ) override;
+
+    void drawComboBox (Graphics& g, int width, int height, bool,
+                       int, int, int, int, ComboBox& box) override;
     
 private:
 	  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlumeLookAndFeel)

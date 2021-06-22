@@ -45,14 +45,16 @@ RetractableMapAndMidiPanel::~RetractableMapAndMidiPanel()
 
 const String RetractableMapAndMidiPanel::getInfoString()
 {
+    const String bullet = " " + String::charToString (juce_wchar(0x2022));
+    
 	if (panelMode == parameterMode)
 	{
-		return String ("Parameters Panel:\n\n - Map plugin parameters to the gesture using the \"Map\" button.\n") +
-			   String (!wrapper.isWrapping() ? "- You must have a wrapped plugin to use this feature!" : "");
+		return String ("Parameters Panel:\n\n" + bullet + " Map plugin parameters to the gesture using the \"Map\" button.\n") +
+			   String (!wrapper.isWrapping() ? (bullet + " You must have a wrapped plugin to use this feature!") : "");
 	}
 	else
 	{
-		return String ("MIDI Panel:\n\n - Select the type of MIDI to send to ") +
+		return String ("MIDI Panel:\n\n" + bullet + " Select the type of MIDI to send to ") +
 			   String (wrapper.isWrapping() ? wrapper.getWrappedPluginName() : "the plugin") +
 			   + ".\n";
 	}

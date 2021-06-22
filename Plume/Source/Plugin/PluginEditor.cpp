@@ -23,11 +23,6 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	setBroughtToFrontOnMouseClick (true);
 
 	// Creates the Top Panels
-    alertPanel.reset (PlumeAlertPanel::createSpecificAlertPanel (PlumeAlertPanel::unknown));
-    addAndMakeVisible (*alertPanel);
-    alertPanel->setVisible (false);
-    alertPanel->setAlwaysOnTop (true);
-
     updaterPanel.reset (new UpdaterPanel (processor.getUpdater()));
     
     optionsPanel.reset (new OptionsPanel (processor, *updaterPanel));
@@ -158,6 +153,29 @@ void PlumeEditor::paint (Graphics& g)
 {
     // Background
     g.fillAll (getPlumeColour (plumeBackground));
+    paintShadows (g);
+}
+
+void PlumeEditor::paintShadows (Graphics& g)
+{
+    Path shadowPath;
+
+    // Header Shadow
+    {
+        auto headerShadowBounds = header->getBounds();
+
+        shadowPath.addRoundedRectangle (headerShadowBounds.toFloat(), 3.0f);
+    }
+
+    // Sidebar Button Shadow
+    {
+        auto sideBarShadowBounds = sideBar->getBounds();
+
+        shadowPath.addRoundedRectangle (sideBarShadowBounds.toFloat(), 3.0f);
+    }
+
+    DropShadow shadow (Colour (0x30000000), 10, {2, 3});
+    shadow.drawForPath (g, shadowPath);
 }
 
 void PlumeEditor::resized()
@@ -169,7 +187,9 @@ void PlumeEditor::resized()
     bugReportPanel->setBounds (area);
     updaterPanel->setBounds (area);
     newPresetPanel->setBounds (area);
-    alertPanel->setBounds (area);
+    
+    if (alertPanel)
+        alertPanel->setBounds (area);
 
 	if (!sideBarButton->getToggleState())
 	{
@@ -182,7 +202,7 @@ void PlumeEditor::resized()
 	header->setBounds (area.removeFromTop (HEADER_HEIGHT));
     newGesturePanel->setBounds (area);
 
-    area.reduce (sideBarButton->getWidth(), sideBarButton->getWidth());
+    area.reduce (sideBarButton->getWidth(), 0);
 	gesturePanel->setBounds (area);
 
 	resizableCorner->setBounds (getWidth() - 20, getHeight() - 20, 20, 20);
@@ -235,17 +255,14 @@ void PlumeEditor::actionListenerCallback (const String &message)
         }
     }
     else if (message.compare (PLUME::commands::scanRequired) == 0)
-    {
         createAndShowAlertPanel (PlumeAlertPanel::scanRequired);
-    }
+
     else if (message.compare (PLUME::commands::missingScript) == 0)
-    {
         createAndShowAlertPanel (PlumeAlertPanel::missingScript);
-    }
+
     else if (message.compare (PLUME::commands::missingPlugin) == 0)
-    {
         createAndShowAlertPanel (PlumeAlertPanel::missingPlugin);
-    }
+
     else if (message.compare(PLUME::commands::mappingOverwrite) == 0)
     {
         processor.getWrapper().clearWrapperEditor();
@@ -399,7 +416,7 @@ void PlumeEditor::createAndShowAlertPanel (const String& title, const String& me
                                                    const String& buttonText, const bool hasCloseButton,
                                                    int returnValue)
 {
-    if (alertPanel->isCurrentlyModal()) alertPanel->exitModalState (0);
+    if (alertPanel) return;
 
     alertPanel.reset (new PlumeAlertPanel (title, message, returnValue, hasCloseButton, buttonText));
     addAndMakeVisible (*alertPanel);
@@ -414,6 +431,8 @@ void PlumeEditor::createAndShowAlertPanel (const String& title, const String& me
 
 void PlumeEditor::createAndShowAlertPanel (PlumeAlertPanel::SpecificReturnValue returnValue)
 {
+    if (alertPanel) return;
+
     alertPanel.reset (PlumeAlertPanel::createSpecificAlertPanel (returnValue));
     addAndMakeVisible (*alertPanel);
 

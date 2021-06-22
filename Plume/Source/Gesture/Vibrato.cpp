@@ -68,7 +68,7 @@ int Vibrato::getMidiValue()
         send = true;
 
         const float normalizedValue = (getGestureValue()/(2*9.80665f)*gainVal/200.0f*0.5f + 0.5f);
-        return Gesture::normalizeMidi (normalizedValue, 0.0f, 1.0f, useDefaultMidi);
+        return Gesture::normalizeMidi (normalizedValue, 0.0f, 1.0f, (midiType == Gesture::pitch));
     }
     
     // Vibrato back to neutral
@@ -77,13 +77,13 @@ int Vibrato::getMidiValue()
         vibLast = false;
         send = true;
         
-        if (!useDefaultMidi) return 64;
+        if (!(midiType == Gesture::pitch)) return 64;
         else                return 8192;
     }
     
     // No vibrato
     send = false;
-    if (!useDefaultMidi) return 64;
+    if (!(midiType == Gesture::pitch)) return 64;
     else                return 8192;
 }
 
@@ -138,9 +138,31 @@ bool Vibrato::getSend()
 //==============================================================================
 void Vibrato::setIntensityValue (float newVal)
 {
-    intensity.beginChangeGesture();
-    intensity.setValueNotifyingHost (intensityRange.convertTo0to1 (newVal));
-    intensity.endChangeGesture();
+    if (isActive())
+    {
+        const int roundedNew = roundToInt (intensityRange.convertTo0to1 (newVal) * 100);
+        const int roundedLast = roundToInt (lastIntensity * 100);
+
+        if (roundedNew != roundedLast)
+        {
+            if (!wasBeingChangedIntensity)
+            {
+                intensity.beginChangeGesture();
+                wasBeingChangedIntensity = true;
+            }
+
+            intensity.setValueNotifyingHost (intensityRange.convertTo0to1 (newVal));
+            lastIntensity = intensityRange.convertTo0to1 (newVal);
+        }
+        else
+        {
+            if (wasBeingChangedIntensity)
+            {
+                intensity.endChangeGesture();
+                wasBeingChangedIntensity = false;
+            }
+        }
+    }
 }
 
 std::atomic<float>& Vibrato::getIntensityReference()
@@ -151,6 +173,6 @@ std::atomic<float>& Vibrato::getIntensityReference()
 //==============================================================================
 void Vibrato::updateValue (const Array<float> rawData)
 {
-    if (isActive()) setIntensityValue (rawData[PLUME::data::acceleration]);
+    setIntensityValue (rawData[PLUME::data::acceleration]);
     setGestureValue (rawData[PLUME::data::variance]);
 }

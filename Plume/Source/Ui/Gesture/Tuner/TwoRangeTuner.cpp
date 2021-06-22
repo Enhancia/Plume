@@ -49,7 +49,7 @@ void TwoRangeTuner::paint (Graphics& g)
 void TwoRangeTuner::resized()
 {
     // Sets bounds and changes the slider and labels position
-    sliderBounds = getLocalBounds().reduced (30);
+    sliderBounds = getLocalBounds().reduced (PLUME::UI::MARGIN).translated (0, jmax (20, getHeight()/8));
     resizeSliders();
     resizeButtons();
 
@@ -83,15 +83,18 @@ void TwoRangeTuner::resizeButtons()
 {
     using namespace PLUME::UI;
 
-    auto buttonsAreaLeft = getLocalBounds().reduced (0, 2*MARGIN)
-                                           .withRight (getLocalBounds().getX() + 70);
-    auto buttonsAreaRight = getLocalBounds().reduced (0, 2*MARGIN)
-                                            .withLeft (getLocalBounds().getRight() - 70);
+    auto buttonsAreaLeft = getLocalBounds().withRight (getLocalBounds().getX() + 70)
+                                           .withHeight (60)
+                                           .reduced (MARGIN);
 
-    maxLeftAngleButton->setBounds (buttonsAreaLeft.removeFromTop (35).reduced (MARGIN/2));
-    minLeftAngleButton->setBounds (buttonsAreaLeft.removeFromTop (35).reduced (MARGIN/2));
-    maxRightAngleButton->setBounds (buttonsAreaRight.removeFromTop (35).reduced (MARGIN/2));
-    minRightAngleButton->setBounds (buttonsAreaRight.removeFromTop (35).reduced (MARGIN/2));
+    auto buttonsAreaRight = getLocalBounds().withLeft (getLocalBounds().getRight() - 70)
+                                            .withHeight (60)
+                                            .reduced (MARGIN);
+
+    maxLeftAngleButton->setBounds (buttonsAreaLeft.removeFromTop (buttonsAreaLeft.getHeight()/2).withTrimmedBottom (MARGIN/2));
+    minLeftAngleButton->setBounds (buttonsAreaLeft.withTrimmedTop (MARGIN/2));
+    maxRightAngleButton->setBounds (buttonsAreaRight.removeFromTop (buttonsAreaRight.getHeight()/2).withTrimmedBottom (MARGIN/2));
+    minRightAngleButton->setBounds (buttonsAreaRight.withTrimmedTop (MARGIN/2));
 }
 
 void TwoRangeTuner::updateComponents()
@@ -232,7 +235,8 @@ void TwoRangeTuner::updateDisplay()
 {
     if (getValueAngle() != previousCursorAngle)
     {
-        repaint();
+        repaint (leftLowSlider->getBounds().withTrimmedBottom (leftLowSlider->getHeight()*6/10)
+                                           .translated (0, -15));
     }
 }
 

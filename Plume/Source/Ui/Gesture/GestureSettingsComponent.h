@@ -29,8 +29,7 @@ class GestureSettingsComponent : public Component,
 {
 public:
     //==============================================================================
-    GestureSettingsComponent (Gesture& gest, GestureArray& gestArray, PluginWrapper& wrap,
-                              PlumeShapeButton& closeButton);
+    GestureSettingsComponent (Gesture& gest, GestureArray& gestArray, PluginWrapper& wrap);
     ~GestureSettingsComponent();
 
     //==============================================================================
@@ -82,7 +81,6 @@ private:
     std::unique_ptr<PlumeShapeButton> muteButton;
     std::unique_ptr<RetractableMapAndMidiPanel> retractablePanel;
     std::unique_ptr<DescriptionPanel> descriptionPanel;
-    PlumeShapeButton& closeButton;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GestureSettingsComponent)

@@ -175,6 +175,7 @@ private:
 
     //==============================================================================
     void createSideBarButtonPath(); //TODO mettre dans common avec les autres chemins
+    void paintShadows (Graphics& g);
 
     //==============================================================================
   #if JUCE_WINDOWS

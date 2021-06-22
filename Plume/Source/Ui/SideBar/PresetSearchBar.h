@@ -42,6 +42,7 @@ private:
     //==============================================================================
     std::unique_ptr<Label> searchLabel;
     std::unique_ptr<PlumeShapeButton> cancelButton;
+    juce::Rectangle<int> barArea;
     
     //==============================================================================
     PlumeProcessor& processor;

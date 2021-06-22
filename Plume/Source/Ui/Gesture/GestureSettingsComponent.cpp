@@ -13,10 +13,9 @@
 #include "GestureSettingsComponent.h"
 
 //==============================================================================
-GestureSettingsComponent::GestureSettingsComponent (Gesture& gest, GestureArray& gestArray,
-                                                    PluginWrapper& wrap, PlumeShapeButton& closeBttn)
+GestureSettingsComponent::GestureSettingsComponent (Gesture& gest, GestureArray& gestArray, PluginWrapper& wrap)
                             : gesture (gest), gestureArray (gestArray),
-                              wrapper (wrap), closeButton (closeBttn), gestureId (gest.id)
+                              wrapper (wrap), gestureId (gest.id)
 {
     setComponentID ("Gesture Settings");
 
@@ -37,8 +36,10 @@ GestureSettingsComponent::~GestureSettingsComponent()
 //==============================================================================
 const String GestureSettingsComponent::getInfoString()
 {
+    const String bullet = " " + String::charToString (juce_wchar(0x2022));
+
     return "Gesture settings:\n\n"
-           "- Use this panel to configure the selected gesture.";
+           + bullet + " Use this panel to configure the selected gesture.";
 }
 
 void GestureSettingsComponent::update()
@@ -123,7 +124,7 @@ void GestureSettingsComponent::paint (Graphics& g)
     if (auto* gesturePtr = gestureArray.getGesture (gestureId))
     {
         g.setColour (getPlumeColour (detailPanelMainText));                    
-        g.setFont (PLUME::font::plumeFontBold.withHeight (15.0f));
+        g.setFont (PLUME::font::plumeFontMedium.withHeight (15.0f));
         g.drawText (gesturePtr->getName().toUpperCase(),
                     headerArea.removeFromLeft (getWidth()/3).reduced (MARGIN, 0),
                     Justification::centred, false);
@@ -182,13 +183,7 @@ void GestureSettingsComponent::resized()
     auto area = getLocalBounds();
     auto headerArea = area.removeFromTop (HEADER_HEIGHT).reduced (MARGIN_SMALL);
 
-    closeButton.setBounds (getBoundsInParent().removeFromTop (HEADER_HEIGHT)
-                                              .reduced (MARGIN_SMALL)
-                                              .removeFromRight (25)
-                                              .withSizeKeepingCentre (18, 18));
-    headerArea.removeFromRight (25);
-
-    muteButton->setBounds (headerArea.removeFromRight (30).withSizeKeepingCentre (18, 18));
+    muteButton->setBounds (headerArea.removeFromRight (20).withSizeKeepingCentre (18, 18));
 
     retractablePanel->setBounds (area.removeFromBottom (getHeight()/2 - HEADER_HEIGHT));
     area.removeFromBottom (MARGIN);
@@ -316,18 +311,12 @@ void GestureSettingsComponent::createToggles()
 
         PLUME::log::writeToLog ("Gesture " + gesture.getName() + " (Id " + String (gesture.id) + (muteButton->getToggleState() ? ") Muting." : ") Unmuting."),
                                 PLUME::log::gesture);
-
-        closeButton.setToggleState (gesture.isActive(), dontSendNotification);
         update();
         if (auto* gestComp = dynamic_cast<PlumeComponent*> (getParentComponent()->findChildWithID ("gestComp" + String (gestureId))))
         {
             gestComp->update();
         }
     };
-
-    closeButton.setStrokeOffAndOnColours (Gesture::getHighlightColour (gesture.type, false),
-                                          Gesture::getHighlightColour(gesture.type));
-    closeButton.setToggleState (gesture.isActive(), dontSendNotification);
 }
 
 void GestureSettingsComponent::createPanels()
