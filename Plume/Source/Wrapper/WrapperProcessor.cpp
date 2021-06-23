@@ -50,6 +50,7 @@ WrapperProcessor::WrapperProcessor(AudioPluginInstance& wrappedPlugin, PluginWra
       plugin (wrappedPlugin),
       owner (ownerWrapper)
 {
+    setBusesLayout (plugin.getBusesLayout());
     initWrappedParameters();
 }
 
@@ -78,6 +79,12 @@ void WrapperProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& mid
     plugin.processBlock (buffer, midiMessages);
 }
 
+
+//==============================================================================
+bool WrapperProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+{
+    return isBusesLayoutSupported (layouts);
+}
 
 //==============================================================================
 void WrapperProcessor::initWrappedParameters()

@@ -30,6 +30,7 @@ public:
     {   return plugin.releaseResources(); }
     
     void processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override ;
+    bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
 
     //==============================================================================
     AudioProcessorEditor* createEditor() override { return plugin.createEditor(); }

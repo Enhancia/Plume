@@ -15,7 +15,6 @@
 PlumeProcessor::PlumeProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
      : AudioProcessor (BusesProperties()
-                       .withInput  ("Input",  AudioChannelSet::stereo(), true)
                        .withOutput ("Output", AudioChannelSet::stereo(), true)
                        )
 #endif
@@ -96,29 +95,16 @@ void PlumeProcessor::releaseResources()
     }
 }
 
-#ifndef JucePlugin_PreferredChannelConfigurations
 bool PlumeProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
-  #if JucePlugin_IsMidiEffect
-    ignoreUnused (layouts);
-    return true;
-  #else
-    // This is the place where you check if the layout is supported.
-    // In this template code we only support mono or stereo.
-    if (layouts.getMainOutputChannelSet() != AudioChannelSet::mono()
-     && layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
-        return false;
-
-    // This checks if the input layout matches the output layout
-   #if ! JucePlugin_IsSynth
-    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
-        return false;
-   #endif
-
-    return true;
-  #endif
+    if (wrapper->isWrapping())
+    {
+        return wrapper->getWrapperProcessor().isBusesLayoutSupported (layouts);
+    }
+    
+    return (layouts.getMainOutputChannelSet() == AudioChannelSet::mono()
+                || layouts.getMainOutputChannelSet() == AudioChannelSet::stereo());
 }
-#endif
 
 void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {   
