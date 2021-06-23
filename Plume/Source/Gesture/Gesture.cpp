@@ -162,8 +162,8 @@ void Gesture::setGestureValue (float newVal)
 
 	if (isActive())
     {
-        const int roundedNew = roundToInt (range.convertTo0to1 (newVal) * 100);
-        const int roundedLast = roundToInt (lastValue * 100);
+        const int roundedNew = roundToInt (range.convertTo0to1 (newVal) * 500);
+        const int roundedLast = roundToInt (lastValue * 500);
 
         if (roundedNew != roundedLast)
         {
