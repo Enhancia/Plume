@@ -54,22 +54,20 @@ PitchBend::~PitchBend()
 }
     
 //==============================================================================
-void PitchBend::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
+void PitchBend::addGestureMidi(MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 {
     if (!isActive()) return; // does nothing if the gesture is inactive or mapped
-    
-    int pbVal = getMidiValue();
-
-	if (pbVal == lastMidi) return; // Does nothing if the midi value did not change
 
     if (send)
     {
         // Creates the pitchwheel message
-        addRightMidiSignalToBuffer (midiMessages, plumeBuffer, 1);
+        addRightMidiSignalToBuffer(midiMessages, plumeBuffer, 1);
+
+        //if (lastMidi == (midiType == Gesture::pitch) ? 8192 : 64) pbLast = false;
     }
 }
 
-int PitchBend::getMidiValue()
+void PitchBend::updateMidiValue()
 {
     /*if (!(getGestureValue() >= rangeLeftEnd && getGestureValue() <= rangeRightStart && pbLast == true))
     {
@@ -83,58 +81,68 @@ int PitchBend::getMidiValue()
     // Right side
     if (getGestureValue() >= rangeRightStart && getGestureValue() < 140.0f)
     {
+        /*
         DBG ("PITCH BEND case RIGHT = \nValue " << getGestureValue() <<
             " | Send " << (send ? "Y" : "N") <<
-            " | Last " << (pbLast ? "Y" : "N"));
+            " | Last " << (pbLast ? "Y" : "N"));*/
 
         send = true;
         pbLast = true;
         
         // if the range is empty just returns the max value
-        if (rangeRightLow.getValue() == rangeRightHigh.getValue()) return midiRangeMiddle;
+        if (rangeRightLow.getValue() == rangeRightHigh.getValue()) currentMidi = midiRangeMiddle;
         
         // Normal case, maps to an interval from neutral to max pitch
-        if (!getMidiReverse()) return Gesture::map (getGestureValue(), rangeRightStart, rangeRightEnd, midiRangeMiddle, midiRangeHigh);
-        else   return midiRangeHigh - Gesture::map (getGestureValue(), rangeRightStart, rangeRightEnd, midiRangeMiddle, midiRangeHigh);
+        if (!getMidiReverse()) currentMidi = Gesture::map (getGestureValue(), rangeRightStart, rangeRightEnd, midiRangeMiddle, midiRangeHigh);
+        else   currentMidi = midiRangeHigh - Gesture::map (getGestureValue(), rangeRightStart, rangeRightEnd, midiRangeMiddle, midiRangeHigh);
     }
     
     // Left side
     else if (getGestureValue() <= rangeLeftEnd && getGestureValue() > -140.0f)
     {
+        /*
         DBG ("PITCH BEND case LEFT = \nValue " << getGestureValue() <<
             " | Send " << (send ? "Y" : "N") <<
-            " | Last " << (pbLast ? "Y" : "N"));
+            " | Last " << (pbLast ? "Y" : "N"));*/
 
         send = true;
         pbLast = true;
         
         // if the range is empty just returns the min value
-        if (rangeLeftLow.getValue() == rangeLeftHigh.getValue()) return 0;
+        if (rangeLeftLow.getValue() == rangeLeftHigh.getValue()) currentMidi = 0;
         
         // Normal case, maps to an interval from min pitch to neutral
-        if (!getMidiReverse()) return Gesture::map (getGestureValue(), rangeLeftStart, rangeLeftEnd, 0, midiRangeMiddle);
-        else   return midiRangeHigh - Gesture::map (getGestureValue(), rangeLeftStart, rangeLeftEnd, 0, midiRangeMiddle);
+        if (!getMidiReverse()) currentMidi = Gesture::map (getGestureValue(), rangeLeftStart, rangeLeftEnd, 0, midiRangeMiddle);
+        else   currentMidi = midiRangeHigh - Gesture::map (getGestureValue(), rangeLeftStart, rangeLeftEnd, 0, midiRangeMiddle);
     }
     
     // If back to central zone
-    else if (getGestureValue() >= rangeLeftEnd && getGestureValue() <= rangeRightStart && pbLast == true)
+    else if (getGestureValue() > rangeLeftEnd && getGestureValue() < rangeRightStart && pbLast == true)
     {
+        /*
         DBG ("PITCH BEND case CENTER = \nValue " << getGestureValue() <<
             " | Send " << (send ? "Y" : "N") <<
-            " | Last " << (pbLast ? "Y" : "N"));
+            " | Last " << (pbLast ? "Y" : "N"));*/
 
         send = true;
         pbLast = false;
-        return midiRangeMiddle;
+        currentMidi = midiRangeMiddle;
     }
-    
-    send = false;
-    return midiRangeMiddle;
+    else
+    {
+        send = false;
+        currentMidi = midiRangeMiddle;
+    }
+
+    DBG ("Updated pitch bend :\nValue : " << currentMidi <<
+        " | Last Value : " << lastMidi <<
+        "\nSend " << (send ? "Y" : "N") <<
+        " | Last bool " << (pbLast ? "Y" : "N"));
 }
 
 bool PitchBend::shouldSend()
 {
-    const float val = getGestureValue();
+    const float val = currentMidi;
 
     return ((val >= rangeRightStart && val < 140.0f) || // Right side
             (val <= rangeLeftEnd && val > -140.0f) || // Left side
@@ -227,7 +235,6 @@ void PitchBend::updateValue (const Array<float> rawData)
 {
     setGestureValue (rawData[PLUME::data::roll]);
 }
-
 
 void PitchBend::setActive (bool shouldBeOn)
 {
