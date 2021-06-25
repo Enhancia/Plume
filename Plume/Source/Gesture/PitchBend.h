@@ -32,16 +32,17 @@ public:
     
     //==============================================================================
     void addGestureMidi(MidiBuffer& midiMessages, MidiBuffer& plumeBuffer) override;
-    int getMidiValue () override;
+    void updateMidiValue () override;
     
     void updateMappedParameters() override;
-    float getValueForMappedParameter (Range<float> paramRange, bool reversed) override;
-    
+    float computeMappedParameterValue (Range<float> paramRange, bool reversed) override;
+
     //==============================================================================
     void updateValue (const Array<float> rawData) override;
     void setActive (bool shouldBeOn);
 
     //==============================================================================
+
     bool getSend(); /**< \brief Getter for the send boolean value */
     bool shouldSend(); /**< \brief Hides Gesture::shouldSend(). Handles the case where the PB is set active while in the middle range */
     
@@ -54,6 +55,7 @@ public:
 
     
 private:
+    void updateSendLogic(); /**< \brief Helper method to update the send and pbLast booleans when using mapped parameters */
     bool send = false; /**< \brief Boolean used to know if the gesture should send midi */
     bool pbLast = false; /**< \brief Boolean to know if the gesture sent midi in the last buffer*/
     

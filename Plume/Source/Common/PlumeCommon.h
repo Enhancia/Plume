@@ -126,9 +126,9 @@ namespace PLUME
     namespace gesture
     {
         // gesture max range values
-        const float VIBRATO_RANGE_MAX  = 100.0f;
+        const float VIBRATO_RANGE_MAX  = 30.0f;
         const float VIBRATO_THRESH_MAX = 500.0f;
-        const float VIBRATO_INTENSITY_MAX = 1000.0f;
+        const float VIBRATO_INTENSITY_MAX = 700.0f;
         const float PITCHBEND_MIN = -180.0f;
         const float PITCHBEND_MAX =  180.0f;
         const float TILT_MIN = -180.0f;

@@ -51,6 +51,7 @@ void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages, MidiBuffer&
         {
             if (g->generatesMidi() && !g->affectsPitch())
             {
+                g->updateMidiValue();
                 g->addGestureMidi (midiMessages, plumeBuffer);
             }
         }
@@ -66,6 +67,7 @@ void GestureArray::addGestureMidiToBuffer (MidiBuffer& midiMessages, MidiBuffer&
         {
             if (g->generatesMidi())
             {
+                g->updateMidiValue();
                 g->addGestureMidi (midiMessages, plumeBuffer);
             }
         }
@@ -554,6 +556,7 @@ void GestureArray::addMergedPitchMessage (MidiBuffer& midiMessages, MidiBuffer& 
         {
             // Checks if each specific gesture should send a midi signal, before adding it to pitchVal
             int gestValue;
+            g->updateMidiValue();
             
             // Vibrato
             if (g->type == Gesture::vibrato)

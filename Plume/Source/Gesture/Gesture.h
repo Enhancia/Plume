@@ -120,18 +120,23 @@ public:
     virtual void addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer) =0;
     
     /**
-     *  \brief Method that returns the value that would be used to create a MIDI message.
-     *
-     *  Override this method to return the right value, according to gesture current value.
+     *  \brief Getter for the last midi value
      *
      *  \return The correct value to create a midi message, between 0 and 127.
      */
-    virtual int getMidiValue() =0;
+    int getMidiValue();
     
+    /**
+     *  \brief Method that stores the value that will be used to create a MIDI message.
+     *
+     *  Override this method to store the right value, according to gesture current value.
+     */
+    virtual void updateMidiValue() =0;
+
     /**
      *  \brief Helper function to write the correct values for the mapped parameters.
      *
-     *  Updates all mapped parameters of this Gesture with their right values. Uses getValueForMappedParameters() to get each value.
+     *  Updates all mapped parameters of this Gesture with their right values. Uses computeMappedParameterValues() to get each value.
      *
      */
     virtual void updateMappedParameters() =0;
@@ -142,7 +147,7 @@ public:
      *  Override this method in derived classes to return a float within the specified range.
      * 
      */
-    virtual float getValueForMappedParameter (Range<float> paramRange, bool reversed = false) =0;
+    virtual float computeMappedParameterValue (Range<float> paramRange, bool reversed = false) =0;
     
     //==============================================================================
     /**
@@ -512,11 +517,13 @@ protected:
      *  \param channel midi channel.
      */
     void addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int channel);
+    void addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int channel, int value);
     
     //==============================================================================
     String name; /**< \brief Specific name of the gesture. By default it is the gesture type*/
     String description; /**< \brief User specified description of the gesture. By default it is empty*/
     bool mapped; /**< \brief Boolean that represents if the gesture is mapped or not. */
+    int currentMidi = -1; /**< \brief Integer value that represents the midiValue to send to the next midi buffer*/
     int lastMidi = -1; /**< \brief Integer value that represents the midiValue supposedely sent to the previous midiBuffer */
     
     //==============================================================================
