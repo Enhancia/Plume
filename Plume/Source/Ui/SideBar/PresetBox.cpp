@@ -25,7 +25,7 @@ PresetBox::PresetBox (const String& componentName, PlumeProcessor& p)  : ListBox
     editLabel.reset (new Label ("editLabel", "NewPreset"));
     editLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
     editLabel->setColour (Label::textColourId, getPlumeColour (presetsBoxRowText));
-    editLabel->setFont (PLUME::font::plumeFont.withHeight (float (getRowHeight())/2));
+    editLabel->setFont (PLUME::font::plumeFont.withHeight (float (getRowHeight() - PLUME::UI::MARGIN_SMALL)));
     editLabel->setInterceptsMouseClicks (false, false);
     editLabel->addListener (this);
     
