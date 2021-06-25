@@ -64,11 +64,11 @@ void Roll::updateMappedParameters()
     // Goes through the parameterArray to update each value
     for (auto* param : parameterArray)
     {   
-        param->parameter.setValueNotifyingHost (getValueForMappedParameter (param->range, param->reversed));
+        param->parameter.setValueNotifyingHost (computeMappedParameterValue (param->range, param->reversed));
     }
 }
 
-float Roll::getValueForMappedParameter (Range<float> paramRange, bool reversed = false)
+float Roll::computeMappedParameterValue (Range<float> paramRange, bool reversed = false)
 {
 	return Gesture::mapParameter (getGestureValue(), rollDisplayRange.convertFrom0to1 (rangeLow.getValue()), rollDisplayRange.convertFrom0to1 (rangeHigh.getValue()), paramRange, reversed);
 }

@@ -136,7 +136,7 @@ public:
     /**
      *  \brief Helper function to write the correct values for the mapped parameters.
      *
-     *  Updates all mapped parameters of this Gesture with their right values. Uses getValueForMappedParameters() to get each value.
+     *  Updates all mapped parameters of this Gesture with their right values. Uses computeMappedParameterValues() to get each value.
      *
      */
     virtual void updateMappedParameters() =0;
@@ -147,7 +147,7 @@ public:
      *  Override this method in derived classes to return a float within the specified range.
      * 
      */
-    virtual float getValueForMappedParameter (Range<float> paramRange, bool reversed = false) =0;
+    virtual float computeMappedParameterValue (Range<float> paramRange, bool reversed = false) =0;
     
     //==============================================================================
     /**

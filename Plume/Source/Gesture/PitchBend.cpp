@@ -153,74 +153,89 @@ void PitchBend::updateMappedParameters()
 {
     if (!isActive()) return; // does nothing if the gesture is inactive
     
-    bool pbLastTemp = pbLast;
-    
-    // Goes through the parameterArray to update each value
-    for (auto* param : parameterArray)
+    updateSendLogic();
+
+    if (send)
     {
-        pbLast = pbLastTemp;
-		    
-        if (getValueForMappedParameter(param->range, param->reversed) != param->parameter.getValue() && send == true)
+        // Goes through the parameterArray to update each value
+        for (auto* param : parameterArray)
         {
-            param->parameter.setValueNotifyingHost (getValueForMappedParameter(param->range, param->reversed));
+            const float newParamValue = computeMappedParameterValue (param->range, param->reversed);
+
+            if (newParamValue != param->parameter.getValue())
+            {
+                param->parameter.setValueNotifyingHost (newParamValue);
+            }
         }
     }
 }
 
-float PitchBend::getValueForMappedParameter (Range<float> paramRange, bool reversed = false)
+void PitchBend::updateSendLogic()
 {
+    const float gestureValue = getGestureValue();
+
     // Right side
-    if (getGestureValue() >= rangeRightStart && getGestureValue() < 140.0f)
+    if (gestureValue >= rangeRightStart && gestureValue < 140.0f)
     {
         send = true;
 		pbLast = true;
-		
-		// if the range is empty just returns the max value
-        if (rangeRightLow.getValue() == rangeRightHigh.getValue()) return reversed ? paramRange.getStart() : paramRange.getEnd();
-        
+    }
+    
+    // Left side
+    else if (gestureValue < rangeLeftEnd && gestureValue > -140.0f)
+    {
+        send = true;
+        pbLast = true;
+    }
+    
+    // If back to central zone
+    else if (gestureValue > rangeLeftEnd && gestureValue < rangeRightStart && pbLast == true)
+    {
+        send = true;
+        pbLast = false;
+    }
+    
+    else
+        send = false;
+}
+
+float PitchBend::computeMappedParameterValue (Range<float> paramRange, bool reversed = false)
+{
+    const float gestureValue = getGestureValue();
+    
+    // Right side
+    if (gestureValue >= rangeRightStart && gestureValue < 140.0f)
+    {
         // Normal case, maps to an interval from neutral to max
-        if (!reversed) return (Gesture::mapParameter (getGestureValue(), rangeRightStart, rangeRightEnd,
+        if (!reversed) return (Gesture::mapParameter (gestureValue, rangeRightStart, rangeRightEnd,
                                                       Range<float> (paramRange.getStart() + paramRange.getLength()/2,
                                                                     paramRange.getEnd()),
                                                       false));
         // reversed
-        else           return (Gesture::mapParameter (getGestureValue(), rangeRightStart, rangeRightEnd,
+        else           return (Gesture::mapParameter (gestureValue, rangeRightStart, rangeRightEnd,
                                                       Range<float> (paramRange.getStart(),
                                                                     paramRange.getStart() + paramRange.getLength()/2),
                                                       true));
     }
     
     // Left side
-    else if (getGestureValue() < rangeLeftEnd && getGestureValue() > -140.0f)
+    else if (gestureValue < rangeLeftEnd && gestureValue > -140.0f)
     {
-        send = true;
-        pbLast = true;
-        
         // if the range is empty just returns the min value
         if (rangeLeftLow.getValue() == rangeLeftHigh.getValue()) return reversed ? paramRange.getEnd() : paramRange.getStart();
         
         // Normal case, maps to an interval from min to neutral
-        if (!reversed) return (Gesture::mapParameter (getGestureValue(), rangeLeftStart, rangeLeftEnd,
+        if (!reversed) return (Gesture::mapParameter (gestureValue, rangeLeftStart, rangeLeftEnd,
                                                       Range<float> (paramRange.getStart(),
                                                                     paramRange.getStart() + paramRange.getLength()/2),
                                                       false));
         // reversed
-        else           return (Gesture::mapParameter (getGestureValue(), rangeLeftStart, rangeLeftEnd,
+        else           return (Gesture::mapParameter (gestureValue, rangeLeftStart, rangeLeftEnd,
                                                       Range<float> (paramRange.getStart() + paramRange.getLength()/2,
                                                                     paramRange.getEnd()),
                                                       true));
     }
-    
-    // If back to central zone
-    else if (getGestureValue() > rangeLeftEnd && getGestureValue() < rangeRightStart && pbLast == true)
-    {
-        send = true;
-        pbLast = false;
-        
-        return paramRange.getStart() + paramRange.getLength()/2;
-    }
-    
-    send = false;
+
     return paramRange.getStart() + paramRange.getLength()/2;
 }
 

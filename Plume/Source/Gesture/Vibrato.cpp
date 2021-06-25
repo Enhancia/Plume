@@ -90,22 +90,24 @@ void Vibrato::updateMappedParameters()
 {
     if (!isActive()) return; // does nothing if the gesture is inactive
     
-    bool vibLastTemp = vibLast;
-    
-    // Goes through the parameterArray to update each value
-    for (auto* param : parameterArray)
+    updateSendLogic();
+
+    if (send)
     {
-		vibLast = vibLastTemp;
-		float paramVal = getValueForMappedParameter(param->range, param->reversed);
-        
-        if (send == true)
+        // Goes through the parameterArray to update each value
+        for (auto* param : parameterArray)
         {
-            param->parameter.setValueNotifyingHost (paramVal);
+            const float newParamValue = computeMappedParameterValue (param->range, param->reversed);
+
+            if (newParamValue != param->parameter.getValue())
+            {
+                param->parameter.setValueNotifyingHost (newParamValue);
+            }
         }
     }
 }
 
-float Vibrato::getValueForMappedParameter (Range<float> paramRange, bool reversed = false)
+void Vibrato::updateSendLogic()
 {
     bool vibTrig = (intensityRange.convertFrom0to1 (intensity.getValue()) > thresholdDisplayRange.convertFrom0to1 (threshold.getValue()));
     float gainVal = gainDisplayRange.convertFrom0to1 (gain.getValue());
@@ -114,17 +116,32 @@ float Vibrato::getValueForMappedParameter (Range<float> paramRange, bool reverse
     {
         vibLast = true;
         send = true;
-        const float normalizedValue = (getGestureValue()/(2*9.80665f)*gainVal/200.0f*0.5f + 0.5f);
-        return (Gesture::mapParameter (normalizedValue, 0.0f, 1.0f, paramRange, reversed));
     }
     else if (vibTrig != vibLast && vibTrig == false)
     {
         vibLast = false;
         send = true;
+    }
+
+    else
+        send = false;
+}
+
+float Vibrato::computeMappedParameterValue (Range<float> paramRange, bool reversed = false)
+{
+    bool vibTrig = (intensityRange.convertFrom0to1 (intensity.getValue()) > thresholdDisplayRange.convertFrom0to1 (threshold.getValue()));
+    float gainVal = gainDisplayRange.convertFrom0to1 (gain.getValue());
+    
+    if (vibTrig && gainVal != 0.0f)
+    {
+        const float normalizedValue = (getGestureValue()/(2*9.80665f)*gainVal/200.0f*0.5f + 0.5f);
+        return (Gesture::mapParameter (normalizedValue, 0.0f, 1.0f, paramRange, reversed));
+    }
+    else if (vibTrig != vibLast && vibTrig == false)
+    {
         return paramRange.getStart() + paramRange.getLength()/2;
     }
     
-    send = false;
     return paramRange.getStart() + paramRange.getLength()/2;
 }
 
