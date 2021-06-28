@@ -440,11 +440,11 @@ void MappedParameterComponent::updateDisplay()
 {
     if (allowDisplayUpdate)
     {
-        if (gesture.getValueForMappedParameter (mappedParameter.range, mappedParameter.reversed)
-                != lastValue)
+        const float currentMappedParameterValue = mappedParameter.parameter.getValue();
+
+        if (currentMappedParameterValue != lastValue)
         {
-            lastValue = gesture.getValueForMappedParameter (mappedParameter.range,
-                                                            mappedParameter.reversed);
+            lastValue = currentMappedParameterValue;
             
             repaint (lowSlider->getBounds().withX (lowSlider->getBounds().getCentreX() - 13)
                                            .withWidth (8));
@@ -603,7 +603,7 @@ void MappedParameterComponent::drawCursor (Graphics& g)
     Path cursorPath;
     float cursorY = lowSlider->getY() + 11.5f +
                         (lowSlider->getHeight() - 23.0f) *
-                        (1.0f - gesture.getValueForMappedParameter (mappedParameter.range,
+                        (1.0f - gesture.computeMappedParameterValue (mappedParameter.range,
                                                                     mappedParameter.reversed));
 
     juce::Point<float> cursorPoint = {lowSlider->getBounds().getCentreX() - 9.0f,

@@ -30,10 +30,10 @@ public:
     
     //==============================================================================
     void addGestureMidi(MidiBuffer& midiMessages, MidiBuffer& plumeBuffer) override;
-    int getMidiValue () override;
+    void updateMidiValue () override;
     
     void updateMappedParameters() override;
-    float getValueForMappedParameter (Range<float> paramRange, bool reversed) override;
+    float computeMappedParameterValue (Range<float> paramRange, bool reversed) override;
     
     //==============================================================================
     void updateValue (const Array<float> rawData) override;

@@ -44,9 +44,9 @@ void Tilt::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
     addRightMidiSignalToBuffer (midiMessages, plumeBuffer, 1);
 }
 
-int Tilt::getMidiValue()
+void Tilt::updateMidiValue()
 {
-    return Gesture::normalizeMidi (getGestureValue(),
+    currentMidi = Gesture::normalizeMidi (getGestureValue(),
                                    tiltDisplayRange.convertFrom0to1 (rangeLow.getValue()),
                                    tiltDisplayRange.convertFrom0to1 (rangeHigh.getValue()),
                                    (midiType == Gesture::pitch),
@@ -64,11 +64,11 @@ void Tilt::updateMappedParameters()
     // Goes through the parameterArray to update each value
     for (auto* param : parameterArray)
     {   
-        param->parameter.setValueNotifyingHost (getValueForMappedParameter (param->range, param->reversed));
+        param->parameter.setValueNotifyingHost (computeMappedParameterValue (param->range, param->reversed));
     }
 }
 
-float Tilt::getValueForMappedParameter (Range<float> paramRange, bool reversed = false)
+float Tilt::computeMappedParameterValue (Range<float> paramRange, bool reversed = false)
 {
 	  return Gesture::mapParameter (getGestureValue(),
                                   tiltDisplayRange.convertFrom0to1 (rangeLow.getValue()),

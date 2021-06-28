@@ -44,9 +44,9 @@ void Roll::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
     addRightMidiSignalToBuffer (midiMessages, plumeBuffer, 1);
 }
 
-int Roll::getMidiValue()
+void Roll::updateMidiValue()
 {
-    return Gesture::normalizeMidi (getGestureValue(),
+    currentMidi = Gesture::normalizeMidi (getGestureValue(),
                                    rollDisplayRange.convertFrom0to1 (rangeLow.getValue()),
                                    rollDisplayRange.convertFrom0to1 (rangeHigh.getValue()),
                                    (midiType == Gesture::pitch),
@@ -64,11 +64,11 @@ void Roll::updateMappedParameters()
     // Goes through the parameterArray to update each value
     for (auto* param : parameterArray)
     {   
-        param->parameter.setValueNotifyingHost (getValueForMappedParameter (param->range, param->reversed));
+        param->parameter.setValueNotifyingHost (computeMappedParameterValue (param->range, param->reversed));
     }
 }
 
-float Roll::getValueForMappedParameter (Range<float> paramRange, bool reversed = false)
+float Roll::computeMappedParameterValue (Range<float> paramRange, bool reversed = false)
 {
 	return Gesture::mapParameter (getGestureValue(), rollDisplayRange.convertFrom0to1 (rangeLow.getValue()), rollDisplayRange.convertFrom0to1 (rangeHigh.getValue()), paramRange, reversed);
 }
