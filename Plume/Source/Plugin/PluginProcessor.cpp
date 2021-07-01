@@ -13,11 +13,9 @@
 
 //==============================================================================
 PlumeProcessor::PlumeProcessor()
-#ifndef JucePlugin_PreferredChannelConfigurations
      : AudioProcessor (BusesProperties()
-                       .withOutput ("Output", AudioChannelSet::stereo(), true)
+                       .withOutput ("Main Output", AudioChannelSet::stereo(), true)
                        )
-#endif
        , parameters (*this, nullptr, "PARAMETERS", initializeParameters())
 {
     PluginHostType pluginHostType;

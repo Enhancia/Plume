@@ -353,7 +353,7 @@ namespace PLUME
         static void writeToLog (const String& message, const LogCategory category=general, const LogLevel level=info)
         {
           #if !JUCE_DEBUG
-            if (int (level) > int (info)) // cuts TRACE and DEBUG entries on production build
+            if (int (level) >= int (info)) // cuts TRACE and DEBUG entries on production build
           #endif
             {
                 String logString;

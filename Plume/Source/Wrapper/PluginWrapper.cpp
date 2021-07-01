@@ -114,7 +114,7 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
     }
     
     //Creates the wrapped processor object using the instance
-    wrappedInstance->enableAllBuses();
+    //wrappedInstance->enableAllBuses();
     
     wrapperProcessor.reset (new WrapperProcessor (*wrappedInstance, *this));
     wrapperProcessor->prepareToPlay (owner.getSampleRate(), owner.getBlockSize());
@@ -185,7 +185,7 @@ bool PluginWrapper::wrapPlugin (int pluginMenuId)
     }
     
     //Creates the wrapped processor object using the instance
-    wrappedInstance->enableAllBuses();
+    //wrappedInstance->enableAllBuses();
     
     wrapperProcessor.reset (new WrapperProcessor (*wrappedInstance, *this));
     wrapperProcessor->prepareToPlay (owner.getSampleRate(), owner.getBlockSize());

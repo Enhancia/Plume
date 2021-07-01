@@ -29,15 +29,23 @@ public:
     void releaseResources() override
     {   return plugin.releaseResources(); }
     
+    //==============================================================================
     void processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override ;
+
+    //==============================================================================
     bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
+    bool applyBusLayouts (const BusesLayout &layouts) override;
+
+    //==============================================================================
+    bool canAddBus (bool isInput) const override;
+    bool canRemoveBus (bool isInput) const override;
 
     //==============================================================================
     AudioProcessorEditor* createEditor() override { return plugin.createEditor(); }
     bool hasEditor() const override               { return plugin.hasEditor();    }
 
     //==============================================================================
-    const String getName() const override        { return plugin.getName();              }
+    const String getName() const override        { return String ("Plume : ") + plugin.getName();              }
 
     bool acceptsMidi() const override            { return plugin.acceptsMidi();          }
     bool producesMidi() const override           { return plugin.producesMidi();         }
@@ -68,6 +76,13 @@ public:
 private:
     //==============================================================================
     void initWrappedParameters();
+    
+    //==============================================================================
+    void writeBusesLayoutToLog();
+    void copyWrapperBuffersIntoPlumeBuffer (AudioBuffer<float>& plumeBuffer, AudioBuffer<float>& wrapperBuffer);
+
+    //==============================================================================
+    static AudioProcessor::BusesProperties createBusesPropertiesFromPluginInstance (AudioPluginInstance& plugin);
 
     //==============================================================================
     class WrappedParameter;
