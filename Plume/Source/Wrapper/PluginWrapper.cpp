@@ -82,6 +82,7 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
     }
 
     // TO DELETE when implementing AU
+    /*
     #if JUCE_MAC
 
     if (descToWrap->pluginFormatName.compare (AudioUnitPluginFormat::getFormatName()) == 0)
@@ -90,7 +91,7 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
         return false;
     }
 
-    #endif
+    #endif*/
         
     if (hasWrappedInstance)
 	{
@@ -152,6 +153,7 @@ bool PluginWrapper::wrapPlugin (int pluginMenuId)
     }
     
     // TO DELETE when implementing AU
+    /*
     #if JUCE_MAC
 
     if (pluginList->getType (pluginId)->pluginFormatName.compare (AudioUnitPluginFormat::getFormatName()) == 0)
@@ -160,7 +162,7 @@ bool PluginWrapper::wrapPlugin (int pluginMenuId)
         return false;
     }
 
-    #endif
+    #endif*/
         
     if (hasWrappedInstance)
 	{
@@ -500,11 +502,10 @@ void PluginWrapper::setAuUsage (bool
                                 )
 {
   #if JUCE_MAC
-    /* TO UNCOMMENT when implementing AU
+    //TO UNCOMMENT when implementing AU
     useAudioUnits = shouldUseAudioUnits;
     scanHandler->setPluginFormats (true, true, shouldUseAudioUnits);
     savePluginListToFile();
-    */
   #endif
 }
 bool PluginWrapper::usesDefaultPaths()

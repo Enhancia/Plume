@@ -31,7 +31,7 @@ FileOptionsSubPanel::FileOptionsSubPanel (PlumeProcessor& proc)   : processor (p
 
   #if JUCE_MAC
     // TO UNCOMMENT when implementing AU
-    //addToggleRow ("Use Audio Units", "auT", processor.getWrapper().usesAudioUnits());
+    addToggleRow ("Use Audio Units", "auT", processor.getWrapper().usesAudioUnits());
   #endif
 
 
