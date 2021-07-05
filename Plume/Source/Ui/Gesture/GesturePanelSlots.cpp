@@ -32,6 +32,7 @@ GestureComponent::~GestureComponent()
 {
     gestureNameLabel->removeListener (this);
     gestureNameLabel = nullptr;
+    muteButton->removeMouseListener (this);
     muteButton = nullptr;
 }
 
@@ -137,11 +138,12 @@ void GestureComponent::labelTextChanged (Label* lbl)
 
 void GestureComponent::mouseEnter (const MouseEvent &event)
 {
-    setHighlighted (true);
+    if (isMouseOver (true)) setHighlighted (true);
 }
 void GestureComponent::mouseExit (const MouseEvent &event)
 {
-    setHighlighted (false);
+    if (!isMouseOver (true))
+        setHighlighted (false);
 }
 void GestureComponent::mouseDrag (const MouseEvent &event)
 {
@@ -196,7 +198,9 @@ void GestureComponent::createButton()
 
     muteButton->setShape (PLUME::path::createPath (PLUME::path::onOff), false, true, false);
     muteButton->setToggleState (gesture.isActive(), dontSendNotification);
+    muteButton->setGetsHighlighted (false);
     muteButton->setClickingTogglesState (true);
+    muteButton->addMouseListener (this, false);
     muteButton->onClick = [this] ()
     { 
         gesture.setActive (muteButton->getToggleState());
