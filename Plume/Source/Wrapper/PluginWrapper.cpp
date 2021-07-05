@@ -38,11 +38,13 @@ PluginWrapper::PluginWrapper (PlumeProcessor& p, GestureArray& gArr, ValueTree p
 
 PluginWrapper::~PluginWrapper()
 {
-        removeAllChangeListeners();
-    clearWrapperEditor();
-
-	wrapperProcessor = nullptr;
-    wrappedInstance = nullptr;
+    removeAllChangeListeners();
+    
+  #if JUCE_MAC
+    unwrapPluginDelayed (1, false);
+  #else
+    unwrapPlugin();
+  #endif
 
     pluginList->clear();
     pluginList = nullptr;
@@ -93,10 +95,11 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
 
     #endif*/
         
+    jassert (!hasWrappedInstance);
     if (hasWrappedInstance)
-	{
-		unwrapPlugin();
-	}
+    {
+        unwrapPlugin();
+    }
 
     PLUME::log::writeToLog ("Attempting to load plugin : " + descToWrap->name, PLUME::log::pluginWrapping);
 	
@@ -125,73 +128,10 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
 
 bool PluginWrapper::wrapPlugin (int pluginMenuId)
 {
-    ScopedLock plLock (pluginListLock);
-
-    int pluginId = pluginList->getIndexChosenByMenu (pluginMenuId);
+    PluginDescription descToWrap = pluginList->getTypes() [KnownPluginList::getIndexChosenByMenu (pluginList->getTypes(),
+                                                                                                  pluginMenuId)];
     
-    if (pluginList->getType (pluginId) == nullptr)
-    {
-        PLUME::log::writeToLog ("Failed to find the plugin to wrap..  "
-                                "Specified id for wrapping : " + String (pluginId)
-                                + " (List size : " + String (pluginList->getNumTypes()) + ")",
-                                PLUME::log::pluginWrapping, PLUME::log::error);
-        return false;
-    }
-    
-    if (pluginList->getType (pluginId)->name == "Plume")
-    {
-        PLUME::log::writeToLog ("Plume tried to wrap itself..", PLUME::log::pluginWrapping, PLUME::log::error);
-        
-        return false;
-    }
-    
-    if (!(pluginList->getType (pluginId)->isInstrument))
-    {
-        PLUME::log::writeToLog ("Attempted to wrap a non-instrument plugin : " + pluginList->getType(pluginId)->name, PLUME::log::pluginWrapping, PLUME::log::error);
-        
-        return false;
-    }
-    
-    // TO DELETE when implementing AU
-    /*
-    #if JUCE_MAC
-
-    if (pluginList->getType (pluginId)->pluginFormatName.compare (AudioUnitPluginFormat::getFormatName()) == 0)
-    {
-        PLUME::log::writeToLog ("Attempted to wrap a AudioUnit plugin : " + pluginList->getType (pluginId)->name, PLUME::log::pluginWrapping, PLUME::log::error);
-        return false;
-    }
-
-    #endif*/
-        
-    if (hasWrappedInstance)
-	{
-		unwrapPlugin();
-	}
-	
-    PLUME::log::writeToLog ("Attempting to load plugin : " + pluginList->getType(pluginId)->name, PLUME::log::pluginWrapping);
-    
-    String errorMsg;
-    wrappedInstance = formatManager->createPluginInstance (*pluginList->getType (pluginId),
-                                                           owner.getSampleRate(),
-														   owner.getBlockSize(),
-                                                           errorMsg);
-                                                             
-    if (wrappedInstance == nullptr)
-    {
-        PLUME::log::writeToLog ("Failed to load plugin.. Error message : " + errorMsg,
-                                PLUME::log::pluginWrapping, PLUME::log::error);
-        return false;
-    }
-    
-    //Creates the wrapped processor object using the instance
-    wrappedInstance->enableAllBuses();
-    
-    wrapperProcessor.reset (new WrapperProcessor (*wrappedInstance, *this));
-    wrapperProcessor->prepareToPlay (owner.getSampleRate(), owner.getBlockSize());
-    hasWrappedInstance = true;
-	
-    return true;
+    return wrapPlugin (descToWrap);
 }
 
 void PluginWrapper::unwrapPlugin()
@@ -207,22 +147,84 @@ void PluginWrapper::unwrapPlugin()
     }
     
     hasWrappedInstance = false;
-    
+
+    DBG ("Deleting Wrapped Plugin");
+
 	wrapEd.reset();
     owner.getGestureArray().clearAllParameters();
     wrapperProcessor.reset();
     wrappedInstance.reset();
 }
 
+void PluginWrapper::unwrapPluginDelayed (const unsigned int delay, bool clearGestureParameters)
+{
+    if (hasWrappedInstance == false)
+    {
+        return;
+    }
+    
+    if (hasOpenedEditor)
+    {
+        clearWrapperEditor();
+    }
+    
+    hasWrappedInstance = false;
+
+    DBG ("Deleting Wrapper Processor and editor");
+    if (clearGestureParameters) owner.getGestureArray().clearAllParameters();
+    wrapEd.reset();
+    wrapperProcessor.reset();
+
+    DBG ("Moving Instance pointer");
+    wrappedInstanceToDelete = std::move (wrappedInstance);
+
+    auto instanceDeletionLambda = [this] ()
+    {
+        DBG ("Deleting Instance, delayed.");
+        wrappedInstanceToDelete.reset();
+    };
+
+    Timer::callAfterDelay (delay, instanceDeletionLambda);
+}
+
+/*
+bool PluginWrapper::rewrapPluginDelayed (int pluginId)
+{
+    if (hasWrappedInstance == false)
+    {
+        return wrapPlugin (pluginId);
+    }
+    
+    if (hasOpenedEditor)
+    {
+        clearWrapperEditor();
+    }
+    
+    hasWrappedInstance = false;
+
+    auto processorDeletionLambda = [this] ()
+    {
+        DBG ("Deleting Wrapper Processor and Instance, delayed.");
+        wrapEd.reset();
+        owner.getGestureArray().clearAllParameters();
+        wrapperProcessor.reset();
+        wrappedInstance.reset();
+    };
+
+    Timer::callAfterDelay (100, processorDeletionLambda);
+
+    return wrapPlugin(description);
+}*/
+
 bool PluginWrapper::rewrapPlugin (PluginDescription& description)
 {
-    unwrapPlugin();
+    unwrapPluginDelayed();
     return wrapPlugin(description);
 }
 
 bool PluginWrapper::rewrapPlugin(int pluginId)
 {
-    unwrapPlugin();
+    unwrapPluginDelayed();
     return wrapPlugin(pluginId);
 }
 
@@ -305,7 +307,9 @@ void PluginWrapper::clearWrapperEditor()
 {
     if (hasWrappedInstance && hasOpenedEditor)
     {
-        wrapperEditor.reset();
+        wrapperEditor->setVisible (false);
+
+        wrapperEditor.reset (nullptr);
         hasOpenedEditor = false;
         
         // Message for the components needing an update upon closing the wrapped editor (ie mapper components)

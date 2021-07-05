@@ -61,6 +61,8 @@ PlumeProcessor::PlumeProcessor()
 
 PlumeProcessor::~PlumeProcessor()
 {
+    wrapper->unwrapPluginDelayed (1, false);
+
     PLUME::log::writeToLog ("Removing Plume instance.", PLUME::log::general);
 
     dataReader->removeChangeListener(gestureArray.get());
@@ -69,8 +71,14 @@ PlumeProcessor::~PlumeProcessor()
     
     gestureArray = nullptr;
     wrapper = nullptr;
+    updater = nullptr;
+    presetHandler = nullptr;
 
     removeLogger();
+
+  #if JUCE_MAC
+    MessageManager::getInstance()->runDispatchLoopUntil (1000);
+  #endif
 }
 
 void PlumeProcessor::removeLogger()

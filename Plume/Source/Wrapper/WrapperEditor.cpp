@@ -29,6 +29,7 @@ WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc, const Comp
     {
         // Adds the interface and sets the component size in accordance
         addAndMakeVisible (wrappedUi = ui);
+        
         childBoundsChanged (wrappedUi);
 
         // Creates the desktop window, attached to a component (Plume's editor)
@@ -96,6 +97,7 @@ WrapperEditorWindow::~WrapperEditorWindow()
 
     wrappedUi.deleteAndZero();
     if (isOnDesktop()) removeFromDesktop();
+    DBG ("Finished deleting wrapper editor window");
 }
 
 void WrapperEditorWindow::paint (Graphics&) {}
