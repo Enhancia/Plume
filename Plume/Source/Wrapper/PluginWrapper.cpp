@@ -56,7 +56,6 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
 
     auto descToWrap = getDescriptionToWrap (description);
     
-    
     if (descToWrap == nullptr)
     {
         PLUME::log::writeToLog ("Failed to find the plugin to wrap..  "
@@ -588,13 +587,9 @@ void PluginWrapper::addPluginsToMenu (PopupMenu& menu, KnownPluginList::SortMeth
     
     if (pluginList->getNumTypes() == 0)
     {
-        /*
-        if (auto* processor = dynamic_cast<ActionBroadcaster*> (getOwner()))
-        {
-
-        }*/
         getOwner().sendActionMessage (PLUME::commands::scanRequired);
     }
+    
     else pluginList->addToMenu (menu, sort);
 }
 
