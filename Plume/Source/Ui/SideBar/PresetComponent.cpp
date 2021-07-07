@@ -161,13 +161,19 @@ void PresetComponent::createComboBox()
     pluginSelectBox->addItem ("All Plugins", 1);
     
     KnownPluginList& kpl = processor.getWrapper().getList();
+    int searchedPlugin = 1;
     
     for (int i=0; i<kpl.getNumTypes(); i++)
     {
-        pluginSelectBox->addItem (kpl.getType (i)->name, i+2);
+        const String currentName = kpl.getType (i)->name;
+
+        pluginSelectBox->addItem (currentName, i+2);
+
+        if (currentName == processor.getPresetHandler().getCurrentSettings().plugin)
+            searchedPlugin = i+2;
     }
     
-    pluginSelectBox->setSelectedId (1, sendNotification);
+    pluginSelectBox->setSelectedId (searchedPlugin, dontSendNotification);
 
     // Combo box look
     pluginSelectBox->setJustificationType (Justification::centredLeft);

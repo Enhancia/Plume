@@ -359,7 +359,6 @@ void PresetBox::setPreset (const int row)
 
         // Calls the plugin's setStateInformation method to load the preset
         processor.setStateInformation (presetData.getData(), int (presetData.getSize()));
-        presetXml->deleteAllChildElements(); // frees the memory
     }
     else // failed to get preset xml somehow
     {

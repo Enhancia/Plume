@@ -54,8 +54,7 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
 {
     ScopedLock plLock (pluginListLock);
 
-    PluginDescription* descToWrap = getDescriptionToWrap (description);
-    
+    auto descToWrap = getDescriptionToWrap (description);
     
     if (descToWrap == nullptr)
     {
@@ -588,17 +587,13 @@ void PluginWrapper::addPluginsToMenu (PopupMenu& menu, KnownPluginList::SortMeth
     
     if (pluginList->getNumTypes() == 0)
     {
-        /*
-        if (auto* processor = dynamic_cast<ActionBroadcaster*> (getOwner()))
-        {
-
-        }*/
         getOwner().sendActionMessage (PLUME::commands::scanRequired);
     }
+    
     else pluginList->addToMenu (menu, sort);
 }
 
-PluginDescription* PluginWrapper::getDescriptionToWrap (const PluginDescription& description)
+std::unique_ptr<PluginDescription> PluginWrapper::getDescriptionToWrap (const PluginDescription& description)
 {   
     ScopedLock plLock (pluginListLock);
 
@@ -608,7 +603,7 @@ PluginDescription* PluginWrapper::getDescriptionToWrap (const PluginDescription&
 			desc.pluginFormatName == description.pluginFormatName &&
 			(desc.name == description.name || desc.descriptiveName == description.descriptiveName))
         {
-            return &desc;
+            return std::make_unique<PluginDescription> (desc);
         }
     }
     
