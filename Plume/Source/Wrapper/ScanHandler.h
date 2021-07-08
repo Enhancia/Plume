@@ -139,7 +139,7 @@ private:
 
                                 for (auto* desc : found)
                                 {
-                                    if (desc->name != "Plume")
+                                    if (desc->name != "Plume" && desc->name != "Plume Tests")
                                     pluginList.addType (*desc);
                                 }
                             }

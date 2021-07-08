@@ -70,7 +70,7 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
         return false;
     }
     
-    if (descToWrap->name == "Plume")
+    if (descToWrap->name == "Plume" || descToWrap->name == "Plume Tests")
     {
         PLUME::log::writeToLog ("Plume tried to wrap itself..", PLUME::log::pluginWrapping, PLUME::log::error);
         return false;
