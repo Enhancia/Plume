@@ -61,8 +61,6 @@ PlumeProcessor::PlumeProcessor()
 
 PlumeProcessor::~PlumeProcessor()
 {
-    wrapper->unwrapPluginDelayed (1, false);
-
     PLUME::log::writeToLog ("Removing Plume instance.", PLUME::log::general);
 
     dataReader->removeChangeListener(gestureArray.get());
