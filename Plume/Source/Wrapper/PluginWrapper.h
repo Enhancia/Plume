@@ -110,7 +110,7 @@ public:
 private:
     //==============================================================================
     Array<File> createFileList();
-    PluginDescription* getDescriptionToWrap (const PluginDescription& description);
+    std::unique_ptr<PluginDescription> getDescriptionToWrap (const PluginDescription& description);
     void loadPluginListFromFile();
     File getOrCreatePluginListFile();
     File getOrCreateDeadsManPedalFile();

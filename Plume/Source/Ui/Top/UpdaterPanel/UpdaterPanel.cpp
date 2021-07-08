@@ -52,8 +52,21 @@ void UpdaterPanel::resized()
     titleLabel->setBounds (area.removeFromTop (area.getHeight()/5));
 
     auto buttonArea = area.removeFromBottom (jmin (area.getHeight()/5, 40));
-    bottomButton->setBounds (buttonArea.withSizeKeepingCentre (bottomButton->getBestWidthForHeight (buttonArea.getHeight()),
-                                     						   buttonArea.getHeight()));
+
+    if (currentProgress == downloadAvailable)
+    {
+	    bottomButton->setBounds (buttonArea.removeFromRight (buttonArea.getWidth()/2)
+	    								   .withSizeKeepingCentre (bottomButton->getBestWidthForHeight (buttonArea.getHeight()),
+	                                     						   buttonArea.getHeight()));
+
+	    viewNotesButton->setBounds (buttonArea.withSizeKeepingCentre (bottomButton->getBestWidthForHeight (buttonArea.getHeight()),
+	                                     						   buttonArea.getHeight()));
+    }
+    else
+    {
+	    bottomButton->setBounds (buttonArea.withSizeKeepingCentre (bottomButton->getBestWidthForHeight (buttonArea.getHeight()),
+	                                     						   buttonArea.getHeight()));
+    }
 
     bodyText->setBounds (area.reduced (PLUME::UI::MARGIN));
 }
@@ -79,6 +92,11 @@ void UpdaterPanel::buttonClicked (Button* bttn)
 	if (bttn == closeButton.get())
 	{
 		closeAndResetPanel();
+	}
+
+	else if (bttn == viewNotesButton.get())
+	{
+		URL ("https://www.enhancia-music.com/plume-release-notes/").launchInDefaultBrowser();
 	}
 
 	else if (bttn == bottomButton.get())
@@ -163,6 +181,13 @@ void UpdaterPanel::createButtons()
     bottomButton->setButtonText ("");
     bottomButton->addListener (this);
 
+	// View notes button
+    viewNotesButton.reset (new TextButton ("View Notes Button"));
+    addAndMakeVisible (*viewNotesButton);
+
+    viewNotesButton->setButtonText ("View Notes");
+    viewNotesButton->addListener (this);
+
 	// Close button
     closeButton = std::make_unique <PlumeShapeButton> ("Close Options Button",
                                                        Colour(0),
@@ -188,6 +213,7 @@ void UpdaterPanel::updateComponentsForSpecificStep (downloadProgress downloadSte
 			case noDownloadAvailable:
 				closeButton->setVisible (true);
 				bottomButton->setVisible (true);
+				viewNotesButton->setVisible (false);
 				bottomButton->setButtonText ("Ok");
 
 				titleLabel->setText ("Plume up to date", dontSendNotification);
@@ -199,6 +225,7 @@ void UpdaterPanel::updateComponentsForSpecificStep (downloadProgress downloadSte
 			case downloadAvailable:
 				closeButton->setVisible (true);
 				bottomButton->setVisible (true);
+				viewNotesButton->setVisible (true);
 				bottomButton->setButtonText ("Download");
 
 				titleLabel->setText ("Plume Update", dontSendNotification);
@@ -212,6 +239,7 @@ void UpdaterPanel::updateComponentsForSpecificStep (downloadProgress downloadSte
 
 			case updateRequired:
 				closeButton->setVisible (true);
+				viewNotesButton->setVisible (false);
 				bottomButton->setVisible (updater.hasNewAvailableVersion());
 				bottomButton->setButtonText ("Download");
 
@@ -234,6 +262,7 @@ void UpdaterPanel::updateComponentsForSpecificStep (downloadProgress downloadSte
 			case inProgress:
 				closeButton->setVisible (false);
 				bottomButton->setVisible (false);
+				viewNotesButton->setVisible (false);
 
 				titleLabel->setText ("Downloading  . . .", dontSendNotification);
 				bodyText->setText ("Preparing download", dontSendNotification);
@@ -242,6 +271,7 @@ void UpdaterPanel::updateComponentsForSpecificStep (downloadProgress downloadSte
 			case downloadFinished:
 				closeButton->setVisible (true);
 				bottomButton->setVisible (true);
+				viewNotesButton->setVisible (false);
 				titleLabel->setText ("Download Finished", dontSendNotification);
 
 				if (updater.wasSuccessful())

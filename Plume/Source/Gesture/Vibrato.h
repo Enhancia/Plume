@@ -31,10 +31,10 @@ public:
     
     //==============================================================================
     void addGestureMidi(MidiBuffer& midiMessages, MidiBuffer& plumeBuffer) override;
-    int getMidiValue () override;
+    void updateMidiValue () override;
     
     void updateMappedParameters() override;
-    float getValueForMappedParameter (Range<float> paramRange, bool reversed) override;
+    float computeMappedParameterValue (Range<float> paramRange, bool reversed) override;
     
     //==============================================================================
     void setIntensityValue (float newVal);
@@ -53,6 +53,7 @@ public:
     NormalisableRange<float> intensityRange;
 
 private:
+    void updateSendLogic();
     std::atomic<float>* intensityRef; /**< Value that will be checked to trigger the vibrato if higher than the treshold */
     
     // Booleans that represent the state of the vibrato
