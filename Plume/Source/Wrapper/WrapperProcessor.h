@@ -45,7 +45,7 @@ public:
     bool hasEditor() const override               { return plugin.hasEditor();    }
 
     //==============================================================================
-    const String getName() const override        { return String ("Plume : ") + plugin.getName();              }
+    const String getName() const override        { return plugin.getName();              }
 
     bool acceptsMidi() const override            { return plugin.acceptsMidi();          }
     bool producesMidi() const override           { return plugin.producesMidi();         }
