@@ -191,7 +191,7 @@ void ScanHandler::setPluginFormats (bool useVST, bool useVST3, bool useAUOnMac)
     if (useVST) formatManager->addFormat (new VSTPluginFormat());
 
   #if JUCE_MAC
-    if (useAUOnMac) formatManager->addFormat (new AudioUnitPluginFormat()); //TO UNCOMMENT when implementing AU
+    if (useAUOnMac) formatManager->addFormat (new AudioUnitPluginFormat());
   #endif
 
   #if JUCE_PLUGINHOST_VST3

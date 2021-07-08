@@ -248,17 +248,15 @@ void HeaderComponent::handlePluginChoice (int chosenId)
     }
     else
     {
-        // Removes the window in case it's opened
-        processor.getWrapper().clearWrapperEditor();
-
-
-        if (processor.getWrapper().wrapPlugin (chosenId))
+        if (processor.getWrapper().rewrapPlugin (chosenId))
         {
             pluginNameLabel->setText (processor.getWrapper().getWrappedPluginName(), dontSendNotification);
 
             // Creates the wrapper editor object as a child of the editor
             createPluginWindow();
         }
+
+        pluginNameLabel->setText (processor.getWrapper().getWrappedPluginName(), dontSendNotification); // TO DELETE ?
     }
 }
 

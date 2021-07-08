@@ -53,6 +53,7 @@ public:
     bool wrapPlugin (PluginDescription& description);
     bool wrapPlugin (int pluginMenuId);
     void unwrapPlugin();
+    void unwrapPluginDelayed (const unsigned int delay = 1000, bool clearGestureParameters = true);
     bool rewrapPlugin (PluginDescription& description);
     bool rewrapPlugin (int pluginMenuId);
     bool isWrapping();
@@ -129,6 +130,7 @@ private:
     //==============================================================================
     std::unique_ptr<WrapperProcessor> wrapperProcessor;
     std::unique_ptr<AudioPluginInstance> wrappedInstance;
+    std::unique_ptr<AudioPluginInstance> wrappedInstanceToDelete;
     std::unique_ptr<WrapperEditorWindow> wrapperEditor;
     std::unique_ptr<AudioProcessorEditor> wrapEd;
 
