@@ -68,6 +68,7 @@ public:
     };
 
     void setPaintMode (const PaintMode newPaintMode);
+    void setGetsHighlighted (bool shouldGetHighlighted);
 
 
 
@@ -78,6 +79,7 @@ private:
 	Colour pathStrokeOffNormal, pathStrokeOffOver, pathStrokeOffDown;
 	Colour pathStrokeOnNormal, pathStrokeOnOver, pathStrokeOnDown;
 	bool usePlumeBorders = true;
+	bool getsHighlighted = true;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeShapeButton)
 };

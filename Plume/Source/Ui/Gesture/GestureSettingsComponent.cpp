@@ -304,6 +304,7 @@ void GestureSettingsComponent::createToggles()
 
     muteButton->setShape (PLUME::path::createPath (PLUME::path::onOff), false, true, false);
     muteButton->setToggleState (gesture.isActive(), dontSendNotification);
+    muteButton->setGetsHighlighted (false);
     muteButton->setClickingTogglesState (true);
     muteButton->onClick = [this] ()
     {

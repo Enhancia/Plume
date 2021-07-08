@@ -74,7 +74,8 @@ void PlumeShapeButton::paintButton (Graphics& g, bool shouldDrawButtonAsHighligh
 	// Sets Outline Colour for ShapeButton
 	if (paintMode != fill)
 	{
-		if (shouldDrawButtonAsHighlighted) setOutline (getToggleState() ? pathStrokeOnOver
+		if (shouldDrawButtonAsHighlighted && getsHighlighted)
+			 setOutline (getToggleState() ? pathStrokeOnOver
 																		: pathStrokeOffOver,
 													   1.0f);
 
@@ -197,4 +198,9 @@ void PlumeShapeButton::setPaintMode (const PaintMode newPaintMode)
 		default:
 			break;
 	}
+}
+
+void PlumeShapeButton::setGetsHighlighted (bool shouldGetHighlighted)
+{
+		getsHighlighted = shouldGetHighlighted;
 }
