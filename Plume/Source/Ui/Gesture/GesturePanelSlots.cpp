@@ -70,7 +70,8 @@ void GestureComponent::paint (Graphics& g)
 
     g.saveState();
     g.reduceClipRegion (roundedRectangleBackground);
-    drawGesturePath (g, getLocalBounds());
+    drawGesturePath (g, getLocalBounds().withSizeKeepingCentre (jmax (getWidth(), getHeight()),
+                                                                jmax (getWidth(), getHeight())));
     g.restoreState();
 
     // Outline

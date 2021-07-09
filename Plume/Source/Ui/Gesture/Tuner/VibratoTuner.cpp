@@ -50,7 +50,7 @@ void VibratoTuner::paint (Graphics& g)
 	drawIntensityCursor (g);
 
 	g.setColour (getPlumeColour (tunerSliderBackground));
-	g.setFont (PLUME::font::plumeFontLight.withHeight (14.0f));
+	g.setFont (PLUME::font::plumeFont.withHeight (14.0f));
 	g.drawText ("THRESHOLD", thresholdSlider->getBounds().withSizeKeepingCentre (100, 50)
 														 .withY (thresholdSlider->getBounds().getBottom()),
 							 Justification::centredTop);

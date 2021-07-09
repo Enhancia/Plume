@@ -82,8 +82,8 @@ void HeaderComponent::paint (Graphics& g)
     // header buttons left and right to preset area
     g.setColour (getPlumeColour (headerButtonBackground));
     g.fillRoundedRectangle (presetNameLabel->getBounds().reduced (0, 6)
-                                                        .withLeft (trackArmButton->getX() - MARGIN_SMALL)
-                                                        .withRight (savePresetButton->getRight() + MARGIN_SMALL)
+                                                        .withLeft (trackArmButton->getX() - MARGIN_SMALL/2)
+                                                        .withRight (savePresetButton->getRight() + MARGIN_SMALL/2)
                                                         .toFloat(),
                             10.0f);
 
@@ -94,7 +94,7 @@ void HeaderComponent::paint (Graphics& g)
                                                         .withRight (rightArrowButton->getX() +
                                                                     rightArrowButton->getWidth())
                                                         .toFloat(),
-                            4.0f);
+                            0.0f);
 
     // Plugin Name Area
     g.saveState();
