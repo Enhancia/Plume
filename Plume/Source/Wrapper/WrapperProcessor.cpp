@@ -156,8 +156,6 @@ AudioProcessor::BusesProperties WrapperProcessor::createBusesPropertiesFromPlugi
 {
     BusesProperties busesProp;
 
-    busesProp.addBus (false, "Main Output", AudioChannelSet::stereo(), true);
-
     for (int isInput =1; isInput >= 0; isInput--)
     {
         for (int busNum =0; busNum < pluginInstance.getBusCount (isInput); busNum++)
@@ -184,7 +182,7 @@ void WrapperProcessor::copyWrapperBuffersIntoPlumeBuffer (AudioBuffer<float>& pl
             {
                 for (int channelNum =0; channelNum < plumeBuffer.getNumChannels(); channelNum++)
                     plumeBuffer.addFrom (channelNum, 0, wrapperBuffer,
-                                         bus->getChannelIndexInProcessBlockBuffer (channelNum),
+                                         bus->getChannelIndexInProcessBlockBuffer (channelNum % bus->getNumberOfChannels()),
                                          0, plumeBuffer.getNumSamples());
             }
         }
