@@ -43,7 +43,7 @@ PluginWrapper::~PluginWrapper()
   #if JUCE_MAC
     unwrapPluginDelayed (1, false);
   #else
-    unwrapPlugin();
+    unwrapPlugin (false);
   #endif
 
     pluginList->clear();
@@ -121,7 +121,7 @@ bool PluginWrapper::wrapPlugin (int pluginMenuId)
     return wrapPlugin (descToWrap);
 }
 
-void PluginWrapper::unwrapPlugin()
+void PluginWrapper::unwrapPlugin (bool clearGestureParameters)
 {
     if (hasWrappedInstance == false)
     {
@@ -136,7 +136,7 @@ void PluginWrapper::unwrapPlugin()
     hasWrappedInstance = false;
 
     wrapEd.reset();
-    owner.getGestureArray().clearAllParameters();
+    if (clearGestureParameters) owner.getGestureArray().clearAllParameters();
     wrapperProcessor.reset();
     wrappedInstance.reset();
 }

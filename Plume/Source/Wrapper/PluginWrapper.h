@@ -52,7 +52,7 @@ public:
     //==============================================================================
     bool wrapPlugin (PluginDescription& description);
     bool wrapPlugin (int pluginMenuId);
-    void unwrapPlugin();
+    void unwrapPlugin (bool clearGestureParameters = true);
     void unwrapPluginDelayed (const unsigned int delay = 1000, bool clearGestureParameters = true);
     bool rewrapPlugin (PluginDescription& description);
     bool rewrapPlugin (int pluginMenuId);
