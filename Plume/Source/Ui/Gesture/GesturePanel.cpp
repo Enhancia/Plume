@@ -574,11 +574,19 @@ void GesturePanel::createMenuForGestureId (int id)
     gestureMenu.addItem (2, "Duplicate", true);
     gestureMenu.addItem (3, "Delete", true);
     
-    handleMenuResult (id,
-                      gestureMenu.showMenu (PopupMenu::Options().withParentComponent (getParentComponent())
+    gestureMenu.showMenuAsync (PopupMenu::Options().withParentComponent (getParentComponent())
                                                                 .withMaximumNumColumns (3)
                                                                 .withPreferredPopupDirection (PopupMenu::Options::PopupDirection::downwards)
-                                                                .withStandardItemHeight (20)));
+                                                                .withStandardItemHeight (20),
+                               ModalCallbackFunction::forComponent (menuCallback, this, id));
+}
+
+void GesturePanel::menuCallback(int result, GesturePanel* gPanel, int id)
+{
+    if (gPanel != nullptr)
+    {
+        gPanel->handleMenuResult (id, result);
+    }
 }
 
 void GesturePanel::handleMenuResult (int gestureId, const int menuResult)

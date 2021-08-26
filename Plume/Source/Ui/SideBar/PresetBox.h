@@ -67,10 +67,14 @@ public:
     void startNewPresetEntry();
     void startRenameEntry (const int row);
     void deletePreset (const int row);
+
     
 private:
     //==============================================================================
+    static void menuCallback (int result, PresetBox* pBox, int row);
     void handleMenuResult (const int row, const int menuResult);
+    
+    //==============================================================================
     void setPreset (const int row);
     void createUserPreset (const String& presetName);
     void renamePreset (const String& newName);

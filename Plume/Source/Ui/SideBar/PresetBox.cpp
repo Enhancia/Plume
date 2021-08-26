@@ -144,8 +144,7 @@ void PresetBox::listBoxItemClicked (int row, const MouseEvent& event)
         rightClickMenu.addItem (2, "Show In Explorer", isUser);
         rightClickMenu.addItem (3, "Delete", isUser);
         
-        handleMenuResult (row,
-                          rightClickMenu.showMenu (PopupMenu::Options().withParentComponent (  getParentComponent()
+        rightClickMenu.showMenuAsync (PopupMenu::Options().withParentComponent (  getParentComponent()
                                                                                              ->getParentComponent()
                                                                                              ->getParentComponent())
                                                                        .withMaximumNumColumns (3)
@@ -153,7 +152,8 @@ void PresetBox::listBoxItemClicked (int row, const MouseEvent& event)
 																		                             Options::
 																		                             PopupDirection::
 																		                             downwards)
-                                                                       .withStandardItemHeight (15)));
+                                                                       .withStandardItemHeight (15),
+                                 ModalCallbackFunction::forComponent (menuCallback, this, row));
     }
 }
 
@@ -317,6 +317,14 @@ void PresetBox::deletePreset (const int row)
     }
 }
 //==============================================================================
+void PresetBox::menuCallback (int result, PresetBox* pBox, int row)
+{
+    if (pBox != nullptr)
+    {
+        pBox->handleMenuResult(row, result);
+    }
+}
+
 void PresetBox::handleMenuResult (const int row, const int menuResult)
 {
     switch (menuResult)

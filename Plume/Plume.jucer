@@ -289,7 +289,7 @@
     </GROUP>
   </MAINGROUP>
   <LIVE_SETTINGS>
-    <WINDOWS buildEnabled="1"/>
+    <WINDOWS buildEnabled="0" warningsEnabled="0"/>
     <OSX/>
   </LIVE_SETTINGS>
   <EXPORTFORMATS>

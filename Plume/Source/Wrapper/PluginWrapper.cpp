@@ -62,7 +62,7 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
     {
         PLUME::log::writeToLog ("Failed to find the plugin to wrap..  "
                                 "Specified description for wrapping : " + description.name
-                                + " (Id : " + String (description.uid) + " | Format : "
+                                + " (Id : " + String (description.uniqueId) + " | Format : "
                                             + description.pluginFormatName + ")",
                                 PLUME::log::pluginWrapping, PLUME::log::error);
 
@@ -586,7 +586,7 @@ std::unique_ptr<PluginDescription> PluginWrapper::getDescriptionToWrap (const Pl
 
     for (auto& desc : pluginList->getTypes())
     {
-		if (desc.uid == description.uid &&
+		if (desc.uniqueId == description.uniqueId &&
 			desc.pluginFormatName == description.pluginFormatName &&
 			(desc.name == description.name || desc.descriptiveName == description.descriptiveName))
         {
