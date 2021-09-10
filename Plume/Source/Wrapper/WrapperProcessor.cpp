@@ -67,22 +67,10 @@ WrapperProcessor::~WrapperProcessor()
 //==============================================================================
 void WrapperProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-    // Clears the audioBuffer if its not needed
-    if (plugin.getMainBusNumInputChannels() == 0)
-    {
-        buffer.clear();
-    }
-
-    int channelCount = 0;
-    int mainBusId = 0;
-    for (int outBusNum =0; outBusNum < plugin.getBusCount (false); outBusNum++)
-    {
-        if (plugin.getBus (false, outBusNum)->isMain()) mainBusId = outBusNum;
-
-        channelCount += getChannelCountOfBus (false, outBusNum);
-    }
-
-    AudioBuffer<float> wrapperBuffer (channelCount, buffer.getNumSamples());
+    if (wrapperBuffer.getNumSamples() != buffer.getNumSamples())
+        wrapperBuffer.setSize(jmax (getTotalNumInputChannels(), getTotalNumOutputChannels()), buffer.getNumSamples());
+    
+    wrapperBuffer.clear();
     
     // Makes the plugin use playhead from the DAW
     plugin.setPlayHead (getPlayHead());
@@ -195,22 +183,46 @@ void WrapperProcessor::writeBusesLayoutToLog()
 
     for (auto* processor : processors)
     {
-        String logString ("Processor " + processor->getName() + " :\nOutput buses : " + String (processor->getBusCount (false)));
+        String logString;
         
-        for (int outBusNum =0; outBusNum < processor->getBusCount (false); outBusNum++)
+        if (processor->getBusCount (true) > 0)
         {
-            if (const AudioProcessor::Bus* bus = processor->getBus (false, outBusNum))
+            logString += "Processor " + processor->getName() + " :\nInput buses : " + String (processor->getBusCount (true));
+            
+            for (int inBusNum =0; inBusNum < processor->getBusCount (true); inBusNum++)
             {
-                logString += "\n  -| " + bus->getName()
-                           + " | Main ? " + String (bus->isMain() ? "Y" : "N")
-                           + " | Layout : " + bus->getCurrentLayout().getDescription()
-                           + " (" + bus->getCurrentLayout().getSpeakerArrangementAsString()
-                           + ") | Channels : " + String (bus->getNumberOfChannels())
-                           + " | Enabled ? " + String (bus->isEnabled() ? "Y" : "N")
-                           + " | Enabled By Default ? " + String (bus->isEnabledByDefault() ? "Y" : "N");
+                if (const AudioProcessor::Bus* bus = processor->getBus (true, inBusNum))
+                {
+                    logString += "\n  -| " + bus->getName()
+                               + " | Main ? " + String (bus->isMain() ? "Y" : "N")
+                               + " | Layout : " + bus->getCurrentLayout().getDescription()
+                               + " (" + bus->getCurrentLayout().getSpeakerArrangementAsString()
+                               + ") | Channels : " + String (bus->getNumberOfChannels())
+                               + " | Enabled ? " + String (bus->isEnabled() ? "Y" : "N")
+                               + " | Enabled By Default ? " + String (bus->isEnabledByDefault() ? "Y" : "N") + "\n";
+                }
+            }
+        }
+        
+        if (processor->getBusCount (false) > 0)
+        {
+            logString += "Processor " + processor->getName() + " :\nOutput buses : " + String (processor->getBusCount (false));
+            
+            for (int outBusNum =0; outBusNum < processor->getBusCount (false); outBusNum++)
+            {
+                if (const AudioProcessor::Bus* bus = processor->getBus (false, outBusNum))
+                {
+                    logString += "\n  -| " + bus->getName()
+                               + " | Main ? " + String (bus->isMain() ? "Y" : "N")
+                               + " | Layout : " + bus->getCurrentLayout().getDescription()
+                               + " (" + bus->getCurrentLayout().getSpeakerArrangementAsString()
+                               + ") | Channels : " + String (bus->getNumberOfChannels())
+                               + " | Enabled ? " + String (bus->isEnabled() ? "Y" : "N")
+                               + " | Enabled By Default ? " + String (bus->isEnabledByDefault() ? "Y" : "N") + "\n";
+                }
             }
         }
 
-        PLUME::log::writeToLog (logString, PLUME::log::pluginWrapping);
+        if (logString.isNotEmpty()) PLUME::log::writeToLog (logString, PLUME::log::pluginWrapping);
     }
 }

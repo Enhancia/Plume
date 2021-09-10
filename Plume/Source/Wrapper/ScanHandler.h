@@ -113,11 +113,14 @@ private:
                     if (launchScannerProgram (formatManager->getFormat(formatNum)->getName(), fileOrIdentifier))
                     {
                         int count = 0;
+                        
+                        sleep (50);
+                        
                         while (scannerProcess.isRunning() && count < timerLimit
                                                           && !threadShouldExit())
                         {
                             count++;
-                            wait (10);
+                            sleep (10);
                         }
 
                         if (!scannerProcess.isRunning()/* || exitCode == 0
@@ -134,13 +137,18 @@ private:
                             }
                             else if (exitCode == 0)
                             {
+                                PLUME::log::writeToLog ("Scanner returned 0 (COUNT " + String (count) + "): Attempting to get description", PLUME::log::pluginScan);
+                                
                                 OwnedArray<PluginDescription> found;
                                 formatManager->getFormat(formatNum)->findAllTypesForFile (found, fileOrIdentifier);
 
                                 for (auto* desc : found)
                                 {
                                     if (desc->name != "Plume" && desc->name != "Plume Tests")
-                                    pluginList.addType (*desc);
+                                    {
+                                        PLUME::log::writeToLog ("Finished Scanning! Adding plugin to list : " + desc->name, PLUME::log::pluginScan);
+                                        pluginList.addType (*desc);
+                                    }
                                 }
                             }
                             else
@@ -174,6 +182,8 @@ private:
                 args.add (fileToScan);
                 args.add (PLUME::file::deadMansPedal.getFullPathName());
 
+                PLUME::log::writeToLog ("Launching scan for plugin/format : " + fileToScan + " / " + formatString, PLUME::log::pluginScan);
+                
                 return (scannerProcess.start (args));
             }
 

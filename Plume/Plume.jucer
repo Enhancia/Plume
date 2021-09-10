@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" pluginFormats="buildAU,buildStandalone,buildVST"
-              version="0.1.7" companyName="Enhancia" buildVST="1" buildVST3="0"
+              version="100.1.7" companyName="Enhancia" buildVST="1" buildVST3="0"
               buildAU="1" buildAUv3="0" buildRTAS="0" buildAAX="0" enableIAA="0"
               pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
               pluginManufacturer="Enhancia" pluginName="Plume" pluginDesc="Enhancia's Plume. Wraps other plugins, provides customizable and mappable gestures to use with Neova."
@@ -296,8 +296,8 @@
     <XCODE_MAC targetFolder="Builds/MacOSX" smallIcon="AnkEeB" bigIcon="AnkEeB"
                extraLinkerFlags="-framework SystemConfiguration">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="Plume"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="Plume"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="Plume Tests"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="Plume Tests"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_video" path="../../../../Programmes/JUCE/modules"/>
@@ -382,5 +382,5 @@
     <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_video" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
   </MODULES>
-  <JUCEOPTIONS JUCE_ENABLE_REPAINT_DEBUGGING="0" JUCE_PLUGINHOST_VST="1" JUCE_PLUGINHOST_AU="1"/>
+  <JUCEOPTIONS JUCE_ENABLE_REPAINT_DEBUGGING="0" JUCE_PLUGINHOST_AU="1" JUCE_PLUGINHOST_VST="1"/>
 </JUCERPROJECT>
