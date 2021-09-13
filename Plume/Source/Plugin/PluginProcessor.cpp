@@ -14,6 +14,7 @@
 //==============================================================================
 PlumeProcessor::PlumeProcessor()
      : AudioProcessor (BusesProperties()
+                       //.withInput ("Main Inout", AudioChannelSet::stereo(), false)
                        .withOutput ("Main Output", AudioChannelSet::stereo(), true)
                        )
        , parameters (*this, nullptr, "PARAMETERS", initializeParameters())
@@ -72,7 +73,7 @@ PlumeProcessor::~PlumeProcessor()
     removeLogger();
 
   #if JUCE_MAC
-    MessageManager::getInstance()->runDispatchLoopUntil (1000);
+    //MessageManager::getInstance()->runDispatchLoopUntil (1000);
   #endif
 }
 

@@ -90,6 +90,7 @@ private:
     //==============================================================================
     AudioPluginInstance& plugin;
     PluginWrapper& owner;
+    AudioBuffer<float> wrapperBuffer;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WrapperProcessor)

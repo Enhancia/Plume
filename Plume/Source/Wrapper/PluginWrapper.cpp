@@ -104,12 +104,14 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
     }
     
     //Creates the wrapped processor object using the instance
-    //wrappedInstance->enableAllBuses();
     
     wrapperProcessor.reset (new WrapperProcessor (*wrappedInstance, *this));
     wrapperProcessor->prepareToPlay (owner.getSampleRate(), owner.getBlockSize());
     hasWrappedInstance = true;
 	
+    //wrapperProcessor->setBusesLayout(owner.getBusesLayout());
+    //wrappedInstance->setBusesLayout(owner.getBusesLayout());
+    
     return true;
 }
 
@@ -586,7 +588,7 @@ std::unique_ptr<PluginDescription> PluginWrapper::getDescriptionToWrap (const Pl
 
     for (auto& desc : pluginList->getTypes())
     {
-		if (desc.uniqueId == description.uniqueId &&
+		if ((desc.uniqueId == description.uniqueId || desc.deprecatedUid == description.deprecatedUid)&&
 			desc.pluginFormatName == description.pluginFormatName &&
 			(desc.name == description.name || desc.descriptiveName == description.descriptiveName))
         {

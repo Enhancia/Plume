@@ -219,7 +219,16 @@ void ScanHandler::createFilesToScanArray (const FileSearchPath& directoriesToSea
                      == fileToScanToCompareTo->fileOrIdentifier.fromLastOccurrenceOf ("\\", false, false)
                                                               .upToLastOccurrenceOf (".", false, false)) &&
                     fileToScanToCompareTo->format == formatNum)
-                        shouldAdd = false;
+                {
+                    shouldAdd = false;
+                }
+            
+                else if (fileOrId.contains ("Plume.") ||
+                    fileOrId.contains ("Plume Tests.") ||
+                    fileOrId.contains ("Plum,Enhn"))
+                {
+                    shouldAdd = false;
+                }
 
             if (shouldAdd) filesToScan.add (new FileToScan (fileOrId, formatNum));
         }
