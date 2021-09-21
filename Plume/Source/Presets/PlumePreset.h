@@ -45,7 +45,7 @@ public:
 	//==============================================================================
 	PlumePreset (String name, File pathToPreset, PresetType pType =userPreset, FilterType category =other,
 	             String auth ="", String ver ="1.0", String plug = "");
-	PlumePreset (File pathToPreset, PresetType pType=userPreset, String pName = "");
+	PlumePreset (File pathToPreset, PresetType pType=userPreset, String pName = "", bool prioritizeFileInfo = false);
 	PlumePreset();
 	PlumePreset (const PlumePreset& other);
 	

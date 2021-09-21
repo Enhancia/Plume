@@ -99,44 +99,47 @@ int PresetHandler::getCurrentPresetIdInSearchList()
 
 void PresetHandler::storePresets()
 {
+    const File userDir = getUserDirectory();
+
+    Array<File> presetFoldersToSearch;
+    presetFoldersToSearch.add (userDir);
+
+    for (auto folder : defaultDirectories)
+    {
+        if (!(folder->isAChildOf(userDir)))
+        {
+            if (userDir.isAChildOf(*folder))
+                presetFoldersToSearch.removeFirstMatchingValue (userDir);
+
+            presetFoldersToSearch.addIfNotAlreadyThere(File(*folder));
+        }
+    }
+
     searchedPresets.clear();
-
-    // Adds default presets
     defaultPresets.clear();
-    DBG (defaultDir.getNumberOfChildFiles (File::findFiles + File::ignoreHiddenFiles));
-
-    if (defaultDir.exists() /*&& defaultDir.containsSubDirectories()*/)
-    {
-        for (auto f : defaultDir.findChildFiles (File::findFiles + File::ignoreHiddenFiles, true, "*.plume"))
-        {
-            defaultPresets.add (new PlumePreset (f, PlumePreset::defaultPreset));
-        }
-    }
-    
-    // Adds user presets
     userPresets.clear();
-    File userDir (getUserDirectory());
-    DBG (userDir.getNumberOfChildFiles (File::findFiles + File::ignoreHiddenFiles));
-    
-    if (userDir.isDirectory())
-    {
-        for (auto f : userDir.findChildFiles (File::findFiles + File::ignoreHiddenFiles, true, "*.plume"))
-        {
-            userPresets.add (new PlumePreset (f));
-        }
-    }
 
-    /*
-    // Adds community presets
-    communityPresets.clear();
-    if (commuDir.exists() && commuDir.containsSubDirectories())
+    for (auto presetFolder : presetFoldersToSearch)
     {
-        for (auto f : commuDir.findChildFiles (File::findFiles + File::ignoreHiddenFiles, true, "*.plume"))
+        if (presetFolder.exists())
         {
-            communityPresets.add (new PlumePreset (f));
+            for (auto f : presetFolder.findChildFiles (File::findFiles + File::ignoreHiddenFiles,
+                                                           true, "*.plume"))
+            {
+                PlumePreset tempPreset (f, PlumePreset::defaultPreset, "", true);
+
+                if (tempPreset.presetType == PlumePreset::defaultPreset)
+                {
+                    defaultPresets.add (new PlumePreset (tempPreset));
+                }
+                else if (tempPreset.presetType == PlumePreset::userPreset)
+                {
+                    userPresets.add (new PlumePreset (tempPreset));
+                }
+
+            }
         }
     }
-    */
 
     updateSearchedPresets();
 }
@@ -251,6 +254,8 @@ bool PresetHandler::createNewUserPreset (XmlElement& presetXml)
                 {
                     if (prst->getFile().getFileNameWithoutExtension() == fileName)
                     {
+                        prst->setFile (prst->getFile()); // sets the same file to update info
+
                         currentPreset = *prst;
                         return false;
                     }
@@ -362,9 +367,14 @@ void PresetHandler::showPresetInExplorer (int id)
 //==============================================================================
 void PresetHandler::initialiseDirectories()
 {
-    //File defaultDir;
-    DBG ("Plume " + String(JucePlugin_VersionString));
-    defaultDir = PLUME::file::defaultPresetDir;
+    //File defaultDirectories;
+    defaultDirectories.add (new File (PLUME::file::defaultPresetDir));
+    #if JUCE_WINDOWS
+    defaultDirectories.add (new File (File::getSpecialLocation (File::userDocumentsDirectory)
+                                                .getChildFile ("Enhancia/")
+                                                .getChildFile ("Plume/")
+                                                .getChildFile ("Presets/")));
+    #endif
 
     loadPresetDirectoryFromFile();
     if (!getUserDirectory().exists())

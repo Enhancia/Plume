@@ -28,14 +28,11 @@ PlumePreset::PlumePreset (String presetName, File pathToPreset, PresetType pType
     }
 }
 
-PlumePreset::PlumePreset (File pathToPreset, PresetType pType, String pName)
+PlumePreset::PlumePreset (File pathToPreset, PresetType pType, String pName, bool prioritizeFileInfo)
                             : name (pName), author ((pType == defaultPreset) ? "Enhancia" : ""),
                                          plugin (""),
                                          version ("1.0")
 {
-    presetType = (int) pType;
-    filterType = other;
-    
     if (pathToPreset.exists())
     {
         presetFile = File (pathToPreset);
@@ -45,21 +42,24 @@ PlumePreset::PlumePreset (File pathToPreset, PresetType pType, String pName)
         {
             loadPresetInfoFromFile();
 			
-            bool overrideInfo = false;
-
-			if (presetType != (int) pType)
-			{
-                presetType = int(pType);
-                overrideInfo = true;
-			}
-
-            if (pName.isNotEmpty() && pName != name)
+            if (!prioritizeFileInfo)
             {
-				name = pName;
-                overrideInfo = true;
-            }
+                bool overrideInfo = false;
 
-			if (overrideInfo) setPresetInfoToFile();
+    			if (presetType != (int) pType)
+    			{
+                    presetType = int(pType);
+                    overrideInfo = true;
+    			}
+
+                if (pName.isNotEmpty() && pName != name)
+                {
+    				name = pName;
+                    overrideInfo = true;
+                }
+
+    			if (overrideInfo) setPresetInfoToFile();
+            }
         }
         else
         {
@@ -108,6 +108,8 @@ bool PlumePreset::setFile (const File& newFile)
     
     if (presetFile.exists())
     {
+        loadPresetInfoFromFile();
+
         valid = true;
         return true;
     }
@@ -243,7 +245,6 @@ void PlumePreset::loadPresetFromFile (File& file)
         if (hasInfoXml (file))
         {
             setFile (file);
-            loadPresetInfoFromFile();
         }
     }
 }

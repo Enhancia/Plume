@@ -195,7 +195,7 @@ private:
     OwnedArray<PlumePreset> defaultPresets;
     OwnedArray<PlumePreset> userPresets;
     
-    File defaultDir;
+    OwnedArray<File> defaultDirectories;
     ValueTree userDirValue;
     
     PlumePreset currentPreset;
