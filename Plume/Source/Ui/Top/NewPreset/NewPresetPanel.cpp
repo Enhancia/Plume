@@ -329,7 +329,7 @@ void NewPresetPanel::createUserPreset()
                                                PlumePreset::userPreset,
                                                typeBox->getSelectedId()-1);
 	
-    processor.getPresetHandler().createNewUserPreset (*presetXml);
+    processor.getPresetHandler().createNewOrOverwriteUserPreset (*presetXml);
     
     // Updates Header..
     if (auto* hdr = dynamic_cast<PlumeComponent*> ( getParentComponent() // editor

@@ -204,15 +204,20 @@ std::unique_ptr<XmlElement> PresetHandler::getPresetXmlToLoad (int selectedPrese
     }	
 }
 
-bool PresetHandler::savePreset (XmlElement& presetXml)
+bool PresetHandler::savePreset (XmlElement& presetXml, File fileToWriteTo)
 {
     String fileString = File::createLegalFileName(presetXml.getChildByName("INFO")->getStringAttribute("name") + ".plume");
 
-    // Tries to write the xml to the specified file
-    if (getUserDirectory().getChildFile (fileString).exists())
+    if (!fileToWriteTo.exists())
     {
-        if (presetXml.writeToFile (getUserDirectory().getChildFile (fileString), String()) &&
-            PlumePreset (getUserDirectory().getChildFile(fileString)).isValid())
+        fileToWriteTo = getUserDirectory().getChildFile (fileString);
+    }
+
+    // Tries to write the xml to the specified file
+    if (fileToWriteTo.exists())
+    {
+        if (presetXml.writeToFile (fileToWriteTo, String()) &&
+            PlumePreset (fileToWriteTo).isValid())
         {
             DBG ("Preset file succesfully written");
             return true;
@@ -225,12 +230,12 @@ bool PresetHandler::savePreset (XmlElement& presetXml)
     }
     else
     {
-        DBG ("Couldn't find preset file : " << getUserDirectory().getFullPathName() << fileString << ".plume");
+        DBG ("Couldn't find preset file : " << fileToWriteTo.getFullPathName());
         return false;
     }
 }
 
-bool PresetHandler::createNewUserPreset (XmlElement& presetXml)
+bool PresetHandler::createNewOrOverwriteUserPreset (XmlElement& presetXml)
 {
     if (XmlElement* info = presetXml.getChildByName ("INFO"))
     {
@@ -238,30 +243,47 @@ bool PresetHandler::createNewUserPreset (XmlElement& presetXml)
         PLUME::log::writeToLog ("Creating new User preset : " + presetName, PLUME::log::presets);
         
         const String fileName = File::createLegalFileName (presetName);
+        File newPresetFile;
+        bool saveAs = false;
+        int presetIdToSaveAs = -1;
+
+        for (auto* prst : userPresets)
+        {
+            if (prst->getFile().getFileNameWithoutExtension() == fileName)
+            {
+                saveAs = true;
+                newPresetFile = prst->getFile();
+                presetIdToSaveAs = userPresets.indexOf (prst);
+                break;
+            }
+        }
+
+        if (!saveAs)
+        {
+            newPresetFile = getUserDirectory().getChildFile (fileName + ".plume");
+            newPresetFile.create();
+        }
 
         // If the file is succesfully created, changes current preset and saves
-        if (getUserDirectory().getChildFile (fileName + ".plume").create())
+        if (newPresetFile.exists())
         {
             // Saves the current preset in case saving fails
             String formerPresetName = currentPreset.getName();
             int formerType = currentPreset.presetType;
     		File formerFile = currentPreset.getFile();
     		
-            if (savePreset (presetXml))
+            if (savePreset (presetXml, newPresetFile))
             {   
-                // checks if the file exists already
-                for (auto* prst : userPresets)
+                if (saveAs)
                 {
-                    if (prst->getFile().getFileNameWithoutExtension() == fileName)
-                    {
-                        prst->setFile (prst->getFile()); // sets the same file to update info
-
-                        currentPreset = *prst;
-                        return false;
-                    }
+                    PlumePreset& presetThatWasSavedAs = *userPresets[presetIdToSaveAs];
+                    presetThatWasSavedAs.setFile (newPresetFile); // sets the same file to update info
+                    currentPreset = presetThatWasSavedAs;
                 }
-                
-                currentPreset = *userPresets.add (new PlumePreset (getUserDirectory().getChildFile (fileName).withFileExtension("plume")));
+                else
+                {
+                    currentPreset = *userPresets.add (new PlumePreset (getUserDirectory().getChildFile (fileName).withFileExtension("plume")));
+                }
                 
                 updateSearchedPresets();
                 return true;

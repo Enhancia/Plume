@@ -382,7 +382,7 @@ void PresetBox::createUserPreset (const String& presetName)
 	processor.createPluginXml (*presetXml);
 	processor.createGestureXml (*presetXml);
 	
-    processor.getPresetHandler().createNewUserPreset (*presetXml);
+    processor.getPresetHandler().createNewOrOverwriteUserPreset (*presetXml);
     updateHeader();
     
     presetXml->deleteAllChildElements();
