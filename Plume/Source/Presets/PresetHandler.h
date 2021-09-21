@@ -162,8 +162,8 @@ public:
     //==============================================================================
     void storePresets();
     std::unique_ptr<XmlElement> getPresetXmlToLoad (int selectedPreset);
-    bool savePreset (XmlElement& presetXml);
-    bool createNewUserPreset (XmlElement& presetXml);
+    bool savePreset (XmlElement& presetXml, File fileToWriteTo = File());
+    bool createNewOrOverwriteUserPreset (XmlElement& presetXml);
     bool renamePreset (String newName, const int id);
 	PlumePreset getPresetForId (const int id);
     bool deletePresetForId (int id);
