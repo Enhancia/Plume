@@ -108,7 +108,8 @@ private:
                 const String fileOrIdentifier = filesToScan[fileNum]->fileOrIdentifier;
                 const int formatNum = filesToScan[fileNum]->format;
 
-                if (!pluginList.isListingUpToDate (fileOrIdentifier, *formatManager->getFormat (formatNum)))
+                if (!pluginList.isListingUpToDate (fileOrIdentifier, *formatManager->getFormat (formatNum))
+                    && !isObviouslyNotAnInstrument (fileOrIdentifier, *formatManager->getFormat (formatNum)))
                 {
                     if (launchScannerProgram (formatManager->getFormat(formatNum)->getName(), fileOrIdentifier))
                     {
@@ -242,6 +243,16 @@ private:
                                                .upToLastOccurrenceOf (".", false, false) +
                               " (" + String (currentFileNum) + "/" + String (numFilesToScan) + ")";
             currentFileNum++;
+        }
+
+        bool isObviouslyNotAnInstrument (const String& fileOrIdentifier, AudioPluginFormat& format)
+        {
+            if (format.getName() == AudioUnitPluginFormat::getFormatName())
+            {
+                return !fileOrIdentifier.contains ("Synths/aumu");
+            }
+
+            return false;
         }
         
         String readDmp()
