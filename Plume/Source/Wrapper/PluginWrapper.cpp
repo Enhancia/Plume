@@ -109,8 +109,10 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
     wrapperProcessor->prepareToPlay (owner.getSampleRate(), owner.getBlockSize());
     hasWrappedInstance = true;
 	
-    //wrapperProcessor->setBusesLayout(owner.getBusesLayout());
-    //wrappedInstance->setBusesLayout(owner.getBusesLayout());
+    if (true /*Check if plugin is UVI*/)
+    {
+        owner.startDetectingAuthSequence();
+    }
     
     return true;
 }

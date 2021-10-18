@@ -86,6 +86,7 @@ public:
     const String getProgramName (int) override { return {}; };
     void changeProgramName (int, const String&) override {};
     
+    //==============================================================================
     void updateTrackProperties (const AudioProcessor::TrackProperties& properties) override;
 
     //==============================================================================
@@ -94,7 +95,10 @@ public:
     //==============================================================================
     void setArm (PLUME::param::armValue newArm);
     bool& getLastArmRef();
-    
+
+    //==============================================================================
+    void sendUnlockSignalWhenPossible();
+
     //==============================================================================
     /**
      * \brief State save method.
@@ -201,12 +205,11 @@ public:
      * \return Reference to the PlumeUpdater object.
      */
     PlumeUpdater& getUpdater();
+    void startDetectingAuthSequence();
     
 private:
     //==============================================================================
     void checkAndUpdateRecordingStatus();
-    void checkForSignedMidi (MidiBuffer& midiMessages);
-    bool isProbablyOnAnArmedTrack();
     void filterInputMidi (MidiBuffer& midiMessages);
     bool messageShouldBeKept (const MidiMessage& midiMessage);
     bool lastArm = false;
@@ -218,11 +221,10 @@ private:
 
     //==============================================================================
     void initializeMidiSequences();
-    void checkMidiAndUpdateMidiSequence (const MidiMessage& midiMessageToCheck);
-    const bool isFromMidiSequence (const MidiMessage& midiMessageToCheck, const midiSequenceId sequenceType = normalAndRecording);
-    const bool isNextStepInSequence (const MidiMessage& midiMessageToCheck, const midiSequenceId sequenceType);
-    int getIdInSequence (const MidiMessage& midiMessageToCheck, const midiSequenceId sequenceType);
-    String sequenceTypeToString (const midiSequenceId sequenceType);
+    void detectAuthSequenceInMidiBuffer (const MidiBuffer& midiMessages);
+    void stopAuthDetection (bool isDetectionSuccessful);
+    bool isDetectingAuthSequence = false;
+    int stepInAuthSequence = 0;
 
     //==============================================================================
     std::unique_ptr<FileLogger> plumeLogger; /**< \brief Logger object. Allows to write logs for testing purposes. */
@@ -237,19 +239,10 @@ private:
     AudioProcessorValueTreeState parameters;
 
     //==============================================================================
-    struct LastSignedMidiIds
-    {
-        int normalSequenceId = -1;
-        int recordingSequenceId = -1;
-    };
+    OwnedArray<MidiMessage> authMidiSequence;
+    OwnedArray<MidiMessage> unlockMidiSequence;
 
-    OwnedArray<MidiMessage> normalMidiSequence;
-    OwnedArray<MidiMessage> recordingMidiSequence;
-
-    unsigned int signedMidiBufferCount = 0;
-    LastSignedMidiIds lastSignedMidi;
-    midiSequenceId lastSequenceType = noSequence;
-    const int signedMidiFrequencyHz = 5;
+    bool shouldSendUnlockSequence = false;
     bool lastRecordingStatus = false;
     uint8_t data[1024];
 
