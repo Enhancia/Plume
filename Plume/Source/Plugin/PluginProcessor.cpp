@@ -152,7 +152,7 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
 
             wrapper->getWrapperProcessor().processBlock (buffer, midiMessages);
 
-            if (isDetectingAuthSequence) detectAuthSequenceInMidiBuffer (midiMessages);
+            //if (isDetectingAuthSequence) detectAuthSequenceInMidiBuffer (midiMessages);
         }
     }
     
@@ -395,6 +395,13 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
 			m.fromBase64Encoding (state->getAllSubText());
 
 			wrapper->getWrapperProcessor().setStateInformation (m.getData(), (int)m.getSize());
+
+            PLUME::log::writeToLog ("Parameter 127 name (PlumeProcessor::loadPluginXml OUT) : "
+                                                        +  getWrapper()
+                                                           .getWrapperProcessor()
+                                                           .getWrappedInstance()
+                                                           .getParameters()[127]->getName (50),
+                                PLUME::log::security);
 		}
     }
 }
@@ -499,22 +506,19 @@ void PlumeProcessor::initializeSettings()
                                        0, nullptr);
 }
 
-
-void PlumeProcessor::parameterChanged (const String &parameterID, float newValue)
+void PlumeProcessor::parameterValueChanged (int parameterIndex, float newValue)
 {
-    /*
-    int paramId = parameterID.upToFirstOccurrenceOf ("_", false, false).getIntValue();
-    String gestType = parameterID.fromFirstOccurrenceOf ("_", false, false)
-                                 .upToLastOccurrenceOf ("_", false, false);
-    String paramType = parameterID.fromLastOccurrenceOf ("_", false, false);
-
-    DBG ("Parameter changed : " << paramId << " " << gestType << " " << paramType);
-
-    if (paramType.compare (low) )
     {
-
+        PLUME::log::writeToLog ("Parameter index : " +  String (parameterIndex) +
+                                " | Name : " + getWrapper().getWrapperProcessor()
+                                                           .getWrappedInstance()
+                                                           .getParameters()[parameterIndex]->getName (50) +
+                                " | New Value : " + String (newValue), PLUME::log::security);
     }
-    */
+}
+
+void PlumeProcessor::parameterGestureChanged (int parameterIndex, bool gestureIsStarting)
+{
 }
 
 void PlumeProcessor::updateTrackProperties (const AudioProcessor::TrackProperties& properties)
@@ -593,6 +597,22 @@ void PlumeProcessor::startDetectingAuthSequence()
     {
         stopAuthDetection (false);        
     });
+}
+
+void PlumeProcessor::addListenerForPlumeControlParam (AudioProcessorParameter* plumeControlParam)
+{
+    if (wrapper->isWrapping())
+    {   
+        plumeControlParam->addListener (this);
+    }
+}
+
+void PlumeProcessor::removeListenerForPlumeControlParam (AudioProcessorParameter* plumeControlParam)
+{
+    if (wrapper->isWrapping())
+    {
+        plumeControlParam->removeListener (this);
+    }   
 }
 
 void PlumeProcessor::detectAuthSequenceInMidiBuffer (const MidiBuffer& midiMessages)

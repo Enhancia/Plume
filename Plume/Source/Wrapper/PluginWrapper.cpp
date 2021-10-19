@@ -105,13 +105,18 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
     
     //Creates the wrapped processor object using the instance
     
-    wrapperProcessor.reset (new WrapperProcessor (*wrappedInstance, *this));
+    wrapperProcessor.reset (new WrapperProcessor (*wrappedInstance, *this, getOwner()));
     wrapperProcessor->prepareToPlay (owner.getSampleRate(), owner.getBlockSize());
     hasWrappedInstance = true;
 	
     if (true /*Check if plugin is UVI*/)
     {
-        owner.startDetectingAuthSequence();
+        PLUME::log::writeToLog ("Parameter 127 name (PluginWrapper::wrapPlugin OUT) : "
+                                                        +  getWrapperProcessor()
+                                                           .getWrappedInstance()
+                                                           .getParameters()[127]->getName (50),
+                                PLUME::log::security);
+        //owner.startDetectingAuthSequence();
     }
     
     return true;

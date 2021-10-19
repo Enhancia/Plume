@@ -43,10 +43,13 @@ private:
 
 
 //==============================================================================
-WrapperProcessor::WrapperProcessor(AudioPluginInstance& wrappedPlugin, PluginWrapper& ownerWrapper)
+WrapperProcessor::WrapperProcessor(AudioPluginInstance& wrappedPlugin,
+                                   PluginWrapper& ownerWrapper,
+                                   AudioProcessorParameter::Listener& proc)
     : AudioProcessor (WrapperProcessor::createBusesPropertiesFromPluginInstance (wrappedPlugin)),
       plugin (wrappedPlugin),
-      owner (ownerWrapper)
+      owner (ownerWrapper),
+      listener (proc)
 {
     //plugin.setBusesLayout (getBusesLayout());
     initWrappedParameters();
@@ -60,8 +63,13 @@ WrapperProcessor::~WrapperProcessor()
     
     for (auto* param : params)
     {
-        param->removeListener (&getOwnerWrapper());
+        if (param != controlParameter) param->removeListener (&getOwnerWrapper());
     }
+
+    //owner.getOwner().removeListenerForPlumeControlParam (*controlParameter);
+    controlParameter->removeListener (&listener);
+
+    controlParameter = nullptr;
 }
 
 //==============================================================================
@@ -113,8 +121,23 @@ void WrapperProcessor::initWrappedParameters()
     
     for (auto* param : params)
     {
-        addParameter(new WrappedParameter(*param));
-        param->addListener (&getOwnerWrapper());
+        PLUME::log::writeToLog ("Wrapper parameter : " + param->getName (50) +
+                                " id : " + String (param->getParameterIndex()),
+                                PLUME::log::pluginWrapping);
+
+        if (//param->getName (50) == "Host Automation" &&
+            param->getParameterIndex() == 127 &&
+            controlParameter == nullptr)
+        {
+            controlParameter = param;
+            //getOwnerWrapper().getOwner().addListenerForPlumeControlParam (controlParameter);
+            controlParameter->addListener (&listener);
+        }
+        else
+        {
+            addParameter(new WrappedParameter(*param));
+            param->addListener (&getOwnerWrapper());
+        }
     }
 }
 

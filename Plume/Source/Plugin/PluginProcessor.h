@@ -35,7 +35,7 @@
  
 class PlumeProcessor  : public AudioProcessor,
                         public ActionBroadcaster,
-                        public AudioProcessorValueTreeState::Listener
+                        public AudioProcessorParameter::Listener
 {
 public:
     enum midiSequenceId
@@ -90,7 +90,8 @@ public:
     void updateTrackProperties (const AudioProcessor::TrackProperties& properties) override;
 
     //==============================================================================
-    void parameterChanged (const String &parameterID, float newValue) override;
+    void parameterValueChanged (int parameterIndex, float newValue) override;
+    void parameterGestureChanged (int parameterIndex, bool gestureIsStarting) override;
 
     //==============================================================================
     void setArm (PLUME::param::armValue newArm);
@@ -206,6 +207,8 @@ public:
      */
     PlumeUpdater& getUpdater();
     void startDetectingAuthSequence();
+    void addListenerForPlumeControlParam (AudioProcessorParameter* plumeControlParam);
+    void removeListenerForPlumeControlParam (AudioProcessorParameter* plumeControlParam);
     
 private:
     //==============================================================================
