@@ -35,7 +35,8 @@
  
 class PlumeProcessor  : public AudioProcessor,
                         public ActionBroadcaster,
-                        public AudioProcessorParameter::Listener
+                        public AudioProcessorParameter::Listener,
+                        public MultiTimer
 {
 public:
     enum midiSequenceId
@@ -90,6 +91,7 @@ public:
     void updateTrackProperties (const AudioProcessor::TrackProperties& properties) override;
 
     //==============================================================================
+    void timerCallback (int timerID) override;
     void parameterValueChanged (int parameterIndex, float newValue) override;
     void parameterGestureChanged (int parameterIndex, bool gestureIsStarting) override;
 
@@ -226,8 +228,10 @@ private:
     void initializeMidiSequences();
     void detectAuthSequenceInMidiBuffer (const MidiBuffer& midiMessages);
     void stopAuthDetection (bool isDetectionSuccessful);
+    void startSendingUnlockParamSequence();
     bool isDetectingAuthSequence = false;
     int stepInAuthSequence = 0;
+    int stepInUnlockSequence = 0;
 
     //==============================================================================
     std::unique_ptr<FileLogger> plumeLogger; /**< \brief Logger object. Allows to write logs for testing purposes. */
@@ -244,6 +248,8 @@ private:
     //==============================================================================
     OwnedArray<MidiMessage> authMidiSequence;
     OwnedArray<MidiMessage> unlockMidiSequence;
+    Array<float> authParamSequence;
+    Array<float> unlockParamSequence;
 
     bool shouldSendUnlockSequence = false;
     bool lastRecordingStatus = false;

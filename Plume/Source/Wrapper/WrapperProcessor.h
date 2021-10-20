@@ -86,7 +86,7 @@ private:
 
     //==============================================================================
     class WrappedParameter;
-    AudioProcessorParameter* controlParameter;
+    AudioProcessorParameter* controlParameter = nullptr;
     
     //==============================================================================
     AudioPluginInstance& plugin;

@@ -126,11 +126,14 @@ void WrapperProcessor::initWrappedParameters()
                                 PLUME::log::pluginWrapping);
 
         if (//param->getName (50) == "Host Automation" &&
-            param->getParameterIndex() == 127 &&
-            controlParameter == nullptr)
+            param->getParameterIndex() == 127)
         {
+            if (controlParameter)
+            {
+                controlParameter->removeListener (&listener);
+            }
+
             controlParameter = param;
-            //getOwnerWrapper().getOwner().addListenerForPlumeControlParam (controlParameter);
             controlParameter->addListener (&listener);
         }
         else

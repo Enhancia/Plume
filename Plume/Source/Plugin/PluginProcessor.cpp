@@ -139,7 +139,7 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
         // Calls the wrapper processor's processBlock method
         if (!(wrapper->getWrapperProcessor().isSuspended()))
         {
-            if (shouldSendUnlockSequence)
+            /*if (shouldSendUnlockSequence)
             {
                 DBG ("Sending Unlock Sequence!!");
                 for (int messageNum =0; messageNum < unlockMidiSequence.size(); messageNum++)
@@ -148,7 +148,7 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
                 }
 
                 shouldSendUnlockSequence = false;
-            }
+            }*/
 
             wrapper->getWrapperProcessor().processBlock (buffer, midiMessages);
 
@@ -402,6 +402,8 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
                                                            .getWrappedInstance()
                                                            .getParameters()[127]->getName (50),
                                 PLUME::log::security);
+
+            //startSendingUnlockParamSequence();
 		}
     }
 }
@@ -506,6 +508,25 @@ void PlumeProcessor::initializeSettings()
                                        0, nullptr);
 }
 
+void PlumeProcessor::timerCallback (int timerID)
+{
+    if (timerID == 0) // Unlock send tUnlock
+    {
+        if (stepInUnlockSequence >= unlockParamSequence.size())
+        {
+            stopTimer (0);
+            stepInUnlockSequence = 0;
+        }
+
+        if (getWrapper().isWrapping())
+        {
+            getWrapper().getWrapperProcessor().getWrappedInstance()
+                                              .getParameters()[127]
+                                              ->setValue (unlockParamSequence[stepInUnlockSequence++]);
+        }
+    }
+}
+
 void PlumeProcessor::parameterValueChanged (int parameterIndex, float newValue)
 {
     {
@@ -585,6 +606,22 @@ void PlumeProcessor::initializeMidiSequences()
         unlockMidiSequence.add (new MidiMessage (MidiMessage::pitchWheel (16, 5650)));
         unlockMidiSequence.add (new MidiMessage (MidiMessage::pitchWheel (10, 1727)));
         unlockMidiSequence.add (new MidiMessage (MidiMessage::pitchWheel (14, 14560)));
+
+        authParamSequence.add (1.0f);
+        authParamSequence.add (0.0f);
+        authParamSequence.add (0.4f);
+        authParamSequence.add (0.6f);
+        authParamSequence.add (0.3f);
+        authParamSequence.add (0.7f);
+        authParamSequence.add (1.0f);
+
+        unlockParamSequence.add (1.0f);
+        unlockParamSequence.add (0.0f);
+        unlockParamSequence.add (0.4f);
+        unlockParamSequence.add (0.6f);
+        unlockParamSequence.add (0.3f);
+        unlockParamSequence.add (0.7f);
+        unlockParamSequence.add (1.0f);
     }
 }
 
@@ -593,10 +630,12 @@ void PlumeProcessor::startDetectingAuthSequence()
     isDetectingAuthSequence = true;
     stepInAuthSequence = 0;
 
+
+    /*
     Timer::callAfterDelay (5000, [this]()
     {
         stopAuthDetection (false);        
-    });
+    });*/
 }
 
 void PlumeProcessor::addListenerForPlumeControlParam (AudioProcessorParameter* plumeControlParam)
@@ -702,4 +741,11 @@ void PlumeProcessor::sendUnlockSignalWhenPossible()
     {
         shouldSendUnlockSequence = true;
     }
+}
+
+void PlumeProcessor::startSendingUnlockParamSequence()
+{
+    stepInAuthSequence = 0;
+
+    startTimer (0, 100);
 }
