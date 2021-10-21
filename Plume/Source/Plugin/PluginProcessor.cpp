@@ -42,7 +42,7 @@ PlumeProcessor::PlumeProcessor()
     // Parameters
     initializeParameters();
     initializeSettings();
-    initializeMidiSequences();
+    initializeParamSequences();
     
     // Objects
     dataReader.reset (new DataReader());
@@ -128,10 +128,11 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
     lastArm = (armValue == int (PLUME::param::armed));
 
     // Adds the gesture's MIDI messages to the buffer, and changes parameters if needed
-    if (!isDetectingAuthSequence) gestureArray->process (midiMessages, plumeBuffer);
+    if (!isDetectingAuthSequence)
+        gestureArray->process (midiMessages, plumeBuffer);
     
     // if wrapped plugin, lets the wrapped plugin process all MIDI into sound
-    if (wrapper->isWrapping())
+    if (wrapper->isWrapping() && !presetIsLocked)
     {
         // Wrapper uses playhead from the DAW
         wrapper->getWrapperProcessor().setPlayHead (getPlayHead());
@@ -139,20 +140,7 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
         // Calls the wrapper processor's processBlock method
         if (!(wrapper->getWrapperProcessor().isSuspended()))
         {
-            /*if (shouldSendUnlockSequence)
-            {
-                DBG ("Sending Unlock Sequence!!");
-                for (int messageNum =0; messageNum < unlockMidiSequence.size(); messageNum++)
-                {
-                    midiMessages.addEvent (*unlockMidiSequence[messageNum], messageNum);
-                }
-
-                shouldSendUnlockSequence = false;
-            }*/
-
             wrapper->getWrapperProcessor().processBlock (buffer, midiMessages);
-
-            //if (isDetectingAuthSequence) detectAuthSequenceInMidiBuffer (midiMessages);
         }
     }
     
@@ -326,57 +314,6 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
                 else                       wrapper->wrapPlugin (pd);
             }
 			
-            /*
-            // First searches the direct path
-            if (!(pd.fileOrIdentifier.isEmpty()))
-            {
-                if (wrapper->isWrapping()) requiresSearch = !(wrapper->rewrapPlugin (pd.fileOrIdentifier));
-                else                       requiresSearch = !(wrapper->wrapPlugin (pd.fileOrIdentifier));
-            }
-            // Then the directory where plume is located
-            if (requiresSearch && File (pd.fileOrIdentifier).exists())
-            {
-                File pluginDir (File::getSpecialLocation (File::currentApplicationFile).getParentDirectory());
-                String pluginToSearch (pd.name);
-                
-                if (pd.pluginFormatName.compare ("VST") == 0)
-                {
-                  #if JUCE_WINDOWS
-                    pluginToSearch += ".dll";
-                  #elif JUCE_MAC
-                    pluginToSearch += ".vst";
-                  #endif
-                }
-                else if (pd.pluginFormatName.compare ("VST3") == 0)
-                {
-                    pluginToSearch += ".vst3";
-                }
-                else if (pd.pluginFormatName.compare ("AudioUnit") == 0)
-                {
-                    pluginToSearch += ".component";
-                }
-                else if (pd.pluginFormatName.compare ("Aax") == 0)
-                {
-                    pluginToSearch += ".aax";
-                }
-                
-                Array<File> searchResult = pluginDir.findChildFiles (File::findFiles + File::ignoreHiddenFiles, true, pluginToSearch);
-                
-                if (!searchResult.isEmpty())
-                {
-                    if (wrapper->isWrapping()) wrapper->rewrapPlugin (searchResult[0].getFullPathName());
-                    else                       wrapper->wrapPlugin (searchResult[0].getFullPathName());
-                }
-                else 
-                {
-                    DBG ("Failed to find the plugin in Plume's directory.");
-                    if (wrapper->isWrapping()) wrapper->unwrapPlugin();
-                    return;
-                }
-                
-            }
-			*/
-            
         }
     }
     // If there is no plugin in the preset only unwraps
@@ -395,13 +332,6 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
 			m.fromBase64Encoding (state->getAllSubText());
 
 			wrapper->getWrapperProcessor().setStateInformation (m.getData(), (int)m.getSize());
-
-            PLUME::log::writeToLog ("Parameter 127 name (PlumeProcessor::loadPluginXml OUT) : "
-                                                        +  getWrapper()
-                                                           .getWrapperProcessor()
-                                                           .getWrappedInstance()
-                                                           .getParameters()[127]->getName (50),
-                                PLUME::log::security);
 
             //startSendingUnlockParamSequence();
 		}
@@ -594,35 +524,23 @@ void PlumeProcessor::checkAndUpdateRecordingStatus()
     }
 }
 
-void PlumeProcessor::initializeMidiSequences()
+void PlumeProcessor::initializeParamSequences()
 {
-    {
-        authMidiSequence.add (new MidiMessage (MidiMessage::pitchWheel (6, 12784)));
-        authMidiSequence.add (new MidiMessage (MidiMessage::pitchWheel (16, 5650)));
-        authMidiSequence.add (new MidiMessage (MidiMessage::pitchWheel (10, 1727)));
-        authMidiSequence.add (new MidiMessage (MidiMessage::pitchWheel (14, 14560)));
-    
-        unlockMidiSequence.add (new MidiMessage (MidiMessage::pitchWheel (6, 12784)));
-        unlockMidiSequence.add (new MidiMessage (MidiMessage::pitchWheel (16, 5650)));
-        unlockMidiSequence.add (new MidiMessage (MidiMessage::pitchWheel (10, 1727)));
-        unlockMidiSequence.add (new MidiMessage (MidiMessage::pitchWheel (14, 14560)));
+    authParamSequence.add (1.0f);
+    authParamSequence.add (0.0f);
+    authParamSequence.add (0.4f);
+    authParamSequence.add (0.6f);
+    authParamSequence.add (0.3f);
+    authParamSequence.add (0.7f);
+    authParamSequence.add (1.0f);
 
-        authParamSequence.add (1.0f);
-        authParamSequence.add (0.0f);
-        authParamSequence.add (0.4f);
-        authParamSequence.add (0.6f);
-        authParamSequence.add (0.3f);
-        authParamSequence.add (0.7f);
-        authParamSequence.add (1.0f);
-
-        unlockParamSequence.add (1.0f);
-        unlockParamSequence.add (0.0f);
-        unlockParamSequence.add (0.4f);
-        unlockParamSequence.add (0.6f);
-        unlockParamSequence.add (0.3f);
-        unlockParamSequence.add (0.7f);
-        unlockParamSequence.add (1.0f);
-    }
+    unlockParamSequence.add (1.0f);
+    unlockParamSequence.add (0.0f);
+    unlockParamSequence.add (0.4f);
+    unlockParamSequence.add (0.6f);
+    unlockParamSequence.add (0.3f);
+    unlockParamSequence.add (0.7f);
+    unlockParamSequence.add (1.0f);
 }
 
 void PlumeProcessor::startDetectingAuthSequence()
@@ -630,12 +548,10 @@ void PlumeProcessor::startDetectingAuthSequence()
     isDetectingAuthSequence = true;
     stepInAuthSequence = 0;
 
-
-    /*
-    Timer::callAfterDelay (5000, [this]()
+    Timer::callAfterDelay (3000, [this]()
     {
         stopAuthDetection (false);        
-    });*/
+    });
 }
 
 void PlumeProcessor::addListenerForPlumeControlParam (AudioProcessorParameter* plumeControlParam)
@@ -654,41 +570,6 @@ void PlumeProcessor::removeListenerForPlumeControlParam (AudioProcessorParameter
     }   
 }
 
-void PlumeProcessor::detectAuthSequenceInMidiBuffer (const MidiBuffer& midiMessages)
-{
-    if (isDetectingAuthSequence && stepInAuthSequence < authMidiSequence.size())
-    {
-        if (!midiMessages.isEmpty())
-        {        
-            // iterates on every message from the buffer to find the next(s) auth messages.
-            for (const MidiMessageMetadata metadata : midiMessages)
-            {
-                auto compareMidiMessagesForAuth = [this](const MidiMessage& message1, const MidiMessage& message2)
-                {
-                    return (message1.isPitchWheel() && message2.isPitchWheel() &&
-                        message1.getChannel() == message2.getChannel() &&
-                        message1.getPitchWheelValue() == message2.getPitchWheelValue());
-                };
-
-                // if message == authMidiSequence[stepInAuthSequence + 1]
-                if (compareMidiMessagesForAuth (metadata.getMessage(), *authMidiSequence[stepInAuthSequence]))
-                {
-                    stepInAuthSequence++;
-                    // if reaches sequ end break and call stopAuthDetection (true)
-                    if (stepInAuthSequence == authMidiSequence.size())
-                    {
-                        stopAuthDetection (true);
-                    }
-                }
-                else
-                {
-                    //stopAuthDetection (false); // maybe not useful? to test and specify
-                }
-            }
-        }
-    }
-}
-
 void PlumeProcessor::stopAuthDetection (bool isDetectionSuccessful)
 {
     if (isDetectingAuthSequence)
@@ -696,7 +577,7 @@ void PlumeProcessor::stopAuthDetection (bool isDetectionSuccessful)
         isDetectingAuthSequence = false;
         stepInAuthSequence = 0;
 
-        if (isDetectionSuccessful) sendUnlockSignalWhenPossible();
+        if (isDetectionSuccessful) startSendingUnlockParamSequence();
     }
 }
 
@@ -733,14 +614,6 @@ bool PlumeProcessor::messageShouldBeKept (const MidiMessage& midiMessage)
 bool& PlumeProcessor::getLastArmRef()
 {
     return lastArm;
-}
-
-void PlumeProcessor::sendUnlockSignalWhenPossible()
-{
-    if (!shouldSendUnlockSequence)
-    {
-        shouldSendUnlockSequence = true;
-    }
 }
 
 void PlumeProcessor::startSendingUnlockParamSequence()

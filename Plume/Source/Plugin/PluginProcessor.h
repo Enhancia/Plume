@@ -225,11 +225,11 @@ private:
     void removeLogger();
 
     //==============================================================================
-    void initializeMidiSequences();
-    void detectAuthSequenceInMidiBuffer (const MidiBuffer& midiMessages);
+    void initializeParamSequences();
     void stopAuthDetection (bool isDetectionSuccessful);
     void startSendingUnlockParamSequence();
     bool isDetectingAuthSequence = false;
+    bool presetIsLocked = false;
     int stepInAuthSequence = 0;
     int stepInUnlockSequence = 0;
 
@@ -246,8 +246,6 @@ private:
     AudioProcessorValueTreeState parameters;
 
     //==============================================================================
-    OwnedArray<MidiMessage> authMidiSequence;
-    OwnedArray<MidiMessage> unlockMidiSequence;
     Array<float> authParamSequence;
     Array<float> unlockParamSequence;
 

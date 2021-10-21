@@ -91,7 +91,7 @@ void WrapperProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& mid
 //==============================================================================
 bool WrapperProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
-    PLUME::log::writeToLog ("Checking buses Layout : " + String (layouts.getMainInputChannels())
+    PLUME::log::writeToLog ("Requested buses Layout : " + String (layouts.getMainInputChannels())
                                                + " | " + String (layouts.getMainOutputChannels()),
                             PLUME::log::pluginWrapping);
 
@@ -121,10 +121,7 @@ void WrapperProcessor::initWrappedParameters()
     
     for (auto* param : params)
     {
-        PLUME::log::writeToLog ("Wrapper parameter : " + param->getName (50) +
-                                " id : " + String (param->getParameterIndex()),
-                                PLUME::log::pluginWrapping);
-
+        // TODO CLEANUP changer condition pour detection auto
         if (//param->getName (50) == "Host Automation" &&
             param->getParameterIndex() == 127)
         {
@@ -249,6 +246,7 @@ void WrapperProcessor::writeBusesLayoutToLog()
             }
         }
 
-        if (logString.isNotEmpty()) PLUME::log::writeToLog (logString, PLUME::log::pluginWrapping);
+        if (logString.isNotEmpty()) PLUME::log::writeToLog (logString, PLUME::log::pluginWrapping,
+                                                                       PLUME::log::debug);
     }
 }
