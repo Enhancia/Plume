@@ -543,9 +543,7 @@ void PlumeProcessor::initializeParamSequences()
 }
 
 void PlumeProcessor::startDetectingAuthSequence()
-{
-    PLUME::log::writeToLog ("Started detecting auth sequence", PLUME::log::security);
-    
+{    
     isDetectingAuthSequence = true;
     stepInAuthSequence = 0;
 
@@ -580,12 +578,7 @@ void PlumeProcessor::stopAuthDetection (bool isDetectionSuccessful)
 
         if (isDetectionSuccessful)
         {
-            PLUME::log::writeToLog ("Detection succesful!! Sending unlock sequence", PLUME::log::security);
             startSendingUnlockParamSequence();
-        }
-        else
-        {
-            PLUME::log::writeToLog ("Detection failed...!! Ah ggs gottem", PLUME::log::security);
         }
     }
 }
@@ -639,16 +632,6 @@ void PlumeProcessor::startSendingUnlockParamSequence()
         //valueChars[2] = characterToEncode;
 
         unlockParamSequence.add (int(characterToEncode)/127.0f);
-
-        /*PLUME::log::writeToLog ("Random num : " + String (randomNumber) +
-                                " (" + String::toHexString ((void*)&randomNumber, sizeof (randomNumber), 1) +
-                                ") | New num : " + String (numberCopy) +
-                                " (" + String::toHexString ((void*)&numberCopy, sizeof (numberCopy), 1) + ")",
-                                PLUME::log::security);*/
-
-        PLUME::log::writeToLog ("Unlock sequence : Character : " + String (characterToEncode) +
-                                " | Float : " + String (unlockParamSequence.getLast()),
-                                PLUME::log::security);
     }
 
     startTimer (0, 100);
@@ -666,14 +649,7 @@ bool PlumeProcessor::isNextStepInAuthSequence (float receivedValue)
                             PLUME::log::security);*/
 
     const char authChar = char (receivedValue*127);
-    PLUME::log::writeToLog ("Received value : " + String (receivedValue) +
-                            " | Char : " + String (authChar),
-                            PLUME::log::security);
-
     const bool isnextstep = (authParamSequence[stepInAuthSequence] == authChar);
-
-    PLUME::log::writeToLog ("Expected next : " + String (authParamSequence[stepInAuthSequence]) + " | same ? " + String (isnextstep ? "Y" : "N"),
-                            PLUME::log::security);
 
     return isnextstep;
 }
