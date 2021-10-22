@@ -333,7 +333,7 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
 
 			wrapper->getWrapperProcessor().setStateInformation (m.getData(), (int)m.getSize());
 
-            startDetectingAuthSequence();
+            if (presetHandler->currentPresetRequiresAuth()) startDetectingAuthSequence();
 		}
     }
 }
@@ -544,10 +544,12 @@ void PlumeProcessor::initializeParamSequences()
 
 void PlumeProcessor::startDetectingAuthSequence()
 {
+    PLUME::log::writeToLog ("Started detecting auth sequence", PLUME::log::security);
+    
     isDetectingAuthSequence = true;
     stepInAuthSequence = 0;
 
-    Timer::callAfterDelay (3000, [this]()
+    Timer::callAfterDelay (1000, [this]()
     {
         stopAuthDetection (false);        
     });

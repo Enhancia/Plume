@@ -97,6 +97,17 @@ int PresetHandler::getCurrentPresetIdInSearchList()
     return -1;
 }
 
+const bool PresetHandler::currentPresetRequiresAuth()
+{
+    PLUME::log::writeToLog ("Checking current preset validity : " + currentPreset.getDescription(), PLUME::log::security);
+
+    return (currentPreset.isValid() && currentPreset.presetType == PlumePreset::defaultPreset &&
+            (currentPreset.matchesSettings (-1, "UVIWorkstationVSTx64", "") ||
+             currentPreset.matchesSettings (-1, "FalconVSTx64", "") ||
+             currentPreset.matchesSettings (-1, "UVIWorkstationVST", "") ||
+             currentPreset.matchesSettings (-1, "UVIWorkstation", "")));
+}
+
 void PresetHandler::storePresets()
 {
     const File userDir = getUserDirectory();

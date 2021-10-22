@@ -107,6 +107,7 @@ public:
     String getCurrentPresetName();
 
     PlumePreset getCurrentPreset();
+    const bool currentPresetRequiresAuth();
 
     /**
      * \brief Getter for the id of the preset currently in use.
