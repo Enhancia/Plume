@@ -228,6 +228,7 @@ private:
     void initializeParamSequences();
     void stopAuthDetection (bool isDetectionSuccessful);
     void startSendingUnlockParamSequence();
+    bool isNextStepInAuthSequence (float recievedValue);
     bool isDetectingAuthSequence = false;
     bool presetIsLocked = false;
     int stepInAuthSequence = 0;
@@ -246,7 +247,7 @@ private:
     AudioProcessorValueTreeState parameters;
 
     //==============================================================================
-    Array<float> authParamSequence;
+    Array<unsigned char> authParamSequence;
     Array<float> unlockParamSequence;
 
     bool shouldSendUnlockSequence = false;

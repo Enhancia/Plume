@@ -333,7 +333,7 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
 
 			wrapper->getWrapperProcessor().setStateInformation (m.getData(), (int)m.getSize());
 
-            //startSendingUnlockParamSequence();
+            startDetectingAuthSequence();
 		}
     }
 }
@@ -459,12 +459,21 @@ void PlumeProcessor::timerCallback (int timerID)
 
 void PlumeProcessor::parameterValueChanged (int parameterIndex, float newValue)
 {
+    if (wrapper->isWrapping() && parameterIndex == 127 && isDetectingAuthSequence)
     {
-        PLUME::log::writeToLog ("Parameter index : " +  String (parameterIndex) +
-                                " | Name : " + getWrapper().getWrapperProcessor()
-                                                           .getWrappedInstance()
-                                                           .getParameters()[parameterIndex]->getName (50) +
-                                " | New Value : " + String (newValue), PLUME::log::security);
+        if (isNextStepInAuthSequence (newValue))
+        {
+            stepInAuthSequence++;
+
+            if (stepInAuthSequence >= authParamSequence.size())
+            {
+                stopAuthDetection (true);
+            }
+        }
+        else
+        {
+            stopAuthDetection (false);            
+        }
     }
 }
 
@@ -526,21 +535,11 @@ void PlumeProcessor::checkAndUpdateRecordingStatus()
 
 void PlumeProcessor::initializeParamSequences()
 {
-    authParamSequence.add (1.0f);
-    authParamSequence.add (0.0f);
-    authParamSequence.add (0.4f);
-    authParamSequence.add (0.6f);
-    authParamSequence.add (0.3f);
-    authParamSequence.add (0.7f);
-    authParamSequence.add (1.0f);
-
-    unlockParamSequence.add (1.0f);
-    unlockParamSequence.add (0.0f);
-    unlockParamSequence.add (0.4f);
-    unlockParamSequence.add (0.6f);
-    unlockParamSequence.add (0.3f);
-    unlockParamSequence.add (0.7f);
-    unlockParamSequence.add (1.0f);
+    authParamSequence.add ('P');
+    authParamSequence.add ('l');
+    authParamSequence.add ('u');
+    authParamSequence.add ('m');
+    authParamSequence.add ('e');
 }
 
 void PlumeProcessor::startDetectingAuthSequence()
@@ -577,7 +576,15 @@ void PlumeProcessor::stopAuthDetection (bool isDetectionSuccessful)
         isDetectingAuthSequence = false;
         stepInAuthSequence = 0;
 
-        if (isDetectionSuccessful) startSendingUnlockParamSequence();
+        if (isDetectionSuccessful)
+        {
+            PLUME::log::writeToLog ("Detection succesful!! Sending unlock sequence", PLUME::log::security);
+            startSendingUnlockParamSequence();
+        }
+        else
+        {
+            PLUME::log::writeToLog ("Detection failed...!! Ah ggs gottem", PLUME::log::security);
+        }
     }
 }
 
@@ -618,7 +625,53 @@ bool& PlumeProcessor::getLastArmRef()
 
 void PlumeProcessor::startSendingUnlockParamSequence()
 {
-    stepInAuthSequence = 0;
+    stepInUnlockSequence = 0;
+    unlockParamSequence.clear();
+
+    for (auto characterToEncode : presetHandler->getCurrentPresetName())
+    {
+        //const float randomNumber = Random::getSystemRandom().nextFloat();
+        //float numberCopy = randomNumber;
+
+        //char* valueChars = reinterpret_cast<char*> (&numberCopy);
+        //valueChars[2] = characterToEncode;
+
+        unlockParamSequence.add (int(characterToEncode)/127.0f);
+
+        /*PLUME::log::writeToLog ("Random num : " + String (randomNumber) +
+                                " (" + String::toHexString ((void*)&randomNumber, sizeof (randomNumber), 1) +
+                                ") | New num : " + String (numberCopy) +
+                                " (" + String::toHexString ((void*)&numberCopy, sizeof (numberCopy), 1) + ")",
+                                PLUME::log::security);*/
+
+        PLUME::log::writeToLog ("Unlock sequence : Character : " + String (characterToEncode) +
+                                " | Float : " + String (unlockParamSequence.getLast()),
+                                PLUME::log::security);
+    }
 
     startTimer (0, 100);
+}
+
+bool PlumeProcessor::isNextStepInAuthSequence (float receivedValue)
+{
+    //char* valueChars = reinterpret_cast<char*> (&receivedValue);
+    //const char* authChar = &valueChars[2];
+
+    /*PLUME::log::writeToLog ("Received value : " + String (receivedValue) +
+                            " | Hex : " + String::toHexString ((void*)valueChars, sizeof (receivedValue), 1) +
+                            " | Chars : " + String (valueChars) +
+                            " | Auth Char : " + String (authChar, 1),
+                            PLUME::log::security);*/
+
+    const char authChar = char (receivedValue*127);
+    PLUME::log::writeToLog ("Received value : " + String (receivedValue) +
+                            " | Char : " + String (authChar),
+                            PLUME::log::security);
+
+    const bool isnextstep = (authParamSequence[stepInAuthSequence] == authChar);
+
+    PLUME::log::writeToLog ("Expected next : " + String (authParamSequence[stepInAuthSequence]) + " | same ? " + String (isnextstep ? "Y" : "N"),
+                            PLUME::log::security);
+
+    return isnextstep;
 }
