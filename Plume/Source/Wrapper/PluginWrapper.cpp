@@ -81,7 +81,15 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
         PLUME::log::writeToLog ("Attempted to wrap a non-instrument plugin : " + descToWrap->name, PLUME::log::pluginWrapping, PLUME::log::error);
         return false;
     }
-        
+    
+    // TO DELETE when implementing AU
+  #if JUCE_MAC
+    if (descToWrap->pluginFormatName.compare (AudioUnitPluginFormat::getFormatName()) == 0)
+    {
+        return false;
+    }
+  #endif
+
     jassert (!hasWrappedInstance);
     if (hasWrappedInstance)
     {
@@ -490,6 +498,7 @@ void PluginWrapper::setAuUsage (bool
                                 )
 {
   #if JUCE_MAC
+    // TO UNCOMMENT when implementing AU
     useAudioUnits = shouldUseAudioUnits;
     scanHandler->setPluginFormats (true, true, shouldUseAudioUnits);
     savePluginListToFile();
@@ -679,7 +688,7 @@ void PluginWrapper::loadPluginListFromFile()
         useDefaultPaths = settings->getBoolAttribute ("use_system", true);
         useCustomPaths = settings->getBoolAttribute ("use_custom", true);
         #if JUCE_MAC
-        useAudioUnits = settings->getBoolAttribute ("use_au", true);
+        useAudioUnits = settings->getBoolAttribute ("use_au", useAudioUnits);
         #endif
     }
     
