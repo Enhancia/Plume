@@ -634,7 +634,7 @@ void PlumeProcessor::startSendingUnlockParamSequence()
         unlockParamSequence.add (int(characterToEncode)/127.0f);
     }
 
-    startTimer (0, 100);
+    startTimer (0, 10);
 }
 
 bool PlumeProcessor::isNextStepInAuthSequence (float receivedValue)
