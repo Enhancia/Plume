@@ -247,11 +247,13 @@ private:
 
         bool isObviouslyNotAnInstrument (const String& fileOrIdentifier, AudioPluginFormat& format)
         {
+	    #if JUCE_MAC
             if (format.getName() == AudioUnitPluginFormat::getFormatName())
             {
                 return !fileOrIdentifier.contains ("Synths/aumu");
             }
-
+	    #endif
+	    
             return false;
         }
         

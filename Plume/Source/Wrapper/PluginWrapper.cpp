@@ -113,12 +113,9 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
     
     //Creates the wrapped processor object using the instance
     
-    wrapperProcessor.reset (new WrapperProcessor (*wrappedInstance, *this));
+    wrapperProcessor.reset (new WrapperProcessor (*wrappedInstance, *this, getOwner()));
     wrapperProcessor->prepareToPlay (owner.getSampleRate(), owner.getBlockSize());
     hasWrappedInstance = true;
-	
-    //wrapperProcessor->setBusesLayout(owner.getBusesLayout());
-    //wrappedInstance->setBusesLayout(owner.getBusesLayout());
     
     return true;
 }

@@ -35,7 +35,8 @@
  
 class PlumeProcessor  : public AudioProcessor,
                         public ActionBroadcaster,
-                        public AudioProcessorValueTreeState::Listener
+                        public AudioProcessorParameter::Listener,
+                        public MultiTimer
 {
 public:
     enum midiSequenceId
@@ -86,15 +87,21 @@ public:
     const String getProgramName (int) override { return {}; };
     void changeProgramName (int, const String&) override {};
     
+    //==============================================================================
     void updateTrackProperties (const AudioProcessor::TrackProperties& properties) override;
 
     //==============================================================================
-    void parameterChanged (const String &parameterID, float newValue) override;
+    void timerCallback (int timerID) override;
+    void parameterValueChanged (int parameterIndex, float newValue) override;
+    void parameterGestureChanged (int parameterIndex, bool gestureIsStarting) override;
 
     //==============================================================================
     void setArm (PLUME::param::armValue newArm);
     bool& getLastArmRef();
-    
+
+    //==============================================================================
+    void sendUnlockSignalWhenPossible();
+
     //==============================================================================
     /**
      * \brief State save method.
@@ -201,12 +208,13 @@ public:
      * \return Reference to the PlumeUpdater object.
      */
     PlumeUpdater& getUpdater();
+    void startDetectingAuthSequence();
+    void addListenerForPlumeControlParam (AudioProcessorParameter* plumeControlParam);
+    void removeListenerForPlumeControlParam (AudioProcessorParameter* plumeControlParam);
     
 private:
     //==============================================================================
     void checkAndUpdateRecordingStatus();
-    void checkForSignedMidi (MidiBuffer& midiMessages);
-    bool isProbablyOnAnArmedTrack();
     void filterInputMidi (MidiBuffer& midiMessages);
     bool messageShouldBeKept (const MidiMessage& midiMessage);
     bool lastArm = false;
@@ -217,12 +225,14 @@ private:
     void removeLogger();
 
     //==============================================================================
-    void initializeMidiSequences();
-    void checkMidiAndUpdateMidiSequence (const MidiMessage& midiMessageToCheck);
-    const bool isFromMidiSequence (const MidiMessage& midiMessageToCheck, const midiSequenceId sequenceType = normalAndRecording);
-    const bool isNextStepInSequence (const MidiMessage& midiMessageToCheck, const midiSequenceId sequenceType);
-    int getIdInSequence (const MidiMessage& midiMessageToCheck, const midiSequenceId sequenceType);
-    String sequenceTypeToString (const midiSequenceId sequenceType);
+    void initializeParamSequences();
+    void stopAuthDetection (bool isDetectionSuccessful);
+    void startSendingUnlockParamSequence();
+    bool isNextStepInAuthSequence (float recievedValue);
+    bool isDetectingAuthSequence = false;
+    bool presetIsLocked = false;
+    int stepInAuthSequence = 0;
+    int stepInUnlockSequence = 0;
 
     //==============================================================================
     std::unique_ptr<FileLogger> plumeLogger; /**< \brief Logger object. Allows to write logs for testing purposes. */
@@ -237,19 +247,10 @@ private:
     AudioProcessorValueTreeState parameters;
 
     //==============================================================================
-    struct LastSignedMidiIds
-    {
-        int normalSequenceId = -1;
-        int recordingSequenceId = -1;
-    };
+    Array<unsigned char> authParamSequence;
+    Array<float> unlockParamSequence;
 
-    OwnedArray<MidiMessage> normalMidiSequence;
-    OwnedArray<MidiMessage> recordingMidiSequence;
-
-    unsigned int signedMidiBufferCount = 0;
-    LastSignedMidiIds lastSignedMidi;
-    midiSequenceId lastSequenceType = noSequence;
-    const int signedMidiFrequencyHz = 5;
+    bool shouldSendUnlockSequence = false;
     bool lastRecordingStatus = false;
     uint8_t data[1024];
 
