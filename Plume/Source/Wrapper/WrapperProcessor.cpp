@@ -66,10 +66,11 @@ WrapperProcessor::~WrapperProcessor()
         if (param != controlParameter) param->removeListener (&getOwnerWrapper());
     }
 
-    //owner.getOwner().removeListenerForPlumeControlParam (*controlParameter);
-    controlParameter->removeListener (&listener);
-
-    controlParameter = nullptr;
+    if (controlParameter)
+    {
+        controlParameter->removeListener (&listener);
+        controlParameter = nullptr;
+    }
 }
 
 //==============================================================================
@@ -122,7 +123,7 @@ void WrapperProcessor::initWrappedParameters()
     for (auto* param : params)
     {
         // TODO CLEANUP changer condition pour detection auto
-        if (//param->getName (50) == "Host Automation" &&
+        if (param->getName (50) == "Host Automation 127" &&
             param->getParameterIndex() == 127)
         {
             if (controlParameter)
