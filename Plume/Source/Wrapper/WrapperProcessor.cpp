@@ -59,11 +59,11 @@ WrapperProcessor::WrapperProcessor(AudioPluginInstance& wrappedPlugin,
 
 WrapperProcessor::~WrapperProcessor()
 {
-    auto& params = plugin.getParameters();
+    auto& params = getParameters();
     
     for (auto* param : params)
     {
-        if (param != controlParameter) param->removeListener (&getOwnerWrapper());
+        param->removeListener (&getOwnerWrapper());
     }
 
     if (controlParameter)
@@ -123,7 +123,7 @@ void WrapperProcessor::initWrappedParameters()
     for (auto* param : params)
     {
         // TODO CLEANUP changer condition pour detection auto
-        if (param->getName (50) == "Host Automation 127" &&
+        if (param->getName (50) == "Host Automation" &&
             param->getParameterIndex() == 127)
         {
             if (controlParameter)
