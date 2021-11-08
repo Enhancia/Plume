@@ -84,7 +84,7 @@ void SideBarComponent::paint (Graphics& g)
     // ALPHA text
     g.setColour (currentTheme.getColour(PLUME::colour::sideBarSubText));
     g.setFont (PLUME::font::plumeFont.withHeight (14.0f));
-    g.drawText ("ALPHA", area.removeFromRight (PLUME::font::plumeFont.withHeight (14.0f).getStringWidth ("ALPHA") + 2*MARGIN_SMALL)
+    g.drawText ("BETA", area.removeFromRight (PLUME::font::plumeFont.withHeight (14.0f).getStringWidth ("BETA") + 2*MARGIN_SMALL)
                              .reduced (MARGIN_SMALL),
                 Justification::topLeft, true);
     

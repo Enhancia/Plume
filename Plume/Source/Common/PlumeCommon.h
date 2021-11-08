@@ -1,5 +1,4 @@
-/*
-  ==============================================================================
+/*==============================================================================
 
     PlumeCommon.h
     Created: 7 Nov 2018 5:01:34pm
@@ -326,7 +325,8 @@ namespace PLUME
             update,
             pluginScan,
             pluginWrapping,
-            wrappedInterface
+            wrappedInterface,
+            security
         };
         
         const String levelStrings[] = {
@@ -347,7 +347,8 @@ namespace PLUME
             "update: ",
             "pluginScan: ",
             "pluginWrapping: ",
-            "wrappedInterface: "
+            "wrappedInterface: ",
+            "security: "
         };
 
         static void writeToLog (const String& message, const LogCategory category=general, const LogLevel level=info)

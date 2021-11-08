@@ -52,7 +52,7 @@ namespace ProjectInfo
 {
     const char* const  projectName    = "Plume";
     const char* const  companyName    = "Enhancia";
-    const char* const  versionString  = "0.1.9";
-    const int          versionNumber  = 0x109;
+    const char* const  versionString  = "0.1.10";
+    const int          versionNumber  = 0x10a;
 }
 #endif

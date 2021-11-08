@@ -43,10 +43,13 @@ private:
 
 
 //==============================================================================
-WrapperProcessor::WrapperProcessor(AudioPluginInstance& wrappedPlugin, PluginWrapper& ownerWrapper)
+WrapperProcessor::WrapperProcessor(AudioPluginInstance& wrappedPlugin,
+                                   PluginWrapper& ownerWrapper,
+                                   AudioProcessorParameter::Listener& proc)
     : AudioProcessor (WrapperProcessor::createBusesPropertiesFromPluginInstance (wrappedPlugin)),
       plugin (wrappedPlugin),
-      owner (ownerWrapper)
+      owner (ownerWrapper),
+      listener (proc)
 {
     //plugin.setBusesLayout (getBusesLayout());
     initWrappedParameters();
@@ -56,11 +59,17 @@ WrapperProcessor::WrapperProcessor(AudioPluginInstance& wrappedPlugin, PluginWra
 
 WrapperProcessor::~WrapperProcessor()
 {
-    auto& params = plugin.getParameters();
+    auto& params = getParameters();
     
     for (auto* param : params)
     {
         param->removeListener (&getOwnerWrapper());
+    }
+
+    if (controlParameter)
+    {
+        controlParameter->removeListener (&listener);
+        controlParameter = nullptr;
     }
 }
 
@@ -83,7 +92,7 @@ void WrapperProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& mid
 //==============================================================================
 bool WrapperProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
-    PLUME::log::writeToLog ("Checking buses Layout : " + String (layouts.getMainInputChannels())
+    PLUME::log::writeToLog ("Requested buses Layout : " + String (layouts.getMainInputChannels())
                                                + " | " + String (layouts.getMainOutputChannels()),
                             PLUME::log::pluginWrapping);
 
@@ -113,8 +122,23 @@ void WrapperProcessor::initWrappedParameters()
     
     for (auto* param : params)
     {
-        addParameter(new WrappedParameter(*param));
-        param->addListener (&getOwnerWrapper());
+        // TODO CLEANUP changer condition pour detection auto
+        if (param->getName (50) == "Host Automation" &&
+            param->getParameterIndex() == 127)
+        {
+            if (controlParameter)
+            {
+                controlParameter->removeListener (&listener);
+            }
+
+            controlParameter = param;
+            controlParameter->addListener (&listener);
+        }
+        else
+        {
+            addParameter(new WrappedParameter(*param));
+            param->addListener (&getOwnerWrapper());
+        }
     }
 }
 
@@ -223,6 +247,7 @@ void WrapperProcessor::writeBusesLayoutToLog()
             }
         }
 
-        if (logString.isNotEmpty()) PLUME::log::writeToLog (logString, PLUME::log::pluginWrapping);
+        if (logString.isNotEmpty()) PLUME::log::writeToLog (logString, PLUME::log::pluginWrapping,
+                                                                       PLUME::log::debug);
     }
 }

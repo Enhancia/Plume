@@ -19,7 +19,7 @@ class WrapperProcessor  : public AudioProcessor
 {
 public:
     //==============================================================================
-    WrapperProcessor(AudioPluginInstance&, PluginWrapper&);
+    WrapperProcessor(AudioPluginInstance&, PluginWrapper&, AudioProcessorParameter::Listener& proc);
     ~WrapperProcessor();
 
     //==============================================================================
@@ -86,10 +86,12 @@ private:
 
     //==============================================================================
     class WrappedParameter;
+    AudioProcessorParameter* controlParameter = nullptr;
     
     //==============================================================================
     AudioPluginInstance& plugin;
     PluginWrapper& owner;
+    AudioProcessorParameter::Listener& listener;
     AudioBuffer<float> wrapperBuffer;
 
     //==============================================================================
