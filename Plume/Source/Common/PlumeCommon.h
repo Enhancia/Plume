@@ -28,6 +28,8 @@ namespace PLUME
 {
     const int NUM_GEST = 8;
     const int MAX_PARAMETER = 6;
+
+    extern int nbInstance; /**< @Brief shared variable between same instance .dll, tracks number of instance opened  */
     
     namespace UI
     {
