@@ -36,7 +36,8 @@
 class DataReader   : public Component,
                      private InterprocessConnection,
                      public ChangeBroadcaster,
-                     public ChangeListener
+                     public ChangeListener,
+                     public MultiTimer
 {
 public:
     static constexpr int DATA_SIZE = PLUME::data::numDatas;
@@ -58,6 +59,25 @@ public:
     void sendString(uint8_t* data, int data_size);
 
     //==============================================================================
+    void timerCallback (int timerID) override;
+    
+    /**
+        @Brief Tracks statutPipe messages
+
+        Calls connectToExistingPipe(int nbPipe) with the pipe ID received by statutPipe
+        MacOs only
+     */
+    void changeListenerCallback(ChangeBroadcaster* source) override;
+    
+    /**
+        @Brief Instantiate StatutPipe object
+
+        Instantiate and add listener on StatutPipe
+        MacOs only
+     */
+    void instantiateStatutPipe();
+        
+    //==============================================================================
     bool connectToExistingPipe();
     bool connectToExistingPipe(int nbPipe);
     bool isConnected();
@@ -66,7 +86,7 @@ public:
     void connectionMade() override;
     void connectionLost() override;
     void messageReceived(const MemoryBlock &message) override;
-    void changeListenerCallback(ChangeBroadcaster* source) override;
+    
     
 private:
     //==============================================================================
@@ -75,9 +95,9 @@ private:
     
     std::unique_ptr<StringArray> data;
 
-	#if JUCE_MAC
+  #if JUCE_MAC
     std::unique_ptr<StatutPipe> statutPipe;
-	#endif
+  #endif
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DataReader)
 };
