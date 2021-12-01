@@ -46,7 +46,7 @@ public:
     void buttonClicked (Button* bttn) override;
 
     //==============================================================================
-    static PlumeAlertPanel* createSpecificAlertPanel (SpecificReturnValue panelType);
+    static PlumeAlertPanel* createSpecificAlertPanel (SpecificReturnValue panelType, const String& specificText = "");
 
 private:
     //==============================================================================

@@ -66,7 +66,7 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
                                             + description.pluginFormatName + ")",
                                 PLUME::log::pluginWrapping, PLUME::log::error);
 
-        getOwner().sendActionMessage (PLUME::commands::missingPlugin);
+        getOwner().sendActionMessage (PLUME::commands::missingPlugin + description.descriptiveName);
         return false;
     }
     

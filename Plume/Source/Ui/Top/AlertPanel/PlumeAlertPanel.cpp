@@ -136,18 +136,30 @@ void PlumeAlertPanel::createAndAddButtons (const String& buttonText, const bool 
     closeButton->setVisible (addCloseButton);
 }
 
-PlumeAlertPanel* PlumeAlertPanel::createSpecificAlertPanel (SpecificReturnValue panelType)
+PlumeAlertPanel* PlumeAlertPanel::createSpecificAlertPanel (SpecificReturnValue panelType, const String& specificText)
 {
     switch (panelType)
     {
         case missingPlugin:
-            return new PlumeAlertPanel ("Missing plugin",
-                                       "The preset you just loaded uses a plugin that is not in your plugin list.\n"
-                                       "If you own this plugin, rescan your plugins so that Plume can load it with the preset.\n"
-                                       "Only the gestures were loaded.",
-                                       int (panelType),
-                                       true,
-                                       "Ok");
+            if (specificText.isEmpty())
+            {
+                return new PlumeAlertPanel ("Missing plugin",
+                                           "Plume could not find the plugin for this preset.\n"
+                                           "If you own this plugin, rescan your plugins so that Plume can load it with the preset.",
+                                           int (panelType),
+                                           true,
+                                           "Ok");
+            }
+            else
+            {
+                return new PlumeAlertPanel ("Missing plugin",
+                                           "Plume could not find the following plugin:\n"
+                                           + specificText +
+                                           "\n\nIf you own this plugin, please scan its folder so that Plume can load it with the preset.",
+                                           int (panelType),
+                                           true,
+                                           "Ok");                
+            }
         case missingScript:
             return new PlumeAlertPanel ("Missing DAW script",
                                        "Your DAW supports using a custom script to improve your Plume experience.",

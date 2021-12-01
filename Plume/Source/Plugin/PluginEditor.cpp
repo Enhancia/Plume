@@ -260,8 +260,9 @@ void PlumeEditor::actionListenerCallback (const String &message)
     else if (message.compare (PLUME::commands::missingScript) == 0)
         createAndShowAlertPanel (PlumeAlertPanel::missingScript);
 
-    else if (message.compare (PLUME::commands::missingPlugin) == 0)
-        createAndShowAlertPanel (PlumeAlertPanel::missingPlugin);
+    else if (message.startsWith (PLUME::commands::missingPlugin))
+        createAndShowAlertPanel (PlumeAlertPanel::missingPlugin,
+                                 message.fromLastOccurrenceOf (PLUME::commands::missingPlugin, false, false));
 
     else if (message.compare(PLUME::commands::mappingOverwrite) == 0)
     {
@@ -429,11 +430,11 @@ void PlumeEditor::createAndShowAlertPanel (const String& title, const String& me
     alertPanel->enterModalState (true, ModalCallbackFunction::forComponent (alertPanelCallback, this), false);
 }
 
-void PlumeEditor::createAndShowAlertPanel (PlumeAlertPanel::SpecificReturnValue returnValue)
+void PlumeEditor::createAndShowAlertPanel (PlumeAlertPanel::SpecificReturnValue returnValue, const String& specificText)
 {
     if (alertPanel) return;
 
-    alertPanel.reset (PlumeAlertPanel::createSpecificAlertPanel (returnValue));
+    alertPanel.reset (PlumeAlertPanel::createSpecificAlertPanel (returnValue, specificText));
     addAndMakeVisible (*alertPanel);
 
     alertPanel->setVisible (true);
