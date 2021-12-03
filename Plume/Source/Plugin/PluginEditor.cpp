@@ -114,6 +114,8 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 
     if (processor.getWrapper().getScanner().hasLastScanCrashed())
     {
+        PLUME::file::deadMansPedal.replaceWithText (String());
+        
         processor.sendActionMessage (PLUME::commands::scanCrashed +
                                      processor.getWrapper().getScanner().getLastCrashedPluginId());
     }

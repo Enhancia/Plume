@@ -492,7 +492,9 @@ void PlumeProcessor::detectPlumeCrashFromPreviousSession()
 {
     if (PLUME::file::deadMansPedal.existsAsFile() &&
         PLUME::file::deadMansPedal.loadFileAsString().isNotEmpty() &&
-        File (PLUME::file::deadMansPedal.loadFileAsString()).existsAsFile())
+        File (PLUME::file::deadMansPedal.loadFileAsString()).existsAsFile() &&
+        Time::getCurrentTime().toMilliseconds()
+           - PLUME::file::deadMansPedal.getLastModificationTime().toMilliseconds() > 3000)
     {
         wrapper->getScanner().setLastCrash (PLUME::file::deadMansPedal.loadFileAsString());
     }
