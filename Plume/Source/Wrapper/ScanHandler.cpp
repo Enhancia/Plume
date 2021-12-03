@@ -259,3 +259,18 @@ String& ScanHandler::getProgressStringRef()
 {
     return progressMessage;
 }
+
+void ScanHandler::setLastCrash (const String& lastCrashedPluginId)
+{
+    lastCrashedPlugin = lastCrashedPluginId;
+}
+
+const String ScanHandler::getLastCrashedPluginId()
+{
+    return lastCrashedPlugin;
+}
+
+const bool ScanHandler::hasLastScanCrashed()
+{
+    return lastCrashedPlugin.isNotEmpty();
+}

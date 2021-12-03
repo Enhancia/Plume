@@ -76,6 +76,7 @@ public:
     KnownPluginList& getList();
     ScanHandler& getScanner();
     void handleScanFinished();
+    void blacklistCrashedPlugin();
     
     //==============================================================================
     void createWrapperEditor (const Component* componentWhichWindowToAttachTo);
