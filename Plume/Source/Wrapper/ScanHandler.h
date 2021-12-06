@@ -99,6 +99,7 @@ private:
         {
             numFilesToScan = filesToScan.size();
             currentFileNum = 0;
+            TemporaryFile descriptionFile, resultFile;
 
             startLogEntry();
 
@@ -111,7 +112,8 @@ private:
                 if (!pluginList.isListingUpToDate (fileOrIdentifier, *formatManager->getFormat (formatNum))
                     && !isObviouslyNotAnInstrument (fileOrIdentifier, *formatManager->getFormat (formatNum)))
                 {
-                    if (launchScannerProgram (formatManager->getFormat(formatNum)->getName(), fileOrIdentifier))
+                    if (launchScannerProgram (formatManager->getFormat(formatNum)->getName(), fileOrIdentifier,
+                                              descriptionFile.getFile(), resultFile.getFile()))
                     {
                         int count = 0;
                         
@@ -128,7 +130,9 @@ private:
                                                         || exitCode == 1
                                                         || exitCode == 2*/)
                         {
-                            const int exitCode = scannerProcess.getExitCode();
+                            const int exitCode = resultFile.getFile().loadFileAsString().isNotEmpty()
+                                                    ? resultFile.getFile().loadFileAsString().getIntValue()
+                                                    : scannerProcess.getExitCode();
 
                             if (!readDmp().isEmpty())
                             {
@@ -140,15 +144,35 @@ private:
                             {
                                 PLUME::log::writeToLog ("Scanner returned 0 (COUNT " + String (count) + "): Attempting to get description", PLUME::log::pluginScan);
                                 
-                                OwnedArray<PluginDescription> found;
-                                formatManager->getFormat(formatNum)->findAllTypesForFile (found, fileOrIdentifier);
-
-                                for (auto* desc : found)
+                                if (descriptionFile.getFile().loadFileAsString().isNotEmpty())
                                 {
-                                    if (desc->name != "Plume" && desc->name != "Plume Tests")
+                                    if (auto descriptionsXml = XmlDocument::parse (descriptionFile.getFile()))
                                     {
-                                        PLUME::log::writeToLog ("Finished Scanning! Adding plugin to list : " + desc->name, PLUME::log::pluginScan);
-                                        pluginList.addType (*desc);
+                                        for (auto* descXml : descriptionsXml->getChildIterator())
+                                        {
+                                            DBG ("Scanned desc :" << descXml->toString());
+                                            PluginDescription desc;
+
+                                            if (desc.loadFromXml (*descXml))
+                                            {
+                                                DBG ("Finished getting description from exe ! Adding plugin to list " << desc.name);
+                                                pluginList.addType (desc);
+                                            } 
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    OwnedArray<PluginDescription> found;
+                                    formatManager->getFormat(formatNum)->findAllTypesForFile (found, fileOrIdentifier);
+
+                                    for (auto* desc : found)
+                                    {
+                                        if (desc->name != "Plume" && desc->name != "Plume Tests")
+                                        {
+                                            PLUME::log::writeToLog ("Finished Scanning! Adding plugin to list : " + desc->name, PLUME::log::pluginScan);
+                                            pluginList.addType (*desc);
+                                        }
                                     }
                                 }
                             }
@@ -172,7 +196,8 @@ private:
             endLogEntry();
         }
 
-        bool launchScannerProgram (const String& formatString, const String& fileToScan)
+        bool launchScannerProgram (const String& formatString, const String& fileToScan,
+                                   const File& descFile, const File& resFile)
         {
             if (PLUME::file::scannerExe.existsAsFile() && PLUME::file::deadMansPedal.existsAsFile())
             {
@@ -182,6 +207,8 @@ private:
                 args.add (formatString);
                 args.add (fileToScan);
                 args.add (PLUME::file::deadMansPedal.getFullPathName());
+                args.add (descFile.getFullPathName());
+                args.add (resFile.getFullPathName());
 
                 PLUME::log::writeToLog ("Launching scan for plugin/format : " + fileToScan + " / " + formatString, PLUME::log::pluginScan);
                 
