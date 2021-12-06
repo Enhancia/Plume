@@ -639,15 +639,6 @@ void PlumeProcessor::startSendingUnlockParamSequence()
 
 bool PlumeProcessor::isNextStepInAuthSequence (float receivedValue)
 {
-    //char* valueChars = reinterpret_cast<char*> (&receivedValue);
-    //const char* authChar = &valueChars[2];
-
-    /*PLUME::log::writeToLog ("Received value : " + String (receivedValue) +
-                            " | Hex : " + String::toHexString ((void*)valueChars, sizeof (receivedValue), 1) +
-                            " | Chars : " + String (valueChars) +
-                            " | Auth Char : " + String (authChar, 1),
-                            PLUME::log::security);*/
-
     const char authChar = char (receivedValue*127);
     const bool isnextstep = (authParamSequence[stepInAuthSequence] == authChar);
 
