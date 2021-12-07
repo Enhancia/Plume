@@ -99,7 +99,10 @@ private:
         {
             numFilesToScan = filesToScan.size();
             currentFileNum = 0;
-            TemporaryFile descriptionFile, resultFile;
+            TemporaryFile resultFile ("rst");
+            resultFile.getFile().create();
+            TemporaryFile descriptionFile ("dsc");
+            descriptionFile.getFile().create();
 
             startLogEntry();
 
@@ -126,13 +129,11 @@ private:
                             sleep (10);
                         }
 
-                        if (!scannerProcess.isRunning()/* || exitCode == 0
-                                                        || exitCode == 1
-                                                        || exitCode == 2*/)
+                        if (!scannerProcess.isRunning())
                         {
                             const int exitCode = resultFile.getFile().loadFileAsString().isNotEmpty()
                                                     ? resultFile.getFile().loadFileAsString().getIntValue()
-                                                    : scannerProcess.getExitCode();
+                                                    : scannerProcess.getExitCode(); // If no file or no result, uses program return value;
 
                             if (!readDmp().isEmpty())
                             {
@@ -140,10 +141,12 @@ private:
                                 pluginList.addToBlacklist (fileOrIdentifier);
                                 clearDmp();
                             }
-                            else if (exitCode == 0)
+                            else if (exitCode == 0) // Successful scan
                             {
                                 PLUME::log::writeToLog ("Scanner returned 0 (COUNT " + String (count) + "): Attempting to get description", PLUME::log::pluginScan);
                                 
+                                // If a description xml was shared by the scanner:
+                                // creates and adds one or several PluginDescription object(s) from it. 
                                 if (descriptionFile.getFile().loadFileAsString().isNotEmpty())
                                 {
                                     if (auto descriptionsXml = XmlDocument::parse (descriptionFile.getFile()))
@@ -161,10 +164,12 @@ private:
                                         }
                                     }
                                 }
+                                // If no description in file: tries to load descriptions from Plume.
+                                // 'findAllTypesForFile()' might trigger a crash.
                                 else
                                 {
                                     OwnedArray<PluginDescription> found;
-                                    formatManager->getFormat(formatNum)->findAllTypesForFile (found, fileOrIdentifier);
+                                    formatManager->getFormat(formatNum)->findAllTypesForFile (found, fileOrIdentifier); // Might crash..
 
                                     for (auto* desc : found)
                                     {
@@ -176,7 +181,7 @@ private:
                                     }
                                 }
                             }
-                            else
+                            else // Scanner returned something other than 0
                             {
                                 PLUME::log::writeToLog ("Failed to scan plugin (code " + String (exitCode) + ") : " + fileOrIdentifier, PLUME::log::pluginScan, PLUME::log::error);
                             }
@@ -210,7 +215,9 @@ private:
                 args.add (descFile.getFullPathName());
                 args.add (resFile.getFullPathName());
 
-                PLUME::log::writeToLog ("Launching scan for plugin/format : " + fileToScan + " / " + formatString, PLUME::log::pluginScan);
+                PLUME::log::writeToLog ("Launching scan for plugin/format : " + fileToScan +
+                                        " / " + formatString + " Args : " +
+                                        args.joinIntoString (" | "), PLUME::log::pluginScan);
                 
                 return (scannerProcess.start (args));
             }
