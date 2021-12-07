@@ -28,6 +28,7 @@ public:
         missingScript,
         scanRequired,
         mappingOverwrite,
+        scanCrashed,
         unknown
     };
 

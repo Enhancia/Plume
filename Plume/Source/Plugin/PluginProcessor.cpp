@@ -55,6 +55,7 @@ PlumeProcessor::PlumeProcessor()
     
     dataReader->addChangeListener (gestureArray.get());
 
+    detectPlumeCrashFromPreviousSession();
 }
 
 PlumeProcessor::~PlumeProcessor()
@@ -485,6 +486,18 @@ void PlumeProcessor::updateTrackProperties (const AudioProcessor::TrackPropertie
 {
 	ignoreUnused (properties);
     DBG ("Name : " << properties.name << " | Colour : " << properties.colour.toDisplayString(false));
+}
+
+void PlumeProcessor::detectPlumeCrashFromPreviousSession()
+{
+    if (PLUME::file::deadMansPedal.existsAsFile() &&
+        PLUME::file::deadMansPedal.loadFileAsString().isNotEmpty() &&
+        File (PLUME::file::deadMansPedal.loadFileAsString()).existsAsFile() &&
+        Time::getCurrentTime().toMilliseconds()
+           - PLUME::file::deadMansPedal.getLastModificationTime().toMilliseconds() > 3000)
+    {
+        wrapper->getScanner().setLastCrash (PLUME::file::deadMansPedal.loadFileAsString());
+    }
 }
 
 void PlumeProcessor::checkAndUpdateRecordingStatus()

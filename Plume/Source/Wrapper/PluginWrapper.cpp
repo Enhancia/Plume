@@ -403,6 +403,16 @@ void PluginWrapper::handleScanFinished()
     savePluginListToFile();
 }
 
+void PluginWrapper::blacklistCrashedPlugin()
+{
+    if (scanHandler->hasLastScanCrashed())
+    {
+        pluginList->addToBlacklist(scanHandler->getLastCrashedPluginId());
+        PLUME::file::deadMansPedal.replaceWithText(String());
+        savePluginListToFile();
+    }
+}
+
 //==============================================================================
 Array<File> PluginWrapper::createFileList()
 {

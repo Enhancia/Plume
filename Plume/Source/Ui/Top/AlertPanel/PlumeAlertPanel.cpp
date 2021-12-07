@@ -180,12 +180,36 @@ PlumeAlertPanel* PlumeAlertPanel::createSpecificAlertPanel (SpecificReturnValue 
                                        int (panelType),
                                        true,
                                        "Ok");
+        case scanCrashed:
+            if (specificText.isEmpty())
+            {
+                // This should theoretically never happen
+                jassertfalse;
+                return new PlumeAlertPanel ("Plugin Scan Crashed.",
+                                           "Oops, it seems something went wrong during the last plugin scan.\n"
+                                           "You can try to scan again, and if the problem persists, send a bug report to ENHANCIA.",
+                                           0,
+                                           true,
+                                           "Ok");
+            }
+            else
+            {
+                return new PlumeAlertPanel ("Plugin Scan Crashed.",
+                                           "It seems something went wrong when Plume scanned :\n"
+                                           + specificText +
+                                           "\n\nIf you know the plugin to be faulty, click below to blacklist the plugin for upcoming scans.\n",
+                                           int (panelType),
+                                           true,
+                                           "Blacklist");
+            }
         default:
             return new PlumeAlertPanel ("Something went wrong ..",
                                        "Please contact Enhancia about your issue!",
                                        0,
                                        false,
                                        "Ok");
-            return nullptr;
+
     }
+
+    return nullptr;
 }

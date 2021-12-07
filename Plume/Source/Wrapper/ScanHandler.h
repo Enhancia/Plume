@@ -77,6 +77,11 @@ public:
     std::atomic<float>& getProgressRef();
     String& getProgressStringRef();
 
+    //==============================================================================
+    void setLastCrash (const String& lastCrashedPluginId);
+    const bool hasLastScanCrashed();
+    const String getLastCrashedPluginId();
+
 private:
     //==============================================================================
     class ScanThread : public Thread
@@ -113,7 +118,8 @@ private:
                 const int formatNum = filesToScan[fileNum]->format;
 
                 if (!pluginList.isListingUpToDate (fileOrIdentifier, *formatManager->getFormat (formatNum))
-                    && !isObviouslyNotAnInstrument (fileOrIdentifier, *formatManager->getFormat (formatNum)))
+                    && !isObviouslyNotAnInstrument (fileOrIdentifier, *formatManager->getFormat (formatNum))
+                    && isNotBlacklisted (fileOrIdentifier))
                 {
                     if (launchScannerProgram (formatManager->getFormat(formatNum)->getName(), fileOrIdentifier,
                                               descriptionFile.getFile(), resultFile.getFile()))
@@ -169,7 +175,10 @@ private:
                                 else
                                 {
                                     OwnedArray<PluginDescription> found;
+                                    
+                                    addFileToDmp (fileOrIdentifier);
                                     formatManager->getFormat(formatNum)->findAllTypesForFile (found, fileOrIdentifier); // Might crash..
+                                    clearDmp();
 
                                     for (auto* desc : found)
                                     {
@@ -180,6 +189,7 @@ private:
                                         }
                                     }
                                 }
+                                
                             }
                             else // Scanner returned something other than 0
                             {
@@ -290,12 +300,22 @@ private:
 	    
             return false;
         }
+
+        bool isNotBlacklisted (const String& fileOrIdentifier)
+        {
+            for (auto blacklistedPlugin : pluginList.getBlacklistedFiles())
+            {
+                if (blacklistedPlugin.compare (fileOrIdentifier) == 0) return false;
+            }
+
+            return true;
+        }
         
         String readDmp()
         {
             if (PLUME::file::deadMansPedal.existsAsFile())
                 return PLUME::file::deadMansPedal.loadFileAsString();
-            else return String();
+            return String();
         }
         
         bool clearDmp()
@@ -304,6 +324,14 @@ private:
                 return (PLUME::file::deadMansPedal.replaceWithText (String()));
             return false;
         }
+
+        bool addFileToDmp (const String& filePathString)
+        {
+            if (PLUME::file::deadMansPedal.existsAsFile())
+                return PLUME::file::deadMansPedal.replaceWithText (filePathString);
+            return false;
+        }
+
 
         void startLogEntry()
         {
@@ -367,6 +395,7 @@ private:
     bool finished = false;
     String progressMessage;
     std::atomic<float> scannerProgress {0.0f};
+    String lastCrashedPlugin = "";
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ScanHandler)
