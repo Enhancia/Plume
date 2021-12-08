@@ -194,16 +194,4 @@ void DataReader::messageReceived (const MemoryBlock &message)
         }
     }
 }
-
-void DataReader::changeListenerCallback (ChangeBroadcaster*)
-{
-    //only happens on MacOS
-  #if JUCE_MAC
-    int nbPipeToConnect = statutPipe->getPipeToConnect();
-    connectToExistingPipe(nbPipeToConnect);
-    statutPipe->disconnect();
-    statutPipe.reset();
-  #endif
-}
-
 #endif //JUCE_WINDOWS || DEFINED(__OBJC__)
