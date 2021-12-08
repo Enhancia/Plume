@@ -73,52 +73,6 @@ void ScanHandler::startScanProcess (const bool forceRescan,
     startTimer (10);
 }
 
-void ScanHandler::startScanForFormat (const String& pluginFormat,
-                                      const File& pluginList,
-                                      const File& deadsManPedalFile,
-                                      const bool forceRescan,
-                                      const Array<File>& directoriesToScan)
-{
-    /*
-  #if JUCE_WINDOWS
-    File scannerExe (File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("Enhancia/utilities/PluginScanner.exe"));
-  #elif JUCE_MAC
-    File scannerExe (File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Application Support/Enhancia/PlumePluginScanner"));
-  #endif
-    if (scannerExe.existsAsFile())
-    {
-        StringArray args;
-
-        args.add (scannerExe.getFullPathName());
-        args.add (pluginFormat);
-        args.add (pluginList.getFullPathName());
-        args.add (deadsManPedalFile.getFullPathName());
-        args.add ((forceRescan ? "0" : "1"));
-
-        for (auto file : directoriesToScan) args.add (file.getFullPathName());
-        
-        DBG ("Pending messages : " <<  scannerProcess.readAllProcessOutput());
-
-        if (scannerProcess.isRunning()) scannerProcess.kill();
-        DBG ("Starting scan with args :\n" <<  args.joinIntoString ("\n"));
-
-        if (scannerProcess.start (args))
-        {
-            DBG ("============= SCAN START ===========\n");
-            scanThread.startThread();
-
-            finished = false;
-            lastScanInfo = {pluginFormat, pluginList, deadsManPedalFile, forceRescan, directoriesToScan};
-
-            startTimer (1000);
-        }
-    }
-    else
-    {
-        DBG ("Unable to scan plugins : missing scanner executable.");
-    }*/
-}
-
 void ScanHandler::cancelScan()
 {
     scanThread.stopThread (10000);
@@ -143,35 +97,12 @@ void ScanHandler::handleScanRunning()
     if (scanThread.isThreadRunning())
     {
         DBG (getScanInfo());
-        //readProcessOutput();
     }
 }
 
 void ScanHandler::handleScanCrashed()
 {
     resetScanInfo (true);
-    
-    /*
-    crashCount++;
-
-    if (crashCount > 9)
-    {
-        DBG ("Too many crashes.. Ending plugin scan here.");
-
-        cancelScan();
-        resetScanInfo (true);
-    }
-    else
-    {
-        stopTimer();
-
-        startScanForFormat (lastScanInfo.pluginFormat,
-                            lastScanInfo.pluginList,
-                            lastScanInfo.deadsManPedalFile,
-                            0,
-                            lastScanInfo.directoriesToScan);
-    }
-    */
 }
 
 void ScanHandler::handleScanFinished()
@@ -258,4 +189,19 @@ std::atomic<float>& ScanHandler::getProgressRef()
 String& ScanHandler::getProgressStringRef()
 {
     return progressMessage;
+}
+
+void ScanHandler::setLastCrash (const String& lastCrashedPluginId)
+{
+    lastCrashedPlugin = lastCrashedPluginId;
+}
+
+const String ScanHandler::getLastCrashedPluginId()
+{
+    return lastCrashedPlugin;
+}
+
+const bool ScanHandler::hasLastScanCrashed()
+{
+    return lastCrashedPlugin.isNotEmpty();
 }

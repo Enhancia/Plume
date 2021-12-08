@@ -77,6 +77,11 @@ public:
     std::atomic<float>& getProgressRef();
     String& getProgressStringRef();
 
+    //==============================================================================
+    void setLastCrash (const String& lastCrashedPluginId);
+    const bool hasLastScanCrashed();
+    const String getLastCrashedPluginId();
+
 private:
     //==============================================================================
     class ScanThread : public Thread
@@ -99,6 +104,10 @@ private:
         {
             numFilesToScan = filesToScan.size();
             currentFileNum = 0;
+            TemporaryFile resultFile ("rst");
+            resultFile.getFile().create();
+            TemporaryFile descriptionFile ("dsc");
+            descriptionFile.getFile().create();
 
             startLogEntry();
 
@@ -109,9 +118,11 @@ private:
                 const int formatNum = filesToScan[fileNum]->format;
 
                 if (!pluginList.isListingUpToDate (fileOrIdentifier, *formatManager->getFormat (formatNum))
-                    && !isObviouslyNotAnInstrument (fileOrIdentifier, *formatManager->getFormat (formatNum)))
+                    && !isObviouslyNotAnInstrument (fileOrIdentifier, *formatManager->getFormat (formatNum))
+                    && isNotBlacklisted (fileOrIdentifier))
                 {
-                    if (launchScannerProgram (formatManager->getFormat(formatNum)->getName(), fileOrIdentifier))
+                    if (launchScannerProgram (formatManager->getFormat(formatNum)->getName(), fileOrIdentifier,
+                                              descriptionFile.getFile(), resultFile.getFile()))
                     {
                         int count = 0;
                         
@@ -124,11 +135,11 @@ private:
                             sleep (10);
                         }
 
-                        if (!scannerProcess.isRunning()/* || exitCode == 0
-                                                        || exitCode == 1
-                                                        || exitCode == 2*/)
+                        if (!scannerProcess.isRunning())
                         {
-                            const int exitCode = scannerProcess.getExitCode();
+                            const int exitCode = resultFile.getFile().loadFileAsString().isNotEmpty()
+                                                    ? resultFile.getFile().loadFileAsString().getIntValue()
+                                                    : scannerProcess.getExitCode(); // If no file or no result, uses program return value;
 
                             if (!readDmp().isEmpty())
                             {
@@ -136,23 +147,52 @@ private:
                                 pluginList.addToBlacklist (fileOrIdentifier);
                                 clearDmp();
                             }
-                            else if (exitCode == 0)
+                            else if (exitCode == 0) // Successful scan
                             {
                                 PLUME::log::writeToLog ("Scanner returned 0 (COUNT " + String (count) + "): Attempting to get description", PLUME::log::pluginScan);
                                 
-                                OwnedArray<PluginDescription> found;
-                                formatManager->getFormat(formatNum)->findAllTypesForFile (found, fileOrIdentifier);
-
-                                for (auto* desc : found)
+                                // If a description xml was shared by the scanner:
+                                // creates and adds one or several PluginDescription object(s) from it. 
+                                if (descriptionFile.getFile().loadFileAsString().isNotEmpty())
                                 {
-                                    if (desc->name != "Plume" && desc->name != "Plume Tests")
+                                    if (auto descriptionsXml = XmlDocument::parse (descriptionFile.getFile()))
                                     {
-                                        PLUME::log::writeToLog ("Finished Scanning! Adding plugin to list : " + desc->name, PLUME::log::pluginScan);
-                                        pluginList.addType (*desc);
+                                        for (auto* descXml : descriptionsXml->getChildIterator())
+                                        {
+                                            DBG ("Scanned desc :" << descXml->toString());
+                                            PluginDescription desc;
+
+                                            if (desc.loadFromXml (*descXml))
+                                            {
+                                                DBG ("Finished getting description from exe ! Adding plugin to list " << desc.name);
+                                                pluginList.addType (desc);
+                                            } 
+                                        }
                                     }
                                 }
+                                // If no description in file: tries to load descriptions from Plume.
+                                // 'findAllTypesForFile()' might trigger a crash.
+                                else
+                                {
+                                    PLUME::log::writeToLog ("Scanner returned 0 (COUNT " + String (count) + "): No result file: Attempting to create description", PLUME::log::pluginScan);
+                                    OwnedArray<PluginDescription> found;
+                                    
+                                    addFileToDmp (fileOrIdentifier);
+                                    formatManager->getFormat(formatNum)->findAllTypesForFile (found, fileOrIdentifier); // Might crash..
+                                    clearDmp();
+
+                                    for (auto* desc : found)
+                                    {
+                                        if (desc->name != "Plume" && desc->name != "Plume Tests")
+                                        {
+                                            PLUME::log::writeToLog ("Finished Scanning! Adding plugin to list : " + desc->name, PLUME::log::pluginScan);
+                                            pluginList.addType (*desc);
+                                        }
+                                    }
+                                }
+                                
                             }
-                            else
+                            else // Scanner returned something other than 0
                             {
                                 PLUME::log::writeToLog ("Failed to scan plugin (code " + String (exitCode) + ") : " + fileOrIdentifier, PLUME::log::pluginScan, PLUME::log::error);
                             }
@@ -172,7 +212,8 @@ private:
             endLogEntry();
         }
 
-        bool launchScannerProgram (const String& formatString, const String& fileToScan)
+        bool launchScannerProgram (const String& formatString, const String& fileToScan,
+                                   const File& descFile, const File& resFile)
         {
             if (PLUME::file::scannerExe.existsAsFile() && PLUME::file::deadMansPedal.existsAsFile())
             {
@@ -182,8 +223,12 @@ private:
                 args.add (formatString);
                 args.add (fileToScan);
                 args.add (PLUME::file::deadMansPedal.getFullPathName());
+                args.add (descFile.getFullPathName());
+                args.add (resFile.getFullPathName());
 
-                PLUME::log::writeToLog ("Launching scan for plugin/format : " + fileToScan + " / " + formatString, PLUME::log::pluginScan);
+                PLUME::log::writeToLog ("Launching scan for plugin/format : " + fileToScan +
+                                        " / " + formatString + " Args : " +
+                                        args.joinIntoString (" | "), PLUME::log::pluginScan);
                 
                 return (scannerProcess.start (args));
             }
@@ -256,12 +301,22 @@ private:
 	    
             return false;
         }
+
+        bool isNotBlacklisted (const String& fileOrIdentifier)
+        {
+            for (auto blacklistedPlugin : pluginList.getBlacklistedFiles())
+            {
+                if (blacklistedPlugin.compare (fileOrIdentifier) == 0) return false;
+            }
+
+            return true;
+        }
         
         String readDmp()
         {
             if (PLUME::file::deadMansPedal.existsAsFile())
                 return PLUME::file::deadMansPedal.loadFileAsString();
-            else return String();
+            return String();
         }
         
         bool clearDmp()
@@ -270,6 +325,14 @@ private:
                 return (PLUME::file::deadMansPedal.replaceWithText (String()));
             return false;
         }
+
+        bool addFileToDmp (const String& filePathString)
+        {
+            if (PLUME::file::deadMansPedal.existsAsFile())
+                return PLUME::file::deadMansPedal.replaceWithText (filePathString);
+            return false;
+        }
+
 
         void startLogEntry()
         {
@@ -333,6 +396,7 @@ private:
     bool finished = false;
     String progressMessage;
     std::atomic<float> scannerProgress {0.0f};
+    String lastCrashedPlugin = "";
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ScanHandler)

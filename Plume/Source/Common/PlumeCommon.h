@@ -256,6 +256,7 @@ namespace PLUME
         static const String missingScript ("missingScript");
         static const String missingPlugin ("missingPlugin");
         static const String mappingOverwrite ("mappingOverwrite");
+        static const String scanCrashed ("scanCrashed");
     }
 
     namespace compatibility

@@ -236,6 +236,14 @@ public:
 private:
     //==============================================================================
     /**
+        \brief Checks if last Plume session ended with a crash.        
+        
+        The method will ask the interface for the according popup prompting action from the user.     
+     */
+    void detectPlumeCrashFromPreviousSession();
+    
+    //==============================================================================
+    /**
         \brief Removes the specific param as a listener to stop the auth or unlock sequence.        
      
         \param plumeControlParam The specific parameter used for the auth and unlock processes.
