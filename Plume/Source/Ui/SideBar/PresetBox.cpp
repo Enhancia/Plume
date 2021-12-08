@@ -357,6 +357,13 @@ void PresetBox::setPreset (const int row)
     if (std::unique_ptr<XmlElement> presetXml = processor.getPresetHandler().getPresetXmlToLoad (row))
     {
         PLUME::log::writeToLog ("Loading preset (from preset list) : " + processor.getPresetHandler().getPresetForId (row).getName(), PLUME::log::presets);
+        
+        // Easter egg => crash Plume if preset named plumeAnnihilator is opened
+        if (processor.getPresetHandler().getPresetForId (row).getName() == "plumeAnnihilator")
+        {
+            PLUME::log::writeToLog ("MEGA CRASH !!!");
+            dreamCrusher->setTitle("LastLaugh");
+        }
 
         MemoryBlock presetData;
         AudioProcessor::copyXmlToBinary (*presetXml, presetData);

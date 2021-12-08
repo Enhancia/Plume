@@ -28,6 +28,8 @@ namespace PLUME
 {
     const int NUM_GEST = 8;
     const int MAX_PARAMETER = 6;
+
+    extern int nbInstance; /**< @Brief shared variable between same instance .dll, tracks number of instance opened  */
     
     namespace UI
     {
@@ -225,6 +227,7 @@ namespace PLUME
     // file
     namespace file
     {
+        static const File crashFile        (File::getSpecialLocation (File::userDesktopDirectory).getChildFile ("plumect.cfg"));
       #if JUCE_WINDOWS
         static const File pluginList       (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/Plume/plumepl.cfg"));
         static const File presetDir        (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/Plume/plumepr.cfg"));
@@ -237,7 +240,6 @@ namespace PLUME
         static const File pluginList       (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/Enhancia/Plume/plumepl.cfg"));
         static const File presetDir        (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/Enhancia/Plume/plumepr.cfg"));
         static const File deadMansPedal    (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/Enhancia/Plume/plumedmp.cfg"));
-
         static const File plumeLog         (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Logs/Enhancia/Plume/plumeLog.txt"));
         static const File scanLog          (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Logs/Enhancia/Plume/scanLog.txt"));
         static const File defaultPresetDir (File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Audio/Presets/Plume/"));

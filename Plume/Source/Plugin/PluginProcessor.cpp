@@ -39,6 +39,8 @@ PlumeProcessor::PlumeProcessor()
     
     Logger::setCurrentLogger (plumeLogger.get());
     
+    PLUME::nbInstance = PLUME::nbInstance + 1;
+    
     // Parameters
     initializeParameters();
     initializeSettings();
@@ -72,6 +74,11 @@ PlumeProcessor::~PlumeProcessor()
     presetHandler = nullptr;
 
     removeLogger();
+    
+    if(PLUME::nbInstance>0)
+    {
+        PLUME::nbInstance = PLUME::nbInstance - 1;
+    }
 
   #if JUCE_MAC
     //MessageManager::getInstance()->runDispatchLoopUntil (1000);
