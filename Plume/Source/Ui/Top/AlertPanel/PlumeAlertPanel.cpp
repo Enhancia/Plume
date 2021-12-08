@@ -185,19 +185,19 @@ PlumeAlertPanel* PlumeAlertPanel::createSpecificAlertPanel (SpecificReturnValue 
             {
                 // This should theoretically never happen
                 jassertfalse;
-                return new PlumeAlertPanel ("Plugin Scan Crashed.",
-                                           "Oops, it seems something went wrong during the last plugin scan.\n"
-                                           "You can try to scan again, and if the problem persists, send a bug report to ENHANCIA.",
+                return new PlumeAlertPanel ("Plugin Initialization Crashed.",
+                                           "Oops, it seems something went wrong during the last plugin initialization.\n"
+                                           "You can try again but if the problem persists, please send a bug report to ENHANCIA.",
                                            0,
                                            true,
                                            "Ok");
             }
             else
             {
-                return new PlumeAlertPanel ("Plugin Scan Crashed.",
-                                           "It seems something went wrong when Plume scanned :\n"
+                return new PlumeAlertPanel ("Plugin Initialization Crashed.",
+                                           "Something went wrong when Plume tried to initialize :\n"
                                            + specificText +
-                                           "\n\nIf you know the plugin to be faulty, click below to blacklist the plugin for upcoming scans.\n",
+                                           "\n\nIf you know the plugin to be faulty, click below to blacklist the plugin.\n",
                                            int (panelType),
                                            true,
                                            "Blacklist");

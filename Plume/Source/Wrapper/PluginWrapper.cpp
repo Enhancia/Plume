@@ -99,11 +99,16 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
     PLUME::log::writeToLog ("Attempting to load plugin : " + descToWrap->name, PLUME::log::pluginWrapping);
 	
     String errorMsg;
+    if (PLUME::file::deadMansPedal.existsAsFile() || PLUME::file::deadMansPedal.create().wasOk())
+        PLUME::file::deadMansPedal.replaceWithText (descToWrap->fileOrIdentifier);
+
     wrappedInstance = formatManager->createPluginInstance (*descToWrap,
                                                            owner.getSampleRate(),
 														   owner.getBlockSize(),
                                                            errorMsg);
-                                                             
+    if (PLUME::file::deadMansPedal.existsAsFile())
+        PLUME::file::deadMansPedal.replaceWithText (String());
+
     if (wrappedInstance == nullptr)
     {
         PLUME::log::writeToLog ("Failed to load plugin.. Error message : " + errorMsg,
@@ -407,9 +412,15 @@ void PluginWrapper::blacklistCrashedPlugin()
 {
     if (scanHandler->hasLastScanCrashed())
     {
-        pluginList->addToBlacklist(scanHandler->getLastCrashedPluginId());
+        if (auto typeToBlacklist = pluginList->getTypeForFile (scanHandler->getLastCrashedPluginId()))
+        {
+            pluginList->removeType (*typeToBlacklist);
+        }
+
+        pluginList->addToBlacklist (scanHandler->getLastCrashedPluginId());
         PLUME::file::deadMansPedal.replaceWithText(String());
         savePluginListToFile();
+        getOwner().sendActionMessage (PLUME::commands::updateInterface);
     }
 }
 

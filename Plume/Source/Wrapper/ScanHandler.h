@@ -174,6 +174,7 @@ private:
                                 // 'findAllTypesForFile()' might trigger a crash.
                                 else
                                 {
+                                    PLUME::log::writeToLog ("Scanner returned 0 (COUNT " + String (count) + "): No result file: Attempting to create description", PLUME::log::pluginScan);
                                     OwnedArray<PluginDescription> found;
                                     
                                     addFileToDmp (fileOrIdentifier);
