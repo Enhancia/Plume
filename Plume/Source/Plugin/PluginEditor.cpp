@@ -121,7 +121,7 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     }
     else if (processor.hasLastSessionCrashed())
     {
-        processor.sendActionMessage (PLUME::commands::plumeCrashed);   
+        processor.sendActionMessage (PLUME::commands::plumeCrashed);
     }
 }
 
@@ -270,7 +270,10 @@ void PlumeEditor::actionListenerCallback (const String &message)
         createAndShowAlertPanel (PlumeAlertPanel::scanRequired);
     
     else if (message.compare (PLUME::commands::plumeCrashed) == 0)
+    {
         createAndShowAlertPanel (PlumeAlertPanel::plumeCrashed);
+        processor.resetLastSessionCrashed();
+    }
 
     else if (message.compare (PLUME::commands::missingScript) == 0)
         createAndShowAlertPanel (PlumeAlertPanel::missingScript);

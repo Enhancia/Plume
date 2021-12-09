@@ -79,9 +79,9 @@ PlumeProcessor::~PlumeProcessor()
     {
         PLUME::nbInstance = PLUME::nbInstance - 1;
         
-        if (PLUME::nbInstance == 0)
+        if (PLUME::nbInstance == 0 && !plumeCrashed)
         {
-            PLUME::file::crashFile.deleteFile();
+            crashFile.deleteFile();
         }
     }
 
@@ -514,14 +514,16 @@ void PlumeProcessor::detectPlumeCrashFromPreviousSession()
     {
         if (PLUME::nbInstance == 1)
         {
-            if (PLUME::file::crashFile.existsAsFile())
+            setCrashFileToCurrentFormat();
+
+            if (crashFile.existsAsFile())
             {
                 //File shouldnt be here : there was a crash
                 plumeCrashed = true;
             }
             else
             {
-                PLUME::file::crashFile.create();
+                crashFile.create();
             }
         }
     }
@@ -614,6 +616,11 @@ bool PlumeProcessor::hasLastSessionCrashed()
     return plumeCrashed;
 }
 
+void PlumeProcessor::resetLastSessionCrashed()
+{
+    plumeCrashed = false;
+}
+
 void PlumeProcessor::stopAuthDetection (bool isDetectionSuccessful)
 {
     if (isDetectingAuthSequence)
@@ -688,4 +695,24 @@ bool PlumeProcessor::isNextStepInAuthSequence (float receivedValue)
     const bool isnextstep = (authParamSequence[stepInAuthSequence] == authChar);
 
     return isnextstep;
+}
+
+
+void PlumeProcessor::setCrashFileToCurrentFormat()
+{
+    const PluginHostType currentHostType;
+    const auto wrapperType = currentHostType.getPluginLoadedAs();
+
+  #if JUCE_WINDOWS
+    crashFile = File::getSpecialLocation (File::userApplicationDataDirectory)
+                .getChildFile (wrapperType == AudioProcessor::wrapperType_VST  ? "Enhancia/Plume/plumectV.cfg" :
+                               wrapperType == AudioProcessor::wrapperType_VST3 ? "Enhancia/Plume/plumect3.cfg" :
+                               "Enhancia/Plume/plumect.cfg");
+  #elif JUCE_MAC
+    crashFile = File::getSpecialLocation (File::userApplicationDataDirectory)
+                .getChildFile (wrapperType == AudioProcessor::wrapperType_VST       ? "Application Support/Enhancia/Plume/plumectV.cfg" :
+                               wrapperType == AudioProcessor::wrapperType_VST3      ? "Application Support/Enhancia/Plume/plumect3.cfg" :
+                               wrapperType == AudioProcessor::wrapperType_AudioUnit ? "Application Support/Enhancia/Plume/plumectA.cfg" :
+                               "Application Support/Enhancia/Plume/plumect.cfg");
+  #endif
 }

@@ -112,7 +112,7 @@ namespace PLUME
         const Font plumeFontLight = getPlumeFont (light);
         
     }
-
+    
 	GlobalPointers globalPointers;
 	
   #if JUCE_WINDOWS

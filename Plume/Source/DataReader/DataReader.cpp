@@ -23,7 +23,7 @@ DataReader::DataReader(): InterprocessConnection (true, 0x6a6d626e)
   // On MacOS we first connect to the daemon StatutPipe to know which dataPipe we can use
   #if JUCE_MAC
     // Run a timer to wait for an amout of time depending on the number of Plume instanciate -> avoid simultaneous connection on statutPipe
-    if(nbInstance != 1)
+    if (PLUME::nbInstance != 1)
     {
         startTimer(1, PLUME::nbInstance*50);
         return;

@@ -233,11 +233,17 @@ public:
      */
     void removeListenerForPlumeControlParam (AudioProcessorParameter* plumeControlParam);
     /**
-        \brief Getter for the internal plumeCrashed value.        
+        \brief Getter for the internal plumeCrashed value.
      
         \returns True is this Plume file encountered a crash the last time it was used.
      */
     bool hasLastSessionCrashed();
+    /**
+        \brief Resetter for the internal plumeCrashed value.
+
+        Sets the value to false, to prevent several popups.
+     */
+    void resetLastSessionCrashed();
     
 private:
     //==============================================================================
@@ -317,6 +323,10 @@ private:
         \returns true if receivedValue is the next step in the auth sequence.
      */
     bool isNextStepInAuthSequence (float recievedValue);
+    /**
+        \brief Helper method that sets the right format suffix for the crash detection file.
+     */
+    void setCrashFileToCurrentFormat();
 
     bool isDetectingAuthSequence = false; /**< \brief Lets Plume check if Plume is currently in the auth detection process. */
     bool presetIsLocked = false; /**< \brief Tells Plume if the present is currently locked and should therefore not receive MIDI. */
@@ -338,6 +348,14 @@ private:
 
     //==============================================================================
     bool plumeCrashed = false;
+
+    #if JUCE_WINDOWS
+    File crashFile = File::getSpecialLocation (File::userApplicationDataDirectory)
+                                .getChildFile ("Enhancia/Plume/plumect.cfg");
+    #elif JUCE_MAC
+    File crashFile  = File::getSpecialLocation (File::userApplicationDataDirectory)
+                                .getChildFile ("Application Support/Enhancia/Plume/plumect.cfg");
+    #endif
 
     //==============================================================================
     Array<unsigned char> authParamSequence; /**< \brief Sequence expected to receive for auth. */
