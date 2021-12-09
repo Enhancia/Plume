@@ -202,6 +202,13 @@ PlumeAlertPanel* PlumeAlertPanel::createSpecificAlertPanel (SpecificReturnValue 
                                            true,
                                            "Blacklist");
             }
+        case plumeCrashed:
+            return new PlumeAlertPanel ("Plume Crashed.",
+                                       "It seems like something went wrong with Plume during your last session.\n"
+                                       "you can send us a bug report describing what happened to help us correct the issue.",
+                                       int (panelType),
+                                       true,
+                                       "Send Bug Report");
         default:
             return new PlumeAlertPanel ("Something went wrong ..",
                                        "Please contact Enhancia about your issue!",

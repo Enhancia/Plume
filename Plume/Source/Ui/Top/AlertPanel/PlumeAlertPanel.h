@@ -29,6 +29,7 @@ public:
         scanRequired,
         mappingOverwrite,
         scanCrashed,
+        plumeCrashed,
         unknown
     };
 

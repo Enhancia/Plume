@@ -232,6 +232,12 @@ public:
         \param plumeControlParam The specific parameter used for the auth and unlock processes.
      */
     void removeListenerForPlumeControlParam (AudioProcessorParameter* plumeControlParam);
+    /**
+        \brief Getter for the internal plumeCrashed value.        
+     
+        \returns True is this Plume file encountered a crash the last time it was used.
+     */
+    bool hasLastSessionCrashed();
     
 private:
     //==============================================================================
@@ -329,6 +335,9 @@ private:
     //==============================================================================
     //ValueTree settings;
     AudioProcessorValueTreeState parameters; /**< \brief Holds all plugin parameters for Plume. */
+
+    //==============================================================================
+    bool plumeCrashed = false;
 
     //==============================================================================
     Array<unsigned char> authParamSequence; /**< \brief Sequence expected to receive for auth. */

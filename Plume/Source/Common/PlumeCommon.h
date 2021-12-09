@@ -227,8 +227,8 @@ namespace PLUME
     // file
     namespace file
     {
-        static const File crashFile        (File::getSpecialLocation (File::userDesktopDirectory).getChildFile ("plumect.cfg"));
       #if JUCE_WINDOWS
+        static const File crashFile        (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/Plume/plumect.cfg"));
         static const File pluginList       (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/Plume/plumepl.cfg"));
         static const File presetDir        (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/Plume/plumepr.cfg"));
         static const File deadMansPedal    (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/Plume/plumedmp.cfg"));
@@ -237,6 +237,7 @@ namespace PLUME
         static const File defaultPresetDir (File::getSpecialLocation (File::globalApplicationsDirectoryX86).getChildFile ("Enhancia/Plume/Presets/"));
         static const File scannerExe       (File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("Enhancia/utilities/PluginScanner.exe"));
       #elif JUCE_MAC
+        static const File crashFile       (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/Enhancia/Plume/plumect.cfg"));
         static const File pluginList       (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/Enhancia/Plume/plumepl.cfg"));
         static const File presetDir        (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/Enhancia/Plume/plumepr.cfg"));
         static const File deadMansPedal    (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/Enhancia/Plume/plumedmp.cfg"));
@@ -259,6 +260,7 @@ namespace PLUME
         static const String missingPlugin ("missingPlugin");
         static const String mappingOverwrite ("mappingOverwrite");
         static const String scanCrashed ("scanCrashed");
+        static const String plumeCrashed ("plumeCrashed");
     }
 
     namespace compatibility

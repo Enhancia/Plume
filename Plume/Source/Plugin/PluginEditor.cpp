@@ -119,6 +119,10 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
         processor.sendActionMessage (PLUME::commands::scanCrashed +
                                      processor.getWrapper().getScanner().getLastCrashedPluginId());
     }
+    else if (processor.hasLastSessionCrashed())
+    {
+        processor.sendActionMessage (PLUME::commands::plumeCrashed);   
+    }
 }
 
 PlumeEditor::~PlumeEditor()
@@ -264,6 +268,9 @@ void PlumeEditor::actionListenerCallback (const String &message)
     }
     else if (message.compare (PLUME::commands::scanRequired) == 0)
         createAndShowAlertPanel (PlumeAlertPanel::scanRequired);
+    
+    else if (message.compare (PLUME::commands::plumeCrashed) == 0)
+        createAndShowAlertPanel (PlumeAlertPanel::plumeCrashed);
 
     else if (message.compare (PLUME::commands::missingScript) == 0)
         createAndShowAlertPanel (PlumeAlertPanel::missingScript);
@@ -488,6 +495,11 @@ void PlumeEditor::executePanelAction (const int panelReturnValue)
             break;
         case PlumeAlertPanel::scanCrashed:
             processor.getWrapper().blacklistCrashedPlugin();
+            break;
+        case PlumeAlertPanel::plumeCrashed:
+            optionsPanel->setVisible (true);
+            optionsPanel->getOptions().switchToTab (1);
+            bugReportPanel->setVisible (true);
             break;
         default: // modalResult 0 or unknown
             break;

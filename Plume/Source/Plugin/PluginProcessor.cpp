@@ -40,7 +40,7 @@ PlumeProcessor::PlumeProcessor()
     Logger::setCurrentLogger (plumeLogger.get());
     
     PLUME::nbInstance = PLUME::nbInstance + 1;
-    
+
     // Parameters
     initializeParameters();
     initializeSettings();
@@ -78,6 +78,11 @@ PlumeProcessor::~PlumeProcessor()
     if(PLUME::nbInstance>0)
     {
         PLUME::nbInstance = PLUME::nbInstance - 1;
+        
+        if (PLUME::nbInstance == 0)
+        {
+            PLUME::file::crashFile.deleteFile();
+        }
     }
 
   #if JUCE_MAC
@@ -505,6 +510,21 @@ void PlumeProcessor::detectPlumeCrashFromPreviousSession()
     {
         wrapper->getScanner().setLastCrash (PLUME::file::deadMansPedal.loadFileAsString());
     }
+    else
+    {
+        if (PLUME::nbInstance == 1)
+        {
+            if (PLUME::file::crashFile.existsAsFile())
+            {
+                //File shouldnt be here : there was a crash
+                plumeCrashed = true;
+            }
+            else
+            {
+                PLUME::file::crashFile.create();
+            }
+        }
+    }
 }
 
 void PlumeProcessor::checkAndUpdateRecordingStatus()
@@ -587,6 +607,11 @@ void PlumeProcessor::removeListenerForPlumeControlParam (AudioProcessorParameter
     {
         plumeControlParam->removeListener (this);
     }   
+}
+
+bool PlumeProcessor::hasLastSessionCrashed()
+{
+    return plumeCrashed;
 }
 
 void PlumeProcessor::stopAuthDetection (bool isDetectionSuccessful)
