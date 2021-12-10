@@ -512,7 +512,9 @@ void PlumeProcessor::detectPlumeCrashFromPreviousSession()
     }
     else
     {
-        if (PLUME::nbInstance == 1)
+        PluginHostType currentHostType;
+
+        if (PLUME::nbInstance == 1 && !currentHostType.isBitwigStudio())
         {
             setCrashFileToCurrentFormat();
 
