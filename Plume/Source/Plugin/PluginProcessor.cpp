@@ -502,6 +502,8 @@ void PlumeProcessor::updateTrackProperties (const AudioProcessor::TrackPropertie
 
 void PlumeProcessor::detectPlumeCrashFromPreviousSession()
 {
+    setCrashFileToCurrentFormat();
+    
     if (PLUME::file::deadMansPedal.existsAsFile() &&
         PLUME::file::deadMansPedal.loadFileAsString().isNotEmpty() &&
         File (PLUME::file::deadMansPedal.loadFileAsString()).exists() &&
@@ -516,8 +518,6 @@ void PlumeProcessor::detectPlumeCrashFromPreviousSession()
 
         if (PLUME::nbInstance == 1 && !currentHostType.isBitwigStudio())
         {
-            setCrashFileToCurrentFormat();
-
             if (crashFile.existsAsFile())
             {
                 //File shouldnt be here : there was a crash
