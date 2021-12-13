@@ -129,7 +129,7 @@ public:
                                                        const bool hasCloseButton = true,
                                                        int returnValue = 0);
 
-    void createAndShowAlertPanel (PlumeAlertPanel::SpecificReturnValue returnValue);
+    void createAndShowAlertPanel (PlumeAlertPanel::SpecificReturnValue returnValue, const String& specificText = "");
 
     /** 
         \brief  Modal alert panel destructor.

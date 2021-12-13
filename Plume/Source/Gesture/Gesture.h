@@ -355,34 +355,34 @@ public:
     /**
        \brief  Returns a string corresponding to a specified gesture type.
 
-               Call this method to return a specific gesture type description.
-               This can be used by the interface to describe a gesture while
-               not manipulating gestures (ie the gesture type selection on the 
-               newGesturePanel)
+        Call this method to return a specific gesture type description.
+        This can be used by the interface to describe a gesture while
+        not manipulating gestures (ie the gesture type selection on the 
+        newGesturePanel)
      */
     static String getGestureTypeDescription (int gestureType);
 
     /**
        \brief  Returns the highlight colour corresponding to the gesture's type and active state.
 
-               Call this method to return a specific gesture type description.
-               This can be used by the interface to draw the gesture's panels
+       Call this method to return a specific gesture type description.
+       This can be used by the interface to draw the gesture's panels
      */
     Colour getHighlightColour() const;
 
     /**
        \brief  Returns the highlight colour corresponding to the gesture's type, for a specified ON or OFF state.
 
-               Call this method to return a specific gesture type description.
-               This can be used by the interface to draw the gesture's panels
+        Call this method to return a specific gesture type description.
+        This can be used by the interface to draw the gesture's panels
      */
     Colour getHighlightColour (bool gestureIsActive) const;
 
     /**
        \brief  Returns the highlight colour corresponding to a specified gesture type.
 
-               Call this method to return a specific gesture type colour.
-               This can be used by the interface to draw the gesture's panels.
+        Call this method to return a specific gesture type colour.
+        This can be used by the interface to draw the gesture's panels.
      */
     static Colour getHighlightColour (int gestureType, bool gestureIsActive = true);
 

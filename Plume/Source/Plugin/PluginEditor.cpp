@@ -111,6 +111,18 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
         optionsPanel->setVisible (true);
         updaterPanel->resetAndOpenPanel();
     }
+
+    if (processor.getWrapper().getScanner().hasLastScanCrashed())
+    {
+        PLUME::file::deadMansPedal.replaceWithText (String());
+        
+        processor.sendActionMessage (PLUME::commands::scanCrashed +
+                                     processor.getWrapper().getScanner().getLastCrashedPluginId());
+    }
+    else if (processor.hasLastSessionCrashed())
+    {
+        processor.sendActionMessage (PLUME::commands::plumeCrashed);
+    }
 }
 
 PlumeEditor::~PlumeEditor()
@@ -256,12 +268,23 @@ void PlumeEditor::actionListenerCallback (const String &message)
     }
     else if (message.compare (PLUME::commands::scanRequired) == 0)
         createAndShowAlertPanel (PlumeAlertPanel::scanRequired);
+    
+    else if (message.compare (PLUME::commands::plumeCrashed) == 0)
+    {
+        createAndShowAlertPanel (PlumeAlertPanel::plumeCrashed);
+        processor.resetLastSessionCrashed();
+    }
 
     else if (message.compare (PLUME::commands::missingScript) == 0)
         createAndShowAlertPanel (PlumeAlertPanel::missingScript);
 
-    else if (message.compare (PLUME::commands::missingPlugin) == 0)
-        createAndShowAlertPanel (PlumeAlertPanel::missingPlugin);
+    else if (message.startsWith (PLUME::commands::missingPlugin))
+        createAndShowAlertPanel (PlumeAlertPanel::missingPlugin,
+                                 message.fromLastOccurrenceOf (PLUME::commands::missingPlugin, false, false));
+
+    else if (message.startsWith (PLUME::commands::scanCrashed))
+        createAndShowAlertPanel (PlumeAlertPanel::scanCrashed,
+                                 message.fromLastOccurrenceOf (PLUME::commands::scanCrashed, false, false));
 
     else if (message.compare(PLUME::commands::mappingOverwrite) == 0)
     {
@@ -419,29 +442,37 @@ void PlumeEditor::createAndShowAlertPanel (const String& title, const String& me
     if (alertPanel) return;
 
     alertPanel.reset (new PlumeAlertPanel (title, message, returnValue, hasCloseButton, buttonText));
-    addAndMakeVisible (*alertPanel);
+    
+    if (alertPanel)
+    {
+        addAndMakeVisible (*alertPanel);
 
-    alertPanel->setVisible (true);
-    alertPanel->setAlwaysOnTop (true);
-    alertPanel->setLookAndFeel (&plumeLookAndFeel);
-    alertPanel->setBounds (getLocalBounds());
+        alertPanel->setVisible (true);
+        alertPanel->setAlwaysOnTop (true);
+        alertPanel->setLookAndFeel (&plumeLookAndFeel);
+        alertPanel->setBounds (getLocalBounds());
 
-    alertPanel->enterModalState (true, ModalCallbackFunction::forComponent (alertPanelCallback, this), false);
+        alertPanel->enterModalState (true, ModalCallbackFunction::forComponent (alertPanelCallback, this), false);
+    }
 }
 
-void PlumeEditor::createAndShowAlertPanel (PlumeAlertPanel::SpecificReturnValue returnValue)
+void PlumeEditor::createAndShowAlertPanel (PlumeAlertPanel::SpecificReturnValue returnValue, const String& specificText)
 {
     if (alertPanel) return;
 
-    alertPanel.reset (PlumeAlertPanel::createSpecificAlertPanel (returnValue));
-    addAndMakeVisible (*alertPanel);
+    alertPanel.reset (PlumeAlertPanel::createSpecificAlertPanel (returnValue, specificText));
 
-    alertPanel->setVisible (true);
-    alertPanel->setAlwaysOnTop (true);
-    alertPanel->setLookAndFeel (&plumeLookAndFeel);
-    alertPanel->setBounds (getLocalBounds());
+    if (alertPanel)
+    {
+        addAndMakeVisible (*alertPanel);
 
-    alertPanel->enterModalState (true, ModalCallbackFunction::forComponent (alertPanelCallback, this), false);
+        alertPanel->setVisible (true);
+        alertPanel->setAlwaysOnTop (true);
+        alertPanel->setLookAndFeel (&plumeLookAndFeel);
+        alertPanel->setBounds (getLocalBounds());
+
+        alertPanel->enterModalState (true, ModalCallbackFunction::forComponent (alertPanelCallback, this), false);
+    }
 }
 
 void PlumeEditor::closePendingAlertPanel()
@@ -464,6 +495,14 @@ void PlumeEditor::executePanelAction (const int panelReturnValue)
             optionsPanel->setVisible (true);
             optionsPanel->getOptions().switchToTab (0);
             
+            break;
+        case PlumeAlertPanel::scanCrashed:
+            processor.getWrapper().blacklistCrashedPlugin();
+            break;
+        case PlumeAlertPanel::plumeCrashed:
+            optionsPanel->setVisible (true);
+            optionsPanel->getOptions().switchToTab (1);
+            bugReportPanel->setVisible (true);
             break;
         default: // modalResult 0 or unknown
             break;

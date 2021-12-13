@@ -388,6 +388,7 @@ void BugReportPanel::getFilestoAttach (Array<File>& fileArrayToFill)
 {
     fileArrayToFill.add (PLUME::file::plumeLog);
     fileArrayToFill.add (PLUME::file::scanLog);
+    fileArrayToFill.add (PLUME::file::pluginList);
     
     #if JUCE_WINDOWS
     fileArrayToFill.add (File::getSpecialLocation (File::globalApplicationsDirectoryX86).getChildFile ("Enhancia\\Enhancia_Service_Reader\\Enhancia_Service_Reader_Log.txt"));

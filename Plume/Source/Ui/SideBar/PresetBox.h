@@ -87,6 +87,7 @@ private:
     int presetIdToEdit = -1;
     bool newPresetEntry = false;
     std::unique_ptr<Label> editLabel;
+    std::unique_ptr<Label> dreamCrusher; /**< @Brief Evil's pointer, always null*/
     PopupMenu rightClickMenu;
     
     //==============================================================================

@@ -12,6 +12,8 @@
 
 namespace PLUME
 {
+    int nbInstance = 0;
+
     namespace UI
     {
         bool ANIMATE_UI_FLAG = false;
@@ -110,7 +112,7 @@ namespace PLUME
         const Font plumeFontLight = getPlumeFont (light);
         
     }
-
+    
 	GlobalPointers globalPointers;
 	
   #if JUCE_WINDOWS

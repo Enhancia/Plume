@@ -39,6 +39,8 @@ PlumeProcessor::PlumeProcessor()
     
     Logger::setCurrentLogger (plumeLogger.get());
     
+    PLUME::nbInstance = PLUME::nbInstance + 1;
+
     // Parameters
     initializeParameters();
     initializeSettings();
@@ -55,6 +57,7 @@ PlumeProcessor::PlumeProcessor()
     
     dataReader->addChangeListener (gestureArray.get());
 
+    detectPlumeCrashFromPreviousSession();
 }
 
 PlumeProcessor::~PlumeProcessor()
@@ -71,6 +74,16 @@ PlumeProcessor::~PlumeProcessor()
     presetHandler = nullptr;
 
     removeLogger();
+    
+    if(PLUME::nbInstance>0)
+    {
+        PLUME::nbInstance = PLUME::nbInstance - 1;
+        
+        if (PLUME::nbInstance == 0 && !plumeCrashed)
+        {
+            crashFile.deleteFile();
+        }
+    }
 
   #if JUCE_MAC
     //MessageManager::getInstance()->runDispatchLoopUntil (1000);
@@ -487,6 +500,37 @@ void PlumeProcessor::updateTrackProperties (const AudioProcessor::TrackPropertie
     DBG ("Name : " << properties.name << " | Colour : " << properties.colour.toDisplayString(false));
 }
 
+void PlumeProcessor::detectPlumeCrashFromPreviousSession()
+{
+    setCrashFileToCurrentFormat();
+    
+    if (PLUME::file::deadMansPedal.existsAsFile() &&
+        PLUME::file::deadMansPedal.loadFileAsString().isNotEmpty() &&
+        File (PLUME::file::deadMansPedal.loadFileAsString()).exists() &&
+        Time::getCurrentTime().toMilliseconds()
+           - PLUME::file::deadMansPedal.getLastModificationTime().toMilliseconds() > 3000)
+    {
+        wrapper->getScanner().setLastCrash (PLUME::file::deadMansPedal.loadFileAsString());
+    }
+    else
+    {
+        PluginHostType currentHostType;
+
+        if (PLUME::nbInstance == 1 && !currentHostType.isBitwigStudio())
+        {
+            if (crashFile.existsAsFile())
+            {
+                //File shouldnt be here : there was a crash
+                plumeCrashed = true;
+            }
+            else
+            {
+                crashFile.create();
+            }
+        }
+    }
+}
+
 void PlumeProcessor::checkAndUpdateRecordingStatus()
 {
     bool isRecording = false;
@@ -569,6 +613,16 @@ void PlumeProcessor::removeListenerForPlumeControlParam (AudioProcessorParameter
     }   
 }
 
+bool PlumeProcessor::hasLastSessionCrashed()
+{
+    return plumeCrashed;
+}
+
+void PlumeProcessor::resetLastSessionCrashed()
+{
+    plumeCrashed = false;
+}
+
 void PlumeProcessor::stopAuthDetection (bool isDetectionSuccessful)
 {
     if (isDetectingAuthSequence)
@@ -634,22 +688,33 @@ void PlumeProcessor::startSendingUnlockParamSequence()
         unlockParamSequence.add (int(characterToEncode)/127.0f);
     }
 
-    startTimer (0, 10);
+    startTimer (0, 30);
 }
 
 bool PlumeProcessor::isNextStepInAuthSequence (float receivedValue)
 {
-    //char* valueChars = reinterpret_cast<char*> (&receivedValue);
-    //const char* authChar = &valueChars[2];
-
-    /*PLUME::log::writeToLog ("Received value : " + String (receivedValue) +
-                            " | Hex : " + String::toHexString ((void*)valueChars, sizeof (receivedValue), 1) +
-                            " | Chars : " + String (valueChars) +
-                            " | Auth Char : " + String (authChar, 1),
-                            PLUME::log::security);*/
-
     const char authChar = char (receivedValue*127);
     const bool isnextstep = (authParamSequence[stepInAuthSequence] == authChar);
 
     return isnextstep;
+}
+
+
+void PlumeProcessor::setCrashFileToCurrentFormat()
+{
+    const PluginHostType currentHostType;
+    const auto wrapperType = currentHostType.getPluginLoadedAs();
+
+  #if JUCE_WINDOWS
+    crashFile = File::getSpecialLocation (File::userApplicationDataDirectory)
+                .getChildFile (wrapperType == AudioProcessor::wrapperType_VST  ? "Enhancia/Plume/plumectV.cfg" :
+                               wrapperType == AudioProcessor::wrapperType_VST3 ? "Enhancia/Plume/plumect3.cfg" :
+                               "Enhancia/Plume/plumect.cfg");
+  #elif JUCE_MAC
+    crashFile = File::getSpecialLocation (File::userApplicationDataDirectory)
+                .getChildFile (wrapperType == AudioProcessor::wrapperType_VST       ? "Application Support/Enhancia/Plume/plumectV.cfg" :
+                               wrapperType == AudioProcessor::wrapperType_VST3      ? "Application Support/Enhancia/Plume/plumect3.cfg" :
+                               wrapperType == AudioProcessor::wrapperType_AudioUnit ? "Application Support/Enhancia/Plume/plumectA.cfg" :
+                               "Application Support/Enhancia/Plume/plumect.cfg");
+  #endif
 }

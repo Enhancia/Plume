@@ -28,6 +28,8 @@ namespace PLUME
 {
     const int NUM_GEST = 8;
     const int MAX_PARAMETER = 6;
+
+    extern int nbInstance; /**< @Brief shared variable between same instance .dll, tracks number of instance opened  */
     
     namespace UI
     {
@@ -237,7 +239,6 @@ namespace PLUME
         static const File pluginList       (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/Enhancia/Plume/plumepl.cfg"));
         static const File presetDir        (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/Enhancia/Plume/plumepr.cfg"));
         static const File deadMansPedal    (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/Enhancia/Plume/plumedmp.cfg"));
-
         static const File plumeLog         (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Logs/Enhancia/Plume/plumeLog.txt"));
         static const File scanLog          (File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Logs/Enhancia/Plume/scanLog.txt"));
         static const File defaultPresetDir (File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Audio/Presets/Plume/"));
@@ -256,6 +257,8 @@ namespace PLUME
         static const String missingScript ("missingScript");
         static const String missingPlugin ("missingPlugin");
         static const String mappingOverwrite ("mappingOverwrite");
+        static const String scanCrashed ("scanCrashed");
+        static const String plumeCrashed ("plumeCrashed");
     }
 
     namespace compatibility
