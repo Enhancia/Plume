@@ -108,6 +108,10 @@ namespace PLUME
 	    static Identifier group ("group");
 	    static Identifier setting ("setting");
 	    static Identifier value ("value");
+        static Identifier currentPreset ("CURRENTPRESET");
+        static Identifier currentPresetName ("c_preset_name");
+        static Identifier currentPresetType ("c_preset_type");
+        static Identifier currentPresetFile ("c_preset_file");
 	    static Identifier general ("GENERAL");
 	    static Identifier instance ("instance");
 	    static Identifier presetDir ("PRESETDIR");

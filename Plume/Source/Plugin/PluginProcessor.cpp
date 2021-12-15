@@ -235,10 +235,11 @@ void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
 	bool notifyEditor = false;
 	
 	// Plugin configuration loading
-    if (wrapperData->getChildByName ("GENERAL") != nullptr)
+    if (wrapperData->getChildByName ("PLUME") != nullptr)
     {
 		PLUME::UI::ANIMATE_UI_FLAG = false;
         parameters.replaceState (ValueTree::fromXml (*wrapperData->getChildByName ("PLUME")));
+        presetHandler->loadInfoFromTreeState (parameters.state.getChildWithName (PLUME::treeId::general));
         notifyEditor = true;
     }
     
@@ -269,6 +270,12 @@ void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
 
 void PlumeProcessor::createGeneralXml(XmlElement& wrapperData)
 {
+    DBG (parameters.state.toXmlString()); // OLD STATE
+    
+    presetHandler->saveInfoToTreeState (parameters);
+
+    DBG (parameters.state.toXmlString()); // NEW STATE (Updated current preset)
+
 	wrapperData.addChildElement (new XmlElement (*parameters.state.createXml()));
 }
 
@@ -449,6 +456,11 @@ void PlumeProcessor::initializeSettings()
     generalTree.addChild (ValueTree (pluginDirs), 3, nullptr);
     generalTree.getChild (3).addChild (ValueTree (directory).setProperty (value, "", nullptr),
                                        0, nullptr);
+
+    generalTree.addChild (ValueTree (currentPreset).setProperty (currentPresetName, "", nullptr)
+                                                   .setProperty (currentPresetType, "", nullptr)
+                                                   .setProperty (currentPresetFile, "", nullptr),
+                          4, nullptr);
 }
 
 void PlumeProcessor::timerCallback (int timerID)
