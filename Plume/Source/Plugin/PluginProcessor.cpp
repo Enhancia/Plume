@@ -269,13 +269,8 @@ void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
 }
 
 void PlumeProcessor::createGeneralXml(XmlElement& wrapperData)
-{
-    DBG (parameters.state.toXmlString()); // OLD STATE
-    
+{    
     presetHandler->saveInfoToTreeState (parameters);
-
-    DBG (parameters.state.toXmlString()); // NEW STATE (Updated current preset)
-
 	wrapperData.addChildElement (new XmlElement (*parameters.state.createXml()));
 }
 
