@@ -333,7 +333,8 @@ namespace PLUME
             pluginScan,
             pluginWrapping,
             wrappedInterface,
-            security
+            security,
+            bugReport
         };
         
         const String levelStrings[] = {
@@ -355,7 +356,8 @@ namespace PLUME
             "pluginScan: ",
             "pluginWrapping: ",
             "wrappedInterface: ",
-            "security: "
+            "security: ",
+            "bugReport: "
         };
 
         static void writeToLog (const String& message, const LogCategory category=general, const LogLevel level=info)

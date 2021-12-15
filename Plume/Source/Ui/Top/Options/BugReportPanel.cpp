@@ -307,7 +307,7 @@ void BugReportPanel::sendTicketAndUpdate()
 
     if (webStream == nullptr)
     {
-        DBG ("Failed to create Input Stream !");
+        PLUME::log::writeToLog ("Failed to create an Input Stream to send the ticket..", PLUME::log::bugReport, PLUME::log::error);
         updateComponentsForSpecificStep (reportSentError);
         return;
     }
@@ -315,15 +315,15 @@ void BugReportPanel::sendTicketAndUpdate()
     if (dynamic_cast<WebInputStream*> (webStream.get())->isError() || statusCode >= 400)
     {
         const String response = webStream->readEntireStreamAsString();
+        const String errorMessage =  ("Failed to send ticket .. \n Stream error    ? "
+                                       + String (dynamic_cast<WebInputStream*> (webStream.get())->isError() ? "Yes" : "No")
+                                       + "\n Code            : " + String (statusCode)
+                                       + "\n Request  Headers: " + dynamic_cast<WebInputStream*> (webStream.get())->getRequestHeaders()
+                                                                                                                    .getDescription()
+                                       + "\n Response Headers: " + responseHeaders.getDescription()
+                                       + "\n Response        : " + response);
 
-        DBG ("Failed to send ticket .. \n Stream error    ? "
-                << (dynamic_cast<WebInputStream*> (webStream.get())->isError() ? "Yes" : "No")
-                << "\n Code            : " << statusCode
-                << "\n POST Data       : " << ticketURL.getPostData().substring (0, 1000)
-                << "\n Request  Headers: " << dynamic_cast<WebInputStream*> (webStream.get())->getRequestHeaders().getDescription()
-                << "\n Response Headers: " << responseHeaders.getDescription()
-                << "\n Response        : " << response);
-
+        PLUME::log::writeToLog (errorMessage, PLUME::log::bugReport, PLUME::log::error);
         updateComponentsForSpecificStep (reportSentError);
         return;
     }
