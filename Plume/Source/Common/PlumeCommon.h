@@ -248,7 +248,7 @@ namespace PLUME
         static const File defaultPresetDir (File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Audio/Presets/Plume/"));
         static const File scannerExe       (File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Application Support/Enhancia/PlumePluginScanner"));
       #endif
-    }
+    } 
     
     // commands strings
     namespace commands
