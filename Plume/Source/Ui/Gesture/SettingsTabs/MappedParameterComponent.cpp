@@ -46,11 +46,11 @@ MappedParameterComponent::MappedParameterComponent (Gesture& gest,  GestureArray
 
 MappedParameterComponent::~MappedParameterComponent()
 {
-        lowSlider->setLookAndFeel (nullptr);
-    lowSlider = nullptr;
-
+    lowSlider->removeListener (this);
+    lowSlider->setLookAndFeel (nullptr);
+    
+    lowSlider->removeListener (this);
     highSlider->setLookAndFeel (nullptr);
-    highSlider = nullptr;
 
     closeButton = nullptr;
     reverseButton = nullptr;
@@ -404,20 +404,20 @@ void MappedParameterComponent::mouseUp (const MouseEvent& e)
         {
             if (objectBeingDragged == lowThumb)
             {
-                lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider.get()));
+                lowSlider->mouseUp (e.getEventRelativeTo (lowSlider.get()));
                 rangeLabelMin->setVisible (false);
             }
 
             else if (objectBeingDragged == highThumb)
             {
-                highSlider->mouseDrag (e.getEventRelativeTo (highSlider.get()));
+                highSlider->mouseUp (e.getEventRelativeTo (highSlider.get()));
                 rangeLabelMax->setVisible (false);
             }
 
             else if (objectBeingDragged == middleArea)
             {
-                lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider.get()));
-                highSlider->mouseDrag (e.getEventRelativeTo (highSlider.get()));
+                lowSlider->mouseUp (e.getEventRelativeTo (lowSlider.get()));
+                highSlider->mouseUp (e.getEventRelativeTo (highSlider.get()));
                 lowSlider->setSliderSnapsToMousePosition (true);
                 highSlider->setSliderSnapsToMousePosition (true);
 

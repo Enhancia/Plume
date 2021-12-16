@@ -213,6 +213,50 @@ std::unique_ptr<XmlElement> PresetHandler::getPresetXmlToLoad (int selectedPrese
     }	
 }
 
+void PresetHandler::loadInfoFromTreeState (const ValueTree& treeState)
+{
+    if (treeState.isValid())
+    {
+        auto currentPresetTree = treeState.getChildWithName (PLUME::treeId::currentPreset);
+
+        if (currentPresetTree.isValid())
+        {
+            using namespace PLUME::treeId;
+            
+            if (currentPresetTree.hasProperty (currentPresetName))
+                currentPreset.setName (currentPresetTree.getProperty (currentPresetName).toString());
+            
+            if (currentPresetTree.hasProperty (currentPresetType))
+                currentPreset.presetType = int (currentPresetTree.getProperty (currentPresetType));
+            
+            if (currentPresetTree.hasProperty (currentPresetFile))
+                currentPreset.setFile (currentPresetTree.getProperty (currentPresetFile).toString());
+        }
+    }
+}
+
+void PresetHandler::saveInfoToTreeState (AudioProcessorValueTreeState& apvts)
+{
+    auto treeState = apvts.copyState();
+
+    if (treeState.isValid())
+    {
+        auto currentPresetTree = treeState.getChildWithName (PLUME::treeId::general)
+                                          .getChildWithName (PLUME::treeId::currentPreset);
+
+        if (currentPresetTree.isValid() && currentPreset.isValid())
+        {
+            using namespace PLUME::treeId;
+            
+            currentPresetTree.setProperty (currentPresetName, currentPreset.getName(), nullptr);
+            currentPresetTree.setProperty (currentPresetType, currentPreset.presetType, nullptr);
+            currentPresetTree.setProperty (currentPresetFile, currentPreset.getFile().getFullPathName(), nullptr);
+
+            apvts.replaceState (treeState);
+        }
+    }
+}
+
 bool PresetHandler::savePreset (XmlElement& presetXml, File fileToWriteTo)
 {
     String fileString = File::createLegalFileName(presetXml.getChildByName("INFO")->getStringAttribute("name") + ".plume");

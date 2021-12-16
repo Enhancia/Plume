@@ -11,7 +11,6 @@
 #pragma once
 
 #include "../../../../../JuceLibraryCode/JuceHeader.h"
-#include "../../../../Common/PlumeCommon.h"
 #include "../../../../Plugin/PluginProcessor.h"
 #include "../ScannerComponent.h"
 #include "SubPanelComponent.h"

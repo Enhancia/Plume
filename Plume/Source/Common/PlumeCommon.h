@@ -108,6 +108,10 @@ namespace PLUME
 	    static Identifier group ("group");
 	    static Identifier setting ("setting");
 	    static Identifier value ("value");
+        static Identifier currentPreset ("CURRENTPRESET");
+        static Identifier currentPresetName ("c_preset_name");
+        static Identifier currentPresetType ("c_preset_type");
+        static Identifier currentPresetFile ("c_preset_file");
 	    static Identifier general ("GENERAL");
 	    static Identifier instance ("instance");
 	    static Identifier presetDir ("PRESETDIR");
@@ -244,7 +248,7 @@ namespace PLUME
         static const File defaultPresetDir (File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Audio/Presets/Plume/"));
         static const File scannerExe       (File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Application Support/Enhancia/PlumePluginScanner"));
       #endif
-    }
+    } 
     
     // commands strings
     namespace commands
@@ -329,7 +333,8 @@ namespace PLUME
             pluginScan,
             pluginWrapping,
             wrappedInterface,
-            security
+            security,
+            bugReport
         };
         
         const String levelStrings[] = {
@@ -351,7 +356,8 @@ namespace PLUME
             "pluginScan: ",
             "pluginWrapping: ",
             "wrappedInterface: ",
-            "security: "
+            "security: ",
+            "bugReport: "
         };
 
         static void writeToLog (const String& message, const LogCategory category=general, const LogLevel level=info)
