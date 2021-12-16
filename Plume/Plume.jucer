@@ -4,7 +4,7 @@
               version="0.1.12" companyName="Enhancia" buildVST="1" buildVST3="1"
               buildAU="1" buildAUv3="0" buildRTAS="0" buildAAX="0" enableIAA="0"
               pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
-              pluginManufacturer="Enhancia" pluginName="Plume Tests" pluginDesc="Enhancia's Plume. Wraps other plugins, provides customizable and mappable gestures to use with Neova."
+              pluginManufacturer="Enhancia" pluginName="Plume" pluginDesc="Enhancia's Plume. Wraps other plugins, provides customizable and mappable gestures to use with Neova."
               binaryDataNamespace="PlumeData" includeBinaryInJuceHeader="1"
               id="PjN2uz" pluginManufacturerCode="Enhn" pluginCode="Plum" compilerFlagSchemes="NewScheme"
               jucerFormatVersion="1">
