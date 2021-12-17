@@ -133,6 +133,13 @@ public:
      */
     bool isCCInUse (int controllerNumber);
      
+    /**
+     *  \brief Helper method to know if Pitch midi is already in use.
+     *
+     *  \return True if any of the gestures generate pitch.
+     */
+    bool isPitchInUse();
+     
     
     //==============================================================================
     // Modifiers
