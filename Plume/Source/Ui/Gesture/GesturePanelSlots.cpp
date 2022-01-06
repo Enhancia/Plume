@@ -131,8 +131,10 @@ void GestureComponent::editorShown (Label* lbl, TextEditor& ted)
 
 void GestureComponent::labelTextChanged (Label* lbl)
 {
-    gesture.setName (gestureNameLabel->getText());
-    gestureNameLabel->setText (gesture.getName(), dontSendNotification);
+    auto truncatedName = gestureNameLabel->getText().substring(0, 11);
+
+    gesture.setName(truncatedName);
+    gestureNameLabel->setText(gesture.getName(), dontSendNotification);
     
     dynamic_cast<PlumeComponent*> (getParentComponent())->update();
 }
