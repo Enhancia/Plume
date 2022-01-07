@@ -209,12 +209,14 @@ SubPanelComponent::ScannerRowComponent::ScannerRowComponent  (const String& scan
                                                               const String &dialogBoxTitle, 
                                                               const File &initialFileOrDirectory,
                                                               const String &filePatternsAllowed,
-                                                              const File& initialStoredFile,
+                                                              const File& pInitialStoredFile,
                                                               bool searchDirs)
                                                               : searchDirectories (searchDirs)
 {
     setComponentID (scannerID);
-    lastFile = initialStoredFile;
+    this->initialStoredFile = pInitialStoredFile;
+    lastFile = this->initialStoredFile;
+
 
     chooser.reset (new FileChooser (dialogBoxTitle, initialFileOrDirectory, filePatternsAllowed));
     addAndMakeVisible (*(scanButton = std::make_unique<TextButton> ("scanButton")));
@@ -233,16 +235,24 @@ SubPanelComponent::ScannerRowComponent::~ScannerRowComponent()
 
 void SubPanelComponent::ScannerRowComponent::paint (Graphics& g)
 {
-    using namespace PLUME::UI;
+	using namespace PLUME::UI;
 
-    g.setColour (currentTheme.getColour (PLUME::colour::topPanelSubText));
-    g.setFont (PLUME::font::plumeFont.withHeight (11.0f));
+	g.setColour(currentTheme.getColour(PLUME::colour::topPanelSubText));
+	g.setFont(PLUME::font::plumeFont.withHeight(11.0f));
 
-    g.drawFittedText (reducePathName (lastFile.getFullPathName(), 3, 2),
-                      getLocalBounds().removeFromRight (getWidth() - 4*getHeight())
-                                      .reduced (MARGIN, 0),
-                      Justification::centredLeft,
-                      1);
+	juce::String formattedPathName;
+
+	if (lastFile.getFullPathName() == "") {
+		formattedPathName = initialStoredFile.getFullPathName();
+	}
+	else {
+		formattedPathName = lastFile.getFullPathName();
+	}
+
+	formattedPathName = reducePathName(formattedPathName, 3, 2);
+	juce::Rectangle<int> area = getLocalBounds().removeFromRight(getWidth() - 4 * getHeight()).reduced(MARGIN, 0);
+
+	g.drawFittedText(formattedPathName, area, Justification::centredLeft, 1);
 }
 
 void SubPanelComponent::ScannerRowComponent::resized()
@@ -261,6 +271,9 @@ void SubPanelComponent::ScannerRowComponent::buttonClicked (Button* bttn)
             chooser->launchAsync(folderChooserFlags, [this](const FileChooser& fchsr)
             {
                 lastFile = fchsr.getResult();
+                if (lastFile.getFullPathName() != "") {
+                    initialStoredFile = lastFile;
+                }
                 PLUME::log::writeToLog("Changed " + getComponentID() + " : " + lastFile.getFullPathName(), PLUME::log::options);
                 sendChangeMessage();
                 repaint();
