@@ -329,6 +329,7 @@ private:
     void setCrashFileToCurrentFormat();
 
     bool isDetectingAuthSequence = false; /**< \brief Lets Plume check if Plume is currently in the auth detection process. */
+    bool isSendingAuthSequence = false; /**< \brief Lets Plume check if Plume is currently in the unlock process. */
     bool presetIsLocked = false; /**< \brief Tells Plume if the present is currently locked and should therefore not receive MIDI. */
     int stepInAuthSequence = 0; /**< \brief Int that tracks the current step in the auth process. */
     int stepInUnlockSequence = 0; /**< \brief Int that tracks the current step in the unlock process. */

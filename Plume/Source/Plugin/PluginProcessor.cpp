@@ -462,37 +462,52 @@ void PlumeProcessor::timerCallback (int timerID)
 {
     if (timerID == 0) // Unlock send tUnlock
     {
-        if (stepInUnlockSequence >= unlockParamSequence.size())
-        {
-            stopTimer (0);
-            stepInUnlockSequence = 0;
-        }
-
-        if (getWrapper().isWrapping())
-        {
-            getWrapper().getWrapperProcessor().getWrappedInstance()
-                                              .getParameters()[127]
-                                              ->setValue (unlockParamSequence[stepInUnlockSequence++]);
-        }
     }
 }
 
 void PlumeProcessor::parameterValueChanged (int parameterIndex, float newValue)
 {
-    if (wrapper->isWrapping() && parameterIndex == 127 && isDetectingAuthSequence)
+    PLUME::log::writeToLog ("Parameter " + String (parameterIndex) + " changed.", PLUME::log::security);
+    
+    if (wrapper->isWrapping() && parameterIndex == 127)
     {
-        if (isNextStepInAuthSequence (newValue))
-        {
-            stepInAuthSequence++;
+        PLUME::log::writeToLog ("Received auth value : " + String (newValue), PLUME::log::security);
 
-            if (stepInAuthSequence >= authParamSequence.size())
+        if (isDetectingAuthSequence)
+        {
+            if (isNextStepInAuthSequence (newValue))
             {
-                stopAuthDetection (true);
+                stepInAuthSequence++;
+
+                if (stepInAuthSequence >= authParamSequence.size())
+                {
+                    PLUME::log::writeToLog ("Auth succesful", PLUME::log::security);
+                    stopAuthDetection (true);
+                }
+            }
+            else
+            {
+                PLUME::log::writeToLog ("Auth failed", PLUME::log::security);
+                stopAuthDetection (false);            
             }
         }
-        else
+        else if (isSendingAuthSequence && newValue == 0.0f)
         {
-            stopAuthDetection (false);            
+            if (stepInUnlockSequence >= unlockParamSequence.size())
+            {
+                stepInUnlockSequence = 0;
+                isSendingAuthSequence = false;
+            }
+            else
+            {   
+                Timer::callAfterDelay (10, [this]()
+                {
+                    if (auto* controlParameter = getWrapper().getWrapperProcessor().getControlParameter())
+                    {
+                        controlParameter->setValue (unlockParamSequence[stepInUnlockSequence++]);
+                    }
+                });
+            }
         }
     }
 }
@@ -594,7 +609,9 @@ void PlumeProcessor::initializeParamSequences()
 }
 
 void PlumeProcessor::startDetectingAuthSequence()
-{    
+{   
+    PLUME::log::writeToLog ("Starting auth detection", PLUME::log::security);
+
     isDetectingAuthSequence = true;
     stepInAuthSequence = 0;
 
@@ -634,6 +651,8 @@ void PlumeProcessor::stopAuthDetection (bool isDetectionSuccessful)
 {
     if (isDetectingAuthSequence)
     {
+        PLUME::log::writeToLog ("Finished auth detection : succesful ? " + String (isDetectionSuccessful ? "Y" : "N"), PLUME::log::security);
+    
         isDetectingAuthSequence = false;
         stepInAuthSequence = 0;
 
@@ -681,21 +700,25 @@ bool& PlumeProcessor::getLastArmRef()
 
 void PlumeProcessor::startSendingUnlockParamSequence()
 {
+    PLUME::log::writeToLog ("Starting to send unlock sequence", PLUME::log::security);
+
     stepInUnlockSequence = 0;
+    isSendingAuthSequence = true;
     unlockParamSequence.clear();
 
     for (auto characterToEncode : presetHandler->getCurrentPresetName())
     {
-        //const float randomNumber = Random::getSystemRandom().nextFloat();
-        //float numberCopy = randomNumber;
-
-        //char* valueChars = reinterpret_cast<char*> (&numberCopy);
-        //valueChars[2] = characterToEncode;
-
         unlockParamSequence.add (int(characterToEncode)/127.0f);
     }
 
-    startTimer (0, 30);
+    //sends first value
+    if (wrapper->isWrapping())
+    {
+        if (auto* controlParameter = getWrapper().getWrapperProcessor().getControlParameter())
+        {
+            controlParameter->setValue (unlockParamSequence[stepInUnlockSequence++]);
+        }
+    }
 }
 
 bool PlumeProcessor::isNextStepInAuthSequence (float receivedValue)
