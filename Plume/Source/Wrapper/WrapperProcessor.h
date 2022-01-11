@@ -68,6 +68,7 @@ public:
     
     //==============================================================================
     AudioProcessorParameter& getWrappedParameter (int id);
+    AudioProcessorParameter* getControlParameter();
     
     //==============================================================================
     PluginWrapper& getOwnerWrapper();
