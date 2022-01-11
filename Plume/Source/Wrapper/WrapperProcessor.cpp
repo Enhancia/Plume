@@ -122,10 +122,16 @@ void WrapperProcessor::initWrappedParameters()
     
     for (auto* param : params)
     {
+        PLUME::log::writeToLog ("Parameter : " + param->getName (50) +
+                                " (" + String (param->getParameterIndex()) + ")",
+                                PLUME::log::security);
+        
         // TODO CLEANUP changer condition pour detection auto
         if (param->getName (50) == "Host Automation" &&
             param->getParameterIndex() == 127)
         {
+            PLUME::log::writeToLog ("Adding control parameter", PLUME::log::security);
+
             if (controlParameter)
             {
                 controlParameter->removeListener (&listener);
@@ -147,6 +153,11 @@ AudioProcessorParameter& WrapperProcessor::getWrappedParameter (int id)
     auto& params = plugin.getParameters();
     
     return *(params[id]);
+}
+
+AudioProcessorParameter* WrapperProcessor::getControlParameter()
+{
+    return controlParameter;
 }
 
 PluginWrapper& WrapperProcessor::getOwnerWrapper()
