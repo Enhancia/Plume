@@ -35,8 +35,7 @@
  
 class PlumeProcessor  : public AudioProcessor,
                         public ActionBroadcaster,
-                        public AudioProcessorParameter::Listener,
-                        public MultiTimer
+                        public AudioProcessorParameter::Listener
 {
 public:
     //============================================================================== 
@@ -73,7 +72,6 @@ public:
     void updateTrackProperties (const AudioProcessor::TrackProperties& properties) override;
 
     //==============================================================================
-    void timerCallback (int timerID) override;
     void parameterValueChanged (int parameterIndex, float newValue) override;
     void parameterGestureChanged (int parameterIndex, bool gestureIsStarting) override;
 
@@ -220,18 +218,6 @@ public:
         This method will setup the auth detection, that will either lead to starting the unlock process or end in a timeout.
      */
     void startDetectingAuthSequence();
-    /**
-        \brief Registers the specific param as a listener to start the auth and unlock sequences.
-
-        \param plumeControlParam The specific parameter used for the auth and unlock processes. 
-     */
-    void addListenerForPlumeControlParam (AudioProcessorParameter* plumeControlParam);
-    /**
-        \brief Removes the specific param as a listener to stop the auth or unlock sequence.        
-     
-        \param plumeControlParam The specific parameter used for the auth and unlock processes.
-     */
-    void removeListenerForPlumeControlParam (AudioProcessorParameter* plumeControlParam);
     /**
         \brief Getter for the internal plumeCrashed value.
      

@@ -458,21 +458,10 @@ void PlumeProcessor::initializeSettings()
                           4, nullptr);
 }
 
-void PlumeProcessor::timerCallback (int timerID)
-{
-    if (timerID == 0) // Unlock send tUnlock
-    {
-    }
-}
-
 void PlumeProcessor::parameterValueChanged (int parameterIndex, float newValue)
-{
-    PLUME::log::writeToLog ("Parameter " + String (parameterIndex) + " changed.", PLUME::log::security);
-    
+{    
     if (wrapper->isWrapping() && parameterIndex == 127)
     {
-        PLUME::log::writeToLog ("Received auth value : " + String (newValue), PLUME::log::security);
-
         if (isDetectingAuthSequence)
         {
             if (isNextStepInAuthSequence (newValue))
@@ -481,13 +470,11 @@ void PlumeProcessor::parameterValueChanged (int parameterIndex, float newValue)
 
                 if (stepInAuthSequence >= authParamSequence.size())
                 {
-                    PLUME::log::writeToLog ("Auth succesful", PLUME::log::security);
                     stopAuthDetection (true);
                 }
             }
             else
             {
-                PLUME::log::writeToLog ("Auth failed", PLUME::log::security);
                 stopAuthDetection (false);            
             }
         }
@@ -610,8 +597,6 @@ void PlumeProcessor::initializeParamSequences()
 
 void PlumeProcessor::startDetectingAuthSequence()
 {   
-    PLUME::log::writeToLog ("Starting auth detection", PLUME::log::security);
-
     isDetectingAuthSequence = true;
     stepInAuthSequence = 0;
 
@@ -619,22 +604,6 @@ void PlumeProcessor::startDetectingAuthSequence()
     {
         stopAuthDetection (false);        
     });
-}
-
-void PlumeProcessor::addListenerForPlumeControlParam (AudioProcessorParameter* plumeControlParam)
-{
-    if (wrapper->isWrapping())
-    {   
-        plumeControlParam->addListener (this);
-    }
-}
-
-void PlumeProcessor::removeListenerForPlumeControlParam (AudioProcessorParameter* plumeControlParam)
-{
-    if (wrapper->isWrapping())
-    {
-        plumeControlParam->removeListener (this);
-    }   
 }
 
 bool PlumeProcessor::hasLastSessionCrashed()
@@ -650,9 +619,7 @@ void PlumeProcessor::resetLastSessionCrashed()
 void PlumeProcessor::stopAuthDetection (bool isDetectionSuccessful)
 {
     if (isDetectingAuthSequence)
-    {
-        PLUME::log::writeToLog ("Finished auth detection : succesful ? " + String (isDetectionSuccessful ? "Y" : "N"), PLUME::log::security);
-    
+    {    
         isDetectingAuthSequence = false;
         stepInAuthSequence = 0;
 
@@ -700,8 +667,6 @@ bool& PlumeProcessor::getLastArmRef()
 
 void PlumeProcessor::startSendingUnlockParamSequence()
 {
-    PLUME::log::writeToLog ("Starting to send unlock sequence", PLUME::log::security);
-
     stepInUnlockSequence = 0;
     isSendingAuthSequence = true;
     unlockParamSequence.clear();
