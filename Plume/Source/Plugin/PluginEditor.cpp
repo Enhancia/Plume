@@ -83,7 +83,8 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     addAndMakeVisible (*resizableCorner);
 
 	setSize(PLUME::UI::DEFAULT_WINDOW_WIDTH, PLUME::UI::DEFAULT_WINDOW_HEIGHT);
-	setResizeLimits (getWidth(), getHeight(), getWidth()*3, getHeight()*3);
+	setResizeLimits(getWidth(), getHeight(), getWidth() * 3, getHeight() * 3);
+	getConstrainer()->setFixedAspectRatio(16.0 / 9.0);
 
 
 	for (Component* comp : getChildren())

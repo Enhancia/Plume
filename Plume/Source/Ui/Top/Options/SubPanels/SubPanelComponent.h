@@ -160,6 +160,7 @@ private:
         std::unique_ptr<FileChooser> chooser;
         std::unique_ptr<TextButton> scanButton;
         File lastFile;
+        File initialStoredFile;
         const bool searchDirectories;
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ScannerRowComponent)
