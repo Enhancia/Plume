@@ -121,12 +121,9 @@ private:
     bool hasWrappedInstance;
     bool hasOpenedEditor;
     bool useDefaultPaths = true;
-    bool useCustomPaths
+    bool useCustomPaths = false;
   #if JUCE_MAC
-      = false;
     bool useAudioUnits = false;
-  #elif JUCE_WINDOWS
-      = true;
   #endif
 
     float scanProgress = 0.0f;
