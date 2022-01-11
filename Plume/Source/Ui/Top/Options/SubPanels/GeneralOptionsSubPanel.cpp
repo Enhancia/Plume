@@ -54,7 +54,8 @@ ContactSubPanel::ContactSubPanel()
 {
     addSeparatorRow ("Contact");
     addButtonRow ("Contact Enhancia", "cnt", "Contact");
-    addButtonRow ("Send Bug Report", "sbr", "Send");
+    addButtonRow("Send Bug Report", "sbr", "Send");
+    addButtonRow ("Plume Release Notes", "prn", "View");
 }
 
 ContactSubPanel::~ContactSubPanel()
@@ -79,5 +80,8 @@ void ContactSubPanel::buttonClicked (Button* bttn)
         {
             bugReportPanel->setVisible (true);
         }
+    } else if (bttn->getComponentID() == "prn")
+    {
+        URL ("https://www.enhancia-music.com/plume-release-notes/").launchInDefaultBrowser();
     }
 }
