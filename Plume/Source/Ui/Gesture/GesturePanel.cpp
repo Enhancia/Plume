@@ -673,20 +673,16 @@ void GesturePanel::removeParameterListenerForGestureId (const int id)
 
 void GesturePanel::parameterChanged (const String& parameterID, float)
 {
-    // if the ID is "x_value" or "x_vibrato_intensity": doesn't update
-    // (only the MovingCursor object in the the GestureTunerComponent is updated)
-    if (parameterID.dropLastCharacters(2).endsWith ("ue") || !PLUME::UI::ANIMATE_UI_FLAG) return;
+    if (!PLUME::UI::ANIMATE_UI_FLAG) return;
     
     const int gestureId = parameterID.substring(0,1).getIntValue();
     
     if (auto* gestureComponentToUpdate = dynamic_cast<GestureComponent*> (gestureSlots[gestureId]))
     {
+        ScopedLock pcLock (parameterCallbackLock);
+        
         if (gestureComponentToUpdate->id == gestureId)
         {
-			const MessageManagerLock mmLock;
-
-			gestureComponentToUpdate->update();
-
             if (gestureSettings != nullptr)
             {
                 if (gestureSettings->getGestureId() == gestureId)

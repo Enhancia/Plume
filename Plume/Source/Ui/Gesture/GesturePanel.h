@@ -113,6 +113,9 @@ private:
     int draggedOverSlotId = -1;
 
     //==============================================================================
+    CriticalSection parameterCallbackLock;
+
+    //==============================================================================
     GestureArray& gestureArray;
     PluginWrapper& wrapper;
     AudioProcessorValueTreeState& parameters;

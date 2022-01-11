@@ -289,9 +289,7 @@ void OneRangeTuner::editorHidden (Label* lbl, TextEditor&)
 }
     
 void OneRangeTuner::sliderValueChanged (Slider* sldr)
-{
-    //ScopedLock sliderLock (rangeUpdateLock);
-    
+{   
     if (sldr == lowSlider.get())
     {
         // min value changed by user
@@ -410,6 +408,7 @@ void OneRangeTuner::handleDoubleClick (const MouseEvent& e)
 
 void OneRangeTuner::mouseDrag (const MouseEvent& e)
 {
+
     if (!e.mods.isLeftButtonDown() || e.getNumberOfClicks() > 1) return;
 
     if (objectBeingDragged == lowThumb)
@@ -422,6 +421,7 @@ void OneRangeTuner::mouseDrag (const MouseEvent& e)
     }
     else
     {
+
         if (tunerStyle == tilt)
         {
             lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider.get()));
@@ -435,6 +435,7 @@ void OneRangeTuner::mouseDrag (const MouseEvent& e)
             lowSlider->mouseDrag (invertedYEvent.getEventRelativeTo (lowSlider.get()));
             highSlider->mouseDrag (invertedYEvent.getEventRelativeTo (highSlider.get()));
         }
+
     }
 
     repaint();
@@ -562,7 +563,7 @@ void OneRangeTuner::setRangeLow (float val, const bool createChangeGesture)
 }
     
 void OneRangeTuner::setRangeHigh (float val, const bool createChangeGesture)
-{
+{    
     if (createChangeGesture) rangeHigh.beginChangeGesture();
     
     rangeHigh.setValueNotifyingHost (parameterMax.convertTo0to1 (val));
