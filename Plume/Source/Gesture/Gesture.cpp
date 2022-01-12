@@ -36,7 +36,6 @@ Gesture::~Gesture()
     clearAllParameters();
 }
 
-
 //==============================================================================
 // Static Methods to merge messages in a MidiBuffer
 
@@ -513,6 +512,16 @@ void Gesture::swapParametersWithOtherGesture (Gesture& other)
     */
 
     sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
+}
+
+void Gesture::setParametersShouldBeUpdated (const bool shouldBeUpdated)
+{
+    parametersWereChangedSinceLastUpdate = shouldBeUpdated;
+}
+
+bool Gesture::parametersShouldBeUpdated()
+{
+    return parametersWereChangedSinceLastUpdate;
 }
 
 int Gesture::normalizeMidi (float val, float minVal, float maxVal, bool is14BitMidi, bool reversed)

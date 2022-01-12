@@ -24,6 +24,10 @@
 #include "../Ui/Common/DualTextToggle.h"
 #include "../Ui/Common/PlumeShapeButton.h"
 
+#if JUCE_DEBUG
+#define JUCE_DISABLE_AUDIOPROCESSOR_BEGIN_END_GESTURE_CHECKING 1
+#endif
+
 namespace PLUME
 {
     const int NUM_GEST = 8;

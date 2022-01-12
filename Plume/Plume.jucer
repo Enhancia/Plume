@@ -362,8 +362,6 @@
         <MODULEPATH id="juce_opengl" path="C:\Users\alexl\Documents\Dev\Git\JUCE\modules"/>
         <MODULEPATH id="juce_video" path="C:\Users\alexl\Documents\Dev\Git\JUCE\modules"/>
       </MODULEPATHS>
-<<<<<<< Updated upstream
-=======
     </VS2017>
     <VS2022 targetFolder="Builds/VisualStudio2022">
       <CONFIGURATIONS>
@@ -387,7 +385,6 @@
         <MODULEPATH id="juce_opengl" path="C:\Users\alexl\Documents\Dev\Git\JUCE\modules"/>
         <MODULEPATH id="juce_video" path="C:\Users\alexl\Documents\Dev\Git\JUCE\modules"/>
       </MODULEPATHS>
->>>>>>> Stashed changes
     </VS2022>
   </EXPORTFORMATS>
   <MODULES>

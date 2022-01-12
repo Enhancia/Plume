@@ -149,6 +149,23 @@ public:
      */
     virtual float computeMappedParameterValue (Range<float> paramRange, bool reversed = false) =0;
     
+    /**
+     *  \brief Method that lets Plume know if the parameter need to be updated in regards to the gesture value.
+     *
+     *  This method will set parameterWasChangedSinceLastUpdate.
+     *  
+     *  \param shouldBeUpdated True if the parameter needs an update in teh next processBlock call.
+     */
+    void setParametersShouldBeUpdated (const bool shouldBeUpdated);
+
+    /**
+     *  \brief Getter for the parameterWasChangedSinceLastUpdate attribute.
+     *
+     *  Used by GestureArray to know if a call to updateMappedParameters is needed for next block.
+     * 
+     */
+    bool parametersShouldBeUpdated();
+    
     //==============================================================================
     /**
      *  \brief Method that uses raw data to update the gestures raw value accordingly.
@@ -542,7 +559,11 @@ protected:
 	bool midiOnParameterOff; /**< \brief Boolean parameter that represents if the gesture is set to midi mode or not. */
 	int cc; /**< \brief Float parameter with an integer value for CC used by the gesture in midiMap mode (default 1: modwheel). */
 	
+    //==============================================================================
     OwnedArray<MappedParameter> parameterArray;  /**< \brief Array of all the MappedParameter that the gesture controls. */
+    bool parametersWereChangedSinceLastUpdate = false; /**< \brief Bool parameter that tells if a call to updateMappedParameters is needed or not for the next block. */
+    
+    //==============================================================================
     CriticalSection parameterArrayLock;
     CriticalSection gestureValueLock;
 
