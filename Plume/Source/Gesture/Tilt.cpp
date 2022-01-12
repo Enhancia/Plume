@@ -53,19 +53,10 @@ void Tilt::updateMidiValue()
                                    getMidiReverse());
 }
 
-void Tilt::updateMappedParameters()
+bool Tilt::shouldUpdateParameters()
 {
     // Checks if Gesture is on and if value is within the right range
-    if (!isActive() || getGestureValue() >= 100.0f || getGestureValue() <= -100.0f)
-    {
-        return;
-    }
-    
-    // Goes through the parameterArray to update each value
-    for (auto* param : parameterArray)
-    {   
-        param->parameter.setValueNotifyingHost (computeMappedParameterValue (param->range, param->reversed));
-    }
+    return (getGestureValue() < 100.0f && getGestureValue() > -100.0f);
 }
 
 float Tilt::computeMappedParameterValue (Range<float> paramRange, bool reversed = false)

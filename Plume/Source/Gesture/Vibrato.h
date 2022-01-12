@@ -33,7 +33,7 @@ public:
     void addGestureMidi(MidiBuffer& midiMessages, MidiBuffer& plumeBuffer) override;
     void updateMidiValue () override;
     
-    void updateMappedParameters() override;
+    bool shouldUpdateParameters() override;
     float computeMappedParameterValue (Range<float> paramRange, bool reversed) override;
     
     //==============================================================================

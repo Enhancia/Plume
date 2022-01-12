@@ -514,6 +514,29 @@ void Gesture::swapParametersWithOtherGesture (Gesture& other)
     sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
 }
 
+void Gesture::updateMappedParameters()
+{
+    if (isActive() && shouldUpdateParameters())
+    {
+        // Goes through the parameterArray to update each value
+        for (auto* param : parameterArray)
+        {
+            const float newValue = computeMappedParameterValue (param->range, param->reversed);
+
+            if (newValue != param->lastComputedValue)
+            {
+                param->lastComputedValue = newValue;
+                param->parameter.setValueNotifyingHost (newValue);
+            }
+        }
+    }   
+}
+
+bool Gesture::shouldUpdateParameters()
+{
+    return true;
+}
+
 void Gesture::setParametersShouldBeUpdated (const bool shouldBeUpdated)
 {
     parametersWereChangedSinceLastUpdate = shouldBeUpdated;

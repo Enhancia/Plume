@@ -81,6 +81,7 @@ public:
         AudioProcessorParameter& parameter; /**< \brief Reference to a mapped Parameter from the wrapped Plugin. */
         Range<float> range; /**< \brief Range of values from the parameter that the Gesture controls. */
         bool reversed; /**< \brief Boolean that tells if the parameter's range should be inverted. */
+        float lastComputedValue = 0.0f;
     };
     
     //==============================================================================
@@ -136,11 +137,20 @@ public:
     /**
      *  \brief Helper function to write the correct values for the mapped parameters.
      *
-     *  Updates all mapped parameters of this Gesture with their right values. Uses computeMappedParameterValues() to get each value.
+     *  Updates all mapped parameters of this Gesture with their right values. Uses shouldUpdateParameters() to check if an update is necessary and computeMappedParameterValue() to get each value.
      *
      */
-    virtual void updateMappedParameters() =0;
+    void updateMappedParameters();
     
+    /**
+     *  \brief Helper function to add an additional conditions for parameter update (for instance gesture not in range).
+     *
+     *  Override to add a condition. Returns true by default.
+     *
+     *  \returns True if the parameters should update.
+     */
+    virtual bool shouldUpdateParameters();
+
     /**
      *  \brief Method that returns the value for a specific mapped parameter.
      *
