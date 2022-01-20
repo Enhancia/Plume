@@ -174,12 +174,24 @@ PlumeAlertPanel* PlumeAlertPanel::createSpecificAlertPanel (SpecificReturnValue 
                                        true,
                                        "Scan");
         case mappingOverwrite:
-            return new PlumeAlertPanel ("Parameter is already mapped.",
-                                       "This plugin parameter was already assigned to another gesture!\n"
-                                       "Clear the parameter before assigning it again.",
-                                       int (panelType),
-                                       true,
-                                       "Ok");
+            if (specificText.isEmpty())
+            {
+                return new PlumeAlertPanel ("Parameter is already mapped.",
+                                           "This plugin parameter was already assigned to another gesture!\n"
+                                           "Clear the parameter before assigning it again.",
+                                           int (panelType),
+                                           true,
+                                           "Ok");
+            }
+            else
+            {
+                return new PlumeAlertPanel ("Parameter is already mapped.",
+                                           "This plugin parameter is already mapped on gesture " + specificText + "!\n"
+                                           "Clear the parameter before assigning it again.",
+                                           int (panelType),
+                                           true,
+                                           "Ok");   
+            }
         case scanCrashed:
             if (specificText.isEmpty())
             {

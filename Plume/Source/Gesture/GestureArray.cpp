@@ -162,13 +162,17 @@ int GestureArray::size()
     return gestures.size();
 }
 
-bool GestureArray::parameterIsMapped (int parameterId)
+bool GestureArray::parameterIsMapped (int parameterId, String& gestureToWhichTheParameterIsMapped)
 {
     ScopedLock gestlock (gestureArrayLock);
     
     for (auto* g : gestures)
     {
-        if (g->parameterIsMapped (parameterId)) return true;
+        if (g->parameterIsMapped (parameterId))
+        {
+            gestureToWhichTheParameterIsMapped = g->getName() + " (" + String (g->id + 1) + ")";
+            return true;
+        }
     }
     
     return false;
@@ -352,12 +356,13 @@ void GestureArray::removeGesture (const String gestureName)
 void GestureArray::addParameterToMapModeGesture (AudioProcessorParameter& param)
 {
     ScopedLock gestlock (gestureArrayLock);
+    String mappedGestureNameHolder;
 
     // Does nothing if the parameter is already mapped to any gesture
-    if (parameterIsMapped (param.getParameterIndex()))
+    if (parameterIsMapped (param.getParameterIndex(), mappedGestureNameHolder))
     {
         cancelMapMode();
-        sendActionMessage (PLUME::commands::mappingOverwrite);
+        sendActionMessage (PLUME::commands::mappingOverwrite + mappedGestureNameHolder);
         return;
     }
     

@@ -287,10 +287,11 @@ void PlumeEditor::actionListenerCallback (const String &message)
         createAndShowAlertPanel (PlumeAlertPanel::scanCrashed,
                                  message.fromLastOccurrenceOf (PLUME::commands::scanCrashed, false, false));
 
-    else if (message.compare(PLUME::commands::mappingOverwrite) == 0)
+    else if (message.startsWith (PLUME::commands::mappingOverwrite))
     {
         processor.getWrapper().clearWrapperEditor();
-        createAndShowAlertPanel(PlumeAlertPanel::mappingOverwrite);
+        createAndShowAlertPanel(PlumeAlertPanel::mappingOverwrite,
+                                 message.fromLastOccurrenceOf (PLUME::commands::mappingOverwrite, false, false));
     }
 }
 
