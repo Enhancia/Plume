@@ -368,7 +368,7 @@ void GestureArray::addParameterToMapModeGesture (AudioProcessorParameter& param)
         if (g->mapModeOn == true)
         {
             g->addParameter(param);
-            //cancelMapMode();
+            cancelMapMode();
             return;
         }
     }
