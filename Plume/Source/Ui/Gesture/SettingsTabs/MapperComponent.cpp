@@ -210,12 +210,12 @@ void MapperBanner::buttonClicked (Button* bttn)
         {
             gestureArray.cancelMapMode();
             gesture.mapModeOn = true;
-            gestureArray.mapModeOn = true;
             mapButton->setColour (TextButton::buttonColourId,
                                   gesture.getHighlightColour().interpolatedWith (Colour (0xffffffff),
                                                                                  0.4f));
             
             wrapper.createWrapperEditor (findParentComponentOfClass<AudioProcessorEditor> ());
+            gestureArray.mapModeOn = true;
         }
         
         // Cancels map mode for the gesture and colours it accordingly
