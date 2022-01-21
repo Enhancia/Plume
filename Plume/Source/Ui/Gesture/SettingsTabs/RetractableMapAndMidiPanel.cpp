@@ -119,16 +119,6 @@ void RetractableMapAndMidiPanel::buttonClicked (Button* bttn)
 
 void RetractableMapAndMidiPanel::changeListenerCallback(ChangeBroadcaster* source)
 {
-	/* [OUTDATED.. You can only map one gesture at the time with the new interface]
-    // if Another gesture wants to be mapped
-    // Draws the map button in non-map colour
-    if (source == &gestureArray && gestureArray.mapModeOn && gesture.mapModeOn == false)
-    {
-        mapButton->setColour (TextButton::buttonColourId, getLookAndFeel().findColour (TextButton::buttonColourId));
-        return;
-    }
-    */
-
     // If gesture mapping changed
     // Recreates the array of parameterComponent, and redraws the mapperComponent
     if (source == &gesture)
@@ -136,10 +126,9 @@ void RetractableMapAndMidiPanel::changeListenerCallback(ChangeBroadcaster* sourc
         parametersBody->updateParamCompArray();
         parametersBody->resized();
 
-        if (gesture.mapModeOn)
+        if (!gestureArray.mapModeOn) // Wrapper cancelled mapMode after adding parameter
         {
         	wrapper.clearWrapperEditor();
-            gestureArray.cancelMapMode();
         }
 
         getParentComponent()->getParentComponent()->repaint();
