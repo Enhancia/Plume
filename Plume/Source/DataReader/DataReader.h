@@ -33,11 +33,13 @@
  *  This is a class that is instanciated by the PlumeProcessor object. It inherits from InterprocessConnection
  *  so that it can create a pipe, to which a RawDataReader app can connect to send data.
  */
-class DataReader   : public Component,
-                     private InterprocessConnection,
-                     public ChangeBroadcaster,
-                     public ChangeListener,
-                     public MultiTimer
+class DataReader :
+	public ActionBroadcaster,
+	public ChangeBroadcaster,
+	public ChangeListener,
+	public Component,
+	private InterprocessConnection,
+	public MultiTimer
 {
 public:
     static constexpr int DATA_SIZE = PLUME::data::numDatas;
@@ -55,7 +57,7 @@ public:
     
     // Constructor Destructor
 	DataReader();
-    ~DataReader();
+    ~DataReader() override;
 
     // Editor logic
     void paint (Graphics&) override;

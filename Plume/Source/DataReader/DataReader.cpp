@@ -116,9 +116,15 @@ bool DataReader::readData (String s)
 
         // Set states of ring (is connected and is charging)
         if(!getRingIsConnected())
+        {
             setRingIsConnected (true);
+            sendActionMessage(PLUME::commands::updateBatteryDisplay);
+        }
         else if (getRingIsCharging())
+        {
             setRingIsCharging (false);
+            sendActionMessage(PLUME::commands::updateBatteryDisplay);
+        }
 
 
         *data = strArr;
@@ -139,10 +145,12 @@ bool DataReader::readData (String s)
         {
             setRingIsConnected (true);
             setRingIsCharging (true);
+            sendActionMessage(PLUME::commands::updateBatteryDisplay);
         }
         else if (!getRingIsCharging())
         {
             setRingIsCharging (true);
+            sendActionMessage(PLUME::commands::updateBatteryDisplay);
         }
 
         // Get battery value

@@ -478,7 +478,7 @@ HeaderComponent::BatteryComponent::BatteryComponent (const float& batteryValRef,
     lastRawBattery = batteryValueRef;
     lastConnectionState = dataReader.getRingIsConnected ();
 
-	startTimer (static_cast<int>(batteryCheckTimer), 15000);
+	startTimer (static_cast<int>(batteryCheckTimer), 30000);
     if (lastConnectionState)
         startTimer (static_cast<int>(blinkTimer), 1000);
 

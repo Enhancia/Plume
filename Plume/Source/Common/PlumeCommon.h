@@ -282,6 +282,7 @@ namespace PLUME
     {
         static const String toFront ("toFront");
         static const String updateInterface ("updateInterface");
+        static const String updateBatteryDisplay ("updateBatteryDisplay");
         static const String unlockInterface ("unlockInterface");
         static const String lockInterface ("lockInterface");
         static const String scanRequired ("scanRequired");
