@@ -41,19 +41,31 @@ class DataReader   : public Component,
 {
 public:
     static constexpr int DATA_SIZE = PLUME::data::numDatas;
+
+    // Getters Setters
+    float& getBatteryReference ();
+
+    bool getHubIsConnected () const;
+    bool getRingIsConnected () const;
+    bool getRingIsCharging () const;
+
+    void setHubIsConnected (bool value);
+    void setRingIsConnected (bool value);
+    void setRingIsCharging (bool value);
     
-    //==============================================================================
-    DataReader();
+    // Constructor Destructor
+	DataReader();
     ~DataReader();
 
-    //==============================================================================
+    // Editor logic
     void paint (Graphics&) override;
     void resized() override;
 
-    //==============================================================================
+    // Processor logic
     bool readData(String s);
     const String getRawData(int index);
     bool getRawDataAsFloatArray(Array<float>& arrayToFill);
+    const float& getFloatValueReference (const PLUME::data::PlumeData data);
     
     //==============================================================================
     void sendString(uint8_t* data, int data_size);
@@ -94,6 +106,11 @@ private:
     int pipeNumber = -1;
     
     std::unique_ptr<StringArray> data;
+	float batteryValue = 0.0f;
+
+    bool hubIsConnected = false;
+    bool ringIsConnected = false;
+    bool ringIsCharging = false;
 
   #if JUCE_MAC
     std::unique_ptr<StatutPipe> statutPipe;
