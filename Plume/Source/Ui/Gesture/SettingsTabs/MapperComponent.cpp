@@ -51,6 +51,8 @@ void MapperComponent::updateDisplay()
     
     if (PLUME::UI::ANIMATE_UI_FLAG)
     {
+        ScopedLock paramComplock (paramCompArrayLock);
+        
         for (auto* comp : paramCompArray)
         {
             comp->updateDisplay();
@@ -70,7 +72,7 @@ void MapperComponent::updateComponents()
 
 void MapperComponent::initializeParamCompArray()
 {
-        ScopedLock paramComplock (paramCompArrayLock);
+    ScopedLock paramComplock (paramCompArrayLock);
     paramCompArray.clear();
     
 	int i = 0;
