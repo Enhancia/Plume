@@ -81,6 +81,7 @@ public:
         AudioProcessorParameter& parameter; /**< \brief Reference to a mapped Parameter from the wrapped Plugin. */
         Range<float> range; /**< \brief Range of values from the parameter that the Gesture controls. */
         bool reversed; /**< \brief Boolean that tells if the parameter's range should be inverted. */
+        float lastComputedValue = 0.0f;
     };
     
     //==============================================================================
@@ -136,11 +137,20 @@ public:
     /**
      *  \brief Helper function to write the correct values for the mapped parameters.
      *
-     *  Updates all mapped parameters of this Gesture with their right values. Uses computeMappedParameterValues() to get each value.
+     *  Updates all mapped parameters of this Gesture with their right values. Uses shouldUpdateParameters() to check if an update is necessary and computeMappedParameterValue() to get each value.
      *
      */
-    virtual void updateMappedParameters() =0;
+    void updateMappedParameters();
     
+    /**
+     *  \brief Helper function to add an additional conditions for parameter update (for instance gesture not in range).
+     *
+     *  Override to add a condition. Returns true by default.
+     *
+     *  \returns True if the parameters should update.
+     */
+    virtual bool shouldUpdateParameters();
+
     /**
      *  \brief Method that returns the value for a specific mapped parameter.
      *
@@ -148,6 +158,23 @@ public:
      * 
      */
     virtual float computeMappedParameterValue (Range<float> paramRange, bool reversed = false) =0;
+    
+    /**
+     *  \brief Method that lets Plume know if the parameter need to be updated in regards to the gesture value.
+     *
+     *  This method will set parameterWasChangedSinceLastUpdate.
+     *  
+     *  \param shouldBeUpdated True if the parameter needs an update in teh next processBlock call.
+     */
+    void setParametersShouldBeUpdated (const bool shouldBeUpdated);
+
+    /**
+     *  \brief Getter for the parameterWasChangedSinceLastUpdate attribute.
+     *
+     *  Used by GestureArray to know if a call to updateMappedParameters is needed for next block.
+     * 
+     */
+    bool parametersShouldBeUpdated();
     
     //==============================================================================
     /**
@@ -542,7 +569,11 @@ protected:
 	bool midiOnParameterOff; /**< \brief Boolean parameter that represents if the gesture is set to midi mode or not. */
 	int cc; /**< \brief Float parameter with an integer value for CC used by the gesture in midiMap mode (default 1: modwheel). */
 	
+    //==============================================================================
     OwnedArray<MappedParameter> parameterArray;  /**< \brief Array of all the MappedParameter that the gesture controls. */
+    bool parametersWereChangedSinceLastUpdate = false; /**< \brief Bool parameter that tells if a call to updateMappedParameters is needed or not for the next block. */
+    
+    //==============================================================================
     CriticalSection parameterArrayLock;
     CriticalSection gestureValueLock;
 

@@ -82,9 +82,10 @@ void GestureArray::updateAllMappedParameters()
     // mapMode (to prevent the parameter from changing) and that is mapped
     for (auto* g : gestures)
     {
-        if (mapModeOn == false && g->isMapped() && g->generatesMidi() == false)
+        if (mapModeOn == false && g->isMapped() && g->generatesMidi() == false && g->parametersShouldBeUpdated())
         {
             g->updateMappedParameters();
+            g->setParametersShouldBeUpdated (false);
         }
     }
 }
@@ -107,6 +108,11 @@ void GestureArray::updateAllValues()
             for (auto* g : gestures)
             {
                 g->updateValue (rawData);
+
+                if (mapModeOn == false && g->isMapped() && g->generatesMidi() == false)
+                {
+                    g->setParametersShouldBeUpdated (true);
+                }
             }
         }
     }
