@@ -342,8 +342,8 @@
     </VS2019>
     <VS2022 targetFolder="Builds/VisualStudio2022">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="Plume Tests"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="Plume Tests"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="Plume"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="Plume"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics" path="C:\Users\alexl\Documents\Dev\Git\JUCE\modules"/>
