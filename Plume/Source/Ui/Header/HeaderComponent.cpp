@@ -248,6 +248,13 @@ void HeaderComponent::handlePluginChoice (int chosenId)
     }
     else
     {
+        if (processor.getGestureArray().mapModeOn)
+        {
+            // Cancels map mode in case it was on, this prevents the plugin load
+            // from mapping a parameter without the user wanting.
+            processor.getGestureArray().cancelMapMode();
+        }
+
         if (processor.getWrapper().rewrapPlugin (chosenId))
         {
             pluginNameLabel->setText (processor.getWrapper().getWrappedPluginName(), dontSendNotification);
