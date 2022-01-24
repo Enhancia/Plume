@@ -126,7 +126,7 @@ public:
      * 
      *  \return True if the parameter is found in any of the gestures.
      */
-    bool parameterIsMapped (int parameterId, String& gestureToWhichTheParameterIsMapped = String());
+    bool parameterIsMapped (int parameterId, String& gestureToWhichTheParameterIsMapped);
 
     /**
      *  \brief Helper method to know if a specific CC is already in use.

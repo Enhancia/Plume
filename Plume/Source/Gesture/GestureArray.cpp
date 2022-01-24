@@ -387,8 +387,10 @@ void GestureArray::addParameterToMapModeGesture (AudioProcessorParameter& param)
 
 void GestureArray::addAndSetParameter (AudioProcessorParameter& param, int gestureId, float start = 0.0f, float end = 1.0f, bool rev = false)
 {
+    String temp;
+    
     // Does nothing if the parameter is already mapped to any gesture
-    if (parameterIsMapped (param.getParameterIndex())) return;
+    if (parameterIsMapped (param.getParameterIndex(), temp)) return;
     
     // else adds the parameter and cancels mapMode
     if (gestureId < size())
