@@ -43,12 +43,15 @@ void DataReader::setHubIsConnected (const bool value)
 
 void  DataReader::setRingIsConnected (const bool value)
 {
-    ringIsConnected = value;
+	ringIsConnected = value;
+	sendActionMessage (PLUME::commands::updateBatteryDisplay);
 }
 
 void  DataReader::setRingIsCharging (const bool value)
 {
-    ringIsCharging = value;
+	ringIsCharging = value;
+	sendActionMessage (PLUME::commands::updateBatteryDisplay);
+
 }
 
 /*
@@ -118,21 +121,16 @@ bool DataReader::readData (String s)
         if(!getRingIsConnected())
         {
             setRingIsConnected (true);
-            sendActionMessage(PLUME::commands::updateBatteryDisplay);
         }
         else if (getRingIsCharging())
         {
             setRingIsCharging (false);
-            sendActionMessage(PLUME::commands::updateBatteryDisplay);
         }
-
 
         *data = strArr;
         // Get only battery value
         batteryValue = (*data)[static_cast<int>(PLUME::data::battery)].getFloatValue();
-        DBG ("Ring is connected: " << (getRingIsConnected () ? "true" : "false"));
-        DBG ("Ring is charging: " << (getRingIsCharging () ? "true" : "false"));
-        DBG (batteryValue);
+
         return true;
     }
 
@@ -145,21 +143,15 @@ bool DataReader::readData (String s)
         {
             setRingIsConnected (true);
             setRingIsCharging (true);
-            sendActionMessage(PLUME::commands::updateBatteryDisplay);
         }
         else if (!getRingIsCharging())
         {
             setRingIsCharging (true);
-            sendActionMessage(PLUME::commands::updateBatteryDisplay);
         }
 
         // Get battery value
         *data = strArr;
         batteryValue = (*data)[0].getFloatValue ();
-
-        DBG ("Ring is connected: " << (getRingIsConnected () ? "true" : "false"));
-        DBG ("Ring is charging: " << (getRingIsCharging() ? "true" : "false"));
-        DBG (batteryValue);
 
         return true;
     }
@@ -199,7 +191,11 @@ void DataReader::timerCallback (int timerID)
     if (timerID == 0)
     {
         if (getRingIsConnected ())
+        {
             setRingIsConnected (false);
+            setRingIsCharging(false);
+	        sendActionMessage(PLUME::commands::updateBatteryDisplay);
+        }
 
 		stopTimer (0);
     }

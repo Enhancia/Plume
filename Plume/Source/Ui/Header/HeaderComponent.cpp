@@ -534,11 +534,11 @@ void HeaderComponent::BatteryComponent::repaintIfNeeded (bool forceRepaint)
 	const float battery = jmax (jmin (PLUME::data::convertRawBatteryToPercentage (batteryValueRef, dataReader.getRingIsCharging()), 1.0f), 0.0f);
 	const float newRawBattery = batteryValueRef;
 
-	DBG ("----------------"
-		<< "\nComputing battery level"
-		<< "\nRaw      " << batteryValueRef
-		<< "\nRounded  " << battery
-		<< "\nCharging " << (lastChargeState ? "Yes" : "No"));
+	//DBG ("----------------"
+	//	<< "\nComputing battery level"
+	//	<< "\nRaw      " << batteryValueRef
+	//	<< "\nRounded  " << battery
+	//	<< "\nCharging " << (lastChargeState ? "Yes" : "No"));
 
 	if (batteryValueRef < 3.4f)
 	{
@@ -692,6 +692,12 @@ void HeaderComponent::BatteryComponent::drawBatteryPath (Graphics& g, juce::Rect
 	const Colour fillColour = lastBattery < 0.2f ? Colours::red
 		: lastBattery < 0.4f ? Colours::yellow
 		: Colours::lime;
+
+    // Repaint if red to prevent fake low batterie level after hubconnection
+    if(fillColour == Colours::red)
+    {
+	    repaintIfNeeded();
+    }
 
     //const int indicatorAreaWidth = area.getWidth () / 4;
     const int indicatorAreaWidth = 15.0f;
