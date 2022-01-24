@@ -180,8 +180,25 @@ bool GestureArray::isCCInUse (const int controllerNumber)
     
     for (auto* g : gestures)
     {
-        if (g->generatesMidi() && g->midiType == Gesture::controlChange
-                               && g->getCc() == controllerNumber)
+        if (g->isActive() &&
+            g->generatesMidi() &&
+            g->midiType == Gesture::controlChange &&
+            g->getCc() == controllerNumber)
+            return true;
+    }
+    
+    return false;
+}
+
+bool GestureArray::isPitchInUse()
+{
+    ScopedLock gestlock (gestureArrayLock);
+    
+    for (auto* g : gestures)
+    {
+        if (g->isActive() &&
+            g->generatesMidi() &&
+            g->midiType == Gesture::pitch)
             return true;
     }
     

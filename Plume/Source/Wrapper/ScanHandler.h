@@ -164,7 +164,8 @@ private:
 
                                             if (desc.loadFromXml (*descXml))
                                             {
-                                                DBG ("Finished getting description from exe ! Adding plugin to list " << desc.name);
+                                                PLUME::log::writeToLog ("Finished Scanning! Adding plugin to list : " + desc.name +
+                                                                        "(" + desc.version + ")", PLUME::log::pluginScan);
                                                 pluginList.addType (desc);
                                             } 
                                         }
@@ -185,7 +186,8 @@ private:
                                     {
                                         if (desc->name != "Plume" && desc->name != "Plume Tests")
                                         {
-                                            PLUME::log::writeToLog ("Finished Scanning! Adding plugin to list : " + desc->name, PLUME::log::pluginScan);
+                                            PLUME::log::writeToLog ("Finished Scanning! Adding plugin to list : " + desc->name +
+                                                                    "(" + desc->version + ")", PLUME::log::pluginScan);
                                             pluginList.addType (*desc);
                                         }
                                     }

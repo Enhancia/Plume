@@ -118,7 +118,7 @@ void GestureComponent::resized()
 {
     auto headerArea = getLocalBounds().removeFromTop (30);
 
-    gestureNameLabel->setBounds (getLocalBounds().withSizeKeepingCentre (getWidth()*2/3, 25));
+    gestureNameLabel->setBounds (getLocalBounds().withSizeKeepingCentre (getWidth()*2/3, 32));
     muteButton->setBounds (headerArea.removeFromRight (30 + PLUME::UI::MARGIN)
                                      .withSizeKeepingCentre (18, 18));
 }
@@ -131,8 +131,10 @@ void GestureComponent::editorShown (Label* lbl, TextEditor& ted)
 
 void GestureComponent::labelTextChanged (Label* lbl)
 {
-    gesture.setName (gestureNameLabel->getText());
-    gestureNameLabel->setText (gesture.getName(), dontSendNotification);
+    auto truncatedName = gestureNameLabel->getText().substring(0, 26);
+
+    gesture.setName(truncatedName);
+    gestureNameLabel->setText(truncatedName.toUpperCase(), dontSendNotification);
     
     dynamic_cast<PlumeComponent*> (getParentComponent())->update();
 }

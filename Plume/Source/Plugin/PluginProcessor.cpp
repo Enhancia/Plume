@@ -458,41 +458,43 @@ void PlumeProcessor::initializeSettings()
                           4, nullptr);
 }
 
-void PlumeProcessor::timerCallback (int timerID)
-{
-    if (timerID == 0) // Unlock send tUnlock
-    {
-        if (stepInUnlockSequence >= unlockParamSequence.size())
-        {
-            stopTimer (0);
-            stepInUnlockSequence = 0;
-        }
-
-        if (getWrapper().isWrapping())
-        {
-            getWrapper().getWrapperProcessor().getWrappedInstance()
-                                              .getParameters()[127]
-                                              ->setValue (unlockParamSequence[stepInUnlockSequence++]);
-        }
-    }
-}
-
 void PlumeProcessor::parameterValueChanged (int parameterIndex, float newValue)
-{
-    if (wrapper->isWrapping() && parameterIndex == 127 && isDetectingAuthSequence)
+{    
+    if (wrapper->isWrapping() && parameterIndex == 127)
     {
-        if (isNextStepInAuthSequence (newValue))
+        if (isDetectingAuthSequence)
         {
-            stepInAuthSequence++;
-
-            if (stepInAuthSequence >= authParamSequence.size())
+            if (isNextStepInAuthSequence (newValue))
             {
-                stopAuthDetection (true);
+                stepInAuthSequence++;
+
+                if (stepInAuthSequence >= authParamSequence.size())
+                {
+                    stopAuthDetection (true);
+                }
+            }
+            else
+            {
+                stopAuthDetection (false);            
             }
         }
-        else
+        else if (isSendingAuthSequence && newValue == 0.0f)
         {
-            stopAuthDetection (false);            
+            if (stepInUnlockSequence >= unlockParamSequence.size())
+            {
+                stepInUnlockSequence = 0;
+                isSendingAuthSequence = false;
+            }
+            else
+            {   
+                Timer::callAfterDelay (10, [this]()
+                {
+                    if (auto* controlParameter = getWrapper().getWrapperProcessor().getControlParameter())
+                    {
+                        controlParameter->setValue (unlockParamSequence[stepInUnlockSequence++]);
+                    }
+                });
+            }
         }
     }
 }
@@ -594,7 +596,7 @@ void PlumeProcessor::initializeParamSequences()
 }
 
 void PlumeProcessor::startDetectingAuthSequence()
-{    
+{   
     isDetectingAuthSequence = true;
     stepInAuthSequence = 0;
 
@@ -602,22 +604,6 @@ void PlumeProcessor::startDetectingAuthSequence()
     {
         stopAuthDetection (false);        
     });
-}
-
-void PlumeProcessor::addListenerForPlumeControlParam (AudioProcessorParameter* plumeControlParam)
-{
-    if (wrapper->isWrapping())
-    {   
-        plumeControlParam->addListener (this);
-    }
-}
-
-void PlumeProcessor::removeListenerForPlumeControlParam (AudioProcessorParameter* plumeControlParam)
-{
-    if (wrapper->isWrapping())
-    {
-        plumeControlParam->removeListener (this);
-    }   
 }
 
 bool PlumeProcessor::hasLastSessionCrashed()
@@ -633,7 +619,7 @@ void PlumeProcessor::resetLastSessionCrashed()
 void PlumeProcessor::stopAuthDetection (bool isDetectionSuccessful)
 {
     if (isDetectingAuthSequence)
-    {
+    {    
         isDetectingAuthSequence = false;
         stepInAuthSequence = 0;
 
@@ -664,7 +650,7 @@ void PlumeProcessor::filterInputMidi (MidiBuffer& midiMessages)
 
 bool PlumeProcessor::messageShouldBeKept (const MidiMessage& midiMessage)
 {
-    if (midiMessage.isPitchWheel() ||
+    if ((midiMessage.isPitchWheel() && gestureArray->isPitchInUse()) ||
         (midiMessage.isController() && midiMessage.getControllerNumber() < 120
                                     && gestureArray->isCCInUse (midiMessage.getControllerNumber())))
     {
@@ -682,20 +668,22 @@ bool& PlumeProcessor::getLastArmRef()
 void PlumeProcessor::startSendingUnlockParamSequence()
 {
     stepInUnlockSequence = 0;
+    isSendingAuthSequence = true;
     unlockParamSequence.clear();
 
     for (auto characterToEncode : presetHandler->getCurrentPresetName())
     {
-        //const float randomNumber = Random::getSystemRandom().nextFloat();
-        //float numberCopy = randomNumber;
-
-        //char* valueChars = reinterpret_cast<char*> (&numberCopy);
-        //valueChars[2] = characterToEncode;
-
         unlockParamSequence.add (int(characterToEncode)/127.0f);
     }
 
-    startTimer (0, 30);
+    //sends first value
+    if (wrapper->isWrapping())
+    {
+        if (auto* controlParameter = getWrapper().getWrapperProcessor().getControlParameter())
+        {
+            controlParameter->setValue (unlockParamSequence[stepInUnlockSequence++]);
+        }
+    }
 }
 
 bool PlumeProcessor::isNextStepInAuthSequence (float receivedValue)

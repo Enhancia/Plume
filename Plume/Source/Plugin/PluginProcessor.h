@@ -35,8 +35,7 @@
  
 class PlumeProcessor  : public AudioProcessor,
                         public ActionBroadcaster,
-                        public AudioProcessorParameter::Listener,
-                        public MultiTimer
+                        public AudioProcessorParameter::Listener
 {
 public:
     //============================================================================== 
@@ -73,7 +72,6 @@ public:
     void updateTrackProperties (const AudioProcessor::TrackProperties& properties) override;
 
     //==============================================================================
-    void timerCallback (int timerID) override;
     void parameterValueChanged (int parameterIndex, float newValue) override;
     void parameterGestureChanged (int parameterIndex, bool gestureIsStarting) override;
 
@@ -221,18 +219,6 @@ public:
      */
     void startDetectingAuthSequence();
     /**
-        \brief Registers the specific param as a listener to start the auth and unlock sequences.
-
-        \param plumeControlParam The specific parameter used for the auth and unlock processes. 
-     */
-    void addListenerForPlumeControlParam (AudioProcessorParameter* plumeControlParam);
-    /**
-        \brief Removes the specific param as a listener to stop the auth or unlock sequence.        
-     
-        \param plumeControlParam The specific parameter used for the auth and unlock processes.
-     */
-    void removeListenerForPlumeControlParam (AudioProcessorParameter* plumeControlParam);
-    /**
         \brief Getter for the internal plumeCrashed value.
      
         \returns True is this Plume file encountered a crash the last time it was used.
@@ -329,6 +315,7 @@ private:
     void setCrashFileToCurrentFormat();
 
     bool isDetectingAuthSequence = false; /**< \brief Lets Plume check if Plume is currently in the auth detection process. */
+    bool isSendingAuthSequence = false; /**< \brief Lets Plume check if Plume is currently in the unlock process. */
     bool presetIsLocked = false; /**< \brief Tells Plume if the present is currently locked and should therefore not receive MIDI. */
     int stepInAuthSequence = 0; /**< \brief Int that tracks the current step in the auth process. */
     int stepInUnlockSequence = 0; /**< \brief Int that tracks the current step in the unlock process. */
