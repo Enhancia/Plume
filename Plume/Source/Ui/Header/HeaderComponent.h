@@ -97,7 +97,7 @@ private:
     private:
         //==========================================================================
         void launchDelayedRepaint (const int delayMs, bool forceRepaint = false);
-        void drawLightningPath (Path& path, juce::Rectangle<float> area);
+		void drawLightningPath (Graphics& g, juce::Rectangle<float> area);
         void drawBatteryPath (Graphics& g, juce::Rectangle<float> area);
         void drawConnectedPath (Graphics& g, juce::Rectangle<float> area);
         void drawRingPath (Graphics& g, juce::Rectangle<float> area);

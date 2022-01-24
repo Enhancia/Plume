@@ -39,7 +39,7 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc, Component& newPrst)  : p
     // Battery
     batteryComponent = std::make_unique<BatteryComponent> (proc.getDataReader ()->getBatteryReference (), *proc.getDataReader());
     addAndMakeVisible (*batteryComponent);
-    this->setBatteryVisible (true);
+    //this->setBatteryVisible (true);
 
     createButtons();
     
@@ -495,10 +495,8 @@ void HeaderComponent::BatteryComponent::paint (Graphics& g)
     g.setColour (getPlumeColour (headerText).withAlpha (0.9f));
 
     auto area = getLocalBounds().reduced (PLUME::UI::MARGIN);
-    //auto finalArea = area.removeFromLeft (area.getWidth() / 16).reduced (3).toFloat ();
-    const auto ringArea = area.removeFromLeft (30).toFloat();
+    const auto ringArea = area.removeFromLeft (32).toFloat();
 
-    //drawDebugRect (g, ringArea.toFloat());
 	drawRingPath (g, ringArea);
 
     g.setColour (getPlumeColour (sideBarSubText));
@@ -513,13 +511,8 @@ void HeaderComponent::BatteryComponent::paint (Graphics& g)
     //Ring is disconected
 	else
 	{
-        //auto testArea = indicatorsArea.withSizeKeepingCentre (15, area.getHeight () * 3 / 4).toFloat ();
-        //const auto newIndicatorsArea = indicatorsArea.removeFromLeft (30).toFloat();
         const auto newIndicatorsArea = indicatorsArea.removeFromLeft(20).withSizeKeepingCentre (15, area.getHeight () * 3 / 4).toFloat ();
-
-        //drawDebugRect (g, newIndicatorsArea);
         drawConnectedPath (g, newIndicatorsArea);
-        //drawConnectedPath (g, indicatorsArea.withSizeKeepingCentre(15, area.getHeight() * 3 / 4).toFloat());
 	}
 }
 
@@ -623,7 +616,8 @@ void HeaderComponent::BatteryComponent::repaintBlinkingIndicators ()
 		}
 		else if (numBlinkingIndicators == 1)
 		{
-			const int indicatorAreaWidth = indicatorsArea.getWidth () / 4;
+			//const int indicatorAreaWidth = indicatorsArea.getWidth () / 4;
+            const int indicatorAreaWidth = 15.0f;
 
 			repaint (indicatorsArea
 				.withWidth (indicatorAreaWidth)
@@ -670,7 +664,7 @@ void HeaderComponent::BatteryComponent::launchDelayedRepaint(const int delayMs, 
         Timer::callAfterDelay (delayMs, repaintBatteryLambda);
 }
 
-void HeaderComponent::BatteryComponent::drawLightningPath (Path& path, juce::Rectangle<float> area)
+void HeaderComponent::BatteryComponent::drawLightningPath (Graphics& g, juce::Rectangle<float> area)
 {
 	Path lightning;
 
@@ -685,7 +679,7 @@ void HeaderComponent::BatteryComponent::drawLightningPath (Path& path, juce::Rec
 
 	lightning.scaleToFit (area.getX (), area.getY (), area.getWidth (), area.getHeight (), true);
 
-	path.addPath (lightning);
+    g.fillPath (lightning);
 }
 
 /**
@@ -700,7 +694,7 @@ void HeaderComponent::BatteryComponent::drawBatteryPath (Graphics& g, juce::Rect
 		: Colours::lime;
 
     //const int indicatorAreaWidth = area.getWidth () / 4;
-    const int indicatorAreaWidth = 10.0f;
+    const int indicatorAreaWidth = 15.0f;
 
 	for (int indicator = 0; indicator < 4; indicator++)
 	{
@@ -779,24 +773,17 @@ void HeaderComponent::BatteryComponent::drawConnectedPath (Graphics& g, juce::Re
 */
 void HeaderComponent::BatteryComponent::drawRingPath (Graphics& g, juce::Rectangle<float> area)
 {
-	Path ringPath = PLUME::path::createPath (PLUME::path::ring);
-
-	//ringPath.scaleToFit (area.getX (),
-	//	area.getY (),
-	//	area.getWidth (),
-	//	area.getHeight (),
-	//	true);
-
 	g.setColour (getPlumeColour (headerText).withAlpha (0.8f));
 
+    // Ring
+	Path ringPath = PLUME::path::createPath (PLUME::path::ring);
+	const auto affineTransform = ringPath.getTransformToScaleToFit (12, 11, 18, 18, true);
+	g.fillPath (ringPath, affineTransform);
+
+    // Lightning
+	auto zipzoopArea = area.removeFromRight (7);
 	if (lastChargeState)
 	{
-		auto zipzoopArea = area.withSizeKeepingCentre (7.0f, 20.0).withX (area.getRight () - 2.0f);
-		//drawDebugRect (g, zipzoopArea.toFloat ());
-		drawLightningPath (ringPath, zipzoopArea);
-		g.drawText ("r", zipzoopArea, Justification::centred);
+		drawLightningPath (g, zipzoopArea);
 	}
-
-	const auto affineTransform = ringPath.getTransformToScaleToFit (12, 12, 16, 16, true);
-	g.fillPath (ringPath, affineTransform);
 }
