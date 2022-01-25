@@ -74,6 +74,8 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     // Adds itself as a change listener for plume's processor
     processor.addActionListener (this);
     processor.getGestureArray().addActionListener (this);
+    processor.getDataReader()->addActionListener(this);
+
     if (auto* infoPanel = dynamic_cast<InfoPanel*> (sideBar->findChildWithID ("infoPanel")))
         PlumeComponent::listenToAllChildrenPlumeComponents (this, infoPanel, false);
 
@@ -293,6 +295,11 @@ void PlumeEditor::actionListenerCallback (const String &message)
         createAndShowAlertPanel(PlumeAlertPanel::mappingOverwrite,
                                  message.fromLastOccurrenceOf (PLUME::commands::mappingOverwrite, false, false));
     }
+
+	else if (message.compare (PLUME::commands::updateBatteryDisplay) == 0)
+	{
+        header->update();
+	}
 }
 
 void PlumeEditor::buttonClicked (Button* bttn)
