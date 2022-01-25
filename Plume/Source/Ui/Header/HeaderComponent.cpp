@@ -385,12 +385,6 @@ void HeaderComponent::setNextPreset()
 {
     setPresetWithOffset (1);
 }
-
-/**
- * @brief Draw green rectangle and display his width and height
- * @param g graphics object needed to draw
- * @param rectangle wanted debug area
-*/
 void HeaderComponent::drawDebugRect (Graphics& g, const juce::Rectangle<float>& rectangle)
 {
     g.setFont (PLUME::font::plumeFont);
@@ -689,11 +683,6 @@ void HeaderComponent::BatteryComponent::drawLightningPath (Graphics& g, juce::Re
     g.fillPath (lightning);
 }
 
-/**
- * @brief Draw colored dots which represents battery level
- * @param g 
- * @param area 
-*/
 void HeaderComponent::BatteryComponent::drawBatteryPath (Graphics& g, juce::Rectangle<float> area)
 {
 	const Colour fillColour = lastBattery < 0.2f ? Colours::red
@@ -736,11 +725,6 @@ void HeaderComponent::BatteryComponent::drawBatteryPath (Graphics& g, juce::Rect
 	}
 }
 
-/**
- * @brief Draw arrows and red cross that represent connection lost with ring, and a red cross if connection is lost.
- * @param g 
- * @param area 
-*/
 void HeaderComponent::BatteryComponent::drawConnectedPath (Graphics& g, juce::Rectangle<float> area)
 {
 	g.setColour (lastConnectionState ? getPlumeColour (headerText) : getPlumeColour (headerText).withAlpha (0.2f));
@@ -779,11 +763,6 @@ void HeaderComponent::BatteryComponent::drawConnectedPath (Graphics& g, juce::Re
 	}
 }
 
-/**
- * @brief Draw ring
- * @param g 
- * @param area 
-*/
 void HeaderComponent::BatteryComponent::drawRingPath (Graphics& g, juce::Rectangle<float> area)
 {
 	g.setColour (getPlumeColour (headerText).withAlpha (0.8f));

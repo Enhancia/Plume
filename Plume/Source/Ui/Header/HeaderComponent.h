@@ -57,6 +57,12 @@ public:
     void setNextPreset();
     //==============================================================================
 
+
+    /**
+     * @brief Draws green rectangle and display his width and height
+     * @param g graphics object needed to draw
+     * @param rectangle wanted debug area
+    */
     static void drawDebugRect (Graphics& g, const juce::Rectangle<float>& rectangle);
 
 private:
@@ -97,9 +103,27 @@ private:
     private:
         //==========================================================================
         void launchDelayedRepaint (const int delayMs, bool forceRepaint = false);
-		void drawLightningPath (Graphics& g, juce::Rectangle<float> area);
+		    void drawLightningPath (Graphics& g, juce::Rectangle<float> area);
+
+        /**
+         * @brief Draws colored dots which represents battery level
+         * @param g Graphics context to use
+         * @param area Rectangle reference in which to draw
+        */
         void drawBatteryPath (Graphics& g, juce::Rectangle<float> area);
+
+        /**
+         * @brief Draws arrows and red cross that represent connection lost with ring, and a red cross if connection is lost.
+         * @param g Graphics context to use
+         * @param area Rectangle reference in which to draw
+        */
         void drawConnectedPath (Graphics& g, juce::Rectangle<float> area);
+
+        /**
+         * @brief Draws ring path in specified area.
+         * @param g Graphics context to use
+         * @param area Rectangle reference in which to draw
+        */
         void drawRingPath (Graphics& g, juce::Rectangle<float> area);
 
         bool waitForRepaint = false;
