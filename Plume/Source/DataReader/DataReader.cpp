@@ -11,6 +11,53 @@
 
 #include "DataReader.h"
 
+
+/*
+ * GETTERS AND SETTERS
+ */
+
+float& DataReader::getBatteryReference ()
+{
+    return batteryValue;
+}
+
+bool DataReader::getHubIsConnected () const
+{
+    return hubIsConnected;
+}
+
+bool DataReader::getRingIsConnected () const
+{
+    return ringIsConnected;
+}
+
+bool DataReader::getRingIsCharging () const
+{
+    return ringIsCharging;
+}
+
+void DataReader::setHubIsConnected (const bool value)
+{
+    hubIsConnected = value;
+}
+
+void  DataReader::setRingIsConnected (const bool value)
+{
+	ringIsConnected = value;
+	sendActionMessage (PLUME::commands::updateBatteryDisplay);
+}
+
+void  DataReader::setRingIsCharging (const bool value)
+{
+	ringIsCharging = value;
+	sendActionMessage (PLUME::commands::updateBatteryDisplay);
+
+}
+
+/*
+ * //GETTERS AND SETTERS
+ */
+
 //==============================================================================
 DataReader::DataReader(): InterprocessConnection (true, 0x6a6d626e)
 {
@@ -67,8 +114,45 @@ bool DataReader::readData (String s)
     // Checks for full lines
     if (strArr.size() == DATA_SIZE)
     {
-        // Splits the string into DATA_SIZE separate ones
+        // disconnect ring if timer not re-run after 3sec
+        startTimer (0, 3000);
+
+        // Set states of ring (is connected and is charging)
+        if(!getRingIsConnected())
+        {
+            setRingIsConnected (true);
+        }
+        else if (getRingIsCharging())
+        {
+            setRingIsCharging (false);
+        }
+
         *data = strArr;
+        // Get only battery value
+        batteryValue = (*data)[static_cast<int>(PLUME::data::battery)].getFloatValue();
+
+        return true;
+    }
+
+    if(strArr.size() == 1)
+    {
+        // disconnect ring if timer not re-run after 3sec
+        startTimer (0, 3000);
+
+        if(!getRingIsConnected())
+        {
+            setRingIsConnected (true);
+            setRingIsCharging (true);
+        }
+        else if (!getRingIsCharging())
+        {
+            setRingIsCharging (true);
+        }
+
+        // Get battery value
+        *data = strArr;
+        batteryValue = (*data)[0].getFloatValue ();
+
         return true;
     }
     
@@ -104,6 +188,18 @@ void  DataReader::sendString(uint8_t* data, int data_size)
 //==============================================================================
 void DataReader::timerCallback (int timerID)
 {
+    if (timerID == 0)
+    {
+        if (getRingIsConnected ())
+        {
+            setRingIsConnected (false);
+            setRingIsCharging(false);
+	        sendActionMessage(PLUME::commands::updateBatteryDisplay);
+        }
+
+		stopTimer (0);
+    }
+
   #if JUCE_MAC
     if (timerID == 1)
     {

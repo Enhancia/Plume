@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" pluginFormats="buildAU,buildStandalone,buildVST,buildVST3"
-              version="100.1.13" companyName="Enhancia" buildVST="1" buildVST3="1"
+              version="100.1.14" companyName="Enhancia" buildVST="1" buildVST3="1"
               buildAU="1" buildAUv3="0" buildRTAS="0" buildAAX="0" enableIAA="0"
               pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
               pluginManufacturer="Enhancia" pluginName="Plume Tests" pluginDesc="Enhancia's Plume. Wraps other plugins, provides customizable and mappable gestures to use with Neova."
