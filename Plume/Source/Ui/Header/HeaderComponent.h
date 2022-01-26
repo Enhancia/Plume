@@ -75,7 +75,8 @@ private:
         enum timerIds
         {
             batteryCheckTimer = 0,
-            blinkTimer = 1
+            blinkTimer = 1,
+            firstStartTimer = 2
 		};
 
         //DataReader& getDataReader();

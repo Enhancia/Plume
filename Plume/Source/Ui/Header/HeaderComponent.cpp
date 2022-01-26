@@ -483,7 +483,8 @@ HeaderComponent::BatteryComponent::BatteryComponent (const float& batteryValRef,
     if (lastConnectionState)
         startTimer (static_cast<int>(blinkTimer), 1000);
 
-	launchDelayedRepaint (2000, true);
+	startTimer (static_cast<int>(firstStartTimer), 1000);
+	//launchDelayedRepaint (2000, true);
 }
 
 HeaderComponent::BatteryComponent::~BatteryComponent ()
@@ -528,6 +529,12 @@ void HeaderComponent::BatteryComponent::timerCallback (int timerID)
         blinkState = !blinkState;
         repaintBlinkingIndicators ();
 	}
+    else if (timerID == static_cast<int>(firstStartTimer))
+    {
+        repaintIfNeeded (true);
+        stopTimer(static_cast<int>(firstStartTimer));
+	    //this->update();
+    }
 }
 
 void HeaderComponent::BatteryComponent::repaintIfNeeded (bool forceRepaint)

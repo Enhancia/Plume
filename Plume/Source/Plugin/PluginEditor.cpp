@@ -155,6 +155,7 @@ PlumeEditor::~PlumeEditor()
 
     processor.removeActionListener (this);
     processor.getGestureArray().removeActionListener (this);
+    processor.getDataReader()->removeActionListener(this);
     gesturePanel = nullptr;
     resizableCorner = nullptr;
     optionsPanel = nullptr;
