@@ -483,8 +483,8 @@ HeaderComponent::BatteryComponent::BatteryComponent (const float& batteryValRef,
     if (lastConnectionState)
         startTimer (static_cast<int>(blinkTimer), 1000);
 
-	startTimer (static_cast<int>(firstStartTimer), 1000);
-	//launchDelayedRepaint (2000, true);
+	//startTimer (static_cast<int>(delayedRepaintTimer), 1000);
+	launchDelayedRepaint (3000, true);
 }
 
 HeaderComponent::BatteryComponent::~BatteryComponent ()
@@ -529,11 +529,11 @@ void HeaderComponent::BatteryComponent::timerCallback (int timerID)
         blinkState = !blinkState;
         repaintBlinkingIndicators ();
 	}
-    else if (timerID == static_cast<int>(firstStartTimer))
+    else if (timerID == static_cast<int>(delayedRepaintTimer))
     {
-        repaintIfNeeded (true);
-        stopTimer(static_cast<int>(firstStartTimer));
-	    //this->update();
+        repaintIfNeeded (mForceRepaint);
+        mForceRepaint = false;
+        stopTimer(static_cast<int>(delayedRepaintTimer));
     }
 }
 
@@ -652,24 +652,28 @@ void HeaderComponent::BatteryComponent::update ()
 
 void HeaderComponent::BatteryComponent::launchDelayedRepaint(const int delayMs, bool forceRepaint)
 {
-    auto repaintBatteryLambda = [this]()
-    {
-        repaintIfNeeded ();
-        waitForRepaint = false;
-    };
 
-    auto repaintBatteryLambdaForce = [this]()
-    {
-        repaintIfNeeded (true);
-        waitForRepaint = false;
-    };
+    mForceRepaint = forceRepaint;
+	startTimer (static_cast<int>(delayedRepaintTimer), delayMs);
 
-    waitForRepaint = true;
+    //auto repaintBatteryLambda = [this]()
+    //{
+    //    repaintIfNeeded ();
+    //    waitForRepaint = false;
+    //};
 
-    if (forceRepaint)
-        Timer::callAfterDelay (delayMs, repaintBatteryLambdaForce);
-    else
-        Timer::callAfterDelay (delayMs, repaintBatteryLambda);
+    //auto repaintBatteryLambdaForce = [this]()
+    //{
+    //    repaintIfNeeded (true);
+    //    waitForRepaint = false;
+    //};
+
+    //waitForRepaint = true;
+
+    //if (forceRepaint)
+    //    Timer::callAfterDelay (delayMs, repaintBatteryLambdaForce);
+    //else
+    //    Timer::callAfterDelay (delayMs, repaintBatteryLambda);
 }
 
 void HeaderComponent::BatteryComponent::drawLightningPath (Graphics& g, juce::Rectangle<float> area)
