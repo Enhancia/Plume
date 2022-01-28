@@ -703,7 +703,7 @@ void HeaderComponent::BatteryComponent::drawBatteryPath (Graphics& g, juce::Rect
     // Repaint if red to prevent fake low batterie level after hubconnection
     if(fillColour == Colours::red)
     {
-	    repaintIfNeeded();
+	    repaintIfNeeded(true);
     }
 
     //const int indicatorAreaWidth = area.getWidth () / 4;
