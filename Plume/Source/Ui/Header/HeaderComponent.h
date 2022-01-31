@@ -76,7 +76,7 @@ private:
         {
             batteryCheckTimer = 0,
             blinkTimer = 1,
-            firstStartTimer = 2
+            delayedRepaintTimer = 2
 		};
 
         //DataReader& getDataReader();
@@ -142,6 +142,7 @@ private:
         int numBlinkingIndicators = 0;
         juce::Rectangle<int> indicatorsArea;
         bool blinkState = false;
+        bool mForceRepaint = false;
 
         //==========================================================================
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BatteryComponent)
