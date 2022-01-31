@@ -51,6 +51,8 @@ void MapperComponent::updateDisplay()
     
     if (PLUME::UI::ANIMATE_UI_FLAG)
     {
+        ScopedLock paramComplock (paramCompArrayLock);
+        
         for (auto* comp : paramCompArray)
         {
             comp->updateDisplay();
@@ -70,7 +72,7 @@ void MapperComponent::updateComponents()
 
 void MapperComponent::initializeParamCompArray()
 {
-        ScopedLock paramComplock (paramCompArrayLock);
+    ScopedLock paramComplock (paramCompArrayLock);
     paramCompArray.clear();
     
 	int i = 0;
@@ -210,12 +212,12 @@ void MapperBanner::buttonClicked (Button* bttn)
         {
             gestureArray.cancelMapMode();
             gesture.mapModeOn = true;
-            gestureArray.mapModeOn = true;
             mapButton->setColour (TextButton::buttonColourId,
                                   gesture.getHighlightColour().interpolatedWith (Colour (0xffffffff),
                                                                                  0.4f));
             
             wrapper.createWrapperEditor (findParentComponentOfClass<AudioProcessorEditor> ());
+            gestureArray.mapModeOn = true;
         }
         
         // Cancels map mode for the gesture and colours it accordingly

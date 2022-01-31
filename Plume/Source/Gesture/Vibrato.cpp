@@ -86,25 +86,13 @@ void Vibrato::updateMidiValue()
     }
 }
 
-void Vibrato::updateMappedParameters()
+bool Vibrato::shouldUpdateParameters()
 {
-    if (!isActive()) return; // does nothing if the gesture is inactive
+    if (!isActive()) return false; // does nothing if the gesture is inactive
     
     updateSendLogic();
 
-    if (send)
-    {
-        // Goes through the parameterArray to update each value
-        for (auto* param : parameterArray)
-        {
-            const float newParamValue = computeMappedParameterValue (param->range, param->reversed);
-
-            if (newParamValue != param->parameter.getValue())
-            {
-                param->parameter.setValueNotifyingHost (newParamValue);
-            }
-        }
-    }
+    return (send);
 }
 
 void Vibrato::updateSendLogic()

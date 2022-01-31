@@ -251,9 +251,10 @@ void MappedParameterComponent::handleLabelClick (const MouseEvent& e)
 
 		for (auto* param : wrapper.getWrapperProcessor().getParameters())
 		{
+            String temp;
             parameterListMenu.addItem (param->getParameterIndex() + 2,
                                        param->getName (20),
-                                       !gestureArray.parameterIsMapped (param->getParameterIndex()));
+                                       !gestureArray.parameterIsMapped (param->getParameterIndex(), temp));
 		}
 
         parameterListMenu.showMenuAsync (PopupMenu::Options().withParentComponent (getParentComponent())
@@ -299,8 +300,9 @@ void MappedParameterComponent::handleMenuResult (const int result, const bool is
         else if (result < wrapper.getWrapperProcessor().getParameters().size() + 2)
         {
             AudioProcessorParameter& newParam = *wrapper.getWrapperProcessor().getParameters()[result-2];
+            String temp;
 
-            if (!gestureArray.parameterIsMapped (newParam.getParameterIndex()))
+            if (!gestureArray.parameterIsMapped (newParam.getParameterIndex(), temp))
             {
                 allowDisplayUpdate = false;
 

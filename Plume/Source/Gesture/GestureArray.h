@@ -122,9 +122,11 @@ public:
     /**
      *  \brief Helper method to know if a specific parameter is already mapped.
      *
+     *  If specified, the String reference will hold the name of the gesture that already has the parameter.
+     * 
      *  \return True if the parameter is found in any of the gestures.
      */
-    bool parameterIsMapped (int parameterId);
+    bool parameterIsMapped (int parameterId, String& gestureToWhichTheParameterIsMapped);
 
     /**
      *  \brief Helper method to know if a specific CC is already in use.

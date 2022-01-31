@@ -74,6 +74,8 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     // Adds itself as a change listener for plume's processor
     processor.addActionListener (this);
     processor.getGestureArray().addActionListener (this);
+    processor.getDataReader()->addActionListener(this);
+
     if (auto* infoPanel = dynamic_cast<InfoPanel*> (sideBar->findChildWithID ("infoPanel")))
         PlumeComponent::listenToAllChildrenPlumeComponents (this, infoPanel, false);
 
@@ -153,6 +155,7 @@ PlumeEditor::~PlumeEditor()
 
     processor.removeActionListener (this);
     processor.getGestureArray().removeActionListener (this);
+    processor.getDataReader()->removeActionListener(this);
     gesturePanel = nullptr;
     resizableCorner = nullptr;
     optionsPanel = nullptr;
@@ -287,11 +290,17 @@ void PlumeEditor::actionListenerCallback (const String &message)
         createAndShowAlertPanel (PlumeAlertPanel::scanCrashed,
                                  message.fromLastOccurrenceOf (PLUME::commands::scanCrashed, false, false));
 
-    else if (message.compare(PLUME::commands::mappingOverwrite) == 0)
+    else if (message.startsWith (PLUME::commands::mappingOverwrite))
     {
         processor.getWrapper().clearWrapperEditor();
-        createAndShowAlertPanel(PlumeAlertPanel::mappingOverwrite);
+        createAndShowAlertPanel(PlumeAlertPanel::mappingOverwrite,
+                                 message.fromLastOccurrenceOf (PLUME::commands::mappingOverwrite, false, false));
     }
+
+	else if (message.compare (PLUME::commands::updateBatteryDisplay) == 0)
+	{
+        header->update();
+	}
 }
 
 void PlumeEditor::buttonClicked (Button* bttn)

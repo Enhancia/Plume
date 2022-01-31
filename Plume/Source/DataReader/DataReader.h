@@ -33,27 +33,41 @@
  *  This is a class that is instanciated by the PlumeProcessor object. It inherits from InterprocessConnection
  *  so that it can create a pipe, to which a RawDataReader app can connect to send data.
  */
-class DataReader   : public Component,
-                     private InterprocessConnection,
-                     public ChangeBroadcaster,
-                     public ChangeListener,
-                     public MultiTimer
+class DataReader :
+	public ActionBroadcaster,
+	public ChangeBroadcaster,
+	public ChangeListener,
+	public Component,
+	private InterprocessConnection,
+	public MultiTimer
 {
 public:
     static constexpr int DATA_SIZE = PLUME::data::numDatas;
-    
-    //==============================================================================
-    DataReader();
-    ~DataReader();
 
-    //==============================================================================
+    // Getters Setters
+    float& getBatteryReference ();
+
+    bool getHubIsConnected () const;
+    bool getRingIsConnected () const;
+    bool getRingIsCharging () const;
+
+    void setHubIsConnected (bool value);
+    void setRingIsConnected (bool value);
+    void setRingIsCharging (bool value);
+    
+    // Constructor Destructor
+	DataReader();
+    ~DataReader() override;
+
+    // Editor logic
     void paint (Graphics&) override;
     void resized() override;
 
-    //==============================================================================
+    // Processor logic
     bool readData(String s);
     const String getRawData(int index);
     bool getRawDataAsFloatArray(Array<float>& arrayToFill);
+    const float& getFloatValueReference (const PLUME::data::PlumeData data);
     
     //==============================================================================
     void sendString(uint8_t* data, int data_size);
@@ -94,6 +108,11 @@ private:
     int pipeNumber = -1;
     
     std::unique_ptr<StringArray> data;
+	float batteryValue = 0.0f;
+
+    bool hubIsConnected = false;
+    bool ringIsConnected = false;
+    bool ringIsCharging = false;
 
   #if JUCE_MAC
     std::unique_ptr<StatutPipe> statutPipe;

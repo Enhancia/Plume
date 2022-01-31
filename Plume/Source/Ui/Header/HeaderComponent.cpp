@@ -14,7 +14,7 @@
 HeaderComponent::HeaderComponent (PlumeProcessor& proc, Component& newPrst)  : processor (proc),
                                                                                newPresetPanel (newPrst)
 {
-    setName ("Header");
+	Component::setName ("Header");
     setComponentID ("header");
     
     // Plugin Name
@@ -35,7 +35,12 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc, Component& newPrst)  : p
     presetNameLabel->setEditable (false, false, false);
     presetNameLabel->setColour (Label::backgroundColourId, Colour (0));
     presetNameLabel->setColour (Label::textColourId, getPlumeColour (headerText));
-    
+
+    // Battery
+    batteryComponent = std::make_unique<BatteryComponent> (proc.getDataReader ()->getBatteryReference (), *proc.getDataReader());
+    addAndMakeVisible (*batteryComponent);
+    //this->setBatteryVisible (true);
+
     createButtons();
     
 	// Plugin List menu
@@ -51,12 +56,13 @@ HeaderComponent::~HeaderComponent()
     presetNameLabel = nullptr;
     pluginListButton = nullptr;
     savePresetButton = nullptr;
+    batteryComponent = nullptr;
 }
 
 //==============================================================================
 const String HeaderComponent::getInfoString()
 {
-    const String bullet = " " + String::charToString (juce_wchar(0x2022));
+    const String bullet = " " + String::charToString (static_cast<juce_wchar>(0x2022));
 
     return "Header :\n\n" 
             + bullet + " Click on the arrow to display all the available plugins to use.\n"
@@ -68,6 +74,24 @@ void HeaderComponent::update()
     pluginNameLabel->setText (processor.getWrapper().getWrappedPluginName(), dontSendNotification);
     presetNameLabel->setText (processor.getPresetHandler().getCurrentPresetName(), dontSendNotification);
     createPluginMenu (KnownPluginList::sortByManufacturer);
+    batteryComponent->update ();
+}
+
+void HeaderComponent::setBatteryVisible (bool shouldBeVisible)
+{
+    if (batteryComponent->isVisible () != shouldBeVisible)
+    {
+        batteryComponent->setVisible (shouldBeVisible);
+
+        if (shouldBeVisible)
+        {
+            batteryComponent->startTimer (int (BatteryComponent::batteryCheckTimer), 5000);
+        }
+        else
+        {
+            batteryComponent->stopTimer (int (BatteryComponent::batteryCheckTimer));
+        }
+    }
 }
 
 //==============================================================================
@@ -142,6 +166,11 @@ void HeaderComponent::resized()
         presetNameLabel->setBounds (presetArea.reduced (0, MARGIN_SMALL));
     }
 
+    // Battery Area
+    {
+        const auto globalBatteryArea = area.removeFromLeft (getWidth ()).withTrimmedLeft (MARGIN_SMALL);
+        batteryComponent->setBounds (globalBatteryArea);
+    }
 }
 
 //==============================================================================
@@ -248,6 +277,13 @@ void HeaderComponent::handlePluginChoice (int chosenId)
     }
     else
     {
+        if (processor.getGestureArray().mapModeOn)
+        {
+            // Cancels map mode in case it was on, this prevents the plugin load
+            // from mapping a parameter without the user wanting.
+            processor.getGestureArray().cancelMapMode();
+        }
+
         if (processor.getWrapper().rewrapPlugin (chosenId))
         {
             pluginNameLabel->setText (processor.getWrapper().getWrappedPluginName(), dontSendNotification);
@@ -349,6 +385,21 @@ void HeaderComponent::setNextPreset()
 {
     setPresetWithOffset (1);
 }
+void HeaderComponent::drawDebugRect (Graphics& g, const juce::Rectangle<float>& rectangle)
+{
+    g.setFont (PLUME::font::plumeFont);
+    g.setColour (juce::Colours::green);
+    g.drawRect (rectangle);
+
+    const int widthText = truncf (rectangle.getWidth ());
+    const int heightText = truncf (rectangle.getHeight ());
+
+    //g.drawText (std::to_string (widthText), rectangle.getWidth () / 2, rectangle.getY () - 10, 15, 10,
+    //    Justification::horizontallyCentred, false);
+
+    //g.drawText (std::to_string (heightText), rectangle.getX () - 10, rectangle.getHeight () / 2, 15, 10,
+    //    Justification::verticallyCentred, false);
+}
 
 void HeaderComponent::setPresetWithOffset (const int offset)
 {
@@ -407,11 +458,335 @@ void HeaderComponent::prepareGesturePanelAndLoadPreset (const int presetId)
         processor.getWrapper().removeAllChangeListeners();
 
         // Calls the plugin's setStateInformation method to load the preset
-        processor.setStateInformation (presetData.getData(), int (presetData.getSize()));
+        processor.setStateInformation (presetData.getData(), static_cast<int>(presetData.getSize()));
         presetXml->deleteAllChildElements(); // frees the memory
     }
     else // failed to get preset xml somehow
     {
         processor.getPresetHandler().resetPreset();
     }
+}
+
+//==============================================================================
+HeaderComponent::BatteryComponent::BatteryComponent (const float& batteryValRef, DataReader& dataReaderRef) :
+	batteryValueRef (batteryValRef),
+	dataReader (dataReaderRef)
+	//lastBattery(jmax(jmin(PLUME::data::convertRawBatteryToPercentage(batteryValRef), 1.0f), 0.0f)),
+	//lastRawBattery(batteryValueRef)
+{
+    lastBattery = jmax (jmin (PLUME::data::convertRawBatteryToPercentage (batteryValueRef, dataReader.getRingIsCharging()), 1.0f), 0.0f);
+
+    lastRawBattery = batteryValueRef;
+    lastConnectionState = dataReader.getRingIsConnected ();
+
+	startTimer (static_cast<int>(batteryCheckTimer), 30000);
+    if (lastConnectionState)
+        startTimer (static_cast<int>(blinkTimer), 1000);
+
+	//startTimer (static_cast<int>(delayedRepaintTimer), 1000);
+	launchDelayedRepaint (3000, true);
+}
+
+HeaderComponent::BatteryComponent::~BatteryComponent ()
+{
+    stopTimer (static_cast<int>(batteryCheckTimer));
+}
+
+void HeaderComponent::BatteryComponent::paint (Graphics& g)
+{
+    g.setColour (getPlumeColour (headerText).withAlpha (0.9f));
+
+    auto area = getLocalBounds().reduced (PLUME::UI::MARGIN);
+    const auto ringArea = area.removeFromLeft (32).toFloat();
+
+	drawRingPath (g, ringArea);
+
+    g.setColour (getPlumeColour (sideBarSubText));
+
+    indicatorsArea = area.withTrimmedLeft (PLUME::UI::MARGIN);
+
+    // Ring is connected
+	if (lastConnectionState)
+	{
+		drawBatteryPath (g, indicatorsArea.toFloat ());
+	}
+    //Ring is disconected
+	else
+	{
+        const auto newIndicatorsArea = indicatorsArea.removeFromLeft(20).withSizeKeepingCentre (15, area.getHeight () * 3 / 4).toFloat ();
+        drawConnectedPath (g, newIndicatorsArea);
+	}
+}
+
+void HeaderComponent::BatteryComponent::timerCallback (int timerID)
+{
+	if (timerID == static_cast<int>(batteryCheckTimer) && !waitForRepaint)
+	{
+		repaintIfNeeded ();
+	}
+	else if (timerID == static_cast<int>(blinkTimer))
+	{
+        blinkState = !blinkState;
+        repaintBlinkingIndicators ();
+	}
+    else if (timerID == static_cast<int>(delayedRepaintTimer))
+    {
+        repaintIfNeeded (mForceRepaint);
+        mForceRepaint = false;
+        stopTimer(static_cast<int>(delayedRepaintTimer));
+    }
+}
+
+void HeaderComponent::BatteryComponent::repaintIfNeeded (bool forceRepaint)
+{
+	const float battery = jmax (jmin (PLUME::data::convertRawBatteryToPercentage (batteryValueRef, dataReader.getRingIsCharging()), 1.0f), 0.0f);
+	const float newRawBattery = batteryValueRef;
+
+	//DBG ("----------------"
+	//	<< "\nComputing battery level"
+	//	<< "\nRaw      " << batteryValueRef
+	//	<< "\nRounded  " << battery
+	//	<< "\nCharging " << (lastChargeState ? "Yes" : "No"));
+
+	if (batteryValueRef < 3.4f)
+	{
+		if (dataReader.getRingIsCharging () != lastChargeState)
+		{
+			lastChargeState = dataReader.getRingIsCharging ();
+		}
+
+		numBlinkingIndicators = (!lastChargeState && lastBattery == 0.0f) ? 4 : (lastChargeState && lastBattery != 1.0f) ? 1 : 0;
+
+        // Specific case : ring just got into charging and sends a 0-level battery before computing its actual battery level.
+		launchDelayedRepaint (500);
+	}
+	else if (
+        forceRepaint ||
+        lastConnectionState &&
+			((battery != lastBattery &&
+                ((!lastChargeState &&
+                    (newRawBattery - lastRawBattery) < 0.0f) ||
+                    (lastChargeState &&
+                        (newRawBattery - lastRawBattery) > 0.01f))) ||
+                dataReader.getRingIsCharging () != lastChargeState))
+	{
+		lastBattery = battery;
+		lastRawBattery = newRawBattery;
+		lastChargeState = dataReader.getRingIsCharging ();
+
+		numIndicators = battery < 0.0f ? 0
+			: (battery == 0.0f && !lastChargeState) ? 4
+			: battery < 0.2f ? 1
+			: battery < 0.4 ? 2
+			: battery < 0.7 ? 3
+			: 4;
+
+		numBlinkingIndicators = (!lastChargeState && lastBattery == 0.0f) ? 4
+			: (lastChargeState && lastBattery != 1.0f) ? 1
+			: 0;
+
+		repaint ();
+	}
+	else if (dataReader.getRingIsConnected () != lastConnectionState)
+	{
+		lastConnectionState = dataReader.getRingIsConnected ();
+
+		if (lastConnectionState)
+			startTimer (static_cast<int>(blinkTimer), 1000);
+		else
+			stopTimer (static_cast<int>(blinkTimer));
+
+		if (lastConnectionState)
+		{
+			numIndicators = battery < 0.0f ? 0
+				: (battery == 0.0f && !lastChargeState) ? 4
+				: battery < 0.2f ? 1
+				: battery < 0.4 ? 2
+				: battery < 0.7 ? 3
+				: 4;
+
+			numBlinkingIndicators = (!lastChargeState && lastBattery == 0.0f) ? 4
+				: (lastChargeState && lastBattery != 1.0f) ? 1
+				: 0;
+		}
+
+		repaint ();
+	}
+}
+
+void HeaderComponent::BatteryComponent::repaintBlinkingIndicators ()
+{
+	if (numBlinkingIndicators != 0)
+	{
+		if (numBlinkingIndicators == 4)
+		{
+			repaint ();
+		}
+		else if (numBlinkingIndicators == 1)
+		{
+			//const int indicatorAreaWidth = indicatorsArea.getWidth () / 4;
+            const int indicatorAreaWidth = 15.0f;
+
+			repaint (indicatorsArea
+				.withWidth (indicatorAreaWidth)
+				.withX (indicatorsArea.getX () + indicatorAreaWidth * (numIndicators - 1))
+				.withSizeKeepingCentre (6, 6));
+		}
+	}
+}
+
+void HeaderComponent::BatteryComponent::update ()
+{
+    if(dataReader.getRingIsConnected() != lastConnectionState)
+    {
+        repaintIfNeeded ();
+    }
+
+    if(dataReader.getRingIsCharging() != lastChargeState)
+    {
+        repaintIfNeeded ();
+        repaint (getLocalBounds ().withRight (15));
+        launchDelayedRepaint (1000);
+    }
+}
+
+void HeaderComponent::BatteryComponent::launchDelayedRepaint(const int delayMs, bool forceRepaint)
+{
+
+    mForceRepaint = forceRepaint;
+	startTimer (static_cast<int>(delayedRepaintTimer), delayMs);
+
+    //auto repaintBatteryLambda = [this]()
+    //{
+    //    repaintIfNeeded ();
+    //    waitForRepaint = false;
+    //};
+
+    //auto repaintBatteryLambdaForce = [this]()
+    //{
+    //    repaintIfNeeded (true);
+    //    waitForRepaint = false;
+    //};
+
+    //waitForRepaint = true;
+
+    //if (forceRepaint)
+    //    Timer::callAfterDelay (delayMs, repaintBatteryLambdaForce);
+    //else
+    //    Timer::callAfterDelay (delayMs, repaintBatteryLambda);
+}
+
+void HeaderComponent::BatteryComponent::drawLightningPath (Graphics& g, juce::Rectangle<float> area)
+{
+	Path lightning;
+
+	lightning.startNewSubPath (7.0f, 0.0f);
+	lightning.lineTo (4.0f, 3.0f);
+	lightning.lineTo (8.0f, 3.0f);
+	lightning.lineTo (3.0f, 8.0f);
+	lightning.lineTo (4.0f, 5.0f);
+	lightning.lineTo (0.0f, 5.0f);
+	lightning.lineTo (3.0f, 0.0f);
+	lightning.closeSubPath ();
+
+	lightning.scaleToFit (area.getX (), area.getY (), area.getWidth (), area.getHeight (), true);
+
+    g.fillPath (lightning);
+}
+
+void HeaderComponent::BatteryComponent::drawBatteryPath (Graphics& g, juce::Rectangle<float> area)
+{
+	const Colour fillColour = lastBattery < 0.2f ? Colours::red
+		: lastBattery < 0.4f ? Colours::yellow
+		: Colours::lime;
+
+    // Repaint if red to prevent fake low batterie level after hubconnection
+    if(fillColour == Colours::red)
+    {
+	    repaintIfNeeded(true);
+    }
+
+    //const int indicatorAreaWidth = area.getWidth () / 4;
+    const int indicatorAreaWidth = 15.0f;
+
+	for (int indicator = 0; indicator < 4; indicator++)
+	{
+		auto indicatorArea = area.removeFromLeft (indicatorAreaWidth);
+
+		if (indicator < numIndicators || numBlinkingIndicators == 4)
+		{
+			// Blinking fill
+			if (numBlinkingIndicators == 4 || (numBlinkingIndicators == 1 && indicator == numIndicators - 1))
+			{
+				g.setColour (blinkState ? fillColour : getPlumeColour(plumeBackground));
+			}
+			// Standard fill
+			else
+			{
+				g.setColour (fillColour);
+			}
+		}
+		else
+		{
+            g.setColour (getPlumeColour(plumeBackground));
+		}
+
+        g.fillEllipse (indicatorArea.withSizeKeepingCentre (4, 4));
+
+	}
+}
+
+void HeaderComponent::BatteryComponent::drawConnectedPath (Graphics& g, juce::Rectangle<float> area)
+{
+	g.setColour (lastConnectionState ? getPlumeColour (headerText) : getPlumeColour (headerText).withAlpha (0.2f));
+
+	g.drawArrow (Line<float> (area.getX () + area.getWidth () / 4,
+		area.getY () + area.getHeight () / 6,
+		area.getX () + area.getWidth () / 4,
+		area.getY () + area.getHeight ()),
+		1.5f, 7.0f, 5.0f);
+
+	g.drawArrow (Line<float> (area.getX () + area.getWidth () * 3 / 4,
+		area.getY () + area.getHeight (),
+		area.getX () + area.getWidth () * 3 / 4,
+		area.getY () + area.getHeight () / 6),
+		1.5f, 7.0f, 5.0f);
+
+	if (!lastConnectionState)
+	{
+		const auto crossArea = area.withSizeKeepingCentre (jmin (area.getWidth (), area.getHeight (),
+			area.getWidth (), area.getHeight ()) / 2,
+			jmin (area.getWidth (), area.getHeight (),
+				area.getWidth (), area.getHeight ()) / 2)
+			.withX (area.getX ())
+			.withBottomY (area.getY () + area.getHeight ());
+
+		g.setColour (Colours::red);
+
+		g.drawLine (Line<float> (crossArea.getX (),
+			crossArea.getY (),
+			crossArea.getX () + crossArea.getWidth (),
+			crossArea.getY () + crossArea.getHeight ()), 1.5f);
+		g.drawLine (Line<float> (crossArea.getX () + crossArea.getWidth (),
+			crossArea.getY (),
+			crossArea.getX (),
+			crossArea.getY () + crossArea.getHeight ()), 1.5f);
+	}
+}
+
+void HeaderComponent::BatteryComponent::drawRingPath (Graphics& g, juce::Rectangle<float> area)
+{
+	g.setColour (getPlumeColour (headerText).withAlpha (0.8f));
+
+    // Ring
+	Path ringPath = PLUME::path::createPath (PLUME::path::ring);
+	const auto affineTransform = ringPath.getTransformToScaleToFit (12, 11, 18, 18, true);
+	g.fillPath (ringPath, affineTransform);
+
+    // Lightning
+	auto zipzoopArea = area.removeFromRight (7);
+	if (lastChargeState)
+	{
+		drawLightningPath (g, zipzoopArea);
+	}
 }
