@@ -36,8 +36,8 @@ public:
             alphabeticalReversed
         };
 
-		PresetSearchSettings(int type = -1, int filter = -1, String pluginName = String(), String name = String())
-			: presetType (type), filterType (filter), plugin (pluginName), nameSearch (name)
+		PresetSearchSettings(int type = -1, int filter = -1, String pluginName = String(), String pDescriptiveName = String(), String name = String())
+			: presetType (type), filterType (filter), plugin (pluginName), descriptiveName(pDescriptiveName), nameSearch (name)
         {
         }
         
@@ -46,6 +46,7 @@ public:
             this->presetType = other.presetType;
             this->filterType = other.filterType;
             this->plugin     = other.plugin;
+            this->descriptiveName = other.descriptiveName;
             this->nameSearch = other.nameSearch;
             
             return *this;
@@ -67,6 +68,7 @@ public:
         int presetType;
         int filterType;
         String plugin;
+        String descriptiveName;
         String nameSearch;
         SortMethod sortMethod = alphabetical;
     };
@@ -176,10 +178,10 @@ public:
     void loadPresetDirectoryFromFile();
 
     //==============================================================================
-    void setSearchSettings (int type, int filter, String pluginName, String name);
+    void setSearchSettings (int type, int filter, String pluginName, String pDescriptiveName, String name);
     void setTypeSearchSetting (int type);
     void setFilterSearchSetting (int filter);
-    void setPluginSearchSetting (String pluginName);
+    void setPluginSearchSetting (String pDescriptiveName);
     void setNameSearchSetting (String name);
     
     const PresetSearchSettings getCurrentSettings();

@@ -126,11 +126,13 @@ void PresetComponent::focusLost (Component::FocusChangeType cause)
 
 void PresetComponent::comboBoxChanged (ComboBox* cmbx)
 {
-    if (!(cmbx->getSelectedId() == 1 && processor.getPresetHandler().getCurrentSettings().plugin.isEmpty()) &&
-        cmbx->getText() != processor.getPresetHandler().getCurrentSettings().plugin)
+    if (!(cmbx->getSelectedId() == 1 && processor.getPresetHandler().getCurrentSettings().descriptiveName.isEmpty()) &&
+        cmbx->getText() != processor.getPresetHandler().getCurrentSettings().descriptiveName)
     {
-        if (cmbx->getSelectedId() == 1) processor.getPresetHandler().setPluginSearchSetting (String());
-        else                            processor.getPresetHandler().setPluginSearchSetting (cmbx->getText());
+        if (cmbx->getSelectedId() == 1)
+            processor.getPresetHandler().setPluginSearchSetting (String());
+        else
+            processor.getPresetHandler().setPluginSearchSetting (cmbx->getText());
         
         presetBox->updateContent();
         presetBox->selectRow (0);
@@ -165,11 +167,11 @@ void PresetComponent::createComboBox()
     
     for (int i=0; i<kpl.getNumTypes(); i++)
     {
-        const String currentName = kpl.getType (i)->name;
+        const String currentName = kpl.getType (i)->descriptiveName;
 
         pluginSelectBox->addItem (currentName, i+2);
 
-        if (currentName == processor.getPresetHandler().getCurrentSettings().plugin)
+        if (currentName == processor.getPresetHandler().getCurrentSettings().descriptiveName)
             searchedPlugin = i+2;
     }
     
