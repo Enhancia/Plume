@@ -45,7 +45,7 @@ public:
         {
             this->presetType = other.presetType;
             this->filterType = other.filterType;
-            this->plugin     = other.plugin;
+            this->plugin     = other.descriptiveName;
             this->descriptiveName = other.descriptiveName;
             this->nameSearch = other.nameSearch;
             

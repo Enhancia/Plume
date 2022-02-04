@@ -357,7 +357,7 @@ String PluginWrapper::getWrappedPluginName()
 {
     if (hasWrappedInstance)
     {
-        return wrappedInstance->getPluginDescription().name;
+        return wrappedInstance->getPluginDescription().descriptiveName;
     }
     
     return "No plugin";
