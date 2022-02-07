@@ -30,7 +30,9 @@
  */
 class GestureArray	: public ChangeListener,
                       public ChangeBroadcaster,
-                      public ActionBroadcaster
+                      public ActionBroadcaster,
+                      public AudioProcessorValueTreeState
+::Listener
 {
 public:
     GestureArray(DataReader& reader, AudioProcessorValueTreeState& params, bool& lastArmValue);
@@ -240,6 +242,8 @@ public:
      *  This method will call updateValues() to change all the gestures' values to the updated ones.
      */
     void changeListenerCallback(ChangeBroadcaster* source) override;
+
+    void parameterChanged (const String &parameterID, float newValue) override;
     
     bool mapModeOn = false; /**< \brief Boolean to assess if one of the gestures in currently in mapMode*/
     
@@ -264,6 +268,8 @@ private:
     void addGestureCopyingOther (Gesture* other, int gestureId, String gestureName = String());
     int findClosestIdToDuplicate (int idToDuplicateFrom, bool prioritizeHigherId = true);
     String createDuplicateName (String originalGestureName);
+
+    void notifyGestureParametersShouldBeUpdatedForType (Gesture::GestureType);
     
     //==============================================================================
     bool shouldMergePitch = false;

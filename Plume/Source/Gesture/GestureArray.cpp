@@ -15,10 +15,20 @@ GestureArray::GestureArray(DataReader& reader, AudioProcessorValueTreeState& par
 {
     initializeGestures();
     cancelMapMode();
+
+    for (int i = 0; i < PLUME::param::numValues; i++)
+    {
+        parameters.addParameterListener (PLUME::param::valuesIds[i], this);
+    }
 }
 
 GestureArray::~GestureArray()
 {
+    for (int i = 0; i < PLUME::param::numValues; i++)
+    {
+        parameters.removeParameterListener (PLUME::param::valuesIds[i], this);
+    }
+
     gestures.clear();
 }
 
@@ -219,6 +229,36 @@ bool GestureArray::isPitchInUse()
 void GestureArray::changeListenerCallback(ChangeBroadcaster*)
 {
     updateAllValues();
+}
+
+void GestureArray::parameterChanged (const String &parameterID, float newValue)
+{
+    DBG ("Parameter " << parameterID << " changed");
+
+    for (int valueNum = 0; valueNum < PLUME::param::numValues; valueNum++)
+    {
+        if (PLUME::param::valuesIds[valueNum] == parameterID)
+        {
+            switch (valueNum)
+            {
+                case static_cast<int> (PLUME::param::vibrato_value):
+                case static_cast<int> (PLUME::param::vibrato_intensity):
+                    notifyGestureParametersShouldBeUpdatedForType (Gesture::vibrato);
+                    return;
+                case static_cast<int> (PLUME::param::tilt_value):
+                    notifyGestureParametersShouldBeUpdatedForType (Gesture::tilt);
+                    return;
+                case static_cast<int> (PLUME::param::roll_value):
+                    notifyGestureParametersShouldBeUpdatedForType (Gesture::pitchBend);
+                    notifyGestureParametersShouldBeUpdatedForType (Gesture::roll);
+                    return;
+                default:
+                    break;
+            }
+
+            return;
+        }
+    }
 }
 
 //==============================================================================
@@ -789,5 +829,19 @@ void GestureArray::createParameterXml(XmlElement& gestureXml, OwnedArray<Gesture
         paramXml->setAttribute ("reversed", mParam->reversed);
         
         gestureXml.addChildElement (paramXml); // Adds the element
+    }
+}
+
+
+void GestureArray::notifyGestureParametersShouldBeUpdatedForType (Gesture::GestureType typeToNotify)
+{
+    DBG("notifying update for type : " << Gesture::getTypeString (static_cast<int> (typeToNotify)));
+
+    for (auto* gesture : gestures)
+    {
+        if (gesture->type == typeToNotify)
+        {
+            gesture->setParametersShouldBeUpdated (true);
+        }
     }
 }
