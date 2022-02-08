@@ -15,17 +15,10 @@ Tilt::Tilt (String gestName, int gestId, AudioProcessorValueTreeState& plumePara
             float lowValue, float highValue, String description)
     : Gesture (gestName, Gesture::tilt, gestId, NormalisableRange<float> (PLUME::gesture::TILT_MIN, PLUME::gesture::TILT_MAX, 0.1f),
                plumeParameters, param::valuesIds[param::tilt_value], description),
-      tiltDisplayRange (PLUME::UI::TILT_DISPLAY_MIN, PLUME::UI::TILT_DISPLAY_MAX, 1.0f),
-      rangeLow  (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::gesture_param_0]))),
-      rangeHigh (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::gesture_param_1])))
+      tiltDisplayRange (PLUME::UI::TILT_DISPLAY_MIN, PLUME::UI::TILT_DISPLAY_MAX, 1.0f)
 {
-    rangeLow.beginChangeGesture();
-    rangeLow.setValueNotifyingHost (tiltDisplayRange.convertTo0to1 (lowValue));
-    rangeLow.endChangeGesture();
-    
-    rangeHigh.beginChangeGesture();
-    rangeHigh.setValueNotifyingHost (tiltDisplayRange.convertTo0to1 (highValue));
-    rangeHigh.endChangeGesture();
+    rangeLow = tiltDisplayRange.convertTo0to1 (lowValue);
+    rangeHigh = tiltDisplayRange.convertTo0to1 (highValue);
 }
 
 Tilt::~Tilt()
@@ -47,8 +40,8 @@ void Tilt::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 void Tilt::updateMidiValue()
 {
     currentMidi = Gesture::normalizeMidi (getGestureValue(),
-                                   tiltDisplayRange.convertFrom0to1 (rangeLow.getValue()),
-                                   tiltDisplayRange.convertFrom0to1 (rangeHigh.getValue()),
+                                   tiltDisplayRange.convertFrom0to1 (rangeLow),
+                                   tiltDisplayRange.convertFrom0to1 (rangeHigh),
                                    (midiType == Gesture::pitch),
                                    getMidiReverse());
 }
@@ -61,13 +54,9 @@ bool Tilt::shouldUpdateParameters()
 
 float Tilt::computeMappedParameterValue (Range<float> paramRange, bool reversed = false)
 {
-    const float val = getGestureValue();
-
-    DBG ("Changing mapped parameters with gesture value = " << val);
-
-	return Gesture::mapParameter (val,
-                                  tiltDisplayRange.convertFrom0to1 (rangeLow.getValue()),
-                                  tiltDisplayRange.convertFrom0to1 (rangeHigh.getValue()),
+	return Gesture::mapParameter (getGestureValue(),
+                                  tiltDisplayRange.convertFrom0to1 (rangeLow),
+                                  tiltDisplayRange.convertFrom0to1 (rangeHigh),
                                   paramRange, reversed);
 }
     

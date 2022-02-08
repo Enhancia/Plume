@@ -12,8 +12,8 @@
 
 VibratoTuner::VibratoTuner  (const std::atomic<float>& val, NormalisableRange<float> gestRange,
 				  			 const std::atomic<float>& vibratoIntensity, NormalisableRange<float> intRange,
-    			  			 RangedAudioParameter& vibGain, const NormalisableRange<float> gainMax,
-    			  			 RangedAudioParameter& thresh, const NormalisableRange<float> threshMax)
+    			  			 float& vibGain, const NormalisableRange<float> gainMax,
+    			  			 float& thresh, const NormalisableRange<float> threshMax)
     : Tuner ("", getPlumeColour (vibratoHighlight)),
       value (val), gestureRange (gestRange),
       intensity (vibratoIntensity), intensityRange (intRange),
@@ -195,12 +195,10 @@ void VibratoTuner::mouseDown (const MouseEvent& e)
 		{
 			if (e.eventComponent == gainSlider.get())
 			{
-				gain.beginChangeGesture();
 				gainLabel->setVisible (true);
 			}
 			else if (e.eventComponent == thresholdSlider.get())
 			{
-				threshold.beginChangeGesture();
 				thresholdLabel->setVisible (true);
 			}
 		}
@@ -226,12 +224,10 @@ void VibratoTuner::mouseUp (const MouseEvent& e)
 	{
 		if (e.eventComponent == gainSlider.get())
 		{
-			gain.endChangeGesture();
 			gainLabel->setVisible (false);
 		}
 		else if (e.eventComponent == thresholdSlider.get())
 		{
-			threshold.endChangeGesture();
 			thresholdLabel->setVisible (false);
 		}
 	}
@@ -343,26 +339,22 @@ void VibratoTuner::updateLabelBounds (Label* labelToUpdate)
 
 void VibratoTuner::setGain (float newGain, const bool createChangeGesture)
 {
-    if (createChangeGesture) gain.beginChangeGesture();
-    gain.setValueNotifyingHost (parameterMaxGain.convertTo0to1 (newGain));
-    if (createChangeGesture) gain.endChangeGesture();
+    gain = parameterMaxGain.convertTo0to1 (newGain);
 }
 
 void VibratoTuner::setThreshold (float newTresh, const bool createChangeGesture)
 {
-    if (createChangeGesture) threshold.beginChangeGesture();
-    threshold.setValueNotifyingHost (parameterMaxThreshold.convertTo0to1 (newTresh));
-    if (createChangeGesture) threshold.endChangeGesture();
+    threshold = parameterMaxThreshold.convertTo0to1 (newTresh);
 }
 
 float VibratoTuner::getGain()
 {
-    return parameterMaxGain.convertFrom0to1 (gain.getValue());
+    return parameterMaxGain.convertFrom0to1 (gain);
 }
 
 float VibratoTuner::getThreshold()
 {
-    return parameterMaxThreshold.convertFrom0to1 (threshold.getValue());
+    return parameterMaxThreshold.convertFrom0to1 (threshold);
 }
 
 float VibratoTuner::getIntensity()

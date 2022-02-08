@@ -397,7 +397,7 @@ AudioProcessorValueTreeState::ParameterLayout PlumeProcessor::initializeParamete
                                                            0.0f));
     }
 
-    for (int gest =0; gest < PLUME::NUM_GEST; gest++)
+    /*for (int gest =0; gest < PLUME::NUM_GEST; gest++)
     {
         for (int i =0; i < numParams; i++)
         {
@@ -408,7 +408,7 @@ AudioProcessorValueTreeState::ParameterLayout PlumeProcessor::initializeParamete
                                                                    NormalisableRange<float> (0.0f, 1.0f, 0.0001f),
                                                                    0.0f));
         }
-    }
+    }*/
 
     layout.add (std::make_unique<AudioParameterInt> ("track_arm",
                                                      "track_arm",
