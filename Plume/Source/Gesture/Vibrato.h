@@ -46,7 +46,7 @@ public:
     
     //==============================================================================
     float gain; /**< Sensibility of the vibrato. From 0.0f (no effect) to 500.0f (maximum effect)*/
-	float threshold; /**< threshold used to trigger the effect*/
+    float threshold; /**< threshold used to trigger the effect*/
     
     NormalisableRange<float> gainDisplayRange;
     NormalisableRange<float> thresholdDisplayRange;

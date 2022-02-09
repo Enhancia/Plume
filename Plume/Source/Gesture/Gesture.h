@@ -554,13 +554,11 @@ protected:
     int lastMidi = -1; /**< \brief Integer value that represents the midiValue supposedely sent to the previous midiBuffer */
     
     //==============================================================================
-    std::atomic<float>* valueRef; /**< \brief Parameter that holds the current "raw" value of the gesture. Should be used and updated by subclasses. */
     const NormalisableRange<float> range; /**< \brief Attribute that holds the maximum range of values that the gesture can take. */
 	//int pitchReference = 8192; /**< \brief Base pitch value, that comes from external midi controllers */
 	
     //==============================================================================
-	RangedAudioParameter& value; /**< \brief Float parameter that holds the gesture's raw value in the [0.0f 1.0f]. Should be normalized using "range". */
-    bool wasBeingChanged = false;
+	std::atomic<float> value; /**< \brief Float parameter that holds the gesture's raw value in the [0.0f 1.0f]. Should be normalized using "range". */
     float lastValue = -1.0f;
 
     //==============================================================================

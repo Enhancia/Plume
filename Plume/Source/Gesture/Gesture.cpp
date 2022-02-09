@@ -14,9 +14,7 @@ Gesture::Gesture (String gestName, int gestType, int gestId, const NormalisableR
          		  AudioProcessorValueTreeState& plumeParameters, const String valueId, String gestureDescription,
          		  float defaultValue, int defaultCc, Range<float> defaultMidiRange)
         
-         		  : type (gestType), name (gestName), id (gestId), range (maxRange), description (gestureDescription),
-	       		  value    (*(plumeParameters.getParameter (valueId))),
-	       		  valueRef (plumeParameters.getRawParameterValue (valueId))
+         		  : type (gestType), name (gestName), id (gestId), range (maxRange), description (gestureDescription)
 {
     mapped = false;
     setGestureValue (defaultValue);
@@ -170,34 +168,20 @@ void Gesture::setGestureValue (float newVal)
 
         if (roundedNew != roundedLast)
         {
-            if (!wasBeingChanged)
-            {
-                value.beginChangeGesture();
-                wasBeingChanged = true;
-            }
-
-            value.setValueNotifyingHost (range.convertTo0to1 (newVal));
+            value = range.convertTo0to1 (newVal);
             lastValue = range.convertTo0to1 (newVal);
-        }
-        else
-        {
-            if (wasBeingChanged)
-            {
-                value.endChangeGesture();
-                wasBeingChanged = false;
-            }
         }
     }
 }
 
 float Gesture::getGestureValue() const
 {
-	return range.convertFrom0to1 (value.getValue());
+	return range.convertFrom0to1 (value);
 }
 
 std::atomic<float>& Gesture::getValueReference()
 {
-	return *valueRef;
+	return value;
 }
 
 NormalisableRange<float> Gesture::getRangeReference()
@@ -604,22 +588,22 @@ void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
 	addRightMidiSignalToBuffer (midiMessages, plumeBuffer, channel, getMidiValue());
 }
 
-void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int channel, int value)
+void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int channel, int midiValue)
 {
     if (!generatesMidi()) return; //Does nothing if not in default midi mode
 
     int newMidi;
     
-    DBG ("Adding MIDI : New value : " << value << " | Last Value : " << lastMidi);
+    DBG ("Adding MIDI : New value : " << midiValue << " | Last Value : " << lastMidi);
 
-    if (value != lastMidi) // Prevents to send the same message twice in a row
+    if (midiValue != lastMidi) // Prevents to send the same message twice in a row
     {
         // Assigns the right midi value depending on the signal and
         // the midiRange parameter, then adds message to the buffers
         switch (midiType)
         {
             case (Gesture::pitch):
-                newMidi = map (value, 0, 16383,
+                newMidi = map (midiValue, 0, 16383,
                                   map (midiLow, 0.0f, 1.0f, 0, 16383),
                                   map (midiHigh,   0.0f, 1.0f, 0, 16383));
                                   
@@ -627,7 +611,7 @@ void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
                 break;
             
             case (Gesture::controlChange):
-                newMidi = map (value, 0, 127,
+                newMidi = map (midiValue, 0, 127,
                                   map (midiLow, 0.0f, 1.0f, 0, 127),
                                   map (midiHigh,   0.0f, 1.0f, 0, 127));
                                   
@@ -635,7 +619,7 @@ void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
                 break;
             
             case (Gesture::afterTouch):
-                newMidi = map (value, 0, 127,
+                newMidi = map (midiValue, 0, 127,
                                   map (midiLow, 0.0f, 1.0f, 0, 127),
                                   map (midiHigh,   0.0f, 1.0f, 0, 127));
                                   
@@ -646,6 +630,6 @@ void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
                 break;
         }
 
-        lastMidi = value;
+        lastMidi = midiValue;
     }
 }
