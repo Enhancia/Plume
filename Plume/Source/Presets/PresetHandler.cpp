@@ -184,6 +184,20 @@ String PresetHandler::getFilterTextForPresetId (const int id)
     return searchedPresets[id]->getFilterString();
 }
 
+/**
+ * @brief Pass name and get current index of preset in list of presets
+ * @param presetName
+ * @return current index
+*/
+int PresetHandler::getPresetIndexByName (const String& presetName) const
+{
+    for (int i = 0; i <= searchedPresets.size () - 1; i++)
+        if (searchedPresets[i]->getName () == presetName)
+            return i;
+
+    return 0;
+}
+
 bool PresetHandler::isUserPreset (int id)
 {
 	return (searchedPresets[id]->presetType == PlumePreset::userPreset);
@@ -432,6 +446,10 @@ bool PresetHandler::deletePresetForId (int id)
     return false;
 }
 
+/**
+ * @brief Display preset in Windows Explorer
+ * @param id 
+*/
 void PresetHandler::showPresetInExplorer (int id)
 {
     if (id < 0 || id >= getNumPresets()) return;
@@ -475,6 +493,13 @@ void PresetHandler::initialiseDirectories()
     storePresets();
 }
 
+/**
+ * @brief Set 1 to 4 setting(s) of preset search
+ * @param type 
+ * @param filter 
+ * @param pluginName 
+ * @param name 
+*/
 void PresetHandler::setSearchSettings (int type, int filter, String pluginName, String name)
 {
     if (settings.presetType == type       &&
@@ -505,6 +530,10 @@ void PresetHandler::setSearchSettings (int type, int filter, String pluginName, 
 }
 
 
+/**
+ * @brief Update presets list by type of preset
+ * @param type 
+*/
 void PresetHandler::setTypeSearchSetting (int type)
 {
     if (settings.presetType == type)
@@ -519,6 +548,10 @@ void PresetHandler::setTypeSearchSetting (int type)
     updateSearchedPresets();
 }
 
+/**
+ * @brief Update presets list by filter
+ * @param filter 
+*/
 void PresetHandler::setFilterSearchSetting (int filter)
 {
     if (settings.filterType == filter)
@@ -533,6 +566,10 @@ void PresetHandler::setFilterSearchSetting (int filter)
     updateSearchedPresets();
 }
 
+/**
+ * @brief Update presets list by plugin name
+ * @param pluginName 
+*/
 void PresetHandler::setPluginSearchSetting (String pluginName)
 {
     if (settings.plugin == pluginName)
@@ -546,6 +583,10 @@ void PresetHandler::setPluginSearchSetting (String pluginName)
     updateSearchedPresets();
 }
 
+/**
+ * @brief Update presets list by preset name
+ * @param name 
+*/
 void PresetHandler::setNameSearchSetting (String name)
 {
     name = name.removeCharacters (" -_");
@@ -561,12 +602,19 @@ void PresetHandler::setNameSearchSetting (String name)
     updateSearchedPresets();
 }
 
+/**
+ * @brief Get current preset settings
+ * @return settings
+*/
 const PresetHandler::PresetSearchSettings PresetHandler::getCurrentSettings()
 {
     return settings;
 }
 
 
+/**
+ * @brief Update list of presets, depend of settings
+*/
 void PresetHandler::updateSearchedPresets()
 {
     searchedPresets.clear();

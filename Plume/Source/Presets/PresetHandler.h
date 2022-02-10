@@ -159,6 +159,7 @@ public:
     bool canSavePreset();
     
     String getFilterTextForPresetId (const int id);
+    int getPresetIndexByName (const String& presetName) const;
     void loadInfoFromTreeState (const ValueTree& treeState);
     void saveInfoToTreeState (AudioProcessorValueTreeState& apvts);
 
