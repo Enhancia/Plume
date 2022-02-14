@@ -12,6 +12,7 @@
 
 #include "../../JuceLibraryCode/JuceHeader.h"
 #include "../Common/PlumeCommon.h"
+#include "../Plugin/PlumeParameter.h"
 
 /**
  *  \class Gesture Gesture.h
@@ -62,26 +63,45 @@ public:
      *  This struct is used by the Gesture class to control a parameter from the wrapped plugin, and the range of values that the
      *  gesture should control. The Gesture class implements several methods to modify an array of MappedParameter that it holds.
      */
-    struct MappedParameter
+    struct MappedParameter : public AudioProcessorParameter::Listener,
+                             public AudioProcessorValueTreeState::Listener
     {
-        MappedParameter(AudioProcessorParameter& p, Range<float> pRange, bool rev = false)
-            : parameter (p), range(pRange), reversed (rev)
-        {
-                    }
+        /**
+         * \brief Mapped Parameter struct constructor
+         * 
+         * Creates the mapped parameter struct, storing references to the 2 parameters, and
+         * changing the plume parameter name.
+        */
+        MappedParameter(AudioProcessorParameter& p, AudioProcessorValueTreeState& stateRef, Range<float> pRange, const int gestId, const int paramId, bool rev);
 
-        MappedParameter (const MappedParameter& other)
-            : parameter (other.parameter), range(other.range), reversed (other.reversed)
-        {
-                    }
+        /**
+         * \brief Mapped Parameter struct copy constructor
+        */
+
+        MappedParameter (const MappedParameter& other);
         
-        ~MappedParameter()
-        {
-                    }
+        /**
+         * \brief Mapped Parameter struct destructor
+        */
+        ~MappedParameter();
         
-        AudioProcessorParameter& parameter; /**< \brief Reference to a mapped Parameter from the wrapped Plugin. */
+        void parameterChanged (const String& parameterID, float newValue) override;
+        void parameterValueChanged (int parameterIndex, float newValue) override;
+        void parameterGestureChanged (int, bool) override;
+
+        AudioProcessorValueTreeState& parametersRef; /**< \brief Reference to the parameters from Plume. */
+        
+        AudioProcessorParameter& wrappedParameter; /**< \brief Reference to a Parameter from the wrapped Plugin. */
+        
+        AudioProcessorParameter& plumeParameter; /**< \brief Reference to the Plume Parameter used for this mapping. */
+
         Range<float> range; /**< \brief Range of values from the parameter that the Gesture controls. */
         bool reversed; /**< \brief Boolean that tells if the parameter's range should be inverted. */
         float lastComputedValue = 0.0f;
+        const int gestureId;
+        const int parameterId;
+    private:
+        static AudioProcessorParameter& findRightPlumeParameter (AudioProcessorValueTreeState& stateRef, const int gestId);
     };
     
     //==============================================================================
@@ -426,7 +446,9 @@ public:
      *  \brief Creates a new MappedParameter.
      */
     void addParameter (AudioProcessorParameter& param,
-                       Range<float> r = Range<float> (0.0f, 1.0f), bool rev = false);
+                       AudioProcessorValueTreeState& stateRef,
+                       Range<float> r = Range<float> (0.0f, 1.0f),
+                       bool rev = false);
     
     /**
      *  \brief Deletes a MappedParameter.
@@ -438,6 +460,7 @@ public:
      */
     void replaceParameter (int paramIdToReplace,
                            AudioProcessorParameter& param,
+                           AudioProcessorValueTreeState& stateRef,
                            Range<float> r = Range<float> (0.0f, 1.0f), bool rev = false);
     
     /**
@@ -545,6 +568,8 @@ protected:
      */
     void addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int channel);
     void addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int channel, int value);
+
+    int findFirstUnusedParameter();
     
     //==============================================================================
     String name; /**< \brief Specific name of the gesture. By default it is the gesture type*/

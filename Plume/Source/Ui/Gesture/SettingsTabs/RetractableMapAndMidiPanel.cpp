@@ -132,6 +132,8 @@ void RetractableMapAndMidiPanel::changeListenerCallback(ChangeBroadcaster* sourc
         }
 
         getParentComponent()->getParentComponent()->repaint();
+        gestureArray.getOwnerProcessor()
+        			.updateHostDisplay (AudioProcessor::ChangeDetails().withParameterInfoChanged (true));
     }
     
     // If the editor is closed with map mode still on

@@ -10,24 +10,24 @@
 
 #include "GestureArray.h"
 
-GestureArray::GestureArray(DataReader& reader, AudioProcessorValueTreeState& params, bool& lastArmValue)
-    : dataReader (reader), parameters (params), armValue (lastArmValue)
+GestureArray::GestureArray(AudioProcessor& proc, DataReader& reader, AudioProcessorValueTreeState& params, bool& lastArmValue)
+    : owner (proc), dataReader (reader), parameters (params), armValue (lastArmValue)
 {
     initializeGestures();
     cancelMapMode();
 
-    for (int i = 0; i < PLUME::param::numValues; i++)
+    /*for (int i = 0; i < PLUME::param::numValues; i++)
     {
         parameters.addParameterListener (PLUME::param::valuesIds[i], this);
-    }
+    }*/
 }
 
 GestureArray::~GestureArray()
 {
-    for (int i = 0; i < PLUME::param::numValues; i++)
+    /*for (int i = 0; i < PLUME::param::numValues; i++)
     {
         parameters.removeParameterListener (PLUME::param::valuesIds[i], this);
-    }
+    }*/
 
     gestures.clear();
 }
@@ -225,6 +225,11 @@ bool GestureArray::isPitchInUse()
     return false;
 }
 
+AudioProcessor& GestureArray::getOwnerProcessor()
+{
+    return owner;
+}
+
 //==============================================================================
 void GestureArray::changeListenerCallback(ChangeBroadcaster*)
 {
@@ -233,7 +238,7 @@ void GestureArray::changeListenerCallback(ChangeBroadcaster*)
 
 void GestureArray::parameterChanged (const String &parameterID, float newValue)
 {
-    DBG ("Parameter " << parameterID << " changed");
+    DBG ("[GestureArray] Parameter " << parameterID << " changed");
 
     for (int valueNum = 0; valueNum < PLUME::param::numValues; valueNum++)
     {
@@ -412,13 +417,12 @@ void GestureArray::addParameterToMapModeGesture (AudioProcessorParameter& param)
         return;
     }
     
-    
     // else adds the parameter and cancels mapMode
     for (auto* g : gestures)
     {
         if (g->mapModeOn == true)
         {
-            g->addParameter(param);
+            g->addParameter(param, parameters);
             cancelMapMode();
             return;
         }
@@ -436,14 +440,18 @@ void GestureArray::addAndSetParameter (AudioProcessorParameter& param, int gestu
     if (gestureId < size())
     {
         ScopedLock gestlock (gestureArrayLock);
-        gestures[gestureId]->addParameter (param, Range<float> (start, end), rev);
+        gestures[gestureId]->addParameter (param, parameters, Range<float> (start, end), rev);
     }
+
+    owner.updateHostDisplay (AudioProcessor::ChangeDetails().withParameterInfoChanged (true));
 }
 
 void GestureArray::clearAllGestures()
 {
     gestures.clear();
     shouldMergePitch = false;
+
+    owner.updateHostDisplay (AudioProcessor::ChangeDetails().withParameterInfoChanged (true));
 }
 
 void GestureArray::clearAllParameters()
@@ -455,6 +463,8 @@ void GestureArray::clearAllParameters()
         g->mapModeOn = false;
         g->clearAllParameters();
     }
+
+    owner.updateHostDisplay (AudioProcessor::ChangeDetails().withParameterInfoChanged (true));
 }
 
 void GestureArray::cancelMapMode()
@@ -482,6 +492,11 @@ bool GestureArray::isIdAvailable (int idToCheck)
     }
 
     return true;
+}
+
+AudioProcessorValueTreeState& GestureArray::getParametersReference()
+{
+    return parameters;
 }
 
 //==============================================================================
@@ -821,9 +836,9 @@ void GestureArray::createParameterXml(XmlElement& gestureXml, OwnedArray<Gesture
 {
     for (auto* mParam : mParams)
     {
-        auto paramXml = new XmlElement (mParam->parameter.getName(30).replace (" ", "_"));
+        auto paramXml = new XmlElement (mParam->wrappedParameter.getName(30).replace (" ", "_"));
         
-        paramXml->setAttribute ("id", mParam->parameter.getParameterIndex());
+        paramXml->setAttribute ("id", mParam->wrappedParameter.getParameterIndex());
         paramXml->setAttribute ("start", mParam->range.getStart());
         paramXml->setAttribute ("end", mParam->range.getEnd());
         paramXml->setAttribute ("reversed", mParam->reversed);

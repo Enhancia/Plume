@@ -48,7 +48,7 @@ PlumeProcessor::PlumeProcessor()
     
     // Objects
     dataReader.reset (new DataReader());
-    gestureArray.reset (new GestureArray (*dataReader, parameters, getLastArmRef()));
+    gestureArray.reset (new GestureArray (*this, *dataReader, parameters, getLastArmRef()));
     wrapper.reset (new PluginWrapper (*this, *gestureArray, parameters.state.getChildWithName(PLUME::treeId::general)
 		                                                         .getChildWithName(PLUME::treeId::pluginDirs)));
     presetHandler.reset (new PresetHandler (parameters.state.getChildWithName (PLUME::treeId::general)
@@ -393,7 +393,7 @@ AudioProcessorValueTreeState::ParameterLayout PlumeProcessor::initializeParamete
     {
         String s = "Gest_" + String (i/PLUME::MAX_PARAMETER) + "_param_" + String (i%PLUME::MAX_PARAMETER);
 
-        layout.add (std::make_unique<AudioParameterFloat> (s, s,
+        layout.add (std::make_unique<PlumeParameter<AudioParameterFloat>> (s, s,
                                                            NormalisableRange<float> (0.0f, 1.0f, 0.0001f),
                                                            0.0f));
     }

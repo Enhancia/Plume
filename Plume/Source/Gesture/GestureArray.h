@@ -14,6 +14,7 @@
 #include "../Common/PlumeCommon.h"
 
 #include "../DataReader/DataReader.h"
+#include "../Plugin/PlumeParameter.h"
 
 #include "Gesture.h"
 #include "Vibrato.h"
@@ -35,7 +36,7 @@ class GestureArray	: public ChangeListener,
 ::Listener
 {
 public:
-    GestureArray(DataReader& reader, AudioProcessorValueTreeState& params, bool& lastArmValue);
+    GestureArray(AudioProcessor& proc, DataReader& reader, AudioProcessorValueTreeState& params, bool& lastArmValue);
     ~GestureArray();
 
     //==============================================================================
@@ -143,7 +144,11 @@ public:
      *  \return True if any of the gestures generate pitch.
      */
     bool isPitchInUse();
-     
+
+    /**
+     *  \brief Getter for the Plume Processor (as an AudioProcessor) 
+     */
+    AudioProcessor& getOwnerProcessor(); 
     
     //==============================================================================
     // Modifiers
@@ -232,6 +237,8 @@ public:
      */
     void createParameterXml(XmlElement& gestureXml, OwnedArray<Gesture::MappedParameter>& mParams);
     
+    AudioProcessorValueTreeState& getParametersReference();
+
     //==============================================================================
     //Callbacks 
     
@@ -242,6 +249,7 @@ public:
      *  This method will call updateValues() to change all the gestures' values to the updated ones.
      */
     void changeListenerCallback(ChangeBroadcaster* source) override;
+
 
     void parameterChanged (const String &parameterID, float newValue) override;
     
@@ -278,6 +286,8 @@ private:
     OwnedArray<Gesture> gestures; /**< \brief OwnedArray that holds all gesture objects*/
     DataReader& dataReader; /**< \brief Reference to the data reader object, to access the raw data from the ring*/
     AudioProcessorValueTreeState& parameters;
+    AudioProcessor& owner;
+
     bool& armValue;
     
     CriticalSection gestureArrayLock;

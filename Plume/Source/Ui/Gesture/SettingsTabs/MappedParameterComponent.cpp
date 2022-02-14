@@ -294,6 +294,7 @@ void MappedParameterComponent::handleMenuResult (const int result, const bool is
 
         else if (result == 1)
         {
+            allowDisplayUpdate = false;
             gesture.deleteParameter (paramId);
         }
 
@@ -305,8 +306,7 @@ void MappedParameterComponent::handleMenuResult (const int result, const bool is
             if (!gestureArray.parameterIsMapped (newParam.getParameterIndex(), temp))
             {
                 allowDisplayUpdate = false;
-
-                gesture.replaceParameter (paramId, newParam,
+                gesture.replaceParameter (paramId, newParam, gestureArray.getParametersReference(),
                                           mappedParameter.range, mappedParameter.reversed);
             }
         }
@@ -442,7 +442,7 @@ void MappedParameterComponent::updateDisplay()
 {
     if (allowDisplayUpdate)
     {
-        const float currentMappedParameterValue = mappedParameter.parameter.getValue();
+        const float currentMappedParameterValue = mappedParameter.wrappedParameter.getValue();
 
         if (currentMappedParameterValue != lastValue)
         {
@@ -480,7 +480,7 @@ void MappedParameterComponent::updateHighlightColour()
 void MappedParameterComponent::createLabels()
 {
     //=== Value label ===
-    addAndMakeVisible (*(paramNameLabel = std::make_unique<Label> ("Value Label", mappedParameter.parameter.getName (20))));
+    addAndMakeVisible (*(paramNameLabel = std::make_unique<Label> ("Value Label", mappedParameter.wrappedParameter.getName (20))));
     paramNameLabel->setEditable (false, false, false);
     paramNameLabel->setFont (PLUME::font::plumeFont.withHeight (11.0f));
     paramNameLabel->setColour (Label::textColourId, getPlumeColour (detailPanelMainText));

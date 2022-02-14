@@ -774,4 +774,6 @@ void PluginWrapper::parameterValueChanged (int parameterIndex, float)
     {
 	    gestArray.addParameterToMapModeGesture (wrapperProcessor->getWrappedParameter (parameterIndex));
     }
+
+    owner.updateHostDisplay (AudioProcessor::ChangeDetails().withParameterInfoChanged (true));
 }

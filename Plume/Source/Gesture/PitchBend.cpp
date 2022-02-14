@@ -116,11 +116,6 @@ void PitchBend::updateMidiValue()
         send = false;
         currentMidi = midiRangeMiddle;
     }
-
-    DBG ("Updated pitch bend :\nValue : " << currentMidi <<
-        " | Last Value : " << lastMidi <<
-        "\nSend " << (send ? "Y" : "N") <<
-        " | Last bool " << (pbLast ? "Y" : "N"));
 }
 
 bool PitchBend::shouldSend()

@@ -19,6 +19,7 @@
 #include "../DataReader/DataReader.h"
 #include "../Presets/PresetHandler.h"
 #include "../Updater/PlumeUpdater.h"
+#include "PlumeParameter.h"
 
 //==============================================================================
 /**
