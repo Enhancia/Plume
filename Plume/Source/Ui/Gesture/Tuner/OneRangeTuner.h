@@ -57,6 +57,7 @@ public:
     void editorHidden (Label* lbl, TextEditor& ted) override;
     void sliderValueChanged (Slider* sldr) override;
     void buttonClicked (Button* bttn) override;
+    void buttonStateChanged (Button* btn) override;
 
     //==============================================================================
     void mouseDown (const MouseEvent& e) override;
@@ -126,6 +127,8 @@ private:
     juce::Point<int> sliderCentre;
     float startAngle;
     float endAngle;
+    bool maxAngleBtnIsHover = false;
+    bool minAngleBtnIsHover = false;
 
     //==============================================================================
     PLUME::UI::OneRangeTunerLookAndFeel oneRangeTunerLookAndFeel;
