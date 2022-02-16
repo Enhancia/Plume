@@ -391,9 +391,7 @@ AudioProcessorValueTreeState::ParameterLayout PlumeProcessor::initializeParamete
     
     for (int i =0; i < PLUME::NUM_GEST*PLUME::MAX_PARAMETER; i++)
     {
-        String s = "Gest_" + String (i/PLUME::MAX_PARAMETER) + "_param_" + String (i%PLUME::MAX_PARAMETER);
-
-        layout.add (std::make_unique<PlumeParameter<AudioParameterFloat>> (s, s,
+        layout.add (std::make_unique<PlumeParameter<AudioParameterFloat>> ("Parameter " + String (i), "Unmapped Parameter",
                                                            NormalisableRange<float> (0.0f, 1.0f, 0.0001f),
                                                            0.0f));
     }

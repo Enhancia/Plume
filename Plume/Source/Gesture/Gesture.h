@@ -595,6 +595,7 @@ protected:
     //==============================================================================
     OwnedArray<MappedParameter> parameterArray;  /**< \brief Array of all the MappedParameter that the gesture controls. */
     bool parametersWereChangedSinceLastUpdate = false; /**< \brief Bool parameter that tells if a call to updateMappedParameters is needed or not for the next block. */
+    AudioProcessorValueTreeState& plumeParametersRef;
     
     //==============================================================================
     CriticalSection parameterArrayLock;

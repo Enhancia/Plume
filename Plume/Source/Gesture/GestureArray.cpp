@@ -390,6 +390,8 @@ void GestureArray::removeGesture (const int gestureId)
     }
 
     checkPitchMerging();
+
+    owner.updateHostDisplay (AudioProcessor::ChangeDetails().withParameterInfoChanged (true));
 }
 
 void GestureArray::removeGesture (const String gestureName)
@@ -402,6 +404,8 @@ void GestureArray::removeGesture (const String gestureName)
     }
 
     checkPitchMerging();
+
+    owner.updateHostDisplay (AudioProcessor::ChangeDetails().withParameterInfoChanged (true));
 }
 
 void GestureArray::addParameterToMapModeGesture (AudioProcessorParameter& param)
@@ -581,24 +585,15 @@ void GestureArray::swapGestures (int firstId, int secondId)
 
 	ScopedLock gestlock(gestureArrayLock);
 
-    Gesture* secondGesture = gestures.removeAndReturn (gestures.indexOf (getGesture (secondId)));
-    Array<float> secondGestureParameters = { parameters.getParameterAsValue (String (secondId) + PLUME::param::paramIds[0]).getValue(),
-                                             parameters.getParameterAsValue (String (secondId) + PLUME::param::paramIds[1]).getValue(),
-                                             parameters.getParameterAsValue (String (secondId) + PLUME::param::paramIds[2]).getValue(),
-                                             parameters.getParameterAsValue (String (secondId) + PLUME::param::paramIds[3]).getValue() };
+    std::unique_ptr<Gesture> secondGesture;
+    secondGesture.reset (gestures.removeAndReturn(gestures.indexOf(getGesture(secondId))));
 
     // Replaces second gesture with first
-    moveGestureToId (firstId, secondId);    
+    moveGestureToId (firstId, secondId);
 
     // Copies second gesture to first Id
-    addGestureCopyingOther (secondGesture, firstId);
+    addGestureCopyingOther (secondGesture.get(), firstId);
     getGesture (firstId)->swapParametersWithOtherGesture (*secondGesture);
-    parameters.getParameterAsValue (String (firstId) + PLUME::param::paramIds[0]).setValue (secondGestureParameters[0]);
-    parameters.getParameterAsValue (String (firstId) + PLUME::param::paramIds[1]).setValue (secondGestureParameters[1]);
-    parameters.getParameterAsValue (String (firstId) + PLUME::param::paramIds[2]).setValue (secondGestureParameters[2]);
-    parameters.getParameterAsValue (String (firstId) + PLUME::param::paramIds[3]).setValue (secondGestureParameters[3]);
-
-    delete secondGesture;
 }
 
 //==============================================================================
