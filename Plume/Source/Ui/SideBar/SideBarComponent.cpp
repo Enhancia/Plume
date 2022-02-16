@@ -133,6 +133,7 @@ void SideBarComponent::buttonClicked (Button* bttn)
     {
 		// Displays options
 		optionsPanel.setVisible (true);
+        optionsPanel.grabKeyboardFocus();
     }
 
     else if (bttn == hideInfoButton.get())

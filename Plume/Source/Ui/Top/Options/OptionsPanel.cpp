@@ -121,6 +121,16 @@ void OptionsPanel::buttonClicked (Button* bttn)
     }
 }
 
+bool OptionsPanel::keyPressed (const KeyPress &key)
+{
+    if (key.getKeyCode() == KeyPress::escapeKey)
+    {
+        setVisible (false);
+    }
+
+	return false;
+}
+
 void OptionsPanel::mouseUp (const MouseEvent& event)
 {
     if (!optionsArea.contains (event.getPosition()))

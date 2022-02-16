@@ -482,6 +482,7 @@ void PlumeEditor::createAndShowAlertPanel (PlumeAlertPanel::SpecificReturnValue 
         alertPanel->setBounds (getLocalBounds());
 
         alertPanel->enterModalState (true, ModalCallbackFunction::forComponent (alertPanelCallback, this), false);
+        alertPanel->grabKeyboardFocus();
     }
 }
 

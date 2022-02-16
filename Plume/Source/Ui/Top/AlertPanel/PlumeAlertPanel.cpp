@@ -91,6 +91,16 @@ void PlumeAlertPanel::buttonClicked (Button* bttn)
     }
 }
 
+bool PlumeAlertPanel::keyPressed (const KeyPress &key)
+{
+    if (key.getKeyCode() == KeyPress::escapeKey)
+    {
+        exitModalState (0);
+    }
+
+	return false;
+}
+
 void PlumeAlertPanel::createAndAddLabel (const String& textToSet)
 {
     titleLabel.reset (new Label ("Title Label", textToSet));

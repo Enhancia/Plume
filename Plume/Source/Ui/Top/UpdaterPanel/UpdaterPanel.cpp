@@ -134,6 +134,17 @@ void UpdaterPanel::buttonClicked (Button* bttn)
 		}
 	}
 }
+
+bool UpdaterPanel::keyPressed (const KeyPress& key)
+{
+    if (key.getKeyCode () == KeyPress::escapeKey)
+    {
+        closeAndResetPanel();
+    }
+
+    return false;
+}
+
 void UpdaterPanel::resetAndOpenPanel (bool updateIsRequired)
 {
 	if (currentProgress != inProgress)
@@ -144,6 +155,7 @@ void UpdaterPanel::resetAndOpenPanel (bool updateIsRequired)
 														  									 : noDownloadAvailable);
 
 		setVisible (true);
+		grabKeyboardFocus();
 	}
 }
 
