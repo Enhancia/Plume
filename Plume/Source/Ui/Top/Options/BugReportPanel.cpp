@@ -125,6 +125,16 @@ void BugReportPanel::buttonClicked (Button* bttn)
     }
 }
 
+bool BugReportPanel::keyPressed (const KeyPress& key)
+{
+    if (key == PLUME::keyboard_shortcut::closeWindow)
+    {
+        closeAndResetPanel ();
+    }
+
+    return false;
+}
+
 void BugReportPanel::labelTextChanged (Label* lbl)
 {
     checkFormEntry();
@@ -137,6 +147,7 @@ void BugReportPanel::resetAndOpenPanel()
 {
     updateComponentsForSpecificStep (newReport);
     setVisible (true);
+    grabKeyboardFocus();
 }
 
 void BugReportPanel::closeAndResetPanel()

@@ -142,6 +142,16 @@ void NewGesturePanel::buttonClicked (Button* bttn)
 	}
 }
 
+bool NewGesturePanel::keyPressed (const KeyPress& key)
+{
+    if (key == PLUME::keyboard_shortcut::closeWindow)
+    {
+        hidePanel (true);
+    }
+
+    return false;
+}
+
 void NewGesturePanel::createNewGesture()
 {
 	processor.getGestureArray().addGesture (Gesture::getTypeString (selectedGestureType, true), selectedGestureType, selectedGestureSlot);
@@ -175,6 +185,7 @@ void NewGesturePanel::showPanelForGestureID (const int gestureID)
     update();
 
     setVisible (true);
+    grabKeyboardFocus();
 }
 
 void NewGesturePanel::hidePanel (const bool resetSelectedSlot)

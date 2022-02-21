@@ -123,7 +123,7 @@ void OptionsPanel::buttonClicked (Button* bttn)
 
 bool OptionsPanel::keyPressed (const KeyPress &key)
 {
-    if (key.getKeyCode() == KeyPress::escapeKey)
+    if (key == PLUME::keyboard_shortcut::closeWindow)
     {
         setVisible (false);
     }

@@ -416,6 +416,11 @@ namespace PLUME
         }
     }
 
+    namespace keyboard_shortcut
+    {
+        const KeyPress closeWindow(KeyPress::escapeKey);
+    }
+
   #if JUCE_WINDOWS
 	extern LRESULT CALLBACK messageHook (int nCode, WPARAM wParam, LPARAM lParam);
   #endif

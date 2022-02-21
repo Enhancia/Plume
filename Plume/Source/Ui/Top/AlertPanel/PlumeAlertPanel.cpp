@@ -93,7 +93,7 @@ void PlumeAlertPanel::buttonClicked (Button* bttn)
 
 bool PlumeAlertPanel::keyPressed (const KeyPress &key)
 {
-    if (key.getKeyCode() == KeyPress::escapeKey)
+    if (key == PLUME::keyboard_shortcut::closeWindow)
     {
         exitModalState (0);
     }
