@@ -418,8 +418,9 @@ namespace PLUME
 
     namespace keyboard_shortcut
     {
-        const KeyPress closeWindow(KeyPress::escapeKey);
-        const KeyPress rename(KeyPress::F2Key);
+        const KeyPress closeWindow      (KeyPress::escapeKey);
+        const KeyPress duplicateGesture ('d', ModifierKeys (ModifierKeys::commandModifier), 'd');
+        const KeyPress rename           (KeyPress::F2Key);
     }
 
   #if JUCE_WINDOWS
