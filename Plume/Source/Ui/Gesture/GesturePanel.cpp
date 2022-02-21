@@ -285,6 +285,10 @@ bool GesturePanel::keyPressed (const KeyPress &key)
 				renameGestureInSlot (selectedGesture);
 			}
         }
+
+        else if (key == PLUME::keyboard_shortcut::rename) {
+            renameGestureInSlot (selectedGesture);
+        }
     }
 
 	return false;
