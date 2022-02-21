@@ -667,7 +667,7 @@ int Gesture::findFirstUnusedParameter()
 
 Gesture::MappedParameter::MappedParameter (AudioProcessorParameter& p, AudioProcessorValueTreeState& stateRef, Range<float> pRange, const int gestId, const int paramId, bool rev)
     : wrappedParameter(p),
-      plumeParameter (*(stateRef.getParameter ("Parameter " + String (paramId)))),
+      plumeParameter (*(stateRef.getParameter ("Parameter_" + String (paramId)))),
       parametersRef(stateRef), range(pRange), reversed (rev), gestureId (gestId), parameterId (paramId)
 {
     wrappedParameter.addListener (this);

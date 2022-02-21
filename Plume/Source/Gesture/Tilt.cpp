@@ -14,8 +14,8 @@ using namespace PLUME;
 Tilt::Tilt (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
             float lowValue, float highValue, String description)
     : Gesture (gestName, Gesture::tilt, gestId, NormalisableRange<float> (PLUME::gesture::TILT_MIN, PLUME::gesture::TILT_MAX, 0.1f),
-               plumeParameters, param::valuesIds[param::tilt_value], description),
-      tiltDisplayRange (PLUME::UI::TILT_DISPLAY_MIN, PLUME::UI::TILT_DISPLAY_MAX, 1.0f)
+               plumeParameters, "", description),
+      tiltDisplayRange (NormalisableRange<float> (PLUME::UI::TILT_DISPLAY_MIN, PLUME::UI::TILT_DISPLAY_MAX, 1.0f))
 {
     rangeLow = tiltDisplayRange.convertTo0to1 (lowValue);
     rangeHigh = tiltDisplayRange.convertTo0to1 (highValue);
@@ -59,7 +59,7 @@ float Tilt::computeMappedParameterValue (Range<float> paramRange, bool reversed 
                                   tiltDisplayRange.convertFrom0to1 (rangeHigh),
                                   paramRange, reversed);
 }
-    
+
 //==============================================================================
 void Tilt::updateValue (const Array<float> rawData)
 {
