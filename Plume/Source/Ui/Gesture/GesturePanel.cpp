@@ -16,10 +16,10 @@
 
 //==============================================================================
 GesturePanel::GesturePanel (GestureArray& gestArray, PluginWrapper& wrap,
-                            AudioProcessorValueTreeState& params, NewGesturePanel& newGest,
+                            AudioProcessorValueTreeState& params, NewGesturePanel& newGest, Component& newPrst,
                             int freqHz)
                             : gestureArray (gestArray), wrapper (wrap),
-                              parameters (params), newGesturePanel (newGest),
+                              parameters (params), newGesturePanel (newGest), newPresetPanel (newPrst),
                               freq (freqHz)
 {
     setComponentID ("gesturePanel");
@@ -41,6 +41,7 @@ GesturePanel::~GesturePanel()
     stopTimer();
     unselectCurrentGesture();
     newGesturePanel.hidePanel (true);
+    newPresetPanel.setVisible(false);
     removeListenerForAllParameters();
 }
 
@@ -290,9 +291,12 @@ bool GesturePanel::keyPressed (const KeyPress &key)
             renameGestureInSlot (selectedGesture);
         }
 
-        else if(key == PLUME::keyboard_shortcut::duplicateGesture) {
-            gestureArray.duplicateGesture(selectedGesture);
-            update();
+        else if (key == PLUME::keyboard_shortcut::duplicateGesture) {
+            gestureArray.duplicateGesture (selectedGesture);
+            update ();
+        }
+        else if (key == PLUME::keyboard_shortcut::saveGesture) {
+            newPresetPanel.setVisible (true);
         }
     }
 

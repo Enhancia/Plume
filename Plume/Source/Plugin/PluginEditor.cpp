@@ -56,7 +56,7 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     sideBar->addInfoPanelAsMouseListener (this);
     
     gesturePanel.reset (new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
-                                                        processor.getParameterTree(), *newGesturePanel,
+                                                        processor.getParameterTree(), *newGesturePanel, *newPresetPanel,
                                                         PLUME::UI::FRAMERATE));
 	addAndMakeVisible (*gesturePanel);
                                                         
@@ -354,6 +354,19 @@ void PlumeEditor::mouseExit (const MouseEvent &event)
     }
 }
 
+bool PlumeEditor::keyPressed (const KeyPress& key)
+{
+    if (key == PLUME::keyboard_shortcut::help)
+    {
+        if(auto* hideInfoButton = dynamic_cast<Button*>(sideBar->findChildWithID("hideInfoButton")))
+        {
+            hideInfoButton->triggerClick();
+        }
+    }
+
+    return false;
+}
+
 //==============================================================================
 PlumeProcessor& PlumeEditor::getProcessor()
 {
@@ -368,7 +381,7 @@ void PlumeEditor::updateFullInterface()
     auto gpbounds = gesturePanel->getBounds();
 
     gesturePanel.reset (new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
-                                          processor.getParameterTree(), *newGesturePanel,
+                                          processor.getParameterTree(), *newGesturePanel, *newPresetPanel,
                                           PLUME::UI::FRAMERATE));
     addAndMakeVisible (*gesturePanel, 0);
 	gesturePanel->setBounds(gpbounds);
