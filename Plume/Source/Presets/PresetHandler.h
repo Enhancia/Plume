@@ -161,6 +161,13 @@ public:
     bool canSavePreset();
     
     String getFilterTextForPresetId (const int id);
+
+    /**
+     * @brief Pass name and get current index of preset in list of presets
+     * @param presetName
+     * @return current index
+    */
+    int getPresetIndexByName (const String& presetName) const;
     void loadInfoFromTreeState (const ValueTree& treeState);
     void saveInfoToTreeState (AudioProcessorValueTreeState& apvts);
 
@@ -173,17 +180,54 @@ public:
 	PlumePreset getPresetForId (const int id);
     bool deletePresetForId (int id);
     void resetPreset();
+
+    /**
+     * @brief Display preset in Windows Explorer
+     * @param id 
+    */
     void showPresetInExplorer (int id);
+
     void savePresetDirectoryToFile();
     void loadPresetDirectoryFromFile();
 
     //==============================================================================
+    /**
+     * @brief Set 1 to 4 setting(s) of preset search
+     * @param type 
+     * @param filter 
+     * @param pluginName 
+     * @param name 
+    */
     void setSearchSettings (int type, int filter, String pluginName, String pDescriptiveName, String name);
+
+    /**
+     * @brief Update presets list by type of preset
+     * @param type 
+    */
     void setTypeSearchSetting (int type);
+
+    /**
+     * @brief Update presets list by filter
+     * @param filter 
+    */
     void setFilterSearchSetting (int filter);
+    
+    /**
+     * @brief Update presets list by plugin name
+     * @param pDescriptiveName 
+    */
     void setPluginSearchSetting (String pDescriptiveName);
+
+    /**
+     * @brief Update presets list by preset name
+     * @param name 
+    */
     void setNameSearchSetting (String name);
     
+    /**
+     * @brief Get current preset settings
+     * @return settings
+    */
     const PresetSearchSettings getCurrentSettings();
     
 private:
@@ -194,6 +238,10 @@ private:
     //void createAllSubdirectories();
     
     //==============================================================================
+    
+    /**
+     * @brief Update list of presets, depend of settings
+    */
     void updateSearchedPresets();
     
     //==============================================================================

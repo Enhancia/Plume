@@ -61,7 +61,11 @@ bool Tilt::shouldUpdateParameters()
 
 float Tilt::computeMappedParameterValue (Range<float> paramRange, bool reversed = false)
 {
-	  return Gesture::mapParameter (getGestureValue(),
+    const float val = getGestureValue();
+
+    DBG ("Changing mapped parameters with gesture value = " << val);
+
+	return Gesture::mapParameter (val,
                                   tiltDisplayRange.convertFrom0to1 (rangeLow.getValue()),
                                   tiltDisplayRange.convertFrom0to1 (rangeHigh.getValue()),
                                   paramRange, reversed);

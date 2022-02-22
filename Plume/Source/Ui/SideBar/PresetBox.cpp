@@ -403,8 +403,9 @@ void PresetBox::renamePreset (const String& newName)
                                                  + " => " + newName, PLUME::log::presets);
 
     processor.getPresetHandler().renamePreset (newName, presetIdToEdit);
-    
-    if (presetIdToEdit == currentPresetId) setPreset (currentPresetId);
+
+    if (presetIdToEdit == currentPresetId)
+        setPreset (processor.getPresetHandler ().getPresetIndexByName (newName));
 
     repaint();
 }

@@ -136,6 +136,16 @@ void ScannerComponent::scanFinished()
     {
         header->update();
     }
+
+    if (auto* presetComp = dynamic_cast<PlumeComponent*> (getParentComponent() // FileSubPanel
+        ->getParentComponent () // TabbedPanel
+        ->getParentComponent () // Options Panel
+        ->getParentComponent () // Editor
+        ->findChildWithID ("sideBar")
+        ->findChildWithID ("presetComponent")))
+    {
+        presetComp->update ();
+    }
         
     //exitModalState (1);
 }
