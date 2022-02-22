@@ -186,15 +186,21 @@ void PresetBox::returnKeyPressed (int lastRowSelected)
     setPreset (lastRowSelected);
 }
 
-bool PresetBox::keyPressed (const KeyPress &key)
+bool PresetBox::keyPressed (const KeyPress& key)
 {
+    ListBox::keyPressed (key);
+
+    if (key.isKeyCode (KeyPress::upKey))
+        currentRow--;
+    else if (key.isKeyCode (KeyPress::downKey))
+        currentRow++;
+
     if (key == PLUME::keyboard_shortcut::rename)
     {
-        bool isUser = processor.getPresetHandler().isUserPreset (currentRow);
+        bool isUser = processor.getPresetHandler ().isUserPreset (currentRow);
 
-        if(isUser) {
+        if (isUser)
             startRenameEntry (currentRow);
-        }
     }
 
     return false;
