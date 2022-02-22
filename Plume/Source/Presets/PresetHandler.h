@@ -36,8 +36,8 @@ public:
             alphabeticalReversed
         };
 
-		PresetSearchSettings(int type = -1, int filter = -1, String pluginName = String(), String name = String())
-			: presetType (type), filterType (filter), plugin (pluginName), nameSearch (name)
+		PresetSearchSettings(int type = -1, int filter = -1, String pluginName = String(), String pDescriptiveName = String(), String name = String())
+			: presetType (type), filterType (filter), plugin (pluginName), descriptiveName(pDescriptiveName), nameSearch (name)
         {
         }
         
@@ -45,7 +45,8 @@ public:
         {
             this->presetType = other.presetType;
             this->filterType = other.filterType;
-            this->plugin     = other.plugin;
+            this->plugin     = other.descriptiveName;
+            this->descriptiveName = other.descriptiveName;
             this->nameSearch = other.nameSearch;
             
             return *this;
@@ -67,6 +68,7 @@ public:
         int presetType;
         int filterType;
         String plugin;
+        String descriptiveName;
         String nameSearch;
         SortMethod sortMethod = alphabetical;
     };
@@ -189,7 +191,14 @@ public:
     void loadPresetDirectoryFromFile();
 
     //==============================================================================
-    void setSearchSettings (int type, int filter, String pluginName, String name);
+    /**
+     * @brief Set 1 to 4 setting(s) of preset search
+     * @param type 
+     * @param filter 
+     * @param pluginName 
+     * @param name 
+    */
+    void setSearchSettings (int type, int filter, String pluginName, String pDescriptiveName, String name);
 
     /**
      * @brief Update presets list by type of preset
@@ -202,12 +211,12 @@ public:
      * @param filter 
     */
     void setFilterSearchSetting (int filter);
-
+    
     /**
      * @brief Update presets list by plugin name
-     * @param pluginName 
+     * @param pDescriptiveName 
     */
-    void setPluginSearchSetting (String pluginName);
+    void setPluginSearchSetting (String pDescriptiveName);
 
     /**
      * @brief Update presets list by preset name

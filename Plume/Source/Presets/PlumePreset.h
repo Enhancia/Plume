@@ -73,6 +73,7 @@ public:
 	const String getVersion() const;
 	const int getFilter() const;
 	const String getFilterString() const;
+	const String getDescriptiveName () const;
 	const String getDescription() const;
 	bool matchesSettings (int filter, String pluginName, String nameSearch);
 
@@ -89,7 +90,7 @@ private:
 	//==============================================================================
 	File presetFile;
 	int filterType;
-	String name, author, plugin, version;
+	String name, descriptiveName, author, plugin, version;
 	bool valid = false;
 
 	//==============================================================================

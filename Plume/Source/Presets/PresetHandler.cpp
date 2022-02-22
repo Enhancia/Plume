@@ -484,19 +484,13 @@ void PresetHandler::initialiseDirectories()
     storePresets();
 }
 
-/**
- * @brief Set 1 to 4 setting(s) of preset search
- * @param type 
- * @param filter 
- * @param pluginName 
- * @param name 
-*/
-void PresetHandler::setSearchSettings (int type, int filter, String pluginName, String name)
+void PresetHandler::setSearchSettings (int type, int filter, String pluginName, String pDescriptiveName, String name)
 {
-    if (settings.presetType == type       &&
-        settings.filterType == filter     &&
-        settings.plugin     == pluginName &&
-        settings.nameSearch == name)
+    if (settings.presetType         == type       &&
+        settings.filterType         == filter     &&
+        settings.plugin             == pluginName &&
+        settings.descriptiveName    == pDescriptiveName &&
+        settings.nameSearch         == name)
     {
         return; //No update if nothing changed
     }
@@ -513,10 +507,14 @@ void PresetHandler::setSearchSettings (int type, int filter, String pluginName, 
         if (filter > -1 && filter < PlumePreset::numFilters) settings.filterType = filter;
         else                                                 settings.filterType = -1;
     }
-    
-    if (settings.plugin     != pluginName) settings.plugin     = pluginName;
-    if (settings.nameSearch != name)       settings.nameSearch = name;
-    
+
+    if (settings.plugin != pluginName)
+        settings.plugin = pluginName;
+    if (settings.descriptiveName != pDescriptiveName)
+        settings.descriptiveName = pDescriptiveName;
+    if (settings.nameSearch != name)
+        settings.nameSearch = name;
+
     updateSearchedPresets();
 }
 
@@ -549,15 +547,15 @@ void PresetHandler::setFilterSearchSetting (int filter)
     updateSearchedPresets();
 }
 
-void PresetHandler::setPluginSearchSetting (String pluginName)
+void PresetHandler::setPluginSearchSetting (String pDescriptiveName)
 {
-    if (settings.plugin == pluginName)
+    if (settings.descriptiveName == pDescriptiveName)
     {
         return; //No update if nothing changed
     }
     
     // Sets the value and updates the searched presets list
-    settings.plugin = pluginName;
+    settings.descriptiveName = pDescriptiveName;
     
     updateSearchedPresets();
 }
@@ -593,7 +591,7 @@ void PresetHandler::updateSearchedPresets()
     {
         for (auto* preset : defaultPresets)
         {
-            if (preset->matchesSettings (settings.filterType, settings.plugin, settings.nameSearch))
+            if (preset->matchesSettings (settings.filterType, settings.descriptiveName, settings.nameSearch))
             {
                 searchedPresets.addSorted (settings, preset);
             }
@@ -604,7 +602,7 @@ void PresetHandler::updateSearchedPresets()
     {
         for (auto* preset : userPresets)
         {
-            if (preset->matchesSettings (settings.filterType, settings.plugin, settings.nameSearch))
+            if (preset->matchesSettings (settings.filterType, settings.descriptiveName, settings.nameSearch))
             {
                 searchedPresets.addSorted (settings, preset);
             }
