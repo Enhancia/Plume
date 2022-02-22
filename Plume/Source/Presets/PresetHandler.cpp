@@ -184,6 +184,15 @@ String PresetHandler::getFilterTextForPresetId (const int id)
     return searchedPresets[id]->getFilterString();
 }
 
+int PresetHandler::getPresetIndexByName (const String& presetName) const
+{
+    for (int i = 0; i <= searchedPresets.size () - 1; i++)
+        if (searchedPresets[i]->getName () == presetName)
+            return i;
+
+    return 0;
+}
+
 bool PresetHandler::isUserPreset (int id)
 {
 	return (searchedPresets[id]->presetType == PlumePreset::userPreset);
@@ -475,6 +484,13 @@ void PresetHandler::initialiseDirectories()
     storePresets();
 }
 
+/**
+ * @brief Set 1 to 4 setting(s) of preset search
+ * @param type 
+ * @param filter 
+ * @param pluginName 
+ * @param name 
+*/
 void PresetHandler::setSearchSettings (int type, int filter, String pluginName, String name)
 {
     if (settings.presetType == type       &&
@@ -565,7 +581,6 @@ const PresetHandler::PresetSearchSettings PresetHandler::getCurrentSettings()
 {
     return settings;
 }
-
 
 void PresetHandler::updateSearchedPresets()
 {
