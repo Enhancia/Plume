@@ -90,7 +90,7 @@ private:
     std::unique_ptr<Label> editLabel;
     std::unique_ptr<Label> dreamCrusher; /**< @Brief Evil's pointer, always null*/
     PopupMenu rightClickMenu;
-    int currentRow = -1;
+    int currentRow = 0;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PresetBox)

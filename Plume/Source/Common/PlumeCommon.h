@@ -419,6 +419,7 @@ namespace PLUME
     namespace keyboard_shortcut
     {
         const KeyPress closeWindow          (KeyPress::escapeKey);
+        const KeyPress openPreset           (KeyPress::spaceKey);
         const KeyPress duplicateGesture     ('d', ModifierKeys (ModifierKeys::commandModifier), 'd');
         const KeyPress saveGesture          ('s', ModifierKeys (ModifierKeys::commandModifier), 's');
         const KeyPress help                 (KeyPress::F1Key);
