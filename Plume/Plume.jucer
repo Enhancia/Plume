@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" pluginFormats="buildAU,buildStandalone,buildVST"
-              version="0.1.14" companyName="Enhancia" buildVST="1" buildVST3="0"
+              version="100.1.15" companyName="Enhancia" buildVST="1" buildVST3="0"
               buildAU="1" buildAUv3="0" buildRTAS="0" buildAAX="0" enableIAA="0"
               pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
               pluginManufacturer="Enhancia" pluginName="Plume" pluginDesc="Enhancia's Plume. Wraps other plugins, provides customizable and mappable gestures to use with Neova."
@@ -296,8 +296,8 @@
     <XCODE_MAC targetFolder="Builds/MacOSX" smallIcon="AnkEeB" bigIcon="AnkEeB"
                extraLinkerFlags="-framework SystemConfiguration">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="Plume"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="Plume"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="Plume Tests"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="Plume Tests"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_video" path="../../../../Programmes/JUCE/modules"/>
@@ -317,33 +317,10 @@
         <MODULEPATH id="juce_audio_plugin_client" path="../../JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
-    <VS2019 targetFolder="Builds/VisualStudio2019" smallIcon="AnkEeB" bigIcon="AnkEeB">
-      <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="Plume"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="Plume"/>
-      </CONFIGURATIONS>
-      <MODULEPATHS>
-        <MODULEPATH id="juce_video"/>
-        <MODULEPATH id="juce_opengl"/>
-        <MODULEPATH id="juce_gui_extra"/>
-        <MODULEPATH id="juce_gui_basics"/>
-        <MODULEPATH id="juce_graphics"/>
-        <MODULEPATH id="juce_events"/>
-        <MODULEPATH id="juce_data_structures"/>
-        <MODULEPATH id="juce_cryptography"/>
-        <MODULEPATH id="juce_core"/>
-        <MODULEPATH id="juce_audio_utils"/>
-        <MODULEPATH id="juce_audio_processors"/>
-        <MODULEPATH id="juce_audio_formats"/>
-        <MODULEPATH id="juce_audio_devices"/>
-        <MODULEPATH id="juce_audio_basics"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="../../JUCE/modules"/>
-      </MODULEPATHS>
-    </VS2019>
     <VS2022 targetFolder="Builds/VisualStudio2022">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="Plume"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="Plume"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="Plume Tests"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="Plume Tests"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics" path="C:\Users\alexl\Documents\Dev\Git\JUCE\modules"/>
