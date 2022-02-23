@@ -300,31 +300,38 @@ bool GesturePanel::keyPressed (const KeyPress& key)
         else if (key.isKeyCode (KeyPress::upKey)) {
             if (selectedGesture > 0) {
 
+                auto tempPosition = selectedGesture;
                 selectedGesture--;
 
                 while (gestureArray.getGesture (selectedGesture) == nullptr)
                 {
-                    if(selectedGesture == 0)
+                    if (selectedGesture == 0)
                         break;
                     selectedGesture--;
                 }
 
+                if (gestureArray.getGesture (selectedGesture) == nullptr)
+                    selectedGesture = tempPosition;
+
                 selectGestureExclusive (selectedGesture);
-                DBG(selectedGesture);
             }
         }
         //moving down
         else if (key.isKeyCode (KeyPress::downKey)) {
             if (selectedGesture < gestureSlots.size () - 1) {
 
+                auto tempPosition = selectedGesture;
                 selectedGesture++;
 
                 while (gestureArray.getGesture (selectedGesture) == nullptr)
                 {
-                    if(selectedGesture == gestureSlots.size () - 1)
+                    if (selectedGesture == gestureSlots.size () - 1)
                         break;
                     selectedGesture++;
                 }
+
+                if (gestureArray.getGesture (selectedGesture) == nullptr)
+                    selectedGesture = tempPosition;
 
                 selectGestureExclusive (selectedGesture);
             }
@@ -336,19 +343,19 @@ bool GesturePanel::keyPressed (const KeyPress& key)
                 auto tempPosition = selectedGesture;
                 selectedGesture -= 4;
 
+                if (gestureArray.getGesture (selectedGesture) == nullptr)
+                    selectedGesture = 0;
+
                 while (gestureArray.getGesture (selectedGesture) == nullptr)
                 {
-                    if(selectedGesture == 0 || selectedGesture == gestureSlots.size () - 1)
+                    selectedGesture++;
+                    if (selectedGesture == gestureSlots.size () - 1) {
+                        selectedGesture = tempPosition;
                         break;
-                    selectedGesture--;
+                    }
                 }
 
-                if(gestureArray.getGesture (selectedGesture) != nullptr)
-                    selectGestureExclusive (selectedGesture);
-                else {
-                    selectedGesture = tempPosition;
-                    selectGestureExclusive (selectedGesture);
-                }
+                selectGestureExclusive (selectedGesture);
             }
         }
         //moving right
@@ -356,22 +363,21 @@ bool GesturePanel::keyPressed (const KeyPress& key)
             if (selectedGesture == 0 || selectedGesture == 1 || selectedGesture == 2 || selectedGesture == 3) {
 
                 auto tempPosition = selectedGesture;
-
                 selectedGesture += 4;
+
+                if (gestureArray.getGesture (selectedGesture) == nullptr)
+                    selectedGesture = 4;
 
                 while (gestureArray.getGesture (selectedGesture) == nullptr)
                 {
-                    if(selectedGesture == 0  || selectedGesture == gestureSlots.size () - 1)
-                        break;
                     selectedGesture++;
+                    if (selectedGesture == gestureSlots.size () - 1) {
+                        selectedGesture = tempPosition;
+                        break;
+                    }
                 }
 
-                if(gestureArray.getGesture (selectedGesture) != nullptr)
-                    selectGestureExclusive (selectedGesture);
-                else {
-                    selectedGesture = tempPosition;
-                    selectGestureExclusive (selectedGesture);
-                }
+                selectGestureExclusive (selectedGesture);
             }
         }
     }
