@@ -677,20 +677,20 @@ Gesture::MappedParameter::MappedParameter (AudioProcessorParameter& p, AudioProc
         plumeParamTempPointer->setName (wrappedParameter.getName (100));
     }
 
-    parametersRef.addParameterListener (plumeParameter.getName (100), this);
+    parametersRef.addParameterListener ("Parameter_" + String (paramId), this);
 }
 
 Gesture::MappedParameter::MappedParameter (const MappedParameter& other)
     : wrappedParameter (other.wrappedParameter), plumeParameter (other.plumeParameter), parametersRef(other.parametersRef), range (other.range), reversed (other.reversed), gestureId (other.gestureId), parameterId (other.parameterId)
 {
     wrappedParameter.addListener (this);
-    parametersRef.addParameterListener (other.plumeParameter.getName (100), this);
+    parametersRef.addParameterListener ("Parameter_" + String (parameterId), this);
 }
 
 Gesture::MappedParameter::~MappedParameter()
 {
     wrappedParameter.removeListener (this);
-    parametersRef.removeParameterListener (plumeParameter.getName(100), this);
+    parametersRef.removeParameterListener ("Parameter_" + String (parameterId), this);
 
     if (auto* plumeParamTempPointer = dynamic_cast<PlumeParameter<juce::AudioParameterFloat>*> (&plumeParameter))
     {
@@ -700,7 +700,7 @@ Gesture::MappedParameter::~MappedParameter()
         
 void Gesture::MappedParameter::parameterChanged (const String& parameterID, float newValue)
 {
-    DBG ("Param changed : " << parameterID);
+    DBG ("Param changed (pC) : " << parameterID);
 
     // Change wrappedParam
     if (wrappedParameter.getValue() != plumeParameter.getValue())
@@ -711,7 +711,7 @@ void Gesture::MappedParameter::parameterChanged (const String& parameterID, floa
         
 void Gesture::MappedParameter::parameterValueChanged (int parameterIndex, float newValue)
 {
-    DBG ("Param changed : " << wrappedParameter.getName (50) << " (" << parameterIndex << ")");
+    DBG ("Param changed (pVC) : " << wrappedParameter.getName (50) << " (" << parameterIndex << ")");
 
     // Change plumeParam
     if (wrappedParameter.getValue() != plumeParameter.getValue())
