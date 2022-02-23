@@ -420,6 +420,8 @@ namespace PLUME
     {
         const KeyPress closeWindow          (KeyPress::escapeKey);
         const KeyPress openPreset           (KeyPress::spaceKey);
+        const KeyPress openPresetType       (KeyPress::spaceKey);
+        const KeyPress openPresetTypeBis    (KeyPress::returnKey);
         const KeyPress duplicateGesture     ('d', ModifierKeys (ModifierKeys::commandModifier), 'd');
         const KeyPress saveGesture          ('s', ModifierKeys (ModifierKeys::commandModifier), 's');
         const KeyPress help                 (KeyPress::F1Key);
