@@ -52,6 +52,12 @@ public:
     void buttonClicked (Button*) override;
     void parameterChanged (const String &parameterID, float newValue) override;
 
+    /**
+     * @brief Get the first gesture finded in the list
+     * @return Gesture Id
+    */
+    int findExistingGesture ();
+
     void mouseUp (const MouseEvent &event) override;
     void mouseDrag (const MouseEvent &event) override;
     bool keyPressed (const KeyPress &key) override;
