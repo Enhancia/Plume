@@ -46,6 +46,8 @@ void PlumeAlertPanel::paint (Graphics& g)
 
     g.setGradientFill (gradOut);
     g.drawRoundedRectangle (panelArea.reduced (1).toFloat(), 10.0f, 1.0f);
+
+    grabKeyboardFocus ();
 }
 
 void PlumeAlertPanel::resized()
