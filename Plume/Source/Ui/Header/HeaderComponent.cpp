@@ -211,7 +211,7 @@ void HeaderComponent::buttonClicked (Button* bttn)
 {
     if (bttn == pluginListButton.get())
     {
-        if (processor.getWrapper().getList().getNumTypes() == 0)
+        if (processor.getWrapper().getList().getNumTypes() == 0 || pluginListMenu.getNumItems() == 1)
         {
             processor.sendActionMessage (PLUME::commands::scanRequired);
         }
