@@ -605,8 +605,7 @@ void MappedParameterComponent::drawCursor (Graphics& g)
     Path cursorPath;
     float cursorY = lowSlider->getY() + 11.5f +
                         (lowSlider->getHeight() - 23.0f) *
-                        (1.0f - gesture.computeMappedParameterValue (mappedParameter.range,
-                                                                    mappedParameter.reversed));
+                        (1.0f - mappedParameter.displayValue);
 
     juce::Point<float> cursorPoint = {lowSlider->getBounds().getCentreX() - 9.0f,
                                 cursorY};

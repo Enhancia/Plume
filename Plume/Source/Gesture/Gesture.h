@@ -88,7 +88,6 @@ public:
         void parameterChanged (const String& parameterID, float newValue) override;
         void parameterValueChanged (int parameterIndex, float newValue) override;
         void parameterGestureChanged (int, bool) override;
-
         AudioProcessorValueTreeState& parametersRef; /**< \brief Reference to the parameters from Plume. */
         
         AudioProcessorParameter& wrappedParameter; /**< \brief Reference to a Parameter from the wrapped Plugin. */
@@ -98,10 +97,10 @@ public:
         Range<float> range; /**< \brief Range of values from the parameter that the Gesture controls. */
         bool reversed; /**< \brief Boolean that tells if the parameter's range should be inverted. */
         float lastComputedValue = 0.0f;
+        float displayValue = 0.0f;
+        bool isBeingChanged = false;
         const int gestureId;
         const int parameterId;
-    private:
-        static AudioProcessorParameter& findRightPlumeParameter (AudioProcessorValueTreeState& stateRef, const int gestId);
     };
     
     //==============================================================================
@@ -584,7 +583,7 @@ protected:
 	
     //==============================================================================
 	std::atomic<float> value; /**< \brief Float parameter that holds the gesture's raw value in the [0.0f 1.0f]. Should be normalized using "range". */
-    float lastValue = -1.0f;
+    float lastValue = -1.0f; /**< \brief float that holds last value to compare to the now one, for more efficient updates */
 
     //==============================================================================
 	bool on; /**< \brief Boolean parameter that represents if the gesture is active or not] range. */

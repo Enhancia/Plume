@@ -529,8 +529,22 @@ void Gesture::updateMappedParameters()
 
             if (newValue != param->lastComputedValue)
             {
+                // Send begin change gesture if 1st time moved
+                if (!param->isBeingChanged)
+                {
+                    param->isBeingChanged = true;
+                    param->plumeParameter.beginChangeGesture();
+                }
+
                 param->lastComputedValue = newValue;
+                param->displayValue = newValue;
+                param->plumeParameter.setValueNotifyingHost (newValue);
                 param->wrappedParameter.setValueNotifyingHost (newValue);
+            }
+            else if (param->isBeingChanged) // Gesture wasnt changed. sens end change gesture if necessary
+            {
+                param->isBeingChanged = false;
+                param->plumeParameter.endChangeGesture();
             }
         }
     }   
@@ -700,33 +714,39 @@ Gesture::MappedParameter::~MappedParameter()
         
 void Gesture::MappedParameter::parameterChanged (const String& parameterID, float newValue)
 {
-    DBG ("Param changed (pC) : " << parameterID);
-
     // Change wrappedParam
     if (wrappedParameter.getValue() != plumeParameter.getValue())
     {
+        // Change wrapped plugins param
         wrappedParameter.setValue (newValue);
+
+        // Change value for interface display
+        displayValue = newValue;
     }
 }
         
 void Gesture::MappedParameter::parameterValueChanged (int parameterIndex, float newValue)
 {
-    DBG ("Param changed (pVC) : " << wrappedParameter.getName (50) << " (" << parameterIndex << ")");
-
     // Change plumeParam
     if (wrappedParameter.getValue() != plumeParameter.getValue())
     {
+        // Change wrapped plugins param
         plumeParameter.setValueNotifyingHost (newValue);
+        
+        // Change value for interface display
+        displayValue = newValue;
     }
 }
 
-void Gesture::MappedParameter::parameterGestureChanged (int, bool)
+void Gesture::MappedParameter::parameterGestureChanged (int parameterIndex, bool gestureIsStarting)
 {
-}
+    // Change plumeParam
+    if (isBeingChanged != gestureIsStarting)
+    {
+        isBeingChanged = gestureIsStarting;
 
-AudioProcessorParameter& Gesture::MappedParameter::findRightPlumeParameter (AudioProcessorValueTreeState& stateRef, const int gestId)
-{
-    const String s = "Gest_" + String (gestId) + "_param_0"; // TODO actual search
-
-    return *(stateRef.getParameter (s));
+        // Send plume param notification
+        if (isBeingChanged) plumeParameter.beginChangeGesture();
+        else                plumeParameter.endChangeGesture();
+    }
 }
