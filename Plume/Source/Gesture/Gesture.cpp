@@ -703,6 +703,8 @@ Gesture::MappedParameter::MappedParameter (const MappedParameter& other)
 
 Gesture::MappedParameter::~MappedParameter()
 {
+    if (isBeingChanged) plumeParameter.endChangeGesture(); // If gesture was currently moving, sends end change message before deletion
+
     wrappedParameter.removeListener (this);
     parametersRef.removeParameterListener ("Parameter_" + String (parameterId), this);
 
