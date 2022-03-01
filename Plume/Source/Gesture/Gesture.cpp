@@ -471,7 +471,8 @@ void Gesture::replaceParameter (int paramId,
 
     ScopedLock paramlock (parameterArrayLock);
     
-    parameterArray.set (paramId, new MappedParameter (param, stateRef, r, id, paramId, rev));
+    parameterArray.remove (paramId);
+    parameterArray.insert (paramId, new MappedParameter (param, stateRef, r, id, paramId, rev));
     
     sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
 }
