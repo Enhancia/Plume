@@ -285,7 +285,7 @@ bool GesturePanel::keyPressed (const KeyPress& key)
         //rename gesture
         else if (key.getTextCharacter () == 'r')
         {
-            if (key.getModifiers ().isAltDown ())
+            if (key.getModifiers ().isCommandDown())
                 renameGestureInSlot (selectedGesture);
         }
         //rename gesture
