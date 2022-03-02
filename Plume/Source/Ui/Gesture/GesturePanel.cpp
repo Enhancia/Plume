@@ -276,6 +276,8 @@ bool GesturePanel::keyPressed (const KeyPress &key)
         if (key.getKeyCode() == KeyPress::deleteKey || key.getKeyCode() == KeyPress::backspaceKey)
         {
             removeGestureAndGestureComponent (selectedGesture);
+            if(findExistingGesture() != -1)
+                selectGestureExclusive (findExistingGesture());
         }
 
         else if (key.getTextCharacter() == 'r')
@@ -614,6 +616,8 @@ void GesturePanel::handleMenuResult (int gestureId, const int menuResult)
 
         case 3: // Delete gesture
             removeGestureAndGestureComponent (gestureId);
+            if (findExistingGesture () != -1)
+                selectGestureExclusive (findExistingGesture ());
             update();
     }
 }
@@ -697,6 +701,24 @@ void GesturePanel::parameterChanged (const String& parameterID, float)
             }
         }
     }
+}
+
+int GesturePanel::findExistingGesture () {
+
+    int gestureId = 0;
+    int result = -1;
+
+    while (gestureArray.getGesture (gestureId) == nullptr)
+    {
+        gestureId++;
+        if(gestureId == gestureSlots.size () - 1)
+            break;
+    }
+
+    if(gestureArray.getGesture (gestureId) != nullptr)
+        result = gestureId;
+
+    return result;
 }
 
 
