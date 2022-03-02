@@ -126,11 +126,13 @@ void PresetComponent::focusLost (Component::FocusChangeType cause)
 
 void PresetComponent::comboBoxChanged (ComboBox* cmbx)
 {
-    if (!(cmbx->getSelectedId() == 1 && processor.getPresetHandler().getCurrentSettings().plugin.isEmpty()) &&
-        cmbx->getText() != processor.getPresetHandler().getCurrentSettings().plugin)
+    if (!(cmbx->getSelectedId() == 1 && processor.getPresetHandler().getCurrentSettings().descriptiveName.isEmpty()) &&
+        cmbx->getText() != processor.getPresetHandler().getCurrentSettings().descriptiveName)
     {
-        if (cmbx->getSelectedId() == 1) processor.getPresetHandler().setPluginSearchSetting (String());
-        else                            processor.getPresetHandler().setPluginSearchSetting (cmbx->getText());
+        if (cmbx->getSelectedId() == 1)
+            processor.getPresetHandler().setPluginSearchSetting (String());
+        else
+            processor.getPresetHandler().setPluginSearchSetting (cmbx->getText());
         
         presetBox->updateContent();
         presetBox->selectRow (0);
@@ -154,6 +156,8 @@ void PresetComponent::addNewPreset()
     presetBox->startNewPresetEntry();
 }
 
+//bool compareFunction (String a, String b) { return a < b; }
+
 void PresetComponent::createComboBox()
 {
     // Combo bex items
@@ -162,16 +166,28 @@ void PresetComponent::createComboBox()
     
     KnownPluginList& kpl = processor.getWrapper().getList();
     int searchedPlugin = 1;
-    
-    for (int i=0; i<kpl.getNumTypes(); i++)
-    {
-        const String currentName = kpl.getType (i)->name;
 
-        pluginSelectBox->addItem (currentName, i+2);
+	Array<String> listPlugins;
 
-        if (currentName == processor.getPresetHandler().getCurrentSettings().plugin)
-            searchedPlugin = i+2;
-    }
+	// fill list of plugins and set uppercase first leter
+	for (int i = 0; i < kpl.getNumTypes (); i++)
+	{
+		std::string currentName = kpl.getType (i)->descriptiveName.toStdString ();
+		currentName[0] = toupper (currentName[0]);
+		listPlugins.add ((String)currentName);
+	}
+
+	// sort the plugins list
+	std::sort (listPlugins.begin (), listPlugins.end (), [](String a, String b) { return a < b; });
+
+	// add plugins to combobox
+	for (size_t i = 0; i < listPlugins.size (); i++)
+	{
+		pluginSelectBox->addItem (listPlugins[i], i + 2);
+
+		if (listPlugins[i] == processor.getPresetHandler ().getCurrentSettings ().descriptiveName)
+			searchedPlugin = i + 2;
+	}
     
     pluginSelectBox->setSelectedId (searchedPlugin, dontSendNotification);
 

@@ -276,7 +276,12 @@ bool GesturePanel::keyPressed (const KeyPress& key)
     {
         //remove gesture
         if (key.getKeyCode () == KeyPress::deleteKey || key.getKeyCode () == KeyPress::backspaceKey)
+        {
             removeGestureAndGestureComponent (selectedGesture);
+      
+            if(findExistingGesture() != -1)
+                selectGestureExclusive (findExistingGesture());
+        }
         //rename gesture
         else if (key.getTextCharacter () == 'r')
         {
@@ -419,6 +424,7 @@ void GesturePanel::resizeSlotsAndTrimAreaAccordingly (juce::Rectangle<int>& area
 
     int tempWidth = area.getWidth()/4;
 
+    auto initialArea = area;
     
     if (!settingsVisible)
     {
@@ -427,6 +433,10 @@ void GesturePanel::resizeSlotsAndTrimAreaAccordingly (juce::Rectangle<int>& area
 
     auto column1 = area.removeFromLeft (tempWidth);
     auto column2 = area.removeFromRight (tempWidth);
+
+    // move columns to left/right border of global area
+    column1.setX(initialArea.getX());
+    column2.setX(initialArea.getWidth() - column2.getWidth());
 
     int slotHeight = area.getHeight()/numRows;
 
@@ -704,6 +714,8 @@ void GesturePanel::handleMenuResult (int gestureId, const int menuResult)
 
         case 3: // Delete gesture
             removeGestureAndGestureComponent (gestureId);
+            if (findExistingGesture () != -1)
+                selectGestureExclusive (findExistingGesture ());
             update();
     }
 }
@@ -787,6 +799,24 @@ void GesturePanel::parameterChanged (const String& parameterID, float)
             }
         }
     }
+}
+
+int GesturePanel::findExistingGesture () {
+
+    int gestureId = 0;
+    int result = -1;
+
+    while (gestureArray.getGesture (gestureId) == nullptr)
+    {
+        gestureId++;
+        if(gestureId == gestureSlots.size () - 1)
+            break;
+    }
+
+    if(gestureArray.getGesture (gestureId) != nullptr)
+        result = gestureId;
+
+    return result;
 }
 
 
