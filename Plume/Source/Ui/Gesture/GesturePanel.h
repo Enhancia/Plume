@@ -53,7 +53,7 @@ public:
     void parameterChanged (const String &parameterID, float newValue) override;
 
     /**
-     * @brief Get the first gesture finded in the list
+     * @brief Get the first gesture found in the list
      * @return Gesture Id
     */
     int findExistingGesture ();
