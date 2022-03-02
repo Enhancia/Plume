@@ -371,6 +371,7 @@ void GestureArray::addGestureCopyingOther (Gesture* other, int gestureId, String
     gestures.getLast()->setCc (other->getCc());
     gestures.getLast()->setMidiLow (other->getMidiLow());
     gestures.getLast()->setMidiHigh (other->getMidiHigh());
+    gestures.getLast()->setMidiReverse (other->getMidiReverse());
     
     checkPitchMerging();
 }
