@@ -135,6 +135,8 @@ Component* PresetBox::refreshComponentForRow (int rowNumber,
 
 void PresetBox::listBoxItemClicked (int row, const MouseEvent& event)
 {
+    currentRow = row;
+
     if (event.mods.isPopupMenu())
     {
         rightClickMenu.clear();
@@ -182,6 +184,28 @@ void PresetBox::deleteKeyPressed (int lastRowSelected)
 void PresetBox::returnKeyPressed (int lastRowSelected)
 {
     setPreset (lastRowSelected);
+}
+
+bool PresetBox::keyPressed (const KeyPress& key)
+{
+    ListBox::keyPressed (key);
+
+    if (key.isKeyCode (KeyPress::upKey) && currentRow > 0)
+        currentRow--;
+    else if (key.isKeyCode (KeyPress::downKey) && currentRow < getNumRows () - 1)
+        currentRow++;
+
+    if (key == PLUME::keyboard_shortcut::rename)
+    {
+        bool isUser = processor.getPresetHandler ().isUserPreset (currentRow);
+
+        if (isUser)
+            startRenameEntry (currentRow);
+    }
+    else if (key == PLUME::keyboard_shortcut::openPreset)
+        setPreset (currentRow);
+
+    return false;
 }
 
 void PresetBox::selectedRowsChanged (int lastRowSelected)

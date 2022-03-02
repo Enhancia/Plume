@@ -36,6 +36,7 @@ public:
     
     //==============================================================================
     void buttonClicked (Button* bttn) override;
+    bool keyPressed (const KeyPress& key) override;
     void mouseUp (const MouseEvent& event) override;
     void mouseEnter (const MouseEvent& event) override;
     void mouseExit (const MouseEvent& event) override;

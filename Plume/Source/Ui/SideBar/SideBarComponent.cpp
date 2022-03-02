@@ -34,6 +34,7 @@ SideBarComponent::SideBarComponent (PlumeProcessor& proc, Component& optsPanel)
     addAndMakeVisible (*(hideInfoButton = std::make_unique<PlumeShapeButton> ("Hide Info Button",
                                                          Colour (0),
                                                          getPlumeColour (sideBarMainText).withAlpha (0.9f))));
+    hideInfoButton->setComponentID("hideInfoButton");
     hideInfoButton->setToggleState (infoHidden, dontSendNotification); // side bar visible at first
     hideInfoButton->setClickingTogglesState (true);
     createHideInfoButtonPath();
@@ -133,6 +134,7 @@ void SideBarComponent::buttonClicked (Button* bttn)
     {
 		// Displays options
 		optionsPanel.setVisible (true);
+        optionsPanel.grabKeyboardFocus();
     }
 
     else if (bttn == hideInfoButton.get())

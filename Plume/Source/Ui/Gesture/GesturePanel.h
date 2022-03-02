@@ -31,7 +31,7 @@ class GesturePanel    : public Component,
 public:
     //==============================================================================
     GesturePanel (GestureArray& gestureArray, PluginWrapper& wrap,
-                  AudioProcessorValueTreeState& params, NewGesturePanel& newGest,
+                  AudioProcessorValueTreeState& params, NewGesturePanel& newGest, Component& newPrst,
                   int freqHz = 60);
     ~GesturePanel();
 
@@ -126,6 +126,7 @@ private:
     PluginWrapper& wrapper;
     AudioProcessorValueTreeState& parameters;
     NewGesturePanel& newGesturePanel;
+    Component& newPresetPanel;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GesturePanel)

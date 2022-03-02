@@ -33,6 +33,7 @@ public:
     //==============================================================================
     void visibilityChanged() override;
     void buttonClicked (Button* bttn) override;
+    bool keyPressed (const KeyPress& key) override;
     void labelTextChanged (Label* lbl) override;
     void editorShown (Label* lbl, TextEditor& ed) override;
 
