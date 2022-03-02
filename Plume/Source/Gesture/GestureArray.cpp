@@ -510,7 +510,7 @@ void GestureArray::duplicateGesture (int idToDuplicateFrom, bool prioritizeHighe
 
     if (gestureToMove == nullptr || idToDuplicateTo == -1) return;
 
-    addGestureCopyingOther (gestureToMove, idToDuplicateTo, createDuplicateName (gestureToMove->getName()));
+    addGestureCopyingOther (gestureToMove, idToDuplicateTo, gestureToMove->getName());
 }
 
 int GestureArray::findClosestIdToDuplicate (int idToDuplicateFrom, bool prioritizeHigherId)
