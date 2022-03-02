@@ -49,6 +49,7 @@ public:
     void backgroundClicked (const MouseEvent& event) override;
     void deleteKeyPressed (int lastRowSelected) override;
     void returnKeyPressed (int lastRowSelected) override;
+    bool keyPressed (const KeyPress& key) override;
     void selectedRowsChanged (int lastRowSelected) override;
     //void listWasScrolled() override;
     //var getDragSourceDescription (const SparseSet<int>& rowsToDescribe) override;
@@ -89,6 +90,7 @@ private:
     std::unique_ptr<Label> editLabel;
     std::unique_ptr<Label> dreamCrusher; /**< @Brief Evil's pointer, always null*/
     PopupMenu rightClickMenu;
+    int currentRow = 0;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PresetBox)

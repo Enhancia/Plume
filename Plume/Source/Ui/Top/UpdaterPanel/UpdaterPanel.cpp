@@ -29,6 +29,7 @@ void UpdaterPanel::paint (Graphics& g)
     // updater panel area
     g.setColour (getPlumeColour (topPanelBackground));
     g.fillRoundedRectangle (panelArea.reduced (1).toFloat(), 10.0f);
+	grabKeyboardFocus();
 }
 
 void UpdaterPanel::resized()
@@ -134,6 +135,17 @@ void UpdaterPanel::buttonClicked (Button* bttn)
 		}
 	}
 }
+
+bool UpdaterPanel::keyPressed (const KeyPress& key)
+{
+    if (key == PLUME::keyboard_shortcut::closeWindow)
+    {
+        closeAndResetPanel();
+    }
+
+    return false;
+}
+
 void UpdaterPanel::resetAndOpenPanel (bool updateIsRequired)
 {
 	if (currentProgress != inProgress)

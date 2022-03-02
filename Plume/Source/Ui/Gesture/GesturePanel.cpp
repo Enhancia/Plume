@@ -16,10 +16,10 @@
 
 //==============================================================================
 GesturePanel::GesturePanel (GestureArray& gestArray, PluginWrapper& wrap,
-                            AudioProcessorValueTreeState& params, NewGesturePanel& newGest,
+                            AudioProcessorValueTreeState& params, NewGesturePanel& newGest, Component& newPrst,
                             int freqHz)
                             : gestureArray (gestArray), wrapper (wrap),
-                              parameters (params), newGesturePanel (newGest),
+                              parameters (params), newGesturePanel (newGest), newPresetPanel (newPrst),
                               freq (freqHz)
 {
     setComponentID ("gesturePanel");
@@ -41,6 +41,7 @@ GesturePanel::~GesturePanel()
     stopTimer();
     unselectCurrentGesture();
     newGesturePanel.hidePanel (true);
+    newPresetPanel.setVisible(false);
     removeListenerForAllParameters();
 }
 
@@ -269,27 +270,124 @@ void GesturePanel::handleLeftClickDrag (const MouseEvent&)
 {
 }
 
-bool GesturePanel::keyPressed (const KeyPress &key)
+bool GesturePanel::keyPressed (const KeyPress& key)
 {
-    if (hasSelectedGesture() && key.isValid())
+    if (hasSelectedGesture () && key.isValid ())
     {
-        if (key.getKeyCode() == KeyPress::deleteKey || key.getKeyCode() == KeyPress::backspaceKey)
+        //remove gesture
+        if (key.getKeyCode () == KeyPress::deleteKey || key.getKeyCode () == KeyPress::backspaceKey)
         {
             removeGestureAndGestureComponent (selectedGesture);
+      
             if(findExistingGesture() != -1)
                 selectGestureExclusive (findExistingGesture());
         }
-
-        else if (key.getTextCharacter() == 'r')
+        //rename gesture
+        else if (key.getTextCharacter () == 'r')
         {
-			if (key.getModifiers().isAltDown())
-			{
-				renameGestureInSlot (selectedGesture);
-			}
+            if (key.getModifiers ().isAltDown ())
+                renameGestureInSlot (selectedGesture);
+        }
+        //rename gesture
+        else if (key == PLUME::keyboard_shortcut::rename) {
+            renameGestureInSlot (selectedGesture);
+        }
+        //duplicate gesture
+        else if (key == PLUME::keyboard_shortcut::duplicateGesture) {
+            gestureArray.duplicateGesture (selectedGesture);
+            update ();
+        }
+        //save gesture
+        else if (key == PLUME::keyboard_shortcut::saveGesture) {
+            newPresetPanel.setVisible (true);
+        }
+        //moving up
+        else if (key.isKeyCode (KeyPress::upKey)) {
+            if (selectedGesture > 0) {
+
+                auto tempPosition = selectedGesture;
+                selectedGesture--;
+
+                while (gestureArray.getGesture (selectedGesture) == nullptr)
+                {
+                    if (selectedGesture == 0)
+                        break;
+                    selectedGesture--;
+                }
+
+                if (gestureArray.getGesture (selectedGesture) == nullptr)
+                    selectedGesture = tempPosition;
+
+                selectGestureExclusive (selectedGesture);
+            }
+        }
+        //moving down
+        else if (key.isKeyCode (KeyPress::downKey)) {
+            if (selectedGesture < gestureSlots.size () - 1) {
+
+                auto tempPosition = selectedGesture;
+                selectedGesture++;
+
+                while (gestureArray.getGesture (selectedGesture) == nullptr)
+                {
+                    if (selectedGesture == gestureSlots.size () - 1)
+                        break;
+                    selectedGesture++;
+                }
+
+                if (gestureArray.getGesture (selectedGesture) == nullptr)
+                    selectedGesture = tempPosition;
+
+                selectGestureExclusive (selectedGesture);
+            }
+        }
+        //moving left
+        else if (key.isKeyCode (KeyPress::leftKey)) {
+            if (selectedGesture == 4 || selectedGesture == 5 || selectedGesture == 6 || selectedGesture == 7) {
+
+                auto tempPosition = selectedGesture;
+                selectedGesture -= 4;
+
+                if (gestureArray.getGesture (selectedGesture) == nullptr)
+                    selectedGesture = 0;
+
+                while (gestureArray.getGesture (selectedGesture) == nullptr)
+                {
+                    selectedGesture++;
+                    if (selectedGesture == gestureSlots.size () - 1) {
+                        selectedGesture = tempPosition;
+                        break;
+                    }
+                }
+
+                selectGestureExclusive (selectedGesture);
+            }
+        }
+        //moving right
+        else if (key.isKeyCode (KeyPress::rightKey)) {
+            if (selectedGesture == 0 || selectedGesture == 1 || selectedGesture == 2 || selectedGesture == 3) {
+
+                auto tempPosition = selectedGesture;
+                selectedGesture += 4;
+
+                if (gestureArray.getGesture (selectedGesture) == nullptr)
+                    selectedGesture = 4;
+
+                while (gestureArray.getGesture (selectedGesture) == nullptr)
+                {
+                    selectedGesture++;
+                    if (selectedGesture == gestureSlots.size () - 1) {
+                        selectedGesture = tempPosition;
+                        break;
+                    }
+                }
+
+                selectGestureExclusive (selectedGesture);
+            }
         }
     }
 
-	return false;
+    return false;
 }
 
 void GesturePanel::initialiseGestureSlots()

@@ -46,6 +46,8 @@ void PlumeAlertPanel::paint (Graphics& g)
 
     g.setGradientFill (gradOut);
     g.drawRoundedRectangle (panelArea.reduced (1).toFloat(), 10.0f, 1.0f);
+
+    grabKeyboardFocus ();
 }
 
 void PlumeAlertPanel::resized()
@@ -89,6 +91,16 @@ void PlumeAlertPanel::buttonClicked (Button* bttn)
     {
         exitModalState (modalReturnValue);
     }
+}
+
+bool PlumeAlertPanel::keyPressed (const KeyPress &key)
+{
+    if (key == PLUME::keyboard_shortcut::closeWindow)
+    {
+        exitModalState (0);
+    }
+
+	return false;
 }
 
 void PlumeAlertPanel::createAndAddLabel (const String& textToSet)

@@ -164,6 +164,16 @@ void NewPresetPanel::buttonClicked (Button* bttn)
     setVisible (false);
 }
 
+bool NewPresetPanel::keyPressed (const KeyPress& key)
+{
+    if (key == PLUME::keyboard_shortcut::closeWindow)
+    {
+        setVisible (false);
+    }
+
+    return false;
+}
+
 void NewPresetPanel::labelTextChanged (Label* lbl)
 {
 	using namespace PLUME;

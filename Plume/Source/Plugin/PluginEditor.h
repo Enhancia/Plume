@@ -77,6 +77,7 @@ public:
     //==============================================================================
     void mouseEnter (const MouseEvent &event) override;
     void mouseExit (const MouseEvent &event) override;
+    bool keyPressed (const KeyPress& key) override;
     
     //==============================================================================
     void broughtToFront() override;
