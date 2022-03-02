@@ -324,6 +324,7 @@ void GesturePanel::resizeSlotsAndTrimAreaAccordingly (juce::Rectangle<int>& area
 
     int tempWidth = area.getWidth()/4;
 
+    auto initialArea = area;
     
     if (!settingsVisible)
     {
@@ -332,6 +333,10 @@ void GesturePanel::resizeSlotsAndTrimAreaAccordingly (juce::Rectangle<int>& area
 
     auto column1 = area.removeFromLeft (tempWidth);
     auto column2 = area.removeFromRight (tempWidth);
+
+    // move columns to left/right border of global area
+    column1.setX(initialArea.getX());
+    column2.setX(initialArea.getWidth() - column2.getWidth());
 
     int slotHeight = area.getHeight()/numRows;
 
