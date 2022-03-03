@@ -56,7 +56,7 @@ private:
 
     //==============================================================================
     void sendTicketAndUpdate();
-    URL createURLForTicket (const String& boundary);
+    URL createURLForTicket();
     String createMultipartData (const String& boundary, const Array<File>& txtFilesToAttach);
     void getFilestoAttach (Array<File>& fileArrayToFill);
 

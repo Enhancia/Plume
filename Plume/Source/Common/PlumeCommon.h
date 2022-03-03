@@ -230,33 +230,7 @@ namespace PLUME
          * @param isCharging 
          * @return float 
          */
-		static float convertRawBatteryToPercentage (float batteryValue, bool isCharging)
-		{
-			if (batteryValue < 3.46f && !isCharging)
-				return 0.0f;
-			else if (batteryValue > 4.12 && isCharging)
-				return 1.0f;
-
-            const float cutThresh = 3.46f;
-			Array<float> batteryTiers ({ 3.52f, 3.58f, 3.61f, 3.64f, 3.69f, 3.76f, 3.84f, 3.92f, 4.01f, 4.12f });
-
-            // Standard behaviour
-			float battery = 0.0f;
-
-			for (float batteryTier : batteryTiers)
-			{
-                if (isCharging && batteryTier == batteryTiers[0]) continue; // Skips 1st check if ring is charging, 1st level is 2nd battery tier
-
-				if (batteryValue > batteryTier)
-				{
-					battery += 0.1f;
-				}
-
-				else return battery;
-			}
-
-			return 1.0f;
-		}
+		extern float convertRawBatteryToPercentage (float batteryValue, bool isCharging);
     }
 
     // file
@@ -299,11 +273,7 @@ namespace PLUME
 
     namespace compatibility
     {
-        static bool isTestVersion()
-        {
-            return String (JucePlugin_VersionString).upToFirstOccurrenceOf (".", false, true)
-                                                    .getIntValue() >= 100;
-        }
+        extern bool isTestVersion();
     }
 
     namespace auth
@@ -344,7 +314,7 @@ namespace PLUME
 
     namespace log
     {
-        enum LogLevel
+        enum class LogLevel
         {
             trace =0,
             debug,
@@ -354,7 +324,7 @@ namespace PLUME
             fatal
         };
 
-        enum LogCategory
+        enum class LogCategory
         {
             general =0,
             gesture,
@@ -392,28 +362,7 @@ namespace PLUME
             "bugReport: "
         };
 
-        static void writeToLog (const String& message, const LogCategory category=general, const LogLevel level=info)
-        {
-          #if !JUCE_DEBUG
-            if (int (level) >= int (info)) // cuts TRACE and DEBUG entries on production build
-          #endif
-            {
-                String logString;
-                const Time logTime (Time::getCurrentTime());
-
-                logString += "[" + logTime.toISO8601(true) + "] ";
-
-                if (auto* currentThread = Thread::getCurrentThread())
-                {
-                    logString += "[" + currentThread->getThreadName() + "] ";
-                }
-                
-                logString += levelStrings[int(level)] + categoryStrings[int(category)]
-                          +  message;
-
-                Logger::writeToLog (logString);
-            }
-        }
+        extern void writeToLog (const String& message, const LogCategory category=LogCategory::general, const LogLevel level=LogLevel::info);
     }
 
     namespace keyboard_shortcut

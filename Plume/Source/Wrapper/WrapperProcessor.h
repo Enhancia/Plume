@@ -80,7 +80,7 @@ private:
     
     //==============================================================================
     void writeBusesLayoutToLog();
-    void copyWrapperBuffersIntoPlumeBuffer (AudioBuffer<float>& plumeBuffer, AudioBuffer<float>& wrapperBuffer);
+    void copyWrapperBuffersIntoPlumeBuffer (AudioBuffer<float>& plumeBuffer);
 
     //==============================================================================
     static AudioProcessor::BusesProperties createBusesPropertiesFromPluginInstance (AudioPluginInstance& plugin);

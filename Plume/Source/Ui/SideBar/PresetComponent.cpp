@@ -169,7 +169,7 @@ void PresetComponent::createComboBox()
 
 	Array<String> listPlugins;
 
-	// fill list of plugins and set uppercase first leter
+	// fill list of plugins and set uppercase first letter
 	for (int i = 0; i < kpl.getNumTypes (); i++)
 	{
 		std::string currentName = kpl.getType (i)->descriptiveName.toStdString ();
@@ -181,7 +181,7 @@ void PresetComponent::createComboBox()
 	std::sort (listPlugins.begin (), listPlugins.end (), [](String a, String b) { return a < b; });
 
 	// add plugins to combobox
-	for (size_t i = 0; i < listPlugins.size (); i++)
+	for (int i = 0; i < listPlugins.size (); i++)
 	{
 		pluginSelectBox->addItem (listPlugins[i], i + 2);
 

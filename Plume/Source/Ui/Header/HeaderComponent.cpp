@@ -255,7 +255,7 @@ void HeaderComponent::buttonClicked (Button* bttn)
 }
 
 
-void HeaderComponent::parameterChanged (const String &parameterID, float newValue)
+void HeaderComponent::parameterChanged (const String &, float newValue)
 {
     trackArmButton->setToggleState (newValue == 1.0f, dontSendNotification);
 }
@@ -296,7 +296,7 @@ void HeaderComponent::handlePluginChoice (int chosenId)
     }
 }
 
-void HeaderComponent::createPluginMenu (KnownPluginList::SortMethod sort)
+void HeaderComponent::createPluginMenu (const KnownPluginList::SortMethod sort)
 {
 	pluginListMenu.clear();
 	pluginListMenu.addSectionHeader ("Plugins:");
@@ -385,21 +385,6 @@ void HeaderComponent::setNextPreset()
 {
     setPresetWithOffset (1);
 }
-void HeaderComponent::drawDebugRect (Graphics& g, const juce::Rectangle<float>& rectangle)
-{
-    g.setFont (PLUME::font::plumeFont);
-    g.setColour (juce::Colours::green);
-    g.drawRect (rectangle);
-
-    const int widthText = truncf (rectangle.getWidth ());
-    const int heightText = truncf (rectangle.getHeight ());
-
-    //g.drawText (std::to_string (widthText), rectangle.getWidth () / 2, rectangle.getY () - 10, 15, 10,
-    //    Justification::horizontallyCentred, false);
-
-    //g.drawText (std::to_string (heightText), rectangle.getX () - 10, rectangle.getHeight () / 2, 15, 10,
-    //    Justification::verticallyCentred, false);
-}
 
 void HeaderComponent::setPresetWithOffset (const int offset)
 {
@@ -450,7 +435,7 @@ void HeaderComponent::prepareGesturePanelAndLoadPreset (const int presetId)
     if (std::unique_ptr<XmlElement> presetXml = processor.getPresetHandler().getPresetXmlToLoad (presetId))
     {
 
-        PLUME::log::writeToLog ("Loading preset (using top arrows) : " + processor.getPresetHandler().getPresetForId (presetId).getName(), PLUME::log::presets);
+        PLUME::log::writeToLog ("Loading preset (using top arrows) : " + processor.getPresetHandler().getPresetForId (presetId).getName(), PLUME::log::LogCategory::presets);
 
         MemoryBlock presetData;
         AudioProcessor::copyXmlToBinary (*presetXml, presetData);
@@ -624,8 +609,7 @@ void HeaderComponent::BatteryComponent::repaintBlinkingIndicators ()
 		}
 		else if (numBlinkingIndicators == 1)
 		{
-			//const int indicatorAreaWidth = indicatorsArea.getWidth () / 4;
-            const int indicatorAreaWidth = 15.0f;
+            constexpr int indicatorAreaWidth = 15;
 
 			repaint (indicatorsArea
 				.withWidth (indicatorAreaWidth)
@@ -707,7 +691,7 @@ void HeaderComponent::BatteryComponent::drawBatteryPath (Graphics& g, juce::Rect
     }
 
     //const int indicatorAreaWidth = area.getWidth () / 4;
-    const int indicatorAreaWidth = 15.0f;
+    const float indicatorAreaWidth = 15.0f;
 
 	for (int indicator = 0; indicator < 4; indicator++)
 	{
@@ -780,8 +764,8 @@ void HeaderComponent::BatteryComponent::drawRingPath (Graphics& g, juce::Rectang
 
     // Ring
 	Path ringPath = PLUME::path::createPath (PLUME::path::ring);
-	const auto affineTransform = ringPath.getTransformToScaleToFit (12, 11, 18, 18, true);
-	g.fillPath (ringPath, affineTransform);
+	const auto transform = ringPath.getTransformToScaleToFit (12, 11, 18, 18, true);
+	g.fillPath (ringPath, transform);
 
     // Lightning
 	auto zipzoopArea = area.removeFromRight (7);

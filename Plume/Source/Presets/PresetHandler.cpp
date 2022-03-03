@@ -302,7 +302,7 @@ bool PresetHandler::createNewOrOverwriteUserPreset (XmlElement& presetXml)
     if (XmlElement* info = presetXml.getChildByName ("INFO"))
     {
         const String presetName = info->getStringAttribute ("name");
-        PLUME::log::writeToLog ("Creating new User preset : " + presetName, PLUME::log::presets);
+        PLUME::log::writeToLog ("Creating new User preset : " + presetName, PLUME::log::LogCategory::presets);
         
         const String fileName = File::createLegalFileName (presetName);
         File newPresetFile;
@@ -585,7 +585,7 @@ void PresetHandler::updateSearchedPresets()
     searchedPresets.clear();
 
     PLUME::log::writeToLog ("Updating preset list",
-                            PLUME::log::presets);
+                            PLUME::log::LogCategory::presets);
     
     if (settings.presetType == -1 || settings.presetType == PlumePreset::defaultPreset)
     {

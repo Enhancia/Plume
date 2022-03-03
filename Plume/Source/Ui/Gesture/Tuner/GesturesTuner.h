@@ -52,7 +52,7 @@ public:
                            tilt.rangeLow,
                            tilt.rangeHigh,
                            Range<float> (PLUME::UI::TILT_DISPLAY_MIN, PLUME::UI::TILT_DISPLAY_MAX),
-                           String (CharPointer_UTF8 ("\xc2\xb0")), OneRangeTuner::tilt)
+                           String (CharPointer_UTF8 ("\xc2\xb0")), OneRangeTuner::TunerStyle::tilt)
     {}
     
     ~TiltTuner()
@@ -89,7 +89,7 @@ public:
         :   OneRangeTuner (roll.getValueReference(), roll.getRangeReference(),
                            roll.rangeLow, roll.rangeHigh,
                            Range<float> (PLUME::UI::ROLL_DISPLAY_MIN, PLUME::UI::ROLL_DISPLAY_MAX),
-                           String (CharPointer_UTF8 ("\xc2\xb0")), OneRangeTuner::roll)
+                           String (CharPointer_UTF8 ("\xc2\xb0")), OneRangeTuner::TunerStyle::roll)
     {}
     
     ~RollTuner()

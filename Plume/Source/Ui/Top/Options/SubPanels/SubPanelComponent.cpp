@@ -274,7 +274,7 @@ void SubPanelComponent::ScannerRowComponent::buttonClicked (Button* bttn)
                 if (lastFile.getFullPathName() != "") {
                     initialStoredFile = lastFile;
                 }
-                PLUME::log::writeToLog("Changed " + getComponentID() + " : " + lastFile.getFullPathName(), PLUME::log::options);
+                PLUME::log::writeToLog("Changed " + getComponentID() + " : " + lastFile.getFullPathName(), PLUME::log::LogCategory::options);
                 sendChangeMessage();
                 repaint();
             });
@@ -284,7 +284,7 @@ void SubPanelComponent::ScannerRowComponent::buttonClicked (Button* bttn)
             //if (chooser->browseForFileToOpen())
             {
                 lastFile = chooser->getResult();
-                PLUME::log::writeToLog ("Changed " + getComponentID() + " : " + lastFile.getFullPathName(), PLUME::log::options);
+                PLUME::log::writeToLog ("Changed " + getComponentID() + " : " + lastFile.getFullPathName(), PLUME::log::LogCategory::options);
                 sendChangeMessage();
                 repaint();
             }

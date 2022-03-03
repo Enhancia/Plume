@@ -46,7 +46,7 @@ void HideSideBarButton::drawArrowPath (Graphics& g, bool shouldDrawButtonAsHighl
         p.lineTo (4, 6);
     }
     
-    auto arrowArea = getLocalBounds().withSizeKeepingCentre (3, 6);
+    auto arrowArea = getLocalBounds().withSizeKeepingCentre (3, 6).toFloat();
 
     p.scaleToFit (arrowArea.getX(),
                   arrowArea.getY(),

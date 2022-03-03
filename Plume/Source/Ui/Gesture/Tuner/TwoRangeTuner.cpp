@@ -1047,8 +1047,8 @@ void TwoRangeTuner::drawTunerSliderBackground (Graphics& g)
     {
         auto angle = getThumbAngleRadians (objectBeingDragged);
 
-        juce::Point<float> thumbPoint (float (sliderCentre.x) + arcRadius * float (std::cos (angle - MathConstants<double>::halfPi)),
-                                 float (sliderCentre.y) + arcRadius * float (std::sin (angle - MathConstants<double>::halfPi)));
+        juce::Point<float> thumbPoint (static_cast<float> (sliderCentre.x) + arcRadius * static_cast<float> (std::cos (angle - MathConstants<double>::halfPi)),
+                                 static_cast<float> (sliderCentre.y) + arcRadius * static_cast<float> (std::sin (angle - MathConstants<double>::halfPi)));
 
         g.setColour (tunerColour.withAlpha (0.6f));
         g.fillEllipse (juce::Rectangle<float> (25.0f, 25.0f).withCentre (thumbPoint));
@@ -1068,8 +1068,8 @@ void TwoRangeTuner::drawTunerSliderBackground (Graphics& g)
         else
             angle = getThumbAngleRadians (rightLowThumb);
 
-        juce::Point<float> thumbPoint (sliderCentre.x + arcRadius * std::cos (angle - MathConstants<float>::halfPi),
-            sliderCentre.y + arcRadius * std::sin (angle - MathConstants<float>::halfPi));
+        juce::Point<float> thumbPoint (sliderCentre.toFloat().x + arcRadius * static_cast<float> (std::cos(angle - MathConstants<double>::halfPi)),
+            sliderCentre.toFloat().y + arcRadius * static_cast<float> (std::sin (angle - MathConstants<double>::halfPi)));
 
         g.setColour (tunerColour.withAlpha (0.3f));
         g.fillEllipse (juce::Rectangle<float> (25.0f, 25.0f).withCentre (thumbPoint));

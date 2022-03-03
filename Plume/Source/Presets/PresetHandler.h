@@ -30,7 +30,7 @@ public:
 
     struct PresetSearchSettings
     {
-        enum SortMethod
+        enum class SortMethod
         {
             alphabetical =0,
             alphabeticalReversed
@@ -56,9 +56,9 @@ public:
         {
             switch (sortMethod)
             {
-                case alphabetical:
+                case SortMethod::alphabetical:
                     return preset1->getName().compareNatural (preset2->getName());
-                case alphabeticalReversed:
+                case SortMethod::alphabeticalReversed:
                     return preset2->getName().compareNatural (preset1->getName());
             }
 
@@ -70,7 +70,7 @@ public:
         String plugin;
         String descriptiveName;
         String nameSearch;
-        SortMethod sortMethod = alphabetical;
+        SortMethod sortMethod = SortMethod::alphabetical;
     };
     
     //==============================================================================

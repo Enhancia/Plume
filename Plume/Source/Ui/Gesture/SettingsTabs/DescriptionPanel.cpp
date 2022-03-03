@@ -58,7 +58,7 @@ void DescriptionPanel::update()
 	descriptionLabel->setText (gesture.getDescription(), sendNotification);
 }
     
-void DescriptionPanel::paint (Graphics& g)
+void DescriptionPanel::paint (Graphics&)
 {
 }
 

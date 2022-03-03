@@ -125,9 +125,9 @@ void BugReportPanel::buttonClicked (Button* bttn)
     }
 }
 
-bool BugReportPanel::keyPressed (const KeyPress& key)
+bool BugReportPanel::keyPressed (const KeyPress& keyPress)
 {
-    if (key == PLUME::keyboard_shortcut::closeWindow)
+    if (keyPress == PLUME::keyboard_shortcut::closeWindow)
     {
         closeAndResetPanel ();
     }
@@ -135,7 +135,7 @@ bool BugReportPanel::keyPressed (const KeyPress& key)
     return false;
 }
 
-void BugReportPanel::labelTextChanged (Label* lbl)
+void BugReportPanel::labelTextChanged (Label*)
 {
     checkFormEntry();
 
@@ -250,14 +250,14 @@ void BugReportPanel::updateComponentsForSpecificStep (ReportStep stepToUpgradeTo
             messageEditor->setVisible (true);
             break;
         case reportSentOk:
-            PLUME::log::writeToLog ("Bug report sent succesfully.", PLUME::log::options);
+            PLUME::log::writeToLog ("Bug report sent succesfully.", PLUME::log::LogCategory::options);
             bottomButton->setButtonText ("Ok");
             nameLabel->setVisible (false);
             mailLabel->setVisible (false);
             messageEditor->setVisible (false);
             break;
         case reportSentError:
-            PLUME::log::writeToLog ("Failed to send bug report...", PLUME::log::options, PLUME::log::error);
+            PLUME::log::writeToLog ("Failed to send bug report...", PLUME::log::LogCategory::options, PLUME::log::LogLevel::error);
             bottomButton->setButtonText ("Ok");
             nameLabel->setVisible (false);
             mailLabel->setVisible (false);
@@ -297,7 +297,7 @@ void BugReportPanel::checkFormEntry()
 //==============================================================================
 void BugReportPanel::sendTicketAndUpdate()
 {
-    URL ticketURL = createURLForTicket (mimeBoundary);
+    URL ticketURL = createURLForTicket();
 
     // Gets response headers and display them
     const String headers ("\r\nAuthorization: Basic " + credentials + "\r\n"
@@ -318,7 +318,7 @@ void BugReportPanel::sendTicketAndUpdate()
 
     if (webStream == nullptr)
     {
-        PLUME::log::writeToLog ("Failed to create an Input Stream to send the ticket..", PLUME::log::bugReport, PLUME::log::error);
+        PLUME::log::writeToLog ("Failed to create an Input Stream to send the ticket..", PLUME::log::LogCategory::bugReport, PLUME::log::LogLevel::error);
         updateComponentsForSpecificStep (reportSentError);
         return;
     }
@@ -334,7 +334,7 @@ void BugReportPanel::sendTicketAndUpdate()
                                        + "\n Response Headers: " + responseHeaders.getDescription()
                                        + "\n Response        : " + response);
 
-        PLUME::log::writeToLog (errorMessage, PLUME::log::bugReport, PLUME::log::error);
+        PLUME::log::writeToLog (errorMessage, PLUME::log::LogCategory::bugReport, PLUME::log::LogLevel::error);
         updateComponentsForSpecificStep (reportSentError);
         return;
     }
@@ -342,7 +342,7 @@ void BugReportPanel::sendTicketAndUpdate()
     updateComponentsForSpecificStep (reportSentOk);
 }
 
-URL BugReportPanel::createURLForTicket (const String& boundary)
+URL BugReportPanel::createURLForTicket()
 {
     URL happyFoxURL;
     happyFoxURL = happyFoxURL.withNewDomainAndPath ("https://enhancia.happyfox.com/api/1.1/json/tickets/");

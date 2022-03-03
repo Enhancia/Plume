@@ -142,14 +142,14 @@ public:
 private:
     //==============================================================================
     PlumeProcessor& processor; /**< \brief Reference to Plume's processor object */
-    ScopedPointer<GesturePanel> gesturePanel; /**< \brief Object that handles the different gesture gui objects */
-    ScopedPointer<SideBarComponent> sideBar; /**< \brief Hideable SideBar object that displays the preset list, help, and buttons */
-    ScopedPointer<HeaderComponent> header; /**< \brief Header object that displays the preset, and the wrapping features */
-    ScopedPointer<HideSideBarButton> sideBarButton; /**< \brief Button that hides or shows the sidebar */
-    ScopedPointer<OptionsPanel> optionsPanel;
+    std::unique_ptr<GesturePanel> gesturePanel; /**< \brief Object that handles the different gesture gui objects */
+    std::unique_ptr<SideBarComponent> sideBar; /**< \brief Hideable SideBar object that displays the preset list, help, and buttons */
+    std::unique_ptr<HeaderComponent> header; /**< \brief Header object that displays the preset, and the wrapping features */
+    std::unique_ptr<HideSideBarButton> sideBarButton; /**< \brief Button that hides or shows the sidebar */
+    std::unique_ptr<OptionsPanel> optionsPanel;
     std::unique_ptr<BugReportPanel> bugReportPanel;
-    ScopedPointer<NewPresetPanel> newPresetPanel;
-    ScopedPointer<NewGesturePanel> newGesturePanel;
+    std::unique_ptr<NewPresetPanel> newPresetPanel;
+    std::unique_ptr<NewGesturePanel> newGesturePanel;
     std::unique_ptr<UpdaterPanel> updaterPanel;
     std::unique_ptr<PlumeAlertPanel> alertPanel; /**< \brief Interface's modal alert panel. */
     
@@ -175,12 +175,11 @@ private:
     void executePanelAction (const int panelReturnValue);
 
     //==============================================================================
-    void createSideBarButtonPath(); //TODO mettre dans common avec les autres chemins
     void paintShadows (Graphics& g);
 
     //==============================================================================
   #if JUCE_WINDOWS
-    HHOOK plumeWindowHook;
+    HHOOK plumeWindowHook = NULL;
     void registerEditorHWND();
 
     bool plumeHWNDIsSet = false;
@@ -189,7 +188,7 @@ private:
     
     //==============================================================================
     PLUME::UI::PlumeLookAndFeel plumeLookAndFeel;
-    ScopedPointer<ResizableCornerComponent> resizableCorner;
+    std::unique_ptr<ResizableCornerComponent> resizableCorner;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeEditor)

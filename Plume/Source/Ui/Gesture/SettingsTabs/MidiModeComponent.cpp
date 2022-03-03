@@ -120,7 +120,6 @@ void MidiModeComponent::comboBoxChanged (ComboBox* box)
     if (box == midiTypeBox.get())
     {
         bool isCC = (midiTypeBox->getSelectedId() == Gesture::controlChange);
-        const int previousType = gesture.midiType;
         
         // cc Label is visible & editable only if "CC" is selected
         ccLabel->setEditable (isCC, false, false);
@@ -625,27 +624,27 @@ void MidiRangeTuner::createSliders()
         slider.addListener (this);
     };
 
-    setSliderSettings (*lowSlider, (double) gesture.getMidiLow());
-    setSliderSettings (*highSlider, (double) gesture.getMidiHigh());
+    setSliderSettings (*lowSlider, gesture.getMidiLow());
+    setSliderSettings (*highSlider, gesture.getMidiHigh());
 }
 
 float MidiRangeTuner::getThumbX (DraggableObject thumb)
 {
     if (thumb == lowThumb)
     {
-        return lowSlider->getX() + 11.5f + (lowSlider->getWidth() - 23.0f) * lowSlider->getValue();
+        return lowSlider->getX() + 11.5f + (lowSlider->getWidth() - 23.0f) * static_cast<float> (lowSlider->getValue());
     }
 
     if (thumb == highThumb)
     {
-        return highSlider->getX() + 11.5f + (highSlider->getWidth() - 23.0f) * highSlider->getValue();
+        return highSlider->getX() + 11.5f + (highSlider->getWidth() - 23.0f) * static_cast<float> (highSlider->getValue());
     }
 
     return -1.0f;
 }
 
 
-void MidiRangeTuner::handleSliderClick (const MouseEvent& e)
+void MidiRangeTuner::handleSliderClick (const MouseEvent&)
 {
 
 }

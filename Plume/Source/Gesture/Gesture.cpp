@@ -421,7 +421,7 @@ bool Gesture::affectsPitch()
 void Gesture::addParameter (AudioProcessorParameter& param, Range<float> r, bool rev)
 {
     PLUME::log::writeToLog ("Gesture " + name + " (Id " + String (id) + ") : Adding parameter " + param.getName (50),
-                            PLUME::log::gesture);
+                            PLUME::log::LogCategory::gesture);
 
     ScopedLock paramlock (parameterArrayLock);
     
@@ -437,7 +437,7 @@ void Gesture::addParameter (AudioProcessorParameter& param, Range<float> r, bool
 void Gesture::deleteParameter (int paramId)
 {
     PLUME::log::writeToLog ("Gesture " + name + " (Id " + String (id) + ") : removing parameter " + parameterArray[paramId]->parameter.getName (50),
-                            PLUME::log::gesture);
+                            PLUME::log::LogCategory::gesture);
 
     ScopedLock paramlock (parameterArrayLock);
     
@@ -453,7 +453,7 @@ void Gesture::replaceParameter (int paramId,
                                 Range<float> r, bool rev)
 {
     PLUME::log::writeToLog ("Gesture " + name + " (Id " + String (id) + ") : replacing parameter " + parameterArray[paramId]->parameter.getName (50) + " with " + param.getName (50),
-                            PLUME::log::gesture);
+                            PLUME::log::LogCategory::gesture);
 
     ScopedLock paramlock (parameterArrayLock);
     
@@ -604,22 +604,22 @@ void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
 	addRightMidiSignalToBuffer (midiMessages, plumeBuffer, channel, getMidiValue());
 }
 
-void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int channel, int value)
+void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int channel, int valueToUse)
 {
     if (!generatesMidi()) return; //Does nothing if not in default midi mode
 
     int newMidi;
     
-    DBG ("Adding MIDI : New value : " << value << " | Last Value : " << lastMidi);
+    DBG ("Adding MIDI : New value : " << valueToUse << " | Last Value : " << lastMidi);
 
-    if (value != lastMidi) // Prevents to send the same message twice in a row
+    if (valueToUse != lastMidi) // Prevents to send the same message twice in a row
     {
         // Assigns the right midi value depending on the signal and
         // the midiRange parameter, then adds message to the buffers
         switch (midiType)
         {
             case (Gesture::pitch):
-                newMidi = map (value, 0, 16383,
+                newMidi = map (valueToUse, 0, 16383,
                                   map (midiLow, 0.0f, 1.0f, 0, 16383),
                                   map (midiHigh,   0.0f, 1.0f, 0, 16383));
                                   
@@ -627,7 +627,7 @@ void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
                 break;
             
             case (Gesture::controlChange):
-                newMidi = map (value, 0, 127,
+                newMidi = map (valueToUse, 0, 127,
                                   map (midiLow, 0.0f, 1.0f, 0, 127),
                                   map (midiHigh,   0.0f, 1.0f, 0, 127));
                                   
@@ -635,7 +635,7 @@ void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
                 break;
             
             case (Gesture::afterTouch):
-                newMidi = map (value, 0, 127,
+                newMidi = map (valueToUse, 0, 127,
                                   map (midiLow, 0.0f, 1.0f, 0, 127),
                                   map (midiHigh,   0.0f, 1.0f, 0, 127));
                                   
@@ -646,6 +646,6 @@ void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
                 break;
         }
 
-        lastMidi = value;
+        lastMidi = valueToUse;
     }
 }

@@ -175,15 +175,13 @@ void PresetBox::backgroundClicked (const MouseEvent& event)
     }
 }
 
-void PresetBox::deleteKeyPressed (int lastRowSelected)
+void PresetBox::deleteKeyPressed (int)
 {
-    ignoreUnused(lastRowSelected);
-    //deletePreset (lastRowSelected);
 }
 
-void PresetBox::returnKeyPressed (int lastRowSelected)
+void PresetBox::returnKeyPressed (int selectedRowDuringPress)
 {
-    setPreset (lastRowSelected);
+    setPreset (selectedRowDuringPress);
 }
 
 bool PresetBox::keyPressed (const KeyPress& key)
@@ -208,9 +206,8 @@ bool PresetBox::keyPressed (const KeyPress& key)
     return false;
 }
 
-void PresetBox::selectedRowsChanged (int lastRowSelected)
+void PresetBox::selectedRowsChanged (int)
 {
-    ignoreUnused (lastRowSelected);
     if (auto* infoText = dynamic_cast<TextEditor*> (getParentComponent() // presetComp
                                                     ->getParentComponent() // sideBarComp
                                                     ->findChildWithID("infoPanel")
@@ -327,7 +324,7 @@ void PresetBox::deletePreset (const int row)
     bool shouldUpdateHeader = (processor.getPresetHandler().getCurrentPresetName()
                             == processor.getPresetHandler().getTextForPresetId (row));
     
-    PLUME::log::writeToLog ("Deleting preset : " + processor.getPresetHandler().getPresetForId (row).getName(), PLUME::log::presets);
+    PLUME::log::writeToLog ("Deleting preset : " + processor.getPresetHandler().getPresetForId (row).getName(), PLUME::log::LogCategory::presets);
 	
     if (processor.getPresetHandler().deletePresetForId(row))
 	{
@@ -380,7 +377,7 @@ void PresetBox::setPreset (const int row)
     // Gets the preset Xml and loads it using the processor
     if (std::unique_ptr<XmlElement> presetXml = processor.getPresetHandler().getPresetXmlToLoad (row))
     {
-        PLUME::log::writeToLog ("Loading preset (from preset list) : " + processor.getPresetHandler().getPresetForId (row).getName(), PLUME::log::presets);
+        PLUME::log::writeToLog ("Loading preset (from preset list) : " + processor.getPresetHandler().getPresetForId (row).getName(), PLUME::log::LogCategory::presets);
         
         // Easter egg => crash Plume if preset named plumeAnnihilator is opened
         if (processor.getPresetHandler().getPresetForId (row).getName() == "plumeAnnihilator")
@@ -424,7 +421,7 @@ void PresetBox::renamePreset (const String& newName)
     const int currentPresetId = processor.getPresetHandler().getCurrentPresetIdInSearchList();
 
     PLUME::log::writeToLog ("Renaming preset : " + processor.getPresetHandler().getPresetForId (presetIdToEdit).getName()
-                                                 + " => " + newName, PLUME::log::presets);
+                                                 + " => " + newName, PLUME::log::LogCategory::presets);
 
     processor.getPresetHandler().renamePreset (newName, presetIdToEdit);
 

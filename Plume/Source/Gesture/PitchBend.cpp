@@ -142,7 +142,7 @@ void PitchBend::updateMidiValue()
 
 bool PitchBend::shouldSend()
 {
-    const float val = currentMidi;
+    const float val = static_cast<float> (currentMidi);
 
     return ((val >= rangeRightStart && val < 140.0f) || // Right side
             (val <= rangeLeftEnd && val > -140.0f) || // Left side

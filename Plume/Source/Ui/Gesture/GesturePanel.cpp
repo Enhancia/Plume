@@ -151,7 +151,7 @@ void GesturePanel::timerCallback()
     }
 }
 
-void GesturePanel::buttonClicked (Button* bttn)
+void GesturePanel::buttonClicked (Button*)
 {
 }
 
@@ -239,7 +239,7 @@ void GesturePanel::handleLeftClickUp (const MouseEvent& event)
             if (!gestureComponent->isSelected())
             {
                 PLUME::log::writeToLog ("Gesture " + String (gestureComponent->getGesture().getName()) + " (Id " + String (gestureComponent->id) + ") : Selecting",
-                                        PLUME::log::gesture);
+                                        PLUME::log::LogCategory::gesture);
 
                 selectGestureExclusive (*gestureComponent);
             }
@@ -504,7 +504,7 @@ void GesturePanel::updateSlotIfNeeded (int slotToCheck)
 void GesturePanel::moveGestureToId (int idToMoveFrom, int idToMoveTo)
 {
     PLUME::log::writeToLog ("Gesture " + gestureArray.getGesture (idToMoveFrom)->getName() + " (Id " + String (idToMoveFrom) + ") : Moving to id " + String (idToMoveTo),
-                            PLUME::log::gesture);
+                            PLUME::log::LogCategory::gesture);
 
     bool mustChangeSelection = (selectedGesture == idToMoveFrom);
     
@@ -523,10 +523,10 @@ void GesturePanel::swapGestures (int firstId, int secondId)
 {
     PLUME::log::writeToLog ("Gesture " + gestureArray.getGesture (firstId)->getName() + " (Id " + String (firstId) + ") : Swapping with Gesture "
                                        + gestureArray.getGesture (secondId)->getName() + " (Id " + String (secondId) + ")",
-                            PLUME::log::gesture);
+                            PLUME::log::LogCategory::gesture);
 
     bool mustChangeSelection = (selectedGesture == firstId || selectedGesture == secondId);
-    int idToSelect;
+    int idToSelect = -1;
 
     if (mustChangeSelection)
     {
@@ -567,7 +567,7 @@ void GesturePanel::renameGestureInSlot (int slotNumber)
 void GesturePanel::removeGestureAndGestureComponent (int gestureId)
 {
     PLUME::log::writeToLog ("Gesture " + gestureArray.getGesture (gestureId)->getName() + " (Id " + String (gestureId) + ") : Deleting",
-                            PLUME::log::gesture);
+                            PLUME::log::LogCategory::gesture);
 
     if (gestureId < 0 || gestureId > PLUME::NUM_GEST) return;
     stopTimer();
@@ -706,7 +706,7 @@ void GesturePanel::handleMenuResult (int gestureId, const int menuResult)
             break;
             
         case 2: // Duplicate
-            PLUME::log::writeToLog ("Gesture " + gestureArray.getGesture (gestureId)->getName() + " (Id " + String (gestureId) + ") : Duplicating", PLUME::log::gesture);
+            PLUME::log::writeToLog ("Gesture " + gestureArray.getGesture (gestureId)->getName() + " (Id " + String (gestureId) + ") : Duplicating", PLUME::log::LogCategory::gesture);
             gestureArray.duplicateGesture (gestureId);
             update();
             selectGestureExclusive (gestureId);

@@ -69,11 +69,11 @@ void GestureSettingsComponent::update (const String& parameterThatChanged)
         {
             if (parameterThatChanged.endsWith ("m_0"))
             {
-                oneRangeTuner->updateComponents (OneRangeTuner::lowThumb);
+                oneRangeTuner->updateComponents (OneRangeTuner::DraggableObject::lowThumb);
             }
             else if (parameterThatChanged.endsWith ("m_1"))
             {
-                oneRangeTuner->updateComponents (OneRangeTuner::highThumb);
+                oneRangeTuner->updateComponents (OneRangeTuner::DraggableObject::highThumb);
             }
         }
 
@@ -311,7 +311,7 @@ void GestureSettingsComponent::createToggles()
         gesture.setActive (muteButton->getToggleState());
 
         PLUME::log::writeToLog ("Gesture " + gesture.getName() + " (Id " + String (gesture.id) + (muteButton->getToggleState() ? ") Muting." : ") Unmuting."),
-                                PLUME::log::gesture);
+                                PLUME::log::LogCategory::gesture);
         update();
         if (auto* gestComp = dynamic_cast<PlumeComponent*> (getParentComponent()->findChildWithID ("gestComp" + String (gestureId))))
         {
@@ -323,8 +323,7 @@ void GestureSettingsComponent::createToggles()
 void GestureSettingsComponent::createPanels()
 {
     addAndMakeVisible (*(descriptionPanel = std::make_unique<DescriptionPanel> (gesture)));
-    addAndMakeVisible (*(retractablePanel = std::make_unique <RetractableMapAndMidiPanel> (gesture, gestureArray,
-																		  wrapper, gestTuner->getColour())));
+    addAndMakeVisible (*(retractablePanel = std::make_unique <RetractableMapAndMidiPanel> (gesture, gestureArray, wrapper)));
 	showAppropriatePanel();
 }
 

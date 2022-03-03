@@ -85,7 +85,7 @@ void WrapperProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& mid
     plugin.setPlayHead (getPlayHead());
     plugin.processBlock (wrapperBuffer, midiMessages);
 
-    copyWrapperBuffersIntoPlumeBuffer (buffer, wrapperBuffer);
+    copyWrapperBuffersIntoPlumeBuffer (buffer);
 }
 
 
@@ -94,7 +94,7 @@ bool WrapperProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
     PLUME::log::writeToLog ("Requested buses Layout : " + String (layouts.getMainInputChannels())
                                                + " | " + String (layouts.getMainOutputChannels()),
-                            PLUME::log::pluginWrapping);
+                            PLUME::log::LogCategory::pluginWrapping);
 
     return plugin.checkBusesLayoutSupported (layouts);
 }
@@ -189,7 +189,7 @@ AudioProcessor::BusesProperties WrapperProcessor::createBusesPropertiesFromPlugi
     return busesProp;
 }
 
-void WrapperProcessor::copyWrapperBuffersIntoPlumeBuffer (AudioBuffer<float>& plumeBuffer, AudioBuffer<float>& wrapperBuffer)
+void WrapperProcessor::copyWrapperBuffersIntoPlumeBuffer (AudioBuffer<float>& plumeBuffer)
 {
     for (int busNum =0; busNum < plugin.getBusCount (false); busNum++)
     {
@@ -252,7 +252,7 @@ void WrapperProcessor::writeBusesLayoutToLog()
             }
         }
 
-        if (logString.isNotEmpty()) PLUME::log::writeToLog (logString, PLUME::log::pluginWrapping,
-                                                                       PLUME::log::debug);
+        if (logString.isNotEmpty()) PLUME::log::writeToLog (logString, PLUME::log::LogCategory::pluginWrapping,
+                                                                       PLUME::log::LogLevel::debug);
     }
 }

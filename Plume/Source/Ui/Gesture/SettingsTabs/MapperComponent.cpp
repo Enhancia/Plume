@@ -32,7 +32,7 @@ MapperComponent::~MapperComponent()
 }
 
 //==============================================================================
-void MapperComponent::paint (Graphics& g)
+void MapperComponent::paint (Graphics&)
 {
 }
 

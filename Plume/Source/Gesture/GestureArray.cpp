@@ -103,13 +103,10 @@ void GestureArray::updateAllMappedParameters()
 //==============================================================================
 void GestureArray::updateAllValues()
 {
-    Array<float> rawData;
-    int armValue = parameters.getParameter ("track_arm")
-                             ->convertFrom0to1 (parameters.getParameter ("track_arm")
-                                                          ->getValue());
-    
     if (armValue)
     {
+        Array<float> rawData;
+     
         // Gets the rawData in the array, and calls updateValue for each gesture
         if (dataReader.getRawDataAsFloatArray (rawData))
         {
@@ -231,7 +228,7 @@ void GestureArray::changeListenerCallback(ChangeBroadcaster*)
     updateAllValues();
 }
 
-void GestureArray::parameterChanged (const String &parameterID, float newValue)
+void GestureArray::parameterChanged (const String &parameterID, float)
 {
     DBG ("Parameter " << parameterID << " changed");
 
@@ -270,7 +267,7 @@ void GestureArray::addGesture (String gestureName, int gestureType, int gestureI
         return;
     }
 
-    PLUME::log::writeToLog ("New Gesture : " + Gesture::getTypeString (gestureType, true) + " in Id " + String (gestureId), PLUME::log::gesture);
+    PLUME::log::writeToLog ("New Gesture : " + Gesture::getTypeString (gestureType, true) + " in Id " + String (gestureId), PLUME::log::LogCategory::gesture);
 
     switch (gestureType)
     {
