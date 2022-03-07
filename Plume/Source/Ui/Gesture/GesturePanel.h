@@ -78,6 +78,7 @@ public:
 private:
     //==============================================================================
     void paintShadows (Graphics& g);
+    void paintDragAndDropSnapshot (Graphics& g);
 
     //==============================================================================
     void switchGestureSelectionState (GestureComponent& gestureComponentToSwitch);
@@ -100,7 +101,7 @@ private:
     void createAndAddCloseButton();
 
     //==============================================================================
-    void startDragMode (int slotBeingDragged);
+    void startDragMode (GestureComponent& gestureComponent);
     void endDragMode();
 
     //==============================================================================
@@ -117,6 +118,9 @@ private:
     bool dragMode = false;
     int draggedGestureComponentId = -1;
     int draggedOverSlotId = -1;
+
+    juce::Rectangle<int> draggedImgPosition;
+    const int64 hashCode = 420;
 
     //==============================================================================
     CriticalSection parameterCallbackLock;

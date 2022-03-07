@@ -174,24 +174,28 @@ void PlumeEditor::paint (Graphics& g)
 
 void PlumeEditor::paintShadows (Graphics& g)
 {
-    Path shadowPath;
-
     // Header Shadow
     {
-        auto headerShadowBounds = header->getBounds();
+        Path headerShadowPath;
+        DropShadow headerShadow(Colour (0x30000000), 10, {2, 3});
 
-        shadowPath.addRoundedRectangle (headerShadowBounds.toFloat(), 3.0f);
+        headerShadowPath.addRoundedRectangle (header->getBounds().toFloat(), 3.0f);
+        headerShadow.drawForPath (g, headerShadowPath);
     }
 
     // Sidebar Button Shadow
     {
-        auto sideBarShadowBounds = sideBar->getBounds();
+        if(!sideBarButton->getToggleState()) {
 
-        shadowPath.addRoundedRectangle (sideBarShadowBounds.toFloat(), 3.0f);
+            Path sidebarShadowPath;
+            DropShadow sidebarShadow;
+
+            sidebarShadowPath.addRoundedRectangle (sideBar->getBounds().toFloat(), 3.0f);
+
+            sidebarShadow = DropShadow(Colour (0x30000000), 10, {2, 3});
+            sidebarShadow.drawForPath (g, sidebarShadowPath);
+        }
     }
-
-    DropShadow shadow (Colour (0x30000000), 10, {2, 3});
-    shadow.drawForPath (g, shadowPath);
 }
 
 void PlumeEditor::resized()
