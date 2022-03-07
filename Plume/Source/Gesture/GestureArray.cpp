@@ -10,24 +10,24 @@
 
 #include "GestureArray.h"
 
-GestureArray::GestureArray(DataReader& reader, AudioProcessorValueTreeState& params, bool& lastArmValue)
-    : dataReader (reader), parameters (params), armValue (lastArmValue)
+GestureArray::GestureArray(AudioProcessor& proc, DataReader& reader, AudioProcessorValueTreeState& params, bool& lastArmValue)
+    : owner (proc), dataReader (reader), parameters (params), armValue (lastArmValue)
 {
     initializeGestures();
     cancelMapMode();
 
-    for (int i = 0; i < PLUME::param::numValues; i++)
+    /*for (int i = 0; i < PLUME::param::numValues; i++)
     {
         parameters.addParameterListener (PLUME::param::valuesIds[i], this);
-    }
+    }*/
 }
 
 GestureArray::~GestureArray()
 {
-    for (int i = 0; i < PLUME::param::numValues; i++)
+    /*for (int i = 0; i < PLUME::param::numValues; i++)
     {
         parameters.removeParameterListener (PLUME::param::valuesIds[i], this);
-    }
+    }*/
 
     gestures.clear();
 }
@@ -225,6 +225,11 @@ bool GestureArray::isPitchInUse()
     return false;
 }
 
+AudioProcessor& GestureArray::getOwnerProcessor()
+{
+    return owner;
+}
+
 //==============================================================================
 void GestureArray::changeListenerCallback(ChangeBroadcaster*)
 {
@@ -233,7 +238,7 @@ void GestureArray::changeListenerCallback(ChangeBroadcaster*)
 
 void GestureArray::parameterChanged (const String &parameterID, float newValue)
 {
-    DBG ("Parameter " << parameterID << " changed");
+    DBG ("[GestureArray] Parameter " << parameterID << " changed");
 
     for (int valueNum = 0; valueNum < PLUME::param::numValues; valueNum++)
     {
@@ -316,8 +321,8 @@ void GestureArray::addGestureCopyingOther (Gesture* other, int gestureId, String
             if (auto* vibrato = dynamic_cast<Vibrato*> (other))
             {
                 gestures.add (new Vibrato (gestureName, gestureId, parameters,
-                                           vibrato->gainDisplayRange.convertFrom0to1 (vibrato->gain.getValue()),
-                                           vibrato->thresholdDisplayRange.convertFrom0to1 (vibrato->threshold.getValue()),
+                                           vibrato->gainDisplayRange.convertFrom0to1 (vibrato->gain),
+                                           vibrato->thresholdDisplayRange.convertFrom0to1 (vibrato->threshold),
                                            other->getDescription()));
             }
             break;
@@ -326,10 +331,10 @@ void GestureArray::addGestureCopyingOther (Gesture* other, int gestureId, String
             if (auto* pitchBend = dynamic_cast<PitchBend*> (other))
             {
                 gestures.add (new PitchBend (gestureName, gestureId, parameters,
-                                             pitchBend->pitchBendDisplayRange.convertFrom0to1 (pitchBend->rangeLeftLow.getValue()),
-                                             pitchBend->pitchBendDisplayRange.convertFrom0to1 (pitchBend->rangeLeftHigh.getValue()),
-                                             pitchBend->pitchBendDisplayRange.convertFrom0to1 (pitchBend->rangeRightLow.getValue()),
-                                             pitchBend->pitchBendDisplayRange.convertFrom0to1 (pitchBend->rangeRightHigh.getValue()),
+                                             pitchBend->pitchBendDisplayRange.convertFrom0to1 (pitchBend->rangeLeftLow),
+                                             pitchBend->pitchBendDisplayRange.convertFrom0to1 (pitchBend->rangeLeftHigh),
+                                             pitchBend->pitchBendDisplayRange.convertFrom0to1 (pitchBend->rangeRightLow),
+                                             pitchBend->pitchBendDisplayRange.convertFrom0to1 (pitchBend->rangeRightHigh),
                                              other->getDescription()));
             }
             break;
@@ -338,8 +343,8 @@ void GestureArray::addGestureCopyingOther (Gesture* other, int gestureId, String
             if (auto* tilt = dynamic_cast<Tilt*> (other))
             {
                 gestures.add (new Tilt (gestureName, gestureId, parameters,
-                                        tilt->tiltDisplayRange.convertFrom0to1 (tilt->rangeLow.getValue()),
-                                        tilt->tiltDisplayRange.convertFrom0to1 (tilt->rangeHigh.getValue()),
+                                        tilt->tiltDisplayRange.convertFrom0to1 (tilt->rangeLow),
+                                        tilt->tiltDisplayRange.convertFrom0to1 (tilt->rangeHigh),
                                         other->getDescription()));
             }
             break;
@@ -348,8 +353,8 @@ void GestureArray::addGestureCopyingOther (Gesture* other, int gestureId, String
             if (auto* wave = dynamic_cast<Wave*> (other))
             {
                 gestures.add (new Wave (gestureName, gestureId, parameters,
-                                        wave->rangeLow.convertFrom0to1 (wave->rangeLow.getValue()),
-                                        wave->rangeHigh.convertFrom0to1 (wave->rangeHigh.getValue()),
+                                        wave->rangeLow.convertFrom0to1 (wave->rangeLow),
+                                        wave->rangeHigh.convertFrom0to1 (wave->rangeHigh),
                                         other->getDescription()));
             }
             break;
@@ -358,8 +363,8 @@ void GestureArray::addGestureCopyingOther (Gesture* other, int gestureId, String
             if (auto* roll = dynamic_cast<Roll*> (other))
             {
                 gestures.add (new Roll (gestureName, gestureId, parameters,
-                                        roll->rollDisplayRange.convertFrom0to1 (roll->rangeLow.getValue()),
-                                        roll->rollDisplayRange.convertFrom0to1 (roll->rangeHigh.getValue()),
+                                        roll->rollDisplayRange.convertFrom0to1 (roll->rangeLow),
+                                        roll->rollDisplayRange.convertFrom0to1 (roll->rangeHigh),
                                         other->getDescription()));
             }
             break;
@@ -385,6 +390,8 @@ void GestureArray::removeGesture (const int gestureId)
     }
 
     checkPitchMerging();
+
+    owner.updateHostDisplay (AudioProcessor::ChangeDetails().withParameterInfoChanged (true));
 }
 
 void GestureArray::removeGesture (const String gestureName)
@@ -397,6 +404,8 @@ void GestureArray::removeGesture (const String gestureName)
     }
 
     checkPitchMerging();
+
+    owner.updateHostDisplay (AudioProcessor::ChangeDetails().withParameterInfoChanged (true));
 }
 
 void GestureArray::addParameterToMapModeGesture (AudioProcessorParameter& param)
@@ -412,13 +421,12 @@ void GestureArray::addParameterToMapModeGesture (AudioProcessorParameter& param)
         return;
     }
     
-    
     // else adds the parameter and cancels mapMode
     for (auto* g : gestures)
     {
         if (g->mapModeOn == true)
         {
-            g->addParameter(param);
+            g->addParameter(param, parameters);
             cancelMapMode();
             return;
         }
@@ -436,14 +444,35 @@ void GestureArray::addAndSetParameter (AudioProcessorParameter& param, int gestu
     if (gestureId < size())
     {
         ScopedLock gestlock (gestureArrayLock);
-        gestures[gestureId]->addParameter (param, Range<float> (start, end), rev);
+        gestures[gestureId]->addParameter (param, parameters, Range<float> (start, end), rev);
     }
+
+    owner.updateHostDisplay (AudioProcessor::ChangeDetails().withParameterInfoChanged (true));
+}
+
+void GestureArray::addAndSetParameter (AudioProcessorParameter& param, int gestureId, const int parameterId, float start = 0.0f, float end = 1.0f, bool rev = false)
+{
+    String temp;
+    
+    // Does nothing if the parameter is already mapped to any gesture
+    if (parameterIsMapped (param.getParameterIndex(), temp)) return;
+    
+    // else adds the parameter and cancels mapMode
+    if (gestureId < size())
+    {
+        ScopedLock gestlock (gestureArrayLock);
+        gestures[gestureId]->addParameterAtId (param, parameterId, parameters, Range<float> (start, end), rev);
+    }
+
+    owner.updateHostDisplay (AudioProcessor::ChangeDetails().withParameterInfoChanged (true));
 }
 
 void GestureArray::clearAllGestures()
 {
     gestures.clear();
     shouldMergePitch = false;
+
+    owner.updateHostDisplay (AudioProcessor::ChangeDetails().withParameterInfoChanged (true));
 }
 
 void GestureArray::clearAllParameters()
@@ -455,6 +484,8 @@ void GestureArray::clearAllParameters()
         g->mapModeOn = false;
         g->clearAllParameters();
     }
+
+    owner.updateHostDisplay (AudioProcessor::ChangeDetails().withParameterInfoChanged (true));
 }
 
 void GestureArray::cancelMapMode()
@@ -482,6 +513,11 @@ bool GestureArray::isIdAvailable (int idToCheck)
     }
 
     return true;
+}
+
+AudioProcessorValueTreeState& GestureArray::getParametersReference()
+{
+    return parameters;
 }
 
 //==============================================================================
@@ -566,24 +602,15 @@ void GestureArray::swapGestures (int firstId, int secondId)
 
 	ScopedLock gestlock(gestureArrayLock);
 
-    Gesture* secondGesture = gestures.removeAndReturn (gestures.indexOf (getGesture (secondId)));
-    Array<float> secondGestureParameters = { parameters.getParameterAsValue (String (secondId) + PLUME::param::paramIds[0]).getValue(),
-                                             parameters.getParameterAsValue (String (secondId) + PLUME::param::paramIds[1]).getValue(),
-                                             parameters.getParameterAsValue (String (secondId) + PLUME::param::paramIds[2]).getValue(),
-                                             parameters.getParameterAsValue (String (secondId) + PLUME::param::paramIds[3]).getValue() };
+    std::unique_ptr<Gesture> secondGesture;
+    secondGesture.reset (gestures.removeAndReturn(gestures.indexOf(getGesture(secondId))));
 
     // Replaces second gesture with first
     moveGestureToId (firstId, secondId);
 
     // Copies second gesture to first Id
-    addGestureCopyingOther (secondGesture, firstId);
+    addGestureCopyingOther (secondGesture.get(), firstId);
     getGesture (firstId)->swapParametersWithOtherGesture (*secondGesture);
-    parameters.getParameterAsValue (String (firstId) + PLUME::param::paramIds[0]).setValue (secondGestureParameters[0]);
-    parameters.getParameterAsValue (String (firstId) + PLUME::param::paramIds[1]).setValue (secondGestureParameters[1]);
-    parameters.getParameterAsValue (String (firstId) + PLUME::param::paramIds[2]).setValue (secondGestureParameters[2]);
-    parameters.getParameterAsValue (String (firstId) + PLUME::param::paramIds[3]).setValue (secondGestureParameters[3]);
-
-    delete secondGesture;
 }
 
 //==============================================================================
@@ -776,39 +803,39 @@ void GestureArray::createGestureXml (XmlElement& gesturesData)
         if (g->type == Gesture::vibrato)
         {
             Vibrato& v = dynamic_cast<Vibrato&> (*g);
-            gestXml->setAttribute ("gain", double (v.gainDisplayRange.convertFrom0to1 (v.gain.getValue())));
-			gestXml->setAttribute("thresh", double(v.thresholdDisplayRange.convertFrom0to1 (v.threshold.getValue())));
+            gestXml->setAttribute ("gain", double (v.gainDisplayRange.convertFrom0to1 (v.gain)));
+			gestXml->setAttribute("thresh", double(v.thresholdDisplayRange.convertFrom0to1 (v.threshold)));
         }
         
         else if (g->type == Gesture::pitchBend)
         {
             PitchBend& pb = dynamic_cast<PitchBend&> (*g);
-            gestXml->setAttribute ("startLeft", double (pb.pitchBendDisplayRange.convertFrom0to1 (pb.rangeLeftLow.getValue())));
-            gestXml->setAttribute ("endLeft", double (pb.pitchBendDisplayRange.convertFrom0to1 (pb.rangeLeftHigh.getValue())));
+            gestXml->setAttribute ("startLeft", double (pb.pitchBendDisplayRange.convertFrom0to1 (pb.rangeLeftLow)));
+            gestXml->setAttribute ("endLeft", double (pb.pitchBendDisplayRange.convertFrom0to1 (pb.rangeLeftHigh)));
             
-            gestXml->setAttribute ("startRight", double (pb.pitchBendDisplayRange.convertFrom0to1 (pb.rangeRightLow.getValue())));
-            gestXml->setAttribute ("endRight", double (pb.pitchBendDisplayRange.convertFrom0to1 (pb.rangeRightHigh.getValue())));
+            gestXml->setAttribute ("startRight", double (pb.pitchBendDisplayRange.convertFrom0to1 (pb.rangeRightLow)));
+            gestXml->setAttribute ("endRight", double (pb.pitchBendDisplayRange.convertFrom0to1 (pb.rangeRightHigh)));
         }
         
         else if (g->type == Gesture::tilt)
         {
             Tilt& t = dynamic_cast<Tilt&> (*g);
-            gestXml->setAttribute ("start", double (t.tiltDisplayRange.convertFrom0to1 (t.rangeLow.getValue())));
-            gestXml->setAttribute ("end", double (t.tiltDisplayRange.convertFrom0to1 (t.rangeHigh.getValue())));
+            gestXml->setAttribute ("start", double (t.tiltDisplayRange.convertFrom0to1 (t.rangeLow)));
+            gestXml->setAttribute ("end", double (t.tiltDisplayRange.convertFrom0to1 (t.rangeHigh)));
         }
         /* TODO WAVE
         else if (g->type == Gesture::wave)
         {
             Wave& w = dynamic_cast<Wave&> (*g);
-            gestXml->setAttribute ("start", double (w.rangeLow.convertFrom0to1 (w.rangeLow.getValue())));
-            gestXml->setAttribute ("end", double (w.rangeHigh.convertFrom0to1 (w.rangeHigh.getValue())));
+            gestXml->setAttribute ("start", double (w.rangeLow.convertFrom0to1 (w.rangeLow)));
+            gestXml->setAttribute ("end", double (w.rangeHigh.convertFrom0to1 (w.rangeHigh)));
         }
         */
         else if (g->type == Gesture::roll)
         {
             Roll& r = dynamic_cast<Roll&> (*g);
-            gestXml->setAttribute ("start", double (r.rollDisplayRange.convertFrom0to1 (r.rangeLow.getValue())));
-            gestXml->setAttribute ("end", double (r.rollDisplayRange.convertFrom0to1 (r.rangeHigh.getValue())));
+            gestXml->setAttribute ("start", double (r.rollDisplayRange.convertFrom0to1 (r.rangeLow)));
+            gestXml->setAttribute ("end", double (r.rollDisplayRange.convertFrom0to1 (r.rangeHigh)));
         }
         
 		createParameterXml (*gestXml, g->getParameterArray());
@@ -821,13 +848,13 @@ void GestureArray::createParameterXml(XmlElement& gestureXml, OwnedArray<Gesture
 {
     for (auto* mParam : mParams)
     {
-        auto paramXml = new XmlElement (mParam->parameter.getName(30).replace (" ", "_"));
+        auto paramXml = new XmlElement (mParam->wrappedParameter.getName(30).replace (" ", "_"));
         
-        paramXml->setAttribute ("id", mParam->parameter.getParameterIndex());
+        paramXml->setAttribute ("id", mParam->wrappedParameter.getParameterIndex());
+        paramXml->setAttribute ("plumeParameterId", mParam->parameterId);
         paramXml->setAttribute ("start", mParam->range.getStart());
         paramXml->setAttribute ("end", mParam->range.getEnd());
         paramXml->setAttribute ("reversed", mParam->reversed);
-        
         gestureXml.addChildElement (paramXml); // Adds the element
     }
 }

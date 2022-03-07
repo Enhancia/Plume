@@ -38,12 +38,12 @@ public:
     
     //==============================================================================
     void updateValue (const Array<float> rawData) override;
-    
+
     //============================================================================== 
-    RangedAudioParameter& rangeLow; /**< \brief Tilt's low range value. The full effect will happend between this and rangeHigh. */
-	RangedAudioParameter& rangeHigh; /**< \brief Tilt's high range value. The full effect will happend between rangeLow and this. */
     NormalisableRange<float> tiltDisplayRange;
-	
+    float rangeLow;; /**< \brief Tilt's low range value. The full effect will happend between this and rangeHigh. */
+	  float rangeHigh; /**< \brief Tilt's high range value. The full effect will happend between rangeLow and this. */
+    
 private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Tilt)

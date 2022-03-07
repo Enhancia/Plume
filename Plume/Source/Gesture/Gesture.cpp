@@ -14,9 +14,7 @@ Gesture::Gesture (String gestName, int gestType, int gestId, const NormalisableR
          		  AudioProcessorValueTreeState& plumeParameters, const String valueId, String gestureDescription,
          		  float defaultValue, int defaultCc, Range<float> defaultMidiRange)
         
-         		  : type (gestType), name (gestName), id (gestId), range (maxRange), description (gestureDescription),
-	       		  value    (*(plumeParameters.getParameter (valueId))),
-	       		  valueRef (plumeParameters.getRawParameterValue (valueId))
+         		  : type (gestType), name (gestName), id (gestId), range (maxRange), description (gestureDescription), plumeParametersRef (plumeParameters)
 {
     mapped = false;
     setGestureValue (defaultValue);
@@ -170,34 +168,20 @@ void Gesture::setGestureValue (float newVal)
 
         if (roundedNew != roundedLast)
         {
-            if (!wasBeingChanged)
-            {
-                value.beginChangeGesture();
-                wasBeingChanged = true;
-            }
-
-            value.setValueNotifyingHost (range.convertTo0to1 (newVal));
+            value = range.convertTo0to1 (newVal);
             lastValue = range.convertTo0to1 (newVal);
-        }
-        else
-        {
-            if (wasBeingChanged)
-            {
-                value.endChangeGesture();
-                wasBeingChanged = false;
-            }
         }
     }
 }
 
 float Gesture::getGestureValue() const
 {
-	return range.convertFrom0to1 (value.getValue());
+	return range.convertFrom0to1 (value);
 }
 
 std::atomic<float>& Gesture::getValueReference()
 {
-	return *valueRef;
+	return value;
 }
 
 NormalisableRange<float> Gesture::getRangeReference()
@@ -418,25 +402,58 @@ bool Gesture::affectsPitch()
 //==============================================================================
 // Parameter related methods
 
-void Gesture::addParameter (AudioProcessorParameter& param, Range<float> r, bool rev)
+void Gesture::addParameter (AudioProcessorParameter& param, 
+                            AudioProcessorValueTreeState& stateRef,
+                            Range<float> r, bool rev)
 {
-    PLUME::log::writeToLog ("Gesture " + name + " (Id " + String (id) + ") : Adding parameter " + param.getName (50),
+    PLUME::log::writeToLog ("Gesture " + name + " (Id " + String (id) +
+                            ") : Adding parameter " + param.getName (50),
                             PLUME::log::gesture);
 
     ScopedLock paramlock (parameterArrayLock);
     
     if (parameterArray.size() < PLUME::MAX_PARAMETER)
     {
-        parameterArray.add ( new MappedParameter (param, r, rev));
+        const int paramId = findFirstUnusedParameter();
+        jassert (paramId != -1);
+
+        parameterArray.add ( new MappedParameter (param, stateRef, r, id, paramId, rev));
         mapped = true;
     }
     
     sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
 }
 
+void Gesture::addParameterAtId (AudioProcessorParameter& param,
+                                const int plumeIdToAddParameterTo,
+                                AudioProcessorValueTreeState& stateRef,
+                                Range<float> r, bool rev)
+{
+    PLUME::log::writeToLog ("Gesture " + name + " (Id " + String (id) +
+                            ") : Adding parameter " + param.getName (50) +
+                            " at ID " + String (plumeIdToAddParameterTo),
+                            PLUME::log::gesture);
+
+    ScopedLock paramlock (parameterArrayLock);
+    
+    // Parameter is unused
+    if (stateRef.processor.getParameters()[plumeIdToAddParameterTo]->getName (50) == "Unmapped Parameter")
+    {
+        parameterArray.add (new MappedParameter (param, stateRef, r, id, plumeIdToAddParameterTo, rev));
+        mapped = true;
+        sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
+    }
+    else
+    {
+        // If you're creating a gesture parameter at a specific plume parameter id,
+        // the id must not be used by another parameter...
+        jassertfalse;
+    }
+}
+
 void Gesture::deleteParameter (int paramId)
 {
-    PLUME::log::writeToLog ("Gesture " + name + " (Id " + String (id) + ") : removing parameter " + parameterArray[paramId]->parameter.getName (50),
+    PLUME::log::writeToLog ("Gesture " + name + " (Id " + String (id) + ") : removing parameter " + parameterArray[paramId]->wrappedParameter.getName (50),
                             PLUME::log::gesture);
 
     ScopedLock paramlock (parameterArrayLock);
@@ -450,14 +467,16 @@ void Gesture::deleteParameter (int paramId)
 
 void Gesture::replaceParameter (int paramId,
                                 AudioProcessorParameter& param,
+                                AudioProcessorValueTreeState& stateRef,
                                 Range<float> r, bool rev)
 {
-    PLUME::log::writeToLog ("Gesture " + name + " (Id " + String (id) + ") : replacing parameter " + parameterArray[paramId]->parameter.getName (50) + " with " + param.getName (50),
+    PLUME::log::writeToLog ("Gesture " + name + " (Id " + String (id) + ") : replacing parameter " + parameterArray[paramId]->wrappedParameter.getName (50) + " with " + param.getName (50),
                             PLUME::log::gesture);
 
     ScopedLock paramlock (parameterArrayLock);
     
-    parameterArray.set (paramId, new MappedParameter (param, r, rev));
+    parameterArray.remove (paramId);
+    parameterArray.insert (paramId, new MappedParameter (param, stateRef, r, id, paramId, rev));
     
     sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
 }
@@ -490,7 +509,7 @@ bool Gesture::parameterIsMapped (int parameterId)
     
     for (auto* param : parameterArray)
     {
-        if (param->parameter.getParameterIndex() == parameterId) return true;
+        if (param->wrappedParameter.getParameterIndex() == parameterId) return true;
     }
     
     return false;
@@ -498,18 +517,8 @@ bool Gesture::parameterIsMapped (int parameterId)
 
 void Gesture::swapParametersWithOtherGesture (Gesture& other)
 {
-    clearAllParameters();
-
-    for (auto* otherMappedParam : other.getParameterArray())
-    {
-        addParameter (otherMappedParam->parameter, otherMappedParam->range, otherMappedParam->reversed);
-    }
-
-    /*
     parameterArray.swapWith (other.getParameterArray());
-
-    mapped = parameterArray.isEmpty();
-    */
+    mapped = !parameterArray.isEmpty();
 
     sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
 }
@@ -525,8 +534,22 @@ void Gesture::updateMappedParameters()
 
             if (newValue != param->lastComputedValue)
             {
+                // Send begin change gesture if 1st time moved
+                if (!param->isBeingChanged)
+                {
+                    param->isBeingChanged = true;
+                    param->plumeParameter.beginChangeGesture();
+                }
+
                 param->lastComputedValue = newValue;
-                param->parameter.setValueNotifyingHost (newValue);
+                param->displayValue = newValue;
+                param->plumeParameter.setValueNotifyingHost (newValue);
+                param->wrappedParameter.setValueNotifyingHost (newValue);
+            }
+            else if (param->isBeingChanged) // Gesture wasnt changed. sens end change gesture if necessary
+            {
+                param->isBeingChanged = false;
+                param->plumeParameter.endChangeGesture();
             }
         }
     }   
@@ -604,22 +627,20 @@ void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
 	addRightMidiSignalToBuffer (midiMessages, plumeBuffer, channel, getMidiValue());
 }
 
-void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int channel, int value)
+void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int channel, int midiValue)
 {
     if (!generatesMidi()) return; //Does nothing if not in default midi mode
 
     int newMidi;
     
-    DBG ("Adding MIDI : New value : " << value << " | Last Value : " << lastMidi);
-
-    if (value != lastMidi) // Prevents to send the same message twice in a row
+    if (midiValue != lastMidi) // Prevents to send the same message twice in a row
     {
         // Assigns the right midi value depending on the signal and
         // the midiRange parameter, then adds message to the buffers
         switch (midiType)
         {
             case (Gesture::pitch):
-                newMidi = map (value, 0, 16383,
+                newMidi = map (midiValue, 0, 16383,
                                   map (midiLow, 0.0f, 1.0f, 0, 16383),
                                   map (midiHigh,   0.0f, 1.0f, 0, 16383));
                                   
@@ -627,7 +648,7 @@ void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
                 break;
             
             case (Gesture::controlChange):
-                newMidi = map (value, 0, 127,
+                newMidi = map (midiValue, 0, 127,
                                   map (midiLow, 0.0f, 1.0f, 0, 127),
                                   map (midiHigh,   0.0f, 1.0f, 0, 127));
                                   
@@ -635,7 +656,7 @@ void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
                 break;
             
             case (Gesture::afterTouch):
-                newMidi = map (value, 0, 127,
+                newMidi = map (midiValue, 0, 127,
                                   map (midiLow, 0.0f, 1.0f, 0, 127),
                                   map (midiHigh,   0.0f, 1.0f, 0, 127));
                                   
@@ -646,6 +667,93 @@ void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
                 break;
         }
 
-        lastMidi = value;
+        lastMidi = midiValue;
+    }
+}
+
+int Gesture::findFirstUnusedParameter()
+{
+    int unusedId = 0;
+
+    for (auto* parameter : plumeParametersRef.processor.getParameters())
+    {
+        if (parameter->getName (100) == "Unmapped Parameter") return unusedId;
+        unusedId++;
+    }
+
+    return -1;
+}
+
+Gesture::MappedParameter::MappedParameter (AudioProcessorParameter& p, AudioProcessorValueTreeState& stateRef, Range<float> pRange, const int gestId, const int paramId, bool rev)
+    : wrappedParameter(p),
+      plumeParameter (*(stateRef.getParameter ("Parameter_" + String (paramId)))),
+      parametersRef(stateRef), range(pRange), reversed (rev), gestureId (gestId), parameterId (paramId)
+{
+    wrappedParameter.addListener (this);
+
+    if (auto* plumeParamTempPointer = dynamic_cast<PlumeParameter<juce::AudioParameterFloat>*> (&plumeParameter))
+    {
+        plumeParamTempPointer->setName (wrappedParameter.getName (100));
+    }
+
+    parametersRef.addParameterListener ("Parameter_" + String (paramId), this);
+}
+
+Gesture::MappedParameter::MappedParameter (const MappedParameter& other)
+    : wrappedParameter (other.wrappedParameter), plumeParameter (other.plumeParameter), parametersRef(other.parametersRef), range (other.range), reversed (other.reversed), gestureId (other.gestureId), parameterId (other.parameterId)
+{
+    wrappedParameter.addListener (this);
+    parametersRef.addParameterListener ("Parameter_" + String (parameterId), this);
+}
+
+Gesture::MappedParameter::~MappedParameter()
+{
+    if (isBeingChanged) plumeParameter.endChangeGesture(); // If gesture was currently moving, sends end change message before deletion
+
+    wrappedParameter.removeListener (this);
+    parametersRef.removeParameterListener ("Parameter_" + String (parameterId), this);
+
+    if (auto* plumeParamTempPointer = dynamic_cast<PlumeParameter<juce::AudioParameterFloat>*> (&plumeParameter))
+    {
+        plumeParamTempPointer->setName ("Unmapped Parameter");
+    }
+}
+        
+void Gesture::MappedParameter::parameterChanged (const String& parameterID, float newValue)
+{
+    // Change wrappedParam
+    if (wrappedParameter.getValue() != plumeParameter.getValue())
+    {
+        // Change wrapped plugins param
+        wrappedParameter.setValue (newValue);
+
+        // Change value for interface display
+        displayValue = newValue;
+    }
+}
+        
+void Gesture::MappedParameter::parameterValueChanged (int parameterIndex, float newValue)
+{
+    // Change plumeParam
+    if (wrappedParameter.getValue() != plumeParameter.getValue())
+    {
+        // Change wrapped plugins param
+        plumeParameter.setValueNotifyingHost (newValue);
+        
+        // Change value for interface display
+        displayValue = newValue;
+    }
+}
+
+void Gesture::MappedParameter::parameterGestureChanged (int parameterIndex, bool gestureIsStarting)
+{
+    // Change plumeParam
+    if (isBeingChanged != gestureIsStarting)
+    {
+        isBeingChanged = gestureIsStarting;
+
+        // Send plume param notification
+        if (isBeingChanged) plumeParameter.beginChangeGesture();
+        else                plumeParameter.endChangeGesture();
     }
 }

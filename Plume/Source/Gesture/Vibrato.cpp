@@ -19,21 +19,13 @@ Vibrato::Vibrato (String gestName, int gestId, AudioProcessorValueTreeState& plu
       
       gainDisplayRange      (0.0f, PLUME::UI::VIBRATO_DISPLAY_MAX, 1.0f),
       thresholdDisplayRange (0.0f, PLUME::UI::VIBRATO_THRESH_DISPLAY_MAX, 1.0f),
-      intensityRange (0.0f, PLUME::gesture::VIBRATO_INTENSITY_MAX, 1.0f),
-      gain      (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::gesture_param_0]))),
-      threshold (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::gesture_param_1]))),
-      intensity (*(plumeParameters.getParameter (param::valuesIds[param::vibrato_intensity]))),
-      intensityRef (plumeParameters.getRawParameterValue (PLUME::param::valuesIds[PLUME::param::vibrato_intensity]))
+      intensityRange (0.0f, PLUME::gesture::VIBRATO_INTENSITY_MAX, 1.0f)
+      //intensityRef (intensity)
 {
     midiType = Gesture::pitch;
 
-    gain.beginChangeGesture();
-    gain.setValueNotifyingHost (gainDisplayRange.convertTo0to1 (val));
-    gain.endChangeGesture();
-    
-    threshold.beginChangeGesture();
-    threshold.setValueNotifyingHost (thresholdDisplayRange.convertTo0to1 (thresh));
-    threshold.endChangeGesture();
+    gain = gainDisplayRange.convertTo0to1 (val);    
+    threshold = thresholdDisplayRange.convertTo0to1 (thresh);
 }
 
 Vibrato::~Vibrato()
@@ -53,13 +45,13 @@ void Vibrato::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 
 void Vibrato::updateMidiValue()
 {
-    bool vibTrig = (intensityRange.convertFrom0to1 (intensity.getValue()) > thresholdDisplayRange.convertFrom0to1 (threshold.getValue()));
-    float gainVal = gainDisplayRange.convertFrom0to1 (gain.getValue());
+    bool vibTrig = (intensityRange.convertFrom0to1 (intensity) > thresholdDisplayRange.convertFrom0to1 (threshold));
+    float gainVal = gainDisplayRange.convertFrom0to1 (gain);
     
     // Vibrato should be triggered
     if (vibTrig && gainVal != 0.0f)
     {
-        DBG ("Tresh : " << thresholdDisplayRange.convertFrom0to1 (threshold.getValue()));
+        DBG ("Tresh : " << thresholdDisplayRange.convertFrom0to1 (threshold));
         vibLast = true;
         send = true;
 
@@ -97,8 +89,8 @@ bool Vibrato::shouldUpdateParameters()
 
 void Vibrato::updateSendLogic()
 {
-    bool vibTrig = (intensityRange.convertFrom0to1 (intensity.getValue()) > thresholdDisplayRange.convertFrom0to1 (threshold.getValue()));
-    float gainVal = gainDisplayRange.convertFrom0to1 (gain.getValue());
+    bool vibTrig = (intensityRange.convertFrom0to1 (intensity) > thresholdDisplayRange.convertFrom0to1 (threshold));
+    float gainVal = gainDisplayRange.convertFrom0to1 (gain);
     
     if (vibTrig && gainVal != 0.0f)
     {
@@ -117,8 +109,8 @@ void Vibrato::updateSendLogic()
 
 float Vibrato::computeMappedParameterValue (Range<float> paramRange, bool reversed = false)
 {
-    bool vibTrig = (intensityRange.convertFrom0to1 (intensity.getValue()) > thresholdDisplayRange.convertFrom0to1 (threshold.getValue()));
-    float gainVal = gainDisplayRange.convertFrom0to1 (gain.getValue());
+    bool vibTrig = (intensityRange.convertFrom0to1 (intensity) > thresholdDisplayRange.convertFrom0to1 (threshold));
+    float gainVal = gainDisplayRange.convertFrom0to1 (gain);
     
     if (vibTrig && gainVal != 0.0f)
     {
@@ -151,18 +143,16 @@ void Vibrato::setIntensityValue (float newVal)
         {
             if (!wasBeingChangedIntensity)
             {
-                intensity.beginChangeGesture();
                 wasBeingChangedIntensity = true;
             }
 
-            intensity.setValueNotifyingHost (intensityRange.convertTo0to1 (newVal));
+            intensity = intensityRange.convertTo0to1 (newVal);
             lastIntensity = intensityRange.convertTo0to1 (newVal);
         }
         else
         {
             if (wasBeingChangedIntensity)
             {
-                intensity.endChangeGesture();
                 wasBeingChangedIntensity = false;
             }
         }
@@ -171,7 +161,7 @@ void Vibrato::setIntensityValue (float newVal)
 
 std::atomic<float>& Vibrato::getIntensityReference()
 {
-    return *intensityRef;
+    return intensity;
 }
 
 //==============================================================================

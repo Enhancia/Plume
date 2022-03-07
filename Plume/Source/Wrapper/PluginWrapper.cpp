@@ -752,17 +752,29 @@ void PluginWrapper::fillInPluginDescription (PluginDescription& pd)
 
 
 void PluginWrapper::addParametersToGestureFromXml (XmlElement& gesture, int gestureNum)
-{
-        
+{    
     if (hasWrappedInstance)
     {
         forEachXmlChildElement (gesture, paramXml)
         {
-            gestArray.addAndSetParameter (wrapperProcessor->getWrappedParameter (paramXml->getIntAttribute("id")),
-                                          gestureNum,
-                                          float (paramXml->getDoubleAttribute("start", 0.0f)),
-                                          float (paramXml->getDoubleAttribute("end", 1.0f)),
-                                          paramXml->getBoolAttribute ("reversed", false));
+            const int parameterIdToUse = paramXml->getIntAttribute ("plumeParameterId", -1);
+
+            if (parameterIdToUse != -1) // parameter is set to a specific plume Id
+            {
+                gestArray.addAndSetParameter (wrapperProcessor->getWrappedParameter (paramXml->getIntAttribute("id")),
+                                              gestureNum, parameterIdToUse,
+                                              float (paramXml->getDoubleAttribute("start", 0.0f)),
+                                              float (paramXml->getDoubleAttribute("end", 1.0f)),
+                                              paramXml->getBoolAttribute ("reversed", false));
+            }
+            else // Automatic id selection
+            {   
+                gestArray.addAndSetParameter (wrapperProcessor->getWrappedParameter (paramXml->getIntAttribute("id")),
+                                              gestureNum,
+                                              float (paramXml->getDoubleAttribute("start", 0.0f)),
+                                              float (paramXml->getDoubleAttribute("end", 1.0f)),
+                                              paramXml->getBoolAttribute ("reversed", false));
+            }
         }
     }
 }
@@ -774,4 +786,6 @@ void PluginWrapper::parameterValueChanged (int parameterIndex, float)
     {
 	    gestArray.addParameterToMapModeGesture (wrapperProcessor->getWrappedParameter (parameterIndex));
     }
+
+    owner.updateHostDisplay (AudioProcessor::ChangeDetails().withParameterInfoChanged (true));
 }

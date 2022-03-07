@@ -47,10 +47,10 @@ public:
     bool shouldSend(); /**< \brief Hides Gesture::shouldSend(). Handles the case where the PB is set active while in the middle range */
     
     //==============================================================================
-    RangedAudioParameter& rangeLeftLow; /**< \brief Bend's low range value. The down pitch effect will happen between this and rangeLeftHigh. */
-	RangedAudioParameter& rangeLeftHigh; /**< \brief Bend's high range value. The down pitch effect will happen between rangeLeftLow and this. */
-	RangedAudioParameter& rangeRightLow; /**< \brief Bend's low range value. The up pitch effect will happen between this and rangeRightHigh. */
-	RangedAudioParameter& rangeRightHigh; /**< \brief Bend's high range value. The up pitch effect will happen between rangeRightLow and this. */
+    float rangeLeftLow; /**< \brief Bend's low range value. The down pitch effect will happen between this and rangeLeftHigh. */
+	  float rangeLeftHigh; /**< \brief Bend's high range value. The down pitch effect will happen between rangeLeftLow and this. */
+	  float rangeRightLow; /**< \brief Bend's low range value. The up pitch effect will happen between this and rangeRightHigh. */
+	  float rangeRightHigh; /**< \brief Bend's high range value. The up pitch effect will happen between rangeRightLow and this. */
     NormalisableRange<float> pitchBendDisplayRange;
 
     

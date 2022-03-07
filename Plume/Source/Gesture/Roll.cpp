@@ -15,17 +15,10 @@ Roll::Roll (String gestName, int gestId, AudioProcessorValueTreeState& plumePara
             float lowValue, float highValue, String description)
     : Gesture (gestName, Gesture::roll, gestId, NormalisableRange<float> (PLUME::gesture::ROLL_MIN, PLUME::gesture::ROLL_MAX, 0.1f),
                plumeParameters, param::valuesIds[param::roll_value], description),
-      rollDisplayRange (PLUME::UI::ROLL_DISPLAY_MIN, PLUME::UI::ROLL_DISPLAY_MAX, 1.0f),
-      rangeLow  (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::gesture_param_0]))),
-      rangeHigh (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::gesture_param_1])))
+      rollDisplayRange (PLUME::UI::ROLL_DISPLAY_MIN, PLUME::UI::ROLL_DISPLAY_MAX, 1.0f)
 {
-    rangeLow.beginChangeGesture();
-    rangeLow.setValueNotifyingHost (rollDisplayRange.convertTo0to1 (lowValue));
-    rangeLow.endChangeGesture();
-    
-    rangeHigh.beginChangeGesture();
-    rangeHigh.setValueNotifyingHost (rollDisplayRange.convertTo0to1 (highValue));
-    rangeHigh.endChangeGesture();
+    rangeLow = rollDisplayRange.convertTo0to1 (lowValue);    
+    rangeHigh = rollDisplayRange.convertTo0to1 (highValue);
 }
 
 Roll::~Roll()
@@ -47,8 +40,8 @@ void Roll::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 void Roll::updateMidiValue()
 {
     currentMidi = Gesture::normalizeMidi (getGestureValue(),
-                                   rollDisplayRange.convertFrom0to1 (rangeLow.getValue()),
-                                   rollDisplayRange.convertFrom0to1 (rangeHigh.getValue()),
+                                   rollDisplayRange.convertFrom0to1 (rangeLow),
+                                   rollDisplayRange.convertFrom0to1 (rangeHigh),
                                    (midiType == Gesture::pitch),
                                    getMidiReverse());
 }
@@ -61,7 +54,7 @@ bool Roll::shouldUpdateParameters()
 
 float Roll::computeMappedParameterValue (Range<float> paramRange, bool reversed = false)
 {
-	return Gesture::mapParameter (getGestureValue(), rollDisplayRange.convertFrom0to1 (rangeLow.getValue()), rollDisplayRange.convertFrom0to1 (rangeHigh.getValue()), paramRange, reversed);
+    return Gesture::mapParameter (getGestureValue(), rollDisplayRange.convertFrom0to1 (rangeLow), rollDisplayRange.convertFrom0to1 (rangeHigh), paramRange, reversed);
 }
     
 //==============================================================================

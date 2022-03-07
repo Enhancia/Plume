@@ -48,7 +48,7 @@ PlumeProcessor::PlumeProcessor()
     
     // Objects
     dataReader.reset (new DataReader());
-    gestureArray.reset (new GestureArray (*dataReader, parameters, getLastArmRef()));
+    gestureArray.reset (new GestureArray (*this, *dataReader, parameters, getLastArmRef()));
     wrapper.reset (new PluginWrapper (*this, *gestureArray, parameters.state.getChildWithName(PLUME::treeId::general)
 		                                                         .getChildWithName(PLUME::treeId::pluginDirs)));
     presetHandler.reset (new PresetHandler (parameters.state.getChildWithName (PLUME::treeId::general)
@@ -389,25 +389,11 @@ AudioProcessorValueTreeState::ParameterLayout PlumeProcessor::initializeParamete
     using namespace PLUME::param;
     AudioProcessorValueTreeState::ParameterLayout layout;
     
-    for (int i =0; i < numValues; i++)
+    for (int i =0; i < PLUME::NUM_GEST*PLUME::MAX_PARAMETER; i++)
     {
-        layout.add (std::make_unique<AudioParameterFloat> (valuesIds[i],
-                                                           valuesIds[i],
+        layout.add (std::make_unique<PlumeParameter<AudioParameterFloat>> ("Parameter_" + String (i), "Unmapped Parameter",
                                                            NormalisableRange<float> (0.0f, 1.0f, 0.0001f),
                                                            0.0f));
-    }
-
-    for (int gest =0; gest < PLUME::NUM_GEST; gest++)
-    {
-        for (int i =0; i < numParams; i++)
-        {
-                String description = "Gest " + String(gest + 1)
-                                             + " - Param " + String (i - gesture_param_0 + 1);
-                layout.add (std::make_unique<AudioParameterFloat> (String(gest) + paramIds[i],
-                                                                   description,
-                                                                   NormalisableRange<float> (0.0f, 1.0f, 0.0001f),
-                                                                   0.0f));
-        }
     }
 
     layout.add (std::make_unique<AudioParameterInt> ("track_arm",
