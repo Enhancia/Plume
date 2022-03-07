@@ -452,7 +452,7 @@ void Gesture::addParameterAtId (AudioProcessorParameter& param,
 
 void Gesture::deleteParameter (int paramId)
 {
-    PLUME::log::writeToLog ("Gesture " + name + " (Id " + String (id) + ") : removing parameter " + parameterArray[paramId]->parameter.getName (50),
+    PLUME::log::writeToLog ("Gesture " + name + " (Id " + String (id) + ") : removing parameter " + parameterArray[paramId]->plumeParameter.getName (50),
                             PLUME::log::LogCategory::gesture);
 
     ScopedLock paramlock (parameterArrayLock);
@@ -469,7 +469,7 @@ void Gesture::replaceParameter (int paramId,
                                 AudioProcessorValueTreeState& stateRef,
                                 Range<float> r, bool rev)
 {
-    PLUME::log::writeToLog ("Gesture " + name + " (Id " + String (id) + ") : replacing parameter " + parameterArray[paramId]->parameter.getName (50) + " with " + param.getName (50),
+    PLUME::log::writeToLog ("Gesture " + name + " (Id " + String (id) + ") : replacing parameter " + parameterArray[paramId]->plumeParameter.getName (50) + " with " + param.getName (50),
                             PLUME::log::LogCategory::gesture);
 
     ScopedLock paramlock (parameterArrayLock);
@@ -632,7 +632,7 @@ void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
 
     int newMidi;
     
-    if (midiValue != lastMidi) // Prevents to send the same message twice in a row
+    if (valueToUse != lastMidi) // Prevents to send the same message twice in a row
     {
         // Assigns the right midi value depending on the signal and
         // the midiRange parameter, then adds message to the buffers
