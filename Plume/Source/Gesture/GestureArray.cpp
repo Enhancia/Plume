@@ -146,7 +146,6 @@ Gesture* GestureArray::getGesture (const int idToSearch)
 {
     if (idToSearch >= PLUME::NUM_GEST || idToSearch < 0)
     {
-        DBG ("Gesture n°" << idToSearch << " cannot exist. \nNumber of gestures: " << gestures.size());
         return nullptr;
     }
 
@@ -235,8 +234,6 @@ void GestureArray::changeListenerCallback(ChangeBroadcaster*)
 
 void GestureArray::parameterChanged (const String &parameterID, float)
 {
-    DBG ("[GestureArray] Parameter " << parameterID << " changed");
-
     for (int valueNum = 0; valueNum < PLUME::param::numValues; valueNum++)
     {
         if (PLUME::param::valuesIds[valueNum] == parameterID)
@@ -582,7 +579,6 @@ String GestureArray::createDuplicateName (String originalGestureName)
     if (endChars.getLastCharacter() == ')' && endChars.dropLastCharacters (1).containsOnly ("0123456789"))
     {
         int newNum = endChars.dropLastCharacters (1).getIntValue() + 1; 
-        DBG ("New num " << newNum);
 
         return originalGestureName.upToLastOccurrenceOf ("(", true, false) + String(newNum) + String (")");
     }
@@ -860,8 +856,6 @@ void GestureArray::createParameterXml(XmlElement& gestureXml, OwnedArray<Gesture
 
 void GestureArray::notifyGestureParametersShouldBeUpdatedForType (Gesture::GestureType typeToNotify)
 {
-    DBG("notifying update for type : " << Gesture::getTypeString (static_cast<int> (typeToNotify)));
-
     for (auto* gesture : gestures)
     {
         if (gesture->type == typeToNotify)

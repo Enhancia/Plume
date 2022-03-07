@@ -51,7 +51,6 @@ void Vibrato::updateMidiValue()
     // Vibrato should be triggered
     if (vibTrig && gainVal != 0.0f)
     {
-        DBG ("Tresh : " << thresholdDisplayRange.convertFrom0to1 (threshold));
         vibLast = true;
         send = true;
 
