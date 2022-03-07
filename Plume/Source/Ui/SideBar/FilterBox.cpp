@@ -40,7 +40,7 @@ void FilterBox::paint (Graphics& g)
     g.fillRect (getLocalBounds().reduced (1, 0));
 }
 
-void FilterBox::paintOverChildren (Graphics& g)
+void FilterBox::paintOverChildren (Graphics&)
 {
 }
 

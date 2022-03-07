@@ -56,7 +56,7 @@ void PresetSearchBar::paint (Graphics& g)
     // magnifying glass draw
     Path magnifGlass = PLUME::path::createPath (PLUME::path::magnifyingGlass);
 
-    auto magnifBounds = barArea.withX (MARGIN_SMALL).reduced (3);
+    auto magnifBounds = barArea.withX (MARGIN_SMALL).reduced (3).toFloat();
 
     magnifGlass.scaleToFit (magnifBounds.getX(),
                             magnifBounds.getY(),

@@ -179,9 +179,9 @@ bool DataReader::getRawDataAsFloatArray(Array<float>& arrayToFill)
 }
 
 //==============================================================================
-void  DataReader::sendString(uint8_t* data, int data_size)
+void  DataReader::sendString(uint8_t* dataToSend, int data_size)
 {
-    bool test = sendMessage(MemoryBlock(data, data_size));
+    bool test = sendMessage(MemoryBlock(dataToSend, data_size));
     DBG("Send string return :" + String(int(test)));
 }
 

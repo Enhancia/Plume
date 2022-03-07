@@ -241,6 +241,4 @@ PlumeAlertPanel* PlumeAlertPanel::createSpecificAlertPanel (SpecificReturnValue 
                                        "Ok");
 
     }
-
-    return nullptr;
 }

@@ -406,9 +406,8 @@ void Gesture::addParameter (AudioProcessorParameter& param,
                             AudioProcessorValueTreeState& stateRef,
                             Range<float> r, bool rev)
 {
-    PLUME::log::writeToLog ("Gesture " + name + " (Id " + String (id) +
-                            ") : Adding parameter " + param.getName (50),
-                            PLUME::log::gesture);
+    PLUME::log::writeToLog ("Gesture " + name + " (Id " + String (id) + ") : Adding parameter " + param.getName (50),
+                            PLUME::log::LogCategory::gesture);
 
     ScopedLock paramlock (parameterArrayLock);
     
@@ -432,7 +431,7 @@ void Gesture::addParameterAtId (AudioProcessorParameter& param,
     PLUME::log::writeToLog ("Gesture " + name + " (Id " + String (id) +
                             ") : Adding parameter " + param.getName (50) +
                             " at ID " + String (plumeIdToAddParameterTo),
-                            PLUME::log::gesture);
+                            PLUME::log::LogCategory::gesture);
 
     ScopedLock paramlock (parameterArrayLock);
     
@@ -453,8 +452,8 @@ void Gesture::addParameterAtId (AudioProcessorParameter& param,
 
 void Gesture::deleteParameter (int paramId)
 {
-    PLUME::log::writeToLog ("Gesture " + name + " (Id " + String (id) + ") : removing parameter " + parameterArray[paramId]->wrappedParameter.getName (50),
-                            PLUME::log::gesture);
+    PLUME::log::writeToLog ("Gesture " + name + " (Id " + String (id) + ") : removing parameter " + parameterArray[paramId]->parameter.getName (50),
+                            PLUME::log::LogCategory::gesture);
 
     ScopedLock paramlock (parameterArrayLock);
     
@@ -470,8 +469,8 @@ void Gesture::replaceParameter (int paramId,
                                 AudioProcessorValueTreeState& stateRef,
                                 Range<float> r, bool rev)
 {
-    PLUME::log::writeToLog ("Gesture " + name + " (Id " + String (id) + ") : replacing parameter " + parameterArray[paramId]->wrappedParameter.getName (50) + " with " + param.getName (50),
-                            PLUME::log::gesture);
+    PLUME::log::writeToLog ("Gesture " + name + " (Id " + String (id) + ") : replacing parameter " + parameterArray[paramId]->parameter.getName (50) + " with " + param.getName (50),
+                            PLUME::log::LogCategory::gesture);
 
     ScopedLock paramlock (parameterArrayLock);
     
@@ -627,7 +626,7 @@ void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
 	addRightMidiSignalToBuffer (midiMessages, plumeBuffer, channel, getMidiValue());
 }
 
-void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int channel, int midiValue)
+void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int channel, int valueToUse)
 {
     if (!generatesMidi()) return; //Does nothing if not in default midi mode
 
@@ -640,7 +639,7 @@ void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
         switch (midiType)
         {
             case (Gesture::pitch):
-                newMidi = map (midiValue, 0, 16383,
+                newMidi = map (valueToUse, 0, 16383,
                                   map (midiLow, 0.0f, 1.0f, 0, 16383),
                                   map (midiHigh,   0.0f, 1.0f, 0, 16383));
                                   
@@ -648,7 +647,7 @@ void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
                 break;
             
             case (Gesture::controlChange):
-                newMidi = map (midiValue, 0, 127,
+                newMidi = map (valueToUse, 0, 127,
                                   map (midiLow, 0.0f, 1.0f, 0, 127),
                                   map (midiHigh,   0.0f, 1.0f, 0, 127));
                                   
@@ -656,7 +655,7 @@ void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
                 break;
             
             case (Gesture::afterTouch):
-                newMidi = map (midiValue, 0, 127,
+                newMidi = map (valueToUse, 0, 127,
                                   map (midiLow, 0.0f, 1.0f, 0, 127),
                                   map (midiHigh,   0.0f, 1.0f, 0, 127));
                                   
@@ -666,8 +665,8 @@ void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
             default:
                 break;
         }
-
-        lastMidi = midiValue;
+        
+        lastMidi = valueToUse;
     }
 }
 

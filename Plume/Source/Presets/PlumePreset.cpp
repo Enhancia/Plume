@@ -317,7 +317,7 @@ void PlumePreset::setPresetInfoToFile()
         
 		if (presetType != PresetType::userPreset) presetFile.getParentDirectory().setReadOnly (false);
 
-        xml->writeToFile (presetFile, String());
+        xml->writeTo (presetFile);
 
 		if (presetType != PresetType::userPreset) presetFile.getParentDirectory().setReadOnly (true);
     }

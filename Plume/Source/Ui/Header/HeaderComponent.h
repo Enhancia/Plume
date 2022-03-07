@@ -55,15 +55,6 @@ public:
     //==============================================================================
     void setPreviousPreset();
     void setNextPreset();
-    //==============================================================================
-
-
-    /**
-     * @brief Draws green rectangle and display his width and height
-     * @param g graphics object needed to draw
-     * @param rectangle wanted debug area
-    */
-    static void drawDebugRect (Graphics& g, const juce::Rectangle<float>& rectangle);
 
 private:
 

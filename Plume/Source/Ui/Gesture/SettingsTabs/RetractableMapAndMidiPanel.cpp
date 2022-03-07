@@ -12,7 +12,7 @@
 
 //==============================================================================
 RetractableMapAndMidiPanel::RetractableMapAndMidiPanel (Gesture& gest, GestureArray& gestArr,
-														PluginWrapper& wrap, Colour gestureColour)
+														PluginWrapper& wrap)
     : gesture (gest), gestureArray (gestArr), wrapper (wrap)
 {
 	addAndMakeVisible (*(parametersBanner = std::make_unique<MapperBanner> (gesture, gestureArray, wrapper)));
@@ -91,7 +91,7 @@ void RetractableMapAndMidiPanel::updateMidiRange (MidiRangeTuner::DraggableObjec
 	midiBody->getTuner().updateComponents (thumbToUpdate);
 }	
 
-void RetractableMapAndMidiPanel::paint (Graphics& g)
+void RetractableMapAndMidiPanel::paint (Graphics&)
 {
 }
 
@@ -179,10 +179,10 @@ void RetractableMapAndMidiPanel::setRetracted (bool shouldBeRetracted)
 		setRetracted (midiRetractable);
 
 		resized();
-		if (auto* parentComponent = getParentComponent())
+		if (auto* parentComp = getParentComponent())
 		{
-			parentComponent->resized();
-			parentComponent->repaint();
+			parentComp->resized();
+			parentComp->repaint();
 		}
 	}
 }

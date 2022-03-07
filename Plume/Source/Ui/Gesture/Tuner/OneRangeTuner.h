@@ -20,14 +20,14 @@ class OneRangeTuner:  public Tuner,
                       private Button::Listener
 {
 public:
-    enum TunerStyle
+    enum class TunerStyle
     {
         tilt =0,
         roll,
         wave
     };
 
-    enum DraggableObject
+    enum class DraggableObject
     {
         none = -1,
         lowThumb,
@@ -38,7 +38,7 @@ public:
     //==============================================================================
     OneRangeTuner(const std::atomic<float>& val, NormalisableRange<float> gestureRange,
                   float& rangeL, float& rangeH, const NormalisableRange<float> paramMax,
-                  const String unit = "", TunerStyle style = wave);
+                  const String unit = "", TunerStyle style = TunerStyle::wave);
     ~OneRangeTuner();
     
     //==============================================================================
@@ -119,7 +119,7 @@ private:
     //==============================================================================
     TunerStyle tunerStyle;
 
-    DraggableObject objectBeingDragged = none;
+    DraggableObject objectBeingDragged = DraggableObject::none;
     float previousCursorAngle = value;
 
     juce::Rectangle<int> sliderBounds;

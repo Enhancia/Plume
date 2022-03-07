@@ -43,7 +43,7 @@ public:
 
     //==============================================================================
     RetractableMapAndMidiPanel (Gesture& gest, GestureArray& gestArr,
-                                PluginWrapper& wrap, Colour gestureColour);
+                                PluginWrapper& wrap);
     ~RetractableMapAndMidiPanel();
 
     //==============================================================================
