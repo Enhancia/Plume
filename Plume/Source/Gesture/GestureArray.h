@@ -186,6 +186,10 @@ public:
      *
      */
     void addAndSetParameter (AudioProcessorParameter& param, int gestureId, float start, float end, bool rev);
+    /**
+     *  \brief Method to add a parameter to the gesture in mapMode. Overloaded to use a specific parameterId.
+     */
+    void addAndSetParameter (AudioProcessorParameter& param, int gestureId, const int parameterId, float start, float end, bool rev);
     
     /**
      *  \brief Deletes all gestures in the array.

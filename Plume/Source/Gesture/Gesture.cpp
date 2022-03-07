@@ -424,28 +424,32 @@ void Gesture::addParameter (AudioProcessorParameter& param,
     sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
 }
 
-/*void Gesture::addParameterAtId (AudioProcessorParameter& param,
+void Gesture::addParameterAtId (AudioProcessorParameter& param,
+                                const int plumeIdToAddParameterTo,
                                 AudioProcessorValueTreeState& stateRef,
-                                const int paramId,
                                 Range<float> r, bool rev)
 {
     PLUME::log::writeToLog ("Gesture " + name + " (Id " + String (id) +
-                            ") : Adding parameter " + param.getName (50),
+                            ") : Adding parameter " + param.getName (50) +
+                            " at ID " + String (plumeIdToAddParameterTo),
                             PLUME::log::gesture);
 
     ScopedLock paramlock (parameterArrayLock);
     
-    if (parameterArray.size() < PLUME::MAX_PARAMETER)
+    // Parameter is unused
+    if (stateRef.processor.getParameters()[plumeIdToAddParameterTo]->getName (50) == "Unmapped Parameter")
     {
-        const int paramId = findFirstUnusedParameter();
-        jassert (paramId != -1);
-
-        parameterArray.add ( new MappedParameter (param, stateRef, r, id, paramId, rev));
+        parameterArray.add (new MappedParameter (param, stateRef, r, id, plumeIdToAddParameterTo, rev));
         mapped = true;
+        sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
     }
-    
-    sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
-}*/
+    else
+    {
+        // If you're creating a gesture parameter at a specific plume parameter id,
+        // the id must not be used by another parameter...
+        jassertfalse;
+    }
+}
 
 void Gesture::deleteParameter (int paramId)
 {

@@ -442,12 +442,20 @@ public:
     //==============================================================================
     // Parameter related methods
     /**
-     *  \brief Creates a new MappedParameter.
+     *  \brief Creates a new MappedParameter (at the first available plume parameter id).
      */
     void addParameter (AudioProcessorParameter& param,
                        AudioProcessorValueTreeState& stateRef,
                        Range<float> r = Range<float> (0.0f, 1.0f),
                        bool rev = false);
+    /**
+     *  \brief Creates a new MappedParameter stored at a specific id in plume's parameter array.
+     */
+    void addParameterAtId (AudioProcessorParameter& param,
+                           const int plumeIdToAddParameterTo,
+                           AudioProcessorValueTreeState& stateRef,
+                           Range<float> r = Range<float> (0.0f, 1.0f),
+                           bool rev = false);
     
     /**
      *  \brief Deletes a MappedParameter.

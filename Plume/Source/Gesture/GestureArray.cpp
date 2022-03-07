@@ -450,6 +450,23 @@ void GestureArray::addAndSetParameter (AudioProcessorParameter& param, int gestu
     owner.updateHostDisplay (AudioProcessor::ChangeDetails().withParameterInfoChanged (true));
 }
 
+void GestureArray::addAndSetParameter (AudioProcessorParameter& param, int gestureId, const int parameterId, float start = 0.0f, float end = 1.0f, bool rev = false)
+{
+    String temp;
+    
+    // Does nothing if the parameter is already mapped to any gesture
+    if (parameterIsMapped (param.getParameterIndex(), temp)) return;
+    
+    // else adds the parameter and cancels mapMode
+    if (gestureId < size())
+    {
+        ScopedLock gestlock (gestureArrayLock);
+        gestures[gestureId]->addParameterAtId (param, parameterId, parameters, Range<float> (start, end), rev);
+    }
+
+    owner.updateHostDisplay (AudioProcessor::ChangeDetails().withParameterInfoChanged (true));
+}
+
 void GestureArray::clearAllGestures()
 {
     gestures.clear();
@@ -834,10 +851,10 @@ void GestureArray::createParameterXml(XmlElement& gestureXml, OwnedArray<Gesture
         auto paramXml = new XmlElement (mParam->wrappedParameter.getName(30).replace (" ", "_"));
         
         paramXml->setAttribute ("id", mParam->wrappedParameter.getParameterIndex());
+        paramXml->setAttribute ("plumeParameterId", mParam->parameterId);
         paramXml->setAttribute ("start", mParam->range.getStart());
         paramXml->setAttribute ("end", mParam->range.getEnd());
         paramXml->setAttribute ("reversed", mParam->reversed);
-        
         gestureXml.addChildElement (paramXml); // Adds the element
     }
 }
