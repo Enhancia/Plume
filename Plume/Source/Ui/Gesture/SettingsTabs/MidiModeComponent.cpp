@@ -103,6 +103,11 @@ void MidiModeComponent::labelTextChanged (Label* lbl)
         	parentComp->repaint();
     }
 }
+
+void MidiModeComponent::editorShown (Label*, TextEditor& ted)
+{
+    ted.setJustification (Justification::centred);
+}
    
 void MidiModeComponent::buttonClicked (Button* bttn)
 {

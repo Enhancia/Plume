@@ -127,6 +127,7 @@ void GestureComponent::editorShown (Label*, TextEditor& ted)
     ted.setColour (TextEditor::highlightColourId, Colour (0xff101010));
     ted.setColour (TextEditor::textColourId, Colour (0xff959595));
     ted.setJustification (Justification::centred);
+    ted.setInputRestrictions(26);
 }
 
 void GestureComponent::labelTextChanged (Label*)

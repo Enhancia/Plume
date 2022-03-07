@@ -56,7 +56,7 @@ void Vibrato::updateMidiValue()
         send = true;
 
         const float normalizedValue = (getGestureValue()/(2*9.80665f)*gainVal/200.0f*0.5f + 0.5f);
-        currentMidi = Gesture::normalizeMidi (normalizedValue, 0.0f, 1.0f, (midiType == Gesture::pitch));
+        currentMidi = Gesture::normalizeMidi (normalizedValue, 0.0f, 1.0f, (midiType == Gesture::pitch), getMidiReverse());
     }
 
     // Vibrato back to neutral
