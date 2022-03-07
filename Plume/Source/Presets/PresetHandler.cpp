@@ -278,7 +278,7 @@ bool PresetHandler::savePreset (XmlElement& presetXml, File fileToWriteTo)
     // Tries to write the xml to the specified file
     if (fileToWriteTo.exists())
     {
-        if (presetXml.writeToFile (fileToWriteTo, String()) &&
+        if (presetXml.writeTo (fileToWriteTo) &&
             PlumePreset (fileToWriteTo).isValid())
         {
             DBG ("Preset file succesfully written");
@@ -383,7 +383,7 @@ bool PresetHandler::renamePreset (String newName, const int id)
                 info->setAttribute ("name", newName);
                 
                 // Writes the new xml to the old file
-                if (presetXml->writeToFile (f, String()))
+                if (presetXml->writeTo (f))
                 {
                     // Renames the file
                     if (f.moveFileTo (f.getSiblingFile (newFileName).withFileExtension ("plume")))
@@ -659,7 +659,7 @@ void PresetHandler::savePresetDirectoryToFile()
     }
     
 	std::unique_ptr<XmlElement> presetDirXml = userDirValue.createXml();
-    presetDirXml->writeToFile (presetDir, StringRef());
+    presetDirXml->writeTo (presetDir);
     presetDirXml->deleteAllChildElements();
 }
 

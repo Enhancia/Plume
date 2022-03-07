@@ -605,7 +605,7 @@ void PluginWrapper::addPluginsToMenu (PopupMenu& menu, KnownPluginList::SortMeth
         getOwner().sendActionMessage (PLUME::commands::scanRequired);
     }
     
-    else pluginList->addToMenu (menu, sort);
+    else KnownPluginList::addToMenu (menu, pluginList->getTypes(), sort);
 }
 
 std::unique_ptr<PluginDescription> PluginWrapper::getDescriptionToWrap (const PluginDescription& description)
@@ -650,7 +650,7 @@ void PluginWrapper::savePluginListToFile()
     searchSettings->setAttribute ("use_au",     useAudioUnits   ? 1 : 0);
   #endif
 
-    listXml->writeToFile (PLUME::file::pluginList, StringRef());
+    listXml->writeTo (PLUME::file::pluginList);
     listXml->deleteAllChildElements();
 }
 

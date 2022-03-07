@@ -172,7 +172,7 @@ void PresetComponent::createComboBox()
 	// fill list of plugins and set uppercase first letter
 	for (int i = 0; i < kpl.getNumTypes (); i++)
 	{
-		std::string currentName = kpl.getType (i)->descriptiveName.toStdString ();
+		std::string currentName = kpl.getTypes()[i].descriptiveName.toStdString();
 		currentName[0] = toupper (currentName[0]);
 		listPlugins.add ((String)currentName);
 	}
