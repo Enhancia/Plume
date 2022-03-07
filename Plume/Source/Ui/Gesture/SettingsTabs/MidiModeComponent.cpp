@@ -104,7 +104,7 @@ void MidiModeComponent::labelTextChanged (Label* lbl)
     }
 }
 
-void MidiModeComponent::editorShown (Label* lbl, TextEditor& ted)
+void MidiModeComponent::editorShown (Label*, TextEditor& ted)
 {
     ted.setJustification (Justification::centred);
 }

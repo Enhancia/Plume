@@ -185,18 +185,16 @@ void PlumeEditor::paintShadows (Graphics& g)
 
     // Sidebar Button Shadow
     {
-        Path sidebarShadowPath;
-        DropShadow sidebarShadow;
-
-        sidebarShadowPath.addRoundedRectangle (sideBar->getBounds().toFloat(), 3.0f);
-
         if(!sideBarButton->getToggleState()) {
-            sidebarShadow = DropShadow(Colour (0x30000000), 10, {2, 3});
-        } else {
-            sidebarShadow = DropShadow(Colour (0x00000000), 10, {2, 3});
-        }
 
-        sidebarShadow.drawForPath (g, sidebarShadowPath);
+            Path sidebarShadowPath;
+            DropShadow sidebarShadow;
+
+            sidebarShadowPath.addRoundedRectangle (sideBar->getBounds().toFloat(), 3.0f);
+
+            sidebarShadow = DropShadow(Colour (0x30000000), 10, {2, 3});
+            sidebarShadow.drawForPath (g, sidebarShadowPath);
+        }
     }
 }
 
