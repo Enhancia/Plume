@@ -137,7 +137,7 @@ void OneRangeTuner::updateComponents (OneRangeTuner::DraggableObject thumbThatSh
         {
             if (highSlider->getThumbBeingDragged() == -1 && rangeLow > rangeHigh)
             {
-                setRangeHigh (getRangeLow(), true);
+                setRangeHigh (getRangeLow());
 
                 // Allows the DAW to update the value without using slider->setValue() with a notification
                 // The latter causes crashes on Ableton Live
@@ -154,7 +154,7 @@ void OneRangeTuner::updateComponents (OneRangeTuner::DraggableObject thumbThatSh
         {
             if (lowSlider->getThumbBeingDragged() == -1 && rangeLow > rangeHigh)
             {
-                setRangeLow (getRangeHigh(), true);
+                setRangeLow (getRangeHigh());
 
                 // Allows the DAW to update the value without using slider->setValue() with a notification
                 // The latter causes crashes on Ableton Live
@@ -300,7 +300,7 @@ void OneRangeTuner::sliderValueChanged (Slider* sldr)
         // in case the other thumb is dragged along..
         if (highSlider->getThumbBeingDragged() == -1 && rangeLow > rangeHigh)
         {
-            setRangeHigh (float (lowSlider->getValue()), true);
+            setRangeHigh (float (lowSlider->getValue()));
             highSlider->setValue (double (getRangeLow()), dontSendNotification);
             updateLabelBounds (rangeLabelMax.get());
             rangeLabelMax->setText (String (float (sldr->getValue())) + valueUnit, dontSendNotification);
@@ -317,7 +317,7 @@ void OneRangeTuner::sliderValueChanged (Slider* sldr)
         // in case the other thumb is dragged along..
         if (lowSlider->getThumbBeingDragged() == -1 && rangeLow > rangeHigh)
         {
-            setRangeLow (float (highSlider->getValue()), true);
+            setRangeLow (float (highSlider->getValue()));
             lowSlider->setValue (double (getRangeLow()), dontSendNotification);
             updateLabelBounds (rangeLabelMin.get());
             rangeLabelMin->setText (String (float (sldr->getValue())) + valueUnit, dontSendNotification);
@@ -557,12 +557,12 @@ void OneRangeTuner::createButtons()
     setButtonSettings (*maxAngleButton);
 }
     
-void OneRangeTuner::setRangeLow (float val, const bool createChangeGesture)
+void OneRangeTuner::setRangeLow (float val)
 {    
     rangeLow = parameterMax.convertTo0to1 (val);
 }
     
-void OneRangeTuner::setRangeHigh (float val, const bool createChangeGesture)
+void OneRangeTuner::setRangeHigh (float val)
 {        
     rangeHigh = parameterMax.convertTo0to1 (val);
 }

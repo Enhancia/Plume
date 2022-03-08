@@ -337,12 +337,12 @@ void VibratoTuner::updateLabelBounds (Label* labelToUpdate)
 	}
 }
 
-void VibratoTuner::setGain (float newGain, const bool createChangeGesture)
+void VibratoTuner::setGain (float newGain)
 {
     gain = parameterMaxGain.convertTo0to1 (newGain);
 }
 
-void VibratoTuner::setThreshold (float newTresh, const bool createChangeGesture)
+void VibratoTuner::setThreshold (float newTresh)
 {
     threshold = parameterMaxThreshold.convertTo0to1 (newTresh);
 }

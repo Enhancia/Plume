@@ -41,11 +41,11 @@ void Gesture::addEventAndMergePitchToBuffer (MidiBuffer& midiMessages, MidiBuffe
 										   	 int midiValue, int channel)
 {
     MidiBuffer newBuff;
-    int time;
-    MidiMessage m;
     
-    for (MidiBuffer::Iterator i (midiMessages); i.getNextEvent (m, time);)
+    for (const MidiMessageMetadata metadata : midiMessages)
     {
+        MidiMessage m = metadata.getMessage();
+        
         if (m.isPitchWheel()) // checks for pitch wheel events
         {   
             int newVal = m.getPitchWheelValue() - 8192 + midiValue;
@@ -55,7 +55,7 @@ void Gesture::addEventAndMergePitchToBuffer (MidiBuffer& midiMessages, MidiBuffe
             m = MidiMessage::pitchWheel (m.getChannel(), newVal);
         }
         
-        newBuff.addEvent (m, time);
+        newBuff.addEvent (m, metadata.samplePosition);
     }
     
     // Adds gesture's initial midi message
@@ -69,11 +69,11 @@ void Gesture::addEventAndMergeCCToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
 												 int midiValue, int ccValue, int channel)
 {
     MidiBuffer newBuff;
-    int time;
-    MidiMessage m;
     
-    for (MidiBuffer::Iterator i (midiMessages); i.getNextEvent (m, time);)
+    for (const MidiMessageMetadata metadata : midiMessages)
     {
+        MidiMessage m = metadata.getMessage();
+
         if (m.isController() && m.getControllerValue() == ccValue) // checks if right event
         {
             // Creates a cc message with the new value
@@ -83,7 +83,7 @@ void Gesture::addEventAndMergeCCToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
             m = MidiMessage::controllerEvent (m.getChannel(), ccValue, newVal);
         }
         
-        newBuff.addEvent (m, time);
+        newBuff.addEvent (m, metadata.samplePosition);
     }
     
     // Adds gesture's initial cc message
@@ -97,11 +97,11 @@ void Gesture::addEventAndMergeAfterTouchToBuffer (MidiBuffer& midiMessages, Midi
 										                 int midiValue, int channel)
 {
     MidiBuffer newBuff;
-    int time;
-    MidiMessage m;
     
-    for (MidiBuffer::Iterator i (midiMessages); i.getNextEvent (m, time);)
-    { 
+    for (const MidiMessageMetadata metadata : midiMessages)
+    {
+        MidiMessage m = metadata.getMessage();
+
         // AfterTouchMessage
         if (m.isAftertouch())
         {
@@ -122,7 +122,7 @@ void Gesture::addEventAndMergeAfterTouchToBuffer (MidiBuffer& midiMessages, Midi
             m = MidiMessage::channelPressureChange (m.getChannel(), newVal);
         }
         
-        newBuff.addEvent (m, time);
+        newBuff.addEvent (m, metadata.samplePosition);
     }
     
     // Adds gesture's initial cc message
@@ -718,7 +718,7 @@ Gesture::MappedParameter::~MappedParameter()
     }
 }
         
-void Gesture::MappedParameter::parameterChanged (const String& parameterID, float newValue)
+void Gesture::MappedParameter::parameterChanged (const String&, float newValue)
 {
     // Change wrappedParam
     if (wrappedParameter.getValue() != plumeParameter.getValue())
@@ -731,7 +731,7 @@ void Gesture::MappedParameter::parameterChanged (const String& parameterID, floa
     }
 }
         
-void Gesture::MappedParameter::parameterValueChanged (int parameterIndex, float newValue)
+void Gesture::MappedParameter::parameterValueChanged (int, float newValue)
 {
     // Change plumeParam
     if (wrappedParameter.getValue() != plumeParameter.getValue())
@@ -744,7 +744,7 @@ void Gesture::MappedParameter::parameterValueChanged (int parameterIndex, float 
     }
 }
 
-void Gesture::MappedParameter::parameterGestureChanged (int parameterIndex, bool gestureIsStarting)
+void Gesture::MappedParameter::parameterGestureChanged (int, bool gestureIsStarting)
 {
     // Change plumeParam
     if (isBeingChanged != gestureIsStarting)
