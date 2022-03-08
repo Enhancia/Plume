@@ -173,7 +173,7 @@ void PresetComponent::createComboBox()
 	for (int i = 0; i < kpl.getNumTypes (); i++)
 	{
 		std::string currentName = kpl.getTypes()[i].descriptiveName.toStdString();
-		currentName[0] = toupper (currentName[0]);
+		currentName[0] = static_cast<char> (toupper (currentName[0]));
 		listPlugins.add ((String)currentName);
 	}
 

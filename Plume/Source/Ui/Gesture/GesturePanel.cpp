@@ -200,8 +200,8 @@ void GesturePanel::mouseDrag (const MouseEvent& event)
             repaint(draggedImgPosition);
 
             draggedImgPosition.setPosition(
-                relativeEvent.position.getX() - gestureComponent->getWidth() / 2.0f,
-                relativeEvent.position.getY() - gestureComponent->getHeight() / 2.0f
+                static_cast<int> (relativeEvent.position.getX() - gestureComponent->getWidth() / 2.0f),
+                static_cast<int> (relativeEvent.position.getY() - gestureComponent->getHeight() / 2.0f)
             );
 
             repaint(draggedImgPosition);

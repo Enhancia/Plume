@@ -48,8 +48,9 @@ void UpdaterSubPanel::paintSoftwareArea (Graphics& g)
     {
         g.fillEllipse (softAreaTemp.withTrimmedTop (softAreaTemp.getHeight()*2/3)
                                    .withSizeKeepingCentre (notificationRadius, notificationRadius)
-                                   .withY (softAreaTemp.getY() + softAreaTemp.getHeight()*2/3 + 6 - notificationRadius/2).toFloat()
-                                   .translated (static_cast<int> (PLUME::font::plumeFont.withHeight (20).getStringWidth ("v" + String (JucePlugin_VersionString))/2) + 5, -5));
+                                   .withY (softAreaTemp.getY() + softAreaTemp.getHeight()*2/3 + 6 - notificationRadius/2)
+                                   .translated (PLUME::font::plumeFont.withHeight (20.0f).getStringWidth ("v" + String (JucePlugin_VersionString))/2 + 5, -5)
+                                   .toFloat());
     }
 
     g.setColour (getPlumeColour (topPanelSubText));
