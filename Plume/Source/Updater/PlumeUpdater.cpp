@@ -189,9 +189,10 @@ var PlumeUpdater::fetchRepoJSON()
 {
     // Creating input stream to get file link
     int status;
-    std::unique_ptr<InputStream> urlInStream (REPO_URL.createInputStream (false, nullptr, nullptr,
-                                                                         "Authorization: token " + PLUME::auth::MACHINE_TOKEN,
-                                                                         1000, nullptr, &status));
+    std::unique_ptr<InputStream> urlInStream (REPO_URL.createInputStream (URL::InputStreamOptions (URL::ParameterHandling::inAddress)
+                                                                                .withExtraHeaders ("Authorization: token " + PLUME::auth::MACHINE_TOKEN)
+                                                                                .withConnectionTimeoutMs (1000)
+                                                                                .withStatusCode (&status)));
 
     if (urlInStream == nullptr || status != 200)
     {

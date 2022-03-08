@@ -304,17 +304,14 @@ void BugReportPanel::sendTicketAndUpdate()
                           "Content-Type: multipart/form-data;boundary=" + mimeBoundary + "\r\n");
     int statusCode;
     StringPairArray responseHeaders;
-
-    std::unique_ptr<InputStream> webStream (ticketURL.createInputStream (true,
-                                                                           nullptr,
-                                                                           nullptr,
-                                                                           headers,
-                                                                           10000,
-                                                                           &responseHeaders,
-                                                                           &statusCode,
-                                                                           5,
-                                                                           "POST"));
-
+    
+    std::unique_ptr<InputStream> webStream (ticketURL.createInputStream (URL::InputStreamOptions (URL::ParameterHandling::inPostData)
+                                                                                .withExtraHeaders (headers)
+                                                                                .withConnectionTimeoutMs (10000)
+                                                                                .withStatusCode (&statusCode)
+                                                                                .withResponseHeaders (&responseHeaders)
+                                                                                .withNumRedirectsToFollow (5)
+                                                                                .withHttpRequestCmd ("POST")));
 
     if (webStream == nullptr)
     {
