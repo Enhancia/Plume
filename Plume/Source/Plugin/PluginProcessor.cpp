@@ -358,7 +358,7 @@ void PlumeProcessor::loadGestureXml(const XmlElement& gestureData)
     int i = 0;
     gestureArray->clearAllGestures();
     
-    forEachXmlChildElement (gestureData, gesture)
+    for (auto* gesture : gestureData.getChildIterator())
     {
 		if (i < PLUME::NUM_GEST)
 		{

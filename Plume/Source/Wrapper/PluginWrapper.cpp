@@ -754,7 +754,7 @@ void PluginWrapper::addParametersToGestureFromXml (XmlElement& gesture, int gest
 {    
     if (hasWrappedInstance)
     {
-        forEachXmlChildElement (gesture, paramXml)
+        for (auto* paramXml : gesture.getChildIterator())
         {
             const int parameterIdToUse = paramXml->getIntAttribute ("plumeParameterId", -1);
 
