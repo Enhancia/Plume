@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" pluginFormats="buildAU,buildStandalone,buildVST,buildVST3"
-              version="100.2.0" companyName="Enhancia" buildVST="1" buildVST3="1"
-              buildAU="1" buildAUv3="0" buildRTAS="0" buildAAX="0" enableIAA="0"
-              pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
-              pluginManufacturer="Enhancia" pluginName="Plume" pluginDesc="Enhancia's Plume. Wraps other plugins, provides customizable and mappable gestures to use with Neova."
+<JUCERPROJECT name="Plume Tests" projectType="audioplug" buildStandalone="1"
+              pluginFormats="buildAU,buildStandalone,buildVST,buildVST3" version="100.2.0"
+              companyName="Enhancia" buildVST="1" buildVST3="1" buildAU="1"
+              buildAUv3="0" buildRTAS="0" buildAAX="0" enableIAA="0" pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
+              pluginManufacturer="Enhancia" pluginName="Plume Tests" pluginDesc="Enhancia's Plume. Wraps other plugins, provides customizable and mappable gestures to use with Neova."
               binaryDataNamespace="PlumeData" includeBinaryInJuceHeader="1"
               id="PjN2uz" pluginManufacturerCode="Enhn" pluginCode="Plum" compilerFlagSchemes="NewScheme"
               jucerFormatVersion="1">
-  <MAINGROUP id="RYgD59" name="Plume">
+  <MAINGROUP id="RYgD59" name="Plume Tests">
     <GROUP id="{9375F276-9F56-CF4A-C1B1-D4B5B9CE68B9}" name="Source">
       <GROUP id="{A52FBFC7-37D0-2099-CA5B-989B8D3A840B}" name="Updater">
         <FILE id="csAjpO" name="GitAssetDownloader.cpp" compile="1" resource="0"
