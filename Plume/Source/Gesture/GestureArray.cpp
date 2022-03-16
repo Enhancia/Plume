@@ -275,10 +275,12 @@ void GestureArray::addGesture (String gestureName, int gestureType, int gestureI
     {
         case Gesture::vibrato:
             gestures.add (new Vibrato (gestureName, gestureId, parameters));
+            owner.updateHostDisplay (AudioProcessor::ChangeDetails().withParameterInfoChanged (true));
             break;
         
         case Gesture::pitchBend:
             gestures.add (new PitchBend (gestureName, gestureId, parameters));
+            owner.updateHostDisplay (AudioProcessor::ChangeDetails().withParameterInfoChanged (true));
             break;
             
         case Gesture::tilt:
@@ -372,6 +374,7 @@ void GestureArray::addGestureCopyingOther (Gesture* other, int gestureId, String
     gestures.getLast()->setMidiHigh (other->getMidiHigh());
     gestures.getLast()->setMidiReverse (other->getMidiReverse());
     
+    owner.updateHostDisplay (AudioProcessor::ChangeDetails().withParameterInfoChanged (true));
     checkPitchMerging();
 }
 
@@ -522,6 +525,7 @@ void GestureArray::moveGestureToId (int idToMoveFrom, int idToMoveTo)
     ScopedLock gestlock (gestureArrayLock);
     
     Gesture* gestureToMove = getGesture (idToMoveFrom);
+    const int midiParameterId = gestureToMove->getMidiParameterReference().parameterId;
 
     if (gestureToMove == nullptr || !isIdAvailable(idToMoveTo)) return;
 
@@ -529,6 +533,8 @@ void GestureArray::moveGestureToId (int idToMoveFrom, int idToMoveTo)
     gestures.getLast()->swapParametersWithOtherGesture (*gestureToMove);
     removeGesture (idToMoveFrom);
     
+    if (midiParameterId != -1) gestures.getLast()->setMidiParameter (midiParameterId);
+
     //gestures.getLast()->sendChangeMessage(); // Alert to update Ui
 }
 
@@ -596,15 +602,26 @@ void GestureArray::swapGestures (int firstId, int secondId)
 
 	ScopedLock gestlock(gestureArrayLock);
 
-    std::unique_ptr<Gesture> secondGesture;
-    secondGesture.reset (gestures.removeAndReturn(gestures.indexOf(getGesture(secondId))));
+    const int secondMidiParameterId = getGesture(secondId)->getMidiParameterReference().parameterId;
 
-    // Replaces second gesture with first
-    moveGestureToId (firstId, secondId);
+    {
+        std::unique_ptr<Gesture> secondGesture;
 
-    // Copies second gesture to first Id
-    addGestureCopyingOther (secondGesture.get(), firstId);
-    getGesture (firstId)->swapParametersWithOtherGesture (*secondGesture);
+        secondGesture.reset(gestures.removeAndReturn(gestures.indexOf(getGesture(secondId))));
+
+        // Replaces second gesture with first
+        moveGestureToId(firstId, secondId);
+
+        // Copies second gesture to first Id
+        addGestureCopyingOther(secondGesture.get(), firstId);
+
+        //Sets MAP and Midi parameters for second gesture
+        getGesture(firstId)->swapParametersWithOtherGesture(*secondGesture);
+
+        secondGesture = nullptr;
+    }
+
+    if (secondMidiParameterId != -1) getGesture (firstId)->setMidiParameter (secondMidiParameterId);
 }
 
 //==============================================================================

@@ -17,6 +17,7 @@ Gesture::Gesture (String gestName, int gestType, int gestId, const NormalisableR
          		  : type (gestType), name (gestName), id (gestId), range (maxRange), description (gestureDescription), plumeParametersRef (plumeParameters)
 {
     mapped = false;
+    midiParameter.reset (new MidiParameter (plumeParametersRef, *this));
     setGestureValue (defaultValue);
     setMidiLow (defaultMidiRange.getStart(), false);
     setMidiHigh (defaultMidiRange.getEnd(), false);
@@ -210,6 +211,8 @@ void Gesture::setMapped (bool shouldBeMapped)
 void Gesture::setGeneratesMidi (bool shouldGenerateMidi)
 {
     midiOnParameterOff = shouldGenerateMidi;
+
+    handleModeChange();
 }
 
 void Gesture::setCc (int ccValue)
@@ -436,7 +439,7 @@ void Gesture::addParameterAtId (AudioProcessorParameter& param,
     ScopedLock paramlock (parameterArrayLock);
     
     // Parameter is unused
-    if (stateRef.processor.getParameters()[plumeIdToAddParameterTo]->getName (50) == "Unmapped Parameter")
+    if (stateRef.processor.getParameters()[plumeIdToAddParameterTo]->getName (50) == PLUME::param::defaultParameterName)
     {
         parameterArray.add (new MappedParameter (param, stateRef, r, id, plumeIdToAddParameterTo, rev));
         mapped = true;
@@ -514,12 +517,92 @@ bool Gesture::parameterIsMapped (int parameterId)
     return false;
 }
 
+bool Gesture::plumeParameterIsUsedByThisGesture (const int parameterId)
+{
+    ScopedLock paramlock (parameterArrayLock);
+    
+    for (auto* param : parameterArray)
+    {
+        if (param->plumeParameter.getParameterIndex() == parameterId) return true;
+    }
+    
+    return false;
+}
+
 void Gesture::swapParametersWithOtherGesture (Gesture& other)
 {
     parameterArray.swapWith (other.getParameterArray());
     mapped = !parameterArray.isEmpty();
 
+    /*
+    if (midiParameter->plumeParameterPtr || other.getMidiParameterReference().plumeParameterPtr)
+    {
+        Gesture::MidiParameter otherMidiParamTemp = other.getMidiParameter();
+
+        other.getMidiParameterReference() = *midiParameter;
+        *midiParameter = otherMidiParamTemp;
+    }*/
+
     sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
+}
+
+Gesture::MidiParameter Gesture::getMidiParameter()
+{
+    // Make sure your midi parameter is initialized if you wanna get a reference for it...
+    jassert (midiParameter);
+
+    return *midiParameter.get();
+}
+
+Gesture::MidiParameter& Gesture::getMidiParameterReference()
+{
+    // Make sure your midi parameter is initialized if you wanna get a reference for it...
+    jassert (midiParameter);
+
+    return *midiParameter.get();
+}
+
+void Gesture::setMidiParameter (int paramIdToUse, const bool cleanFormerParameter)
+{
+    if (paramIdToUse == -1)
+        paramIdToUse = findFirstUnusedParameter();
+
+    if (RangedAudioParameter* plumeParameterPtrTemp = plumeParametersRef.getParameter ("Parameter_" + String (paramIdToUse)))
+    {
+        // Make sure you're not overriding an existing parameter to avoid unhandled behaviour and bad access errors...
+        jassert (plumeParameterPtrTemp->getParameterID() != PLUME::param::defaultParameterName);
+
+        // Cleans parameter (if it was already set)
+        if (cleanFormerParameter && midiParameter->parameterId != -1)
+        {
+            removeMidiParameter();
+        }
+
+        // Find id to put parameter in
+        midiParameter->parameterId = paramIdToUse;
+
+        //add listener for parameter && store parameter ptr
+        midiParameter->plumeParameterPtr = plumeParameterPtrTemp;
+        plumeParametersRef.addParameterListener (plumeParameterPtrTemp->getParameterID(), midiParameter.get());
+
+        // change parameter name to midi name
+        if (auto* plumeParamTempPointerRecast = dynamic_cast<PlumeParameter<juce::AudioParameterFloat>*> (plumeParameterPtrTemp))
+        {
+            plumeParamTempPointerRecast->setName (name + " MIDI");
+        }
+    }
+}
+
+void Gesture::removeMidiParameter()
+{
+    if (midiParameter->plumeParameterPtr)
+    {
+        // change parameter name to default name
+        if (auto* plumeParamTempPointerRecast = dynamic_cast<PlumeParameter<juce::AudioParameterFloat>*> (midiParameter->plumeParameterPtr))
+        {
+            plumeParamTempPointerRecast->setName (PLUME::param::defaultParameterName);
+        }
+    }
 }
 
 void Gesture::updateMappedParameters()
@@ -670,13 +753,45 @@ void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
     }
 }
 
+void Gesture::handleModeChange()
+{
+    if (midiOnParameterOff) // Just switched to midi mode
+    {
+        if (midiParameter->parameterId == -1) //parameter is not initialized yet
+        {
+            setMidiParameter();
+        }
+    }
+    else // Just switched to MAP mode
+    {        
+    }
+}
+
 int Gesture::findFirstUnusedParameter()
 {
     int unusedId = 0;
 
     for (auto* parameter : plumeParametersRef.processor.getParameters())
     {
-        if (parameter->getName (100) == "Unmapped Parameter") return unusedId;
+        if (parameter->getName (100) == PLUME::param::defaultParameterName) return unusedId;
+        unusedId++;
+    }
+
+    return -1;
+}
+
+int Gesture::findFirstUnusedParameterForMidiParam()
+{
+    int unusedId = 0;
+
+    for (auto* parameter : plumeParametersRef.processor.getParameters())
+    {
+        if (plumeParameterIsUsedByThisGesture (parameter->getParameterIndex()) ||
+            parameter->getName (100) == PLUME::param::defaultParameterName)
+        {
+            return unusedId;
+        }
+        
         unusedId++;
     }
 
@@ -714,7 +829,7 @@ Gesture::MappedParameter::~MappedParameter()
 
     if (auto* plumeParamTempPointer = dynamic_cast<PlumeParameter<juce::AudioParameterFloat>*> (&plumeParameter))
     {
-        plumeParamTempPointer->setName ("Unmapped Parameter");
+        plumeParamTempPointer->setName (PLUME::param::defaultParameterName);
     }
 }
         
@@ -754,5 +869,48 @@ void Gesture::MappedParameter::parameterGestureChanged (int, bool gestureIsStart
         // Send plume param notification
         if (isBeingChanged) plumeParameter.beginChangeGesture();
         else                plumeParameter.endChangeGesture();
+    }
+}
+
+Gesture::MidiParameter::MidiParameter (AudioProcessorValueTreeState& stateRef, Gesture& currentGesture) : parametersRef (stateRef), gestureRef (currentGesture)
+{
+}
+
+Gesture::MidiParameter::MidiParameter (const MidiParameter& other)
+            : parametersRef (other.parametersRef), gestureRef (other.gestureRef),
+              parameterId (other.parameterId), isBeingChanged (other.isBeingChanged),
+              plumeParameterPtr (other.plumeParameterPtr)
+{
+}
+
+Gesture::MidiParameter::~MidiParameter()
+{
+    if (plumeParameterPtr)
+    {
+        if (isBeingChanged) plumeParameterPtr->endChangeGesture(); // If gesture was currently moving, sends end change message before deletion
+
+        parametersRef.removeParameterListener ("Parameter_" + String (parameterId), this);
+        
+        if (auto* plumeParamTempPointer = dynamic_cast<PlumeParameter<juce::AudioParameterFloat>*> (plumeParameterPtr))
+        {
+            plumeParamTempPointer->setName (PLUME::param::defaultParameterName);
+        }
+    }
+}
+
+Gesture::MidiParameter& Gesture::MidiParameter::operator= (const Gesture::MidiParameter& other) noexcept
+{
+    plumeParameterPtr = other.plumeParameterPtr;
+    parameterId = other.parameterId;
+    
+    return *this;
+}
+        
+void Gesture::MidiParameter::parameterChanged (const String&, float newValue)
+{
+    // Change plumeParam
+    if (/*TODO SET CONDITION : GESTURE VALUE RESCALED TO [0.0f-1.0f] != plumeParameterPtr.getValue()*/true)
+    {
+        // TODO set gesture midiValue
     }
 }

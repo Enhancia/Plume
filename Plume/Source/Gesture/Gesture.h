@@ -96,11 +96,48 @@ public:
 
         Range<float> range; /**< \brief Range of values from the parameter that the Gesture controls. */
         bool reversed; /**< \brief Boolean that tells if the parameter's range should be inverted. */
-        float lastComputedValue = 0.0f;
-        float displayValue = 0.0f;
-        bool isBeingChanged = false;
-        const int gestureId;
-        const int parameterId;
+        float lastComputedValue = 0.0f; /**< \brief Stores the last ring-computed value. Might differ from displayValue due to automations and user changes from the wrapped editor window. */
+        float displayValue = 0.0f; /**< \brief Stores the value that will be displayed in Plume's interface. */
+        bool isBeingChanged = false; /**< \brief Boolean that holds the parameter gesture change state. */
+        const int gestureId; /**< \brief ID of current gesture. */
+        const int parameterId; /**< \brief ID of the plume parameter. */
+    };
+    
+     /**
+     *  \struct MidiParameter
+     *
+     *  \brief Struct that holds a reference to a Plume parameter and its ID, as well as helper methods to create a automatable parameter for the MIDI mode.
+     *
+     *  This struct is used by the Gesture class to automate its MIDI mode value, allowing
+     *  it to record pitch and CC changes in a project.
+     */
+    struct MidiParameter : public AudioProcessorValueTreeState::Listener
+    {
+        /**
+         * \brief Midi Parameter struct constructor
+        */
+        MidiParameter (AudioProcessorValueTreeState& stateRef, Gesture& currentGesture);
+
+        /**
+         * \brief Midi Parameter struct copy constructor
+        */
+        MidiParameter (const MidiParameter& other);
+        
+        /**
+         * \brief Midi Parameter struct destructor
+        */
+        ~MidiParameter();
+
+        MidiParameter& operator= (const MidiParameter& other) noexcept;
+        
+        void parameterChanged (const String& parameterID, float newValue) override;
+        
+        AudioProcessorValueTreeState& parametersRef; /**< \brief Reference to the parameters from Plume. */
+        AudioProcessorParameter* plumeParameterPtr = nullptr; /**< \brief Pointer to the currently used Plume Parameter. */
+
+        bool isBeingChanged = false; /**< \brief Boolean that holds the parameter gesture change state. */
+        Gesture& gestureRef; /**< \brief Reference to the current gesture. */
+        int parameterId = -1; /**< \brief ID of the plume parameter. */
     };
     
     //==============================================================================
@@ -486,16 +523,43 @@ public:
     OwnedArray<MappedParameter>& getParameterArray();
     
     /**
-     *  \brief Checks if a specific parameter is already mapped to the gesture.
+     *  \brief Checks if a specific wrapped parameter is already mapped to the gesture.
      *  
      *  \return True if the parameter is found for this gesture.
      */
     bool parameterIsMapped (int parameterId);
 
     /**
+     *  \brief Checks if a specific plumeParameter is already used by the gesture's parameter array.
+     *  
+     *  \return True if the parameter is found for this gesture.
+     */
+    bool plumeParameterIsUsedByThisGesture (const int parameterId);
+
+    /**
      *  \brief Replaces the mapped parameters with another gesture's.
      */
     void swapParametersWithOtherGesture (Gesture& other);
+
+    /**
+     *  \brief Gets the current MidiParameter.
+     */
+    MidiParameter getMidiParameter();
+
+    /**
+     *  \brief Sets the MidiParameter to a specific id. If the Id is -1, will use the first available one.
+     */
+    void setMidiParameter (int paramIdToUse = -1, const bool cleanFormerParameter = true);
+
+    /**
+     *  \brief Gets the current MidiParameter as a reference to access its memebers.
+     */
+    MidiParameter& getMidiParameterReference();
+
+    /**
+     *  \brief Resets midi parameter name for the DAW and removes the internal parameter pointer.
+     */
+    void removeMidiParameter();
     
     //==============================================================================
     const int type; /**< \brief Type of Gesture. Int value from gestureType enum */
@@ -576,7 +640,12 @@ protected:
     void addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int channel);
     void addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int channel, int value);
 
+    /**
+     * \brief Updates internal state and listening when gesture midi mode state changes.
+    */
+    void handleModeChange();
     int findFirstUnusedParameter();
+    int findFirstUnusedParameterForMidiParam();
     
     //==============================================================================
     String name; /**< \brief Specific name of the gesture. By default it is the gesture type*/
@@ -603,6 +672,7 @@ protected:
     OwnedArray<MappedParameter> parameterArray;  /**< \brief Array of all the MappedParameter that the gesture controls. */
     bool parametersWereChangedSinceLastUpdate = false; /**< \brief Bool parameter that tells if a call to updateMappedParameters is needed or not for the next block. */
     AudioProcessorValueTreeState& plumeParametersRef;
+    std::unique_ptr<MidiParameter> midiParameter;
     
     //==============================================================================
     CriticalSection parameterArrayLock;
