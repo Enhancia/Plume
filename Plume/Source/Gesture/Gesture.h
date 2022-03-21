@@ -184,11 +184,19 @@ public:
     int getMidiValue();
     
     /**
-     *  \brief Method that stores the value that will be used to create a MIDI message.
+     *  \brief Method that updtaes the value that will be used to create the next MIDI message.
      *
-     *  Override this method to store the right value, according to gesture current value.
+     *  This method will use computeMidiValue() to get the value to use. It also has logic to
+     *  interact with the midiParameter stored in the DAW.
      */
-    virtual void updateMidiValue() =0;
+    void updateMidiValue();
+
+    /**
+     *  \brief Method that computes the value that will be used to create a MIDI message.
+     *
+     *  Override this method to create the right value, according to gesture current parameters.
+     */
+    virtual int computeMidiValue() =0;
 
     /**
      *  \brief Helper function to write the correct values for the mapped parameters.
@@ -638,7 +646,6 @@ protected:
      *  \param channel midi channel.
      */
     void addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int channel);
-    void addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int channel, int value);
 
     /**
      * \brief Updates internal state and listening when gesture midi mode state changes.
@@ -651,8 +658,9 @@ protected:
     String name; /**< \brief Specific name of the gesture. By default it is the gesture type*/
     String description; /**< \brief User specified description of the gesture. By default it is empty*/
     bool mapped; /**< \brief Boolean that represents if the gesture is mapped or not. */
-    int currentMidi = -1; /**< \brief Integer value that represents the midiValue to send to the next midi buffer*/
-    int lastMidi = -1; /**< \brief Integer value that represents the midiValue supposedely sent to the previous midiBuffer */
+    std::atomic<int> currentMidi = -1; /**< \brief Integer value that represents the midiValue to send to the next midi buffer*/
+    int lastMidi = -1; /**< \brief Integer value that represents the midiValue to send to the next midi buffer*/
+    bool midiParameterIsPerformingGesture = false;
     
     //==============================================================================
     const NormalisableRange<float> range; /**< \brief Attribute that holds the maximum range of values that the gesture can take. */

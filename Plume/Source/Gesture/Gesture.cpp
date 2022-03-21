@@ -134,6 +134,30 @@ void Gesture::addEventAndMergeAfterTouchToBuffer (MidiBuffer& midiMessages, Midi
 }
 
 //==============================================================================
+void Gesture::updateMidiValue()
+{
+    currentMidi = computeMidiValue();
+    //DBG ("[" << name << "] New computed midi : " << currentMidi);
+
+    if (midiOnParameterOff && midiParameter && midiParameter->plumeParameterPtr)
+    {
+        if (!midiParameterIsPerformingGesture && currentMidi != lastMidi)
+        {
+            midiParameterIsPerformingGesture = true;
+            midiParameter->plumeParameterPtr->beginChangeGesture();
+        }
+        else if (midiParameterIsPerformingGesture && currentMidi == lastMidi)
+        {
+            midiParameterIsPerformingGesture = false;
+            midiParameter->plumeParameterPtr->endChangeGesture();
+        }
+
+        if (midiParameterIsPerformingGesture)
+            midiParameter->plumeParameterPtr->setValueNotifyingHost (currentMidi);
+    }
+}
+
+//==============================================================================
 // Getter to the midiValue taking the midi mode range into account
 int Gesture::getMidiValue()
 {
@@ -706,50 +730,44 @@ float Gesture::mapParameter (float val, float minVal, float maxVal, Range<float>
 
 void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int channel)
 {
-	addRightMidiSignalToBuffer (midiMessages, plumeBuffer, channel, getMidiValue());
-}
-
-void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int channel, int valueToUse)
-{
     if (!generatesMidi()) return; //Does nothing if not in default midi mode
-
-    int newMidi;
+    int midiMappedToRange = -1;
     
-    if (valueToUse != lastMidi) // Prevents to send the same message twice in a row
+    if (currentMidi != lastMidi) // Prevents to send the same message twice in a row
     {
         // Assigns the right midi value depending on the signal and
         // the midiRange parameter, then adds message to the buffers
         switch (midiType)
         {
             case (Gesture::pitch):
-                newMidi = map (valueToUse, 0, 16383,
+                midiMappedToRange = map (currentMidi, 0, 16383,
                                   map (midiLow, 0.0f, 1.0f, 0, 16383),
                                   map (midiHigh,   0.0f, 1.0f, 0, 16383));
                                   
-                addEventAndMergePitchToBuffer (midiMessages, plumeBuffer, newMidi, channel);
+                addEventAndMergePitchToBuffer (midiMessages, plumeBuffer, midiMappedToRange, channel);
                 break;
             
             case (Gesture::controlChange):
-                newMidi = map (valueToUse, 0, 127,
+                midiMappedToRange = map (currentMidi, 0, 127,
                                   map (midiLow, 0.0f, 1.0f, 0, 127),
                                   map (midiHigh,   0.0f, 1.0f, 0, 127));
                                   
-                addEventAndMergeCCToBuffer (midiMessages, plumeBuffer, newMidi, getCc(), channel);
+                addEventAndMergeCCToBuffer (midiMessages, plumeBuffer, midiMappedToRange, getCc(), channel);
                 break;
             
             case (Gesture::afterTouch):
-                newMidi = map (valueToUse, 0, 127,
+                midiMappedToRange = map (currentMidi, 0, 127,
                                   map (midiLow, 0.0f, 1.0f, 0, 127),
                                   map (midiHigh,   0.0f, 1.0f, 0, 127));
                                   
-                addEventAndMergeAfterTouchToBuffer (midiMessages, plumeBuffer, newMidi, channel);
+                addEventAndMergeAfterTouchToBuffer (midiMessages, plumeBuffer, midiMappedToRange, channel);
                 break;
             
             default:
                 break;
         }
-        
-        lastMidi = valueToUse;
+
+        lastMidi = currentMidi;
     }
 }
 

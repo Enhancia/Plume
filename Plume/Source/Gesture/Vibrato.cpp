@@ -43,7 +43,7 @@ void Vibrato::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
     }
 }
 
-void Vibrato::updateMidiValue()
+int Vibrato::computeMidiValue()
 {
     bool vibTrig = (intensityRange.convertFrom0to1 (intensity) > thresholdDisplayRange.convertFrom0to1 (threshold));
     float gainVal = gainDisplayRange.convertFrom0to1 (gain);
@@ -55,7 +55,7 @@ void Vibrato::updateMidiValue()
         send = true;
 
         const float normalizedValue = (getGestureValue()/(2*9.80665f)*gainVal/200.0f*0.5f + 0.5f);
-        currentMidi = Gesture::normalizeMidi (normalizedValue, 0.0f, 1.0f, (midiType == Gesture::pitch), getMidiReverse());
+        return Gesture::normalizeMidi (normalizedValue, 0.0f, 1.0f, (midiType == Gesture::pitch), getMidiReverse());
     }
 
     // Vibrato back to neutral
@@ -64,16 +64,16 @@ void Vibrato::updateMidiValue()
         vibLast = false;
         send = true;
         
-        if (!(midiType == Gesture::pitch)) currentMidi = 64;
-        else                currentMidi = 8192;
+        if (!(midiType == Gesture::pitch)) return 64;
+        else                return 8192;
     }
 
     // No vibrato
     else
     {
         send = false;
-        if (!(midiType == Gesture::pitch)) currentMidi = 64;
-        else                currentMidi = 8192;
+        if (!(midiType == Gesture::pitch)) return 64;
+        else                return 8192;
     }
 }
 
