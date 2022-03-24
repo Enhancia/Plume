@@ -136,8 +136,7 @@ void Gesture::addEventAndMergeAfterTouchToBuffer (MidiBuffer& midiMessages, Midi
 //==============================================================================
 void Gesture::updateMidiValue()
 {
-    currentMidi = computeMidiValue();
-    //DBG ("[" << name << "] New computed midi : " << currentMidi);
+    currentMidi = getRescaledMidiValue (computeMidiValue());
 
     if (midiOnParameterOff && midiParameter && midiParameter->plumeParameterPtr)
     {
@@ -153,28 +152,31 @@ void Gesture::updateMidiValue()
         }
 
         if (midiParameterIsPerformingGesture)
-            midiParameter->plumeParameterPtr->setValueNotifyingHost (currentMidi);
+        {
+            const float normalizedMidi = NormalisableRange<float> (0.0f, (midiType == MidiType::pitch) ? 16383.0f : 127.0f, 1.0f)
+                                            .convertTo0to1 (static_cast<float> (currentMidi));
+
+            midiParameter->plumeParameterPtr->setValueNotifyingHost (normalizedMidi);
+        }
     }
 }
 
-//==============================================================================
-// Getter to the midiValue taking the midi mode range into account
 int Gesture::getMidiValue()
 {
     return currentMidi;
 }
 
-int Gesture::getRescaledMidiValue()
+int Gesture::getRescaledMidiValue (const int midiValueToUse)
 {
     if (midiType == Gesture::pitch)
     {
-        return map (getMidiValue(), 0, 16383, map (midiLow, 0.0f, 1.0f, 0, 16383),
+        return map (midiValueToUse, 0, 16383, map (midiLow, 0.0f, 1.0f, 0, 16383),
                                       map (midiHigh,   0.0f, 1.0f, 0, 16383));
     }
        
     else
     {
-        return map (getMidiValue(), 0, 127, map (midiLow, 0.0f, 1.0f, 0, 127),
+        return map (midiValueToUse, 0, 127, map (midiLow, 0.0f, 1.0f, 0, 127),
                                       map (midiHigh,   0.0f, 1.0f, 0, 127));
     }
 }
@@ -558,14 +560,17 @@ void Gesture::swapParametersWithOtherGesture (Gesture& other)
     parameterArray.swapWith (other.getParameterArray());
     mapped = !parameterArray.isEmpty();
 
-    /*
     if (midiParameter->plumeParameterPtr || other.getMidiParameterReference().plumeParameterPtr)
     {
-        Gesture::MidiParameter otherMidiParamTemp = other.getMidiParameter();
+        const int thisParamId = midiParameter->plumeParameterPtr ? midiParameter->parameterId : -1;
+        const int otherParamId = other.getMidiParameterReference().plumeParameterPtr ? other.getMidiParameterReference().parameterId : -1;
 
-        other.getMidiParameterReference() = *midiParameter;
-        *midiParameter = otherMidiParamTemp;
-    }*/
+        midiParameter->resetParameter();
+        other.getMidiParameterReference().resetParameter();
+
+        if (thisParamId != -1)  setMidiParameter (thisParamId, true);
+        if (otherParamId != -1)  other.setMidiParameter (otherParamId, true);
+    }
 
     sendChangeMessage(); // Alerts the gesture's mapperComponent to update it's Ui
 }
@@ -621,11 +626,7 @@ void Gesture::removeMidiParameter()
 {
     if (midiParameter->plumeParameterPtr)
     {
-        // change parameter name to default name
-        if (auto* plumeParamTempPointerRecast = dynamic_cast<PlumeParameter<juce::AudioParameterFloat>*> (midiParameter->plumeParameterPtr))
-        {
-            plumeParamTempPointerRecast->setName (PLUME::param::defaultParameterName);
-        }
+        midiParameter->resetParameter();
     }
 }
 
@@ -731,36 +732,23 @@ float Gesture::mapParameter (float val, float minVal, float maxVal, Range<float>
 void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int channel)
 {
     if (!generatesMidi()) return; //Does nothing if not in default midi mode
-    int midiMappedToRange = -1;
     
-    if (currentMidi != lastMidi) // Prevents to send the same message twice in a row
+    if (currentMidi != lastMidi == currentMidi != -1) // Prevents to send the same message twice in a row
     {
         // Assigns the right midi value depending on the signal and
         // the midiRange parameter, then adds message to the buffers
         switch (midiType)
         {
             case (Gesture::pitch):
-                midiMappedToRange = map (currentMidi, 0, 16383,
-                                  map (midiLow, 0.0f, 1.0f, 0, 16383),
-                                  map (midiHigh,   0.0f, 1.0f, 0, 16383));
-                                  
-                addEventAndMergePitchToBuffer (midiMessages, plumeBuffer, midiMappedToRange, channel);
+                addEventAndMergePitchToBuffer (midiMessages, plumeBuffer, currentMidi, channel);
                 break;
             
             case (Gesture::controlChange):
-                midiMappedToRange = map (currentMidi, 0, 127,
-                                  map (midiLow, 0.0f, 1.0f, 0, 127),
-                                  map (midiHigh,   0.0f, 1.0f, 0, 127));
-                                  
-                addEventAndMergeCCToBuffer (midiMessages, plumeBuffer, midiMappedToRange, getCc(), channel);
+                addEventAndMergeCCToBuffer (midiMessages, plumeBuffer, currentMidi, getCc(), channel);
                 break;
             
             case (Gesture::afterTouch):
-                midiMappedToRange = map (currentMidi, 0, 127,
-                                  map (midiLow, 0.0f, 1.0f, 0, 127),
-                                  map (midiHigh,   0.0f, 1.0f, 0, 127));
-                                  
-                addEventAndMergeAfterTouchToBuffer (midiMessages, plumeBuffer, midiMappedToRange, channel);
+                addEventAndMergeAfterTouchToBuffer (midiMessages, plumeBuffer, currentMidi, channel);
                 break;
             
             default:
@@ -903,17 +891,7 @@ Gesture::MidiParameter::MidiParameter (const MidiParameter& other)
 
 Gesture::MidiParameter::~MidiParameter()
 {
-    if (plumeParameterPtr)
-    {
-        if (isBeingChanged) plumeParameterPtr->endChangeGesture(); // If gesture was currently moving, sends end change message before deletion
-
-        parametersRef.removeParameterListener ("Parameter_" + String (parameterId), this);
-        
-        if (auto* plumeParamTempPointer = dynamic_cast<PlumeParameter<juce::AudioParameterFloat>*> (plumeParameterPtr))
-        {
-            plumeParamTempPointer->setName (PLUME::param::defaultParameterName);
-        }
-    }
+    resetParameter();
 }
 
 Gesture::MidiParameter& Gesture::MidiParameter::operator= (const Gesture::MidiParameter& other) noexcept
@@ -930,5 +908,20 @@ void Gesture::MidiParameter::parameterChanged (const String&, float newValue)
     if (/*TODO SET CONDITION : GESTURE VALUE RESCALED TO [0.0f-1.0f] != plumeParameterPtr.getValue()*/true)
     {
         // TODO set gesture midiValue
+    }
+}
+
+void Gesture::MidiParameter::resetParameter()
+{
+    if (plumeParameterPtr)
+    {
+        if (isBeingChanged) plumeParameterPtr->endChangeGesture(); // If gesture was currently moving, sends end change message before deletion
+
+        parametersRef.removeParameterListener ("Parameter_" + String (parameterId), this);
+        
+        if (auto* plumeParamTempPointer = dynamic_cast<PlumeParameter<juce::AudioParameterFloat>*> (plumeParameterPtr))
+        {
+            plumeParamTempPointer->setName (PLUME::param::defaultParameterName);
+        }
     }
 }

@@ -131,6 +131,8 @@ public:
         MidiParameter& operator= (const MidiParameter& other) noexcept;
         
         void parameterChanged (const String& parameterID, float newValue) override;
+
+        void resetParameter();
         
         AudioProcessorValueTreeState& parametersRef; /**< \brief Reference to the parameters from Plume. */
         AudioProcessorParameter* plumeParameterPtr = nullptr; /**< \brief Pointer to the currently used Plume Parameter. */
@@ -294,9 +296,9 @@ public:
     // Getter to the midiValue taking the midi mode range into account
     
     /**
-     *  \brief Getter to the midi value taking the midiRange parameter into account.
+     *  \brief Computes a midi value taking the midiRange parameter into account.
      */
-    int getRescaledMidiValue();
+    int getRescaledMidiValue (const int midiValueToUse);
     
     //==============================================================================
     // Getters and setters to the value and range of the gesture. Used by the display among others.

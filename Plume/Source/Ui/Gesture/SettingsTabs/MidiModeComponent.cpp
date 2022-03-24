@@ -490,9 +490,9 @@ void MidiRangeTuner::mouseUp (const MouseEvent& e)
 
 void MidiRangeTuner::updateDisplay()
 {
-    const int newValue = gesture.getRescaledMidiValue();
+    const int newValue = gesture.getMidiValue();
 
-    DBG ("[" << gesture.getName() << "] Updating MIDI Value : lastValue: " << lastValue << " | newValue : " << newValue);
+    //DBG ("[" << gesture.getName() << "] Updating MIDI Value : lastValue: " << lastValue << " | newValue : " << newValue);
 
     if (newValue != lastValue)
     {
