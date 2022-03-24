@@ -134,12 +134,12 @@ void MidiModeComponent::comboBoxChanged (ComboBox* box)
         gesture.midiType = midiTypeBox->getSelectedId();
 
         // Changes the range default value depending on the type
-        if ((gesture.type == Gesture::tilt || gesture.type == Gesture::roll))
-        {
-            gesture.setMidiHigh (1.0f, false);
-            gesture.setMidiLow (isCC ? 0.0f : 0.5f, false);
-            midiRangeTuner->updateComponents (MidiRangeTuner::middleArea);
-        }
+        //if ((gesture.type == Gesture::tilt || gesture.type == Gesture::roll))
+        //{
+        //    gesture.setMidiHigh (1.0f, false);
+        //    gesture.setMidiLow (isCC ? 0.0f : 0.5f, false);
+        //    midiRangeTuner->updateComponents (MidiRangeTuner::middleArea);
+        //}
 
         gestureArray.checkPitchMerging();
 
