@@ -367,7 +367,7 @@ void VibratoTuner::drawValueCursor (Graphics& g)
 	lastValue = value;
 
 	int offset = (getIntensity() < getThreshold()) ? 0
-	                                          : static_cast<int>(value - 0.5f) * (gainSlider->getWidth() - 30)
+	                                          : static_cast<int> ((value - 0.5f) * (static_cast<float> (gainSlider->getWidth()) - 30.0f))
 	                                                           * static_cast<int>(getGain())/85;
 
 	juce::Point<int> cursorPoint = {gainSlider->getBounds().getCentreX() + offset,
