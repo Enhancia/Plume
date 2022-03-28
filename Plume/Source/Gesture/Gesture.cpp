@@ -136,34 +136,46 @@ void Gesture::addEventAndMergeAfterTouchToBuffer (MidiBuffer& midiMessages, Midi
 //==============================================================================
 void Gesture::updateMidiValue()
 {
-    currentMidi = getRescaledMidiValue (computeMidiValue());
-
-    if (midiOnParameterOff && midiParameter && midiParameter->plumeParameterPtr)
+    const int newComputedMidi = getRescaledMidiValue (computeMidiValue());
+    
+    if (newComputedMidi != computedMidi)
     {
-        if (!midiParameterIsPerformingGesture && currentMidi != lastMidi)
+        computedMidi = newComputedMidi;
+        currentMidi = newComputedMidi;
+
+        if (midiOnParameterOff && midiParameter && midiParameter->plumeParameterPtr)
         {
-            midiParameterIsPerformingGesture = true;
-            midiParameter->plumeParameterPtr->beginChangeGesture();
-        }
-        else if (midiParameterIsPerformingGesture && currentMidi == lastMidi)
-        {
-            midiParameterIsPerformingGesture = false;
-            midiParameter->plumeParameterPtr->endChangeGesture();
+            if (!midiParameterIsPerformingGesture && currentMidi != lastMidi)
+            {
+                midiParameterIsPerformingGesture = true;
+                midiParameter->plumeParameterPtr->beginChangeGesture();
+            }
+            else if (midiParameterIsPerformingGesture && currentMidi == lastMidi)
+            {
+                midiParameterIsPerformingGesture = false;
+                midiParameter->plumeParameterPtr->endChangeGesture();
+            }
+
+            if (midiParameterIsPerformingGesture)
+            {
+                const float normalizedMidi = NormalisableRange<float> (0.0f, (midiType == MidiType::pitch) ? 16383.0f : 127.0f, 1.0f)
+                                                .convertTo0to1 (static_cast<float> (currentMidi));
+
+                midiParameter->plumeParameterPtr->setValueNotifyingHost (normalizedMidi);
+            }
         }
 
-        if (midiParameterIsPerformingGesture)
-        {
-            const float normalizedMidi = NormalisableRange<float> (0.0f, (midiType == MidiType::pitch) ? 16383.0f : 127.0f, 1.0f)
-                                            .convertTo0to1 (static_cast<float> (currentMidi));
-
-            midiParameter->plumeParameterPtr->setValueNotifyingHost (normalizedMidi);
-        }
     }
 }
 
 int Gesture::getMidiValue()
 {
     return currentMidi;
+}
+
+void Gesture::setMidiValue (const int newMidiValue)
+{
+    currentMidi = newMidiValue;
 }
 
 int Gesture::getRescaledMidiValue (const int midiValueToUse)
@@ -733,7 +745,7 @@ void Gesture::addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& 
 {
     if (!generatesMidi()) return; //Does nothing if not in default midi mode
     
-    if (currentMidi != lastMidi == currentMidi != -1) // Prevents to send the same message twice in a row
+    if ((currentMidi != lastMidi) == (currentMidi != -1)) // Prevents to send the same message twice in a row
     {
         // Assigns the right midi value depending on the signal and
         // the midiRange parameter, then adds message to the buffers
@@ -904,10 +916,12 @@ Gesture::MidiParameter& Gesture::MidiParameter::operator= (const Gesture::MidiPa
         
 void Gesture::MidiParameter::parameterChanged (const String&, float newValue)
 {
+    const int denormalizedNewValue = static_cast<int> (NormalisableRange<float> (0.0f, (gestureRef.midiType == Gesture::MidiType::pitch) ? 16383.0f : 127.0f, 1.0f).convertFrom0to1 (newValue));
+    
     // Change plumeParam
-    if (/*TODO SET CONDITION : GESTURE VALUE RESCALED TO [0.0f-1.0f] != plumeParameterPtr.getValue()*/true)
+    if (denormalizedNewValue != gestureRef.getMidiValue())
     {
-        // TODO set gesture midiValue
+        gestureRef.setMidiValue (denormalizedNewValue);
     }
 }
 

@@ -184,6 +184,7 @@ public:
      *  \return The correct value to create a midi message, between 0 and 127.
      */
     int getMidiValue();
+    void setMidiValue (const int newMidiValue);
     
     /**
      *  \brief Method that updtaes the value that will be used to create the next MIDI message.
@@ -662,6 +663,7 @@ protected:
     bool mapped; /**< \brief Boolean that represents if the gesture is mapped or not. */
     std::atomic<int> currentMidi = -1; /**< \brief Integer value that represents the midiValue to send to the next midi buffer*/
     int lastMidi = -1; /**< \brief Integer value that represents the midiValue to send to the next midi buffer*/
+    int computedMidi = -1; /**< \brief Integer value that represents the midiValue computed using the ring data*/
     bool midiParameterIsPerformingGesture = false;
     
     //==============================================================================
