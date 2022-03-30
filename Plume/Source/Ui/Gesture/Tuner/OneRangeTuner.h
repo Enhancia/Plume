@@ -78,8 +78,8 @@ private:
     void resizeButtons();
     
     //==============================================================================
-    void setRangeLow (float value, const bool createChangeGesture = false);
-    void setRangeHigh (float value, const bool createChangeGesture = false);
+    void setRangeLow (float value);
+    void setRangeHigh (float value);
     
     float getRangeLow();
     float getRangeHigh();

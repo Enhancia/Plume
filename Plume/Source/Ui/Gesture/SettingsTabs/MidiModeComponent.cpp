@@ -490,9 +490,13 @@ void MidiRangeTuner::mouseUp (const MouseEvent& e)
 
 void MidiRangeTuner::updateDisplay()
 {
-    if (gesture.getRescaledMidiValue() != lastValue)
+    const int newValue = gesture.getMidiValue();
+
+    //DBG ("[" << gesture.getName() << "] Updating MIDI Value : lastValue: " << lastValue << " | newValue : " << newValue);
+
+    if (newValue != lastValue)
     {
-        lastValue = gesture.getRescaledMidiValue();
+        lastValue = newValue;
         
         repaint (lowSlider->getBounds().withY (lowSlider->getBounds().getCentreY() - 13)
                                        .withHeight (8));

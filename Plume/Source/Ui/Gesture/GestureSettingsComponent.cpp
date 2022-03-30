@@ -293,6 +293,7 @@ void GestureSettingsComponent::createToggles()
     midiParameterToggle->onStateChange = [this] ()
     {
         gesture.setGeneratesMidi (midiParameterToggle->getToggleState());
+        gestureArray.getOwnerProcessor().updateHostDisplay (AudioProcessor::ChangeDetails().withParameterInfoChanged (true));
         showAppropriatePanel();
         getParentComponent()->repaint();
     };

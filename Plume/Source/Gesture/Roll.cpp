@@ -37,9 +37,9 @@ void Roll::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
     addRightMidiSignalToBuffer (midiMessages, plumeBuffer, 1);
 }
 
-void Roll::updateMidiValue()
+int Roll::computeMidiValue()
 {
-    currentMidi = Gesture::normalizeMidi (getGestureValue(),
+    return Gesture::normalizeMidi (getGestureValue(),
                                    rollDisplayRange.convertFrom0to1 (rangeLow),
                                    rollDisplayRange.convertFrom0to1 (rangeHigh),
                                    (midiType == Gesture::pitch),

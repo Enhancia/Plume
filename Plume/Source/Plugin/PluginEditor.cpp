@@ -97,13 +97,9 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	PLUME::UI::ANIMATE_UI_FLAG = true;
 
   #if JUCE_WINDOWS
-    if (auto messageManagerPtr = MessageManager::getInstanceWithoutCreating())
-    {
-    	plumeWindowHook = SetWindowsHookExA(WH_CALLWNDPROC, PLUME::messageHook,
-                                            NULL, reinterpret_cast<DWORD> (messageManagerPtr->getCurrentMessageThread()));
-
-    	jassert (plumeWindowHook != NULL);
-    }
+    plumeWindowHook = SetWindowsHookExA(WH_CALLWNDPROC, PLUME::messageHook,
+                                            NULL, GetCurrentThreadId());
+    jassert (plumeWindowHook != NULL);
   #endif
 
     newGesturePanel->toFront (false);

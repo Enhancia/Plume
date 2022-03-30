@@ -148,7 +148,7 @@ void TwoRangeTuner::updateComponents (TwoRangeTuner::DraggableObject thumbThatSh
             DBG ("left low update");
             if (leftHighSlider->getThumbBeingDragged() == -1 && rangeLeftLow > rangeLeftHigh)
             {
-                setRangeLeftHigh (getRangeLeftLow(), true);
+                setRangeLeftHigh (getRangeLeftLow());
 
                 // Allows the DAW to update the value without using slider->setValue() with a notification
                 // The latter causes crashes on Ableton Live
@@ -167,7 +167,7 @@ void TwoRangeTuner::updateComponents (TwoRangeTuner::DraggableObject thumbThatSh
             DBG ("left high update");
             if (leftLowSlider->getThumbBeingDragged() == -1 && rangeLeftLow > rangeLeftHigh)
             {
-                setRangeLeftLow (getRangeLeftHigh(), true);
+                setRangeLeftLow (getRangeLeftHigh());
 
                 // Allows the DAW to update the value without using slider->setValue() with a notification
                 // The latter causes crashes on Ableton Live
@@ -176,7 +176,7 @@ void TwoRangeTuner::updateComponents (TwoRangeTuner::DraggableObject thumbThatSh
 
             if (rangeLeftHigh > rangeRightLow) // Tries to overlap with right range
             {
-                setRangeLeftHigh (getRangeRightLow(), true);
+                setRangeLeftHigh (getRangeRightLow());
                 return;
             }
 
@@ -192,7 +192,7 @@ void TwoRangeTuner::updateComponents (TwoRangeTuner::DraggableObject thumbThatSh
             DBG ("right low update");
             if (rightHighSlider->getThumbBeingDragged() == -1 && rangeRightLow > rangeRightHigh)
             {
-                setRangeRightHigh (getRangeRightLow(), true);
+                setRangeRightHigh (getRangeRightLow());
 
                 // Allows the DAW to update the value without using slider->setValue() with a notification
                 // The latter causes crashes on Ableton Live
@@ -201,7 +201,7 @@ void TwoRangeTuner::updateComponents (TwoRangeTuner::DraggableObject thumbThatSh
 
             if (rangeLeftHigh > rangeRightLow) // Tries to overlap with left range
             {
-                setRangeRightLow (getRangeLeftHigh(), true);
+                setRangeRightLow (getRangeLeftHigh());
                 return;
             }
 
@@ -217,7 +217,7 @@ void TwoRangeTuner::updateComponents (TwoRangeTuner::DraggableObject thumbThatSh
             DBG ("right high update");
             if (rightLowSlider->getThumbBeingDragged() == -1 && rangeRightLow > rangeRightHigh)
             {
-                setRangeRightLow (getRangeRightHigh(), true);
+                setRangeRightLow (getRangeRightHigh());
 
                 // Allows the DAW to update the value without using slider->setValue() with a notification
                 // The latter causes crashes on Ableton Live
@@ -352,7 +352,7 @@ void TwoRangeTuner::sliderValueChanged (Slider* sldr)
 	    // In case the other thumb is dragged along..
 		if (leftHighSlider->getThumbBeingDragged() == -1 && rangeLeftLow > rangeLeftHigh)
 		{
-			setRangeLeftHigh (float(sldr->getValue()), true);
+			setRangeLeftHigh (float(sldr->getValue()));
             leftHighSlider->setValue (sldr->getValue(), dontSendNotification);
             updateLabelBounds (rangeLabelMaxLeft.get());
 			rangeLabelMaxLeft->setText(String(int(getRangeLeftHigh())) + valueUnit, dontSendNotification);
@@ -381,7 +381,7 @@ void TwoRangeTuner::sliderValueChanged (Slider* sldr)
 	    // in case the other thumb is dragged along..
 		if (leftLowSlider->getThumbBeingDragged() == -1 && rangeLeftLow > rangeLeftHigh)
 		{
-            setRangeLeftLow (float(sldr->getValue()), true);
+            setRangeLeftLow (float(sldr->getValue()));
             leftLowSlider->setValue (sldr->getValue(), dontSendNotification);
             updateLabelBounds (rangeLabelMinLeft.get());
 			rangeLabelMinLeft->setText(String(int(getRangeLeftLow())) + valueUnit, dontSendNotification);
@@ -409,7 +409,7 @@ void TwoRangeTuner::sliderValueChanged (Slider* sldr)
 	    // in case the other thumb is dragged along..
 		if (rightHighSlider->getThumbBeingDragged() == -1 && rangeRightLow > rangeRightHigh)
 		{
-            setRangeRightHigh (float(sldr->getValue()), true);
+            setRangeRightHigh (float(sldr->getValue()));
             rightHighSlider->setValue (sldr->getValue(), dontSendNotification);
             updateLabelBounds (rangeLabelMaxRight.get());
 			rangeLabelMaxRight->setText(String(int(getRangeRightHigh())) + valueUnit, dontSendNotification);
@@ -437,7 +437,7 @@ void TwoRangeTuner::sliderValueChanged (Slider* sldr)
 	    // in case the other thumb is dragged along..
 		if (rightLowSlider->getThumbBeingDragged() == -1 && rangeRightLow > rangeRightHigh)
 		{
-			setRangeRightLow (float(sldr->getValue()), true);
+			setRangeRightLow (float(sldr->getValue()));
             rightLowSlider->setValue (sldr->getValue(), dontSendNotification);
             updateLabelBounds (rangeLabelMinRight.get());
 			rangeLabelMinRight->setText(String(int(getRangeRightLow())) + valueUnit, dontSendNotification);
@@ -772,22 +772,22 @@ void TwoRangeTuner::createButtons()
     setButtonSettings (*maxRightAngleButton);
 }
     
-void TwoRangeTuner::setRangeLeftLow (float val, const bool createChangeGesture)
+void TwoRangeTuner::setRangeLeftLow (float val)
 {
     rangeLeftLow = parameterMax.convertTo0to1 (val);
 }
     
-void TwoRangeTuner::setRangeLeftHigh (float val, const bool createChangeGesture)
+void TwoRangeTuner::setRangeLeftHigh (float val)
 {
     rangeLeftHigh = parameterMax.convertTo0to1 (val);
 }
     
-void TwoRangeTuner::setRangeRightLow (float val, const bool createChangeGesture)
+void TwoRangeTuner::setRangeRightLow (float val)
 {
     rangeRightLow = parameterMax.convertTo0to1 (val);
 }
     
-void TwoRangeTuner::setRangeRightHigh (float val, const bool createChangeGesture)
+void TwoRangeTuner::setRangeRightHigh (float val)
 {
     rangeRightHigh = parameterMax.convertTo0to1 (val);
 }

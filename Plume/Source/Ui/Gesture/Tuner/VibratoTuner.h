@@ -60,8 +60,8 @@ private:
     void computeSmoothIntensity (float smoothnessRamp);
 
     //==============================================================================
-    void setGain (float value, const bool createChangeGesture = false);
-    void setThreshold (float value, const bool createChangeGesture = false);
+    void setGain (float value);
+    void setThreshold (float value);
     std::atomic<float>& getIntensityReference();
 
     float getGain();
