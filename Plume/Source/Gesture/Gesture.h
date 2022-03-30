@@ -661,7 +661,7 @@ protected:
     String name; /**< \brief Specific name of the gesture. By default it is the gesture type*/
     String description; /**< \brief User specified description of the gesture. By default it is empty*/
     bool mapped; /**< \brief Boolean that represents if the gesture is mapped or not. */
-    std::atomic<int> currentMidi = -1; /**< \brief Integer value that represents the midiValue to send to the next midi buffer*/
+    std::atomic<int> currentMidi; /**< \brief Integer value that represents the midiValue to send to the next midi buffer*/
     int lastMidi = -1; /**< \brief Integer value that represents the midiValue to send to the next midi buffer*/
     int computedMidi = -1; /**< \brief Integer value that represents the midiValue computed using the ring data*/
     bool midiParameterIsPerformingGesture = false;

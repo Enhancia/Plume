@@ -16,8 +16,10 @@ Gesture::Gesture (String gestName, int gestType, int gestId, const NormalisableR
         
          		  : type (gestType), name (gestName), id (gestId), range (maxRange), description (gestureDescription), plumeParametersRef (plumeParameters)
 {
+
     mapped = false;
     midiParameter.reset (new MidiParameter (plumeParametersRef, *this));
+    currentMidi = -1;
     setGestureValue (defaultValue);
     setMidiLow (defaultMidiRange.getStart(), false);
     setMidiHigh (defaultMidiRange.getEnd(), false);
