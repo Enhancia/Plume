@@ -41,13 +41,20 @@ void PitchBend::addGestureMidi(MidiBuffer& midiMessages, MidiBuffer& plumeBuffer
 {
     if (!isActive()) return; // does nothing if the gesture is inactive or mapped
 
-    if (send)
+    if (send || currentMidi != computedMidi)
     {
         // Creates the pitchwheel message
         addRightMidiSignalToBuffer(midiMessages, plumeBuffer, 1);
 
         //if (lastMidi == (midiType == Gesture::pitch) ? 8192 : 64) pbLast = false;
     }
+}
+
+void PitchBend::updateMidiValue()
+{
+    Gesture::updateMidiValue();
+
+    if (currentMidi != computedMidi) send = true;
 }
 
 int PitchBend::computeMidiValue()
@@ -58,11 +65,6 @@ int PitchBend::computeMidiValue()
     // Right side
     if (getGestureValue() >= rangeRightStart && getGestureValue() < 140.0f)
     {
-        /*
-        DBG ("PITCH BEND case RIGHT = \nValue " << getGestureValue() <<
-            " | Send " << (send ? "Y" : "N") <<
-            " | Last " << (pbLast ? "Y" : "N"));*/
-
         send = true;
         pbLast = true;
         

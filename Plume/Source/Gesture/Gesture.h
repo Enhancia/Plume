@@ -192,7 +192,7 @@ public:
      *  This method will use computeMidiValue() to get the value to use. It also has logic to
      *  interact with the midiParameter stored in the DAW.
      */
-    void updateMidiValue();
+    virtual void updateMidiValue();
 
     /**
      *  \brief Method that computes the value that will be used to create a MIDI message.

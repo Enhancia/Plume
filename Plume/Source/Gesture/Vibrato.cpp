@@ -37,10 +37,17 @@ void Vibrato::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 {
     if (!isActive()) return; // does nothing if the gesture is inactive
 
-    if (send == true)
+    if (send || currentMidi != computedMidi)
     {
         addRightMidiSignalToBuffer (midiMessages, plumeBuffer, 1);
     }
+}
+
+void Vibrato::updateMidiValue()
+{
+    Gesture::updateMidiValue();
+
+    if (currentMidi != computedMidi) send = true;
 }
 
 int Vibrato::computeMidiValue()
