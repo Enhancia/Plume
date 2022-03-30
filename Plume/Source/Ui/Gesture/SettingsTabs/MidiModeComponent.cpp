@@ -134,12 +134,12 @@ void MidiModeComponent::comboBoxChanged (ComboBox* box)
         gesture.midiType = midiTypeBox->getSelectedId();
 
         // Changes the range default value depending on the type
-        if ((gesture.type == Gesture::tilt || gesture.type == Gesture::roll))
-        {
-            gesture.setMidiHigh (1.0f, false);
-            gesture.setMidiLow (isCC ? 0.0f : 0.5f, false);
-            midiRangeTuner->updateComponents (MidiRangeTuner::middleArea);
-        }
+        //if ((gesture.type == Gesture::tilt || gesture.type == Gesture::roll))
+        //{
+        //    gesture.setMidiHigh (1.0f, false);
+        //    gesture.setMidiLow (isCC ? 0.0f : 0.5f, false);
+        //    midiRangeTuner->updateComponents (MidiRangeTuner::middleArea);
+        //}
 
         gestureArray.checkPitchMerging();
 
@@ -490,9 +490,13 @@ void MidiRangeTuner::mouseUp (const MouseEvent& e)
 
 void MidiRangeTuner::updateDisplay()
 {
-    if (gesture.getRescaledMidiValue() != lastValue)
+    const int newValue = gesture.getMidiValue();
+
+    //DBG ("[" << gesture.getName() << "] Updating MIDI Value : lastValue: " << lastValue << " | newValue : " << newValue);
+
+    if (newValue != lastValue)
     {
-        lastValue = gesture.getRescaledMidiValue();
+        lastValue = newValue;
         
         repaint (lowSlider->getBounds().withY (lowSlider->getBounds().getCentreY() - 13)
                                        .withHeight (8));

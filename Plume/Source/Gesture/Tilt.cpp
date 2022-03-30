@@ -37,9 +37,9 @@ void Tilt::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
     addRightMidiSignalToBuffer (midiMessages, plumeBuffer, 1);
 }
 
-void Tilt::updateMidiValue()
+int Tilt::computeMidiValue()
 {
-    currentMidi = Gesture::normalizeMidi (getGestureValue(),
+    return Gesture::normalizeMidi (getGestureValue(),
                                    tiltDisplayRange.convertFrom0to1 (rangeLow),
                                    tiltDisplayRange.convertFrom0to1 (rangeHigh),
                                    (midiType == Gesture::pitch),

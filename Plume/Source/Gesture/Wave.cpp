@@ -24,7 +24,7 @@ void Wave::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 {
 }
 
-void Wave::updateMidiValue()
+int Wave::computeMidiValue()
 {
 }
    

@@ -167,6 +167,8 @@ namespace PLUME
     // parameter suffixs
     namespace param
     {
+        static String defaultParameterName = "Unmapped Parameter";
+        
 		enum
 		{
             gesture_param_0 = 0,

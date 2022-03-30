@@ -21,6 +21,9 @@ PlumeAlertPanel::PlumeAlertPanel (const String& title, const String& message,
     createAndAddTextEditor (message);
     createAndAddLabel (title);
     createAndAddButtons (buttonText, hasCloseButton);
+	if(!hasKeyboardFocus(false) && (isShowing() || isOnDesktop())) {
+		grabKeyboardFocus();
+	}
 }
 
 PlumeAlertPanel::~PlumeAlertPanel()
@@ -46,8 +49,6 @@ void PlumeAlertPanel::paint (Graphics& g)
 
     g.setGradientFill (gradOut);
     g.drawRoundedRectangle (panelArea.reduced (1).toFloat(), 10.0f, 1.0f);
-
-    grabKeyboardFocus ();
 }
 
 void PlumeAlertPanel::resized()

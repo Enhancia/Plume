@@ -372,6 +372,7 @@ void HeaderComponent::createButtons()
     trackArmButton->setToggleState (processor.getParameterTree().getParameter ("track_arm")->getValue() == 1.0f, dontSendNotification);
     trackArmButton->setShape (PLUME::path::createPath (PLUME::path::onOff), false, true, false);
     trackArmButton->setClickingTogglesState (true);
+    trackArmButton->setGetsHighlighted(false);
     trackArmButton->addListener (this);
     addAndMakeVisible (*trackArmButton);
 }

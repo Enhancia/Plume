@@ -289,6 +289,8 @@ void GesturePanel::handleLeftClickDrag (const MouseEvent&)
 
 bool GesturePanel::keyPressed (const KeyPress& key)
 {
+    setWantsKeyboardFocus(true);
+
     if (hasSelectedGesture () && key.isValid ())
     {
         //remove gesture
@@ -402,6 +404,8 @@ bool GesturePanel::keyPressed (const KeyPress& key)
                 selectGestureExclusive (selectedGesture);
             }
         }
+
+        return true;
     }
 
     return false;

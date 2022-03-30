@@ -29,7 +29,6 @@ void UpdaterPanel::paint (Graphics& g)
     // updater panel area
     g.setColour (getPlumeColour (topPanelBackground));
     g.fillRoundedRectangle (panelArea.reduced (1).toFloat(), 10.0f);
-	grabKeyboardFocus();
 }
 
 void UpdaterPanel::resized()
@@ -156,6 +155,9 @@ void UpdaterPanel::resetAndOpenPanel (bool updateIsRequired)
 														  									 : noDownloadAvailable);
 
 		setVisible (true);
+		if(!hasKeyboardFocus(false) && (isShowing() || isOnDesktop())) {
+			grabKeyboardFocus();
+		}
 	}
 }
 
