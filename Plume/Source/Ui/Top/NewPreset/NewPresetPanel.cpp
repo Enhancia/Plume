@@ -158,7 +158,7 @@ void NewPresetPanel::buttonClicked (Button* bttn)
             return;
         }
         
-        createUserPreset();
+        saveUserPreset();
     }
     
     setVisible (false);
@@ -327,7 +327,7 @@ void NewPresetPanel::createBox()
     typeBox->setSelectedId (PlumePreset::other+1, dontSendNotification);
 }
 
-void NewPresetPanel::createUserPreset()
+void NewPresetPanel::saveUserPreset()
 {
     auto presetXml = std::make_unique<XmlElement> ("PLUME");
 	processor.createPluginXml (*presetXml);
@@ -358,4 +358,12 @@ void NewPresetPanel::createUserPreset()
 	}
     
     presetXml->deleteAllChildElements();
+}
+
+void NewPresetPanel::clearLabels ()
+{
+    nameLabel->setText("Preset Name...", dontSendNotification);
+    authorLabel->setText("Author Name...", dontSendNotification);
+    verLabel->setText("1.0", dontSendNotification);
+    typeBox->setSelectedId (static_cast<int>(PlumePreset::other + 1), dontSendNotification);
 }

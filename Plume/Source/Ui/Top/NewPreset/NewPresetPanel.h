@@ -37,13 +37,15 @@ public:
     void labelTextChanged (Label* lbl) override;
     void editorShown (Label* lbl, TextEditor& ed) override;
 
+    void saveUserPreset();
+    void clearLabels();
+
 private:
     //==============================================================================
     void update();
     void createLabels();
     void setLabelProperties (Label& labelToSet, bool editable =true);
     void createBox();
-    void createUserPreset();
     
     //==============================================================================
     juce::Rectangle<int> panelArea;
