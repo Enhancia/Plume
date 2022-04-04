@@ -205,7 +205,7 @@ bool PresetHandler::canSavePreset()
 
 std::unique_ptr<XmlElement> PresetHandler::getPresetXmlToLoad (int selectedPreset)
 {
-	if (selectedPreset < 0 || selectedPreset > getNumSearchedPresets()) return nullptr;
+	if (selectedPreset < 0 || selectedPreset >= getNumSearchedPresets()) return nullptr;
 
 	currentPreset = getPresetForId (selectedPreset);
 	
