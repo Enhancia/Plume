@@ -9,6 +9,7 @@
 */
 
 #include "PresetBox.h"
+#include "../Header/HeaderComponent.h"
 
 PresetBox::PresetBox (const String& componentName, PlumeProcessor& p)  : ListBox (componentName, this),
                                                                          processor (p)
@@ -336,6 +337,16 @@ void PresetBox::deletePreset (const int row)
 			updateHeader();
 	    }
     }
+
+    // get header component
+    const auto headerComp = this->getParentComponent()->
+        getParentComponent()->
+        getParentComponent()->
+        findChildWithID("header");
+
+    // recreate preset options menu in the header
+    if(const auto header = dynamic_cast<HeaderComponent*>(headerComp))
+        header->createPresetOptionsMenu();
 }
 //==============================================================================
 void PresetBox::menuCallback (int result, PresetBox* pBox, int row)
@@ -400,6 +411,17 @@ void PresetBox::setPreset (const int row)
     {
         processor.getPresetHandler().resetPreset();
     }
+
+    // get header component
+    const auto headerComp = this->getParentComponent()->
+        getParentComponent()->
+        getParentComponent()->
+        findChildWithID("header");
+
+    // recreate preset options menu in the header
+    if(const auto header = dynamic_cast<HeaderComponent*>(headerComp))
+        header->createPresetOptionsMenu();
+
 }
 
 void PresetBox::createUserPreset (const String& presetName)

@@ -51,7 +51,7 @@ public:
     //==============================================================================
     void createPluginMenu (KnownPluginList::SortMethod sort);
     void createPluginWindow();
-    void createPresetOptionsMenu();
+    void createPresetOptionsMenu(bool showNew = true, bool showSave = true, bool showEdit = true, bool showDelete = true, bool showInExplorer = true);
 
     //==============================================================================
     void setPreviousPreset();
@@ -144,7 +144,6 @@ private:
 	static void pluginMenuCallback (int result, HeaderComponent* header);
     static void presetOptionsMenuCallback(int result, HeaderComponent* header);
     void handlePluginChoice (int chosenId);
-    void handlePresetOptionsChoice(int result);
     void createButtons();
     void setPresetWithOffset (const int offset);
     void prepareGesturePanelAndLoadPreset (const int presetId);

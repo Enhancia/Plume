@@ -9,6 +9,7 @@
 */
 
 #include "NewPresetPanel.h"
+#include "../../Header/HeaderComponent.h"
 
 //==============================================================================
 NewPresetPanel::NewPresetPanel (PlumeProcessor& proc)   : processor (proc)
@@ -130,6 +131,26 @@ void NewPresetPanel::resized()
                                                 
     cancelButton->setBounds (buttonArea.removeFromLeft (buttonArea.getWidth()/2).reduced (3*MARGIN, MARGIN/2));
     saveButton  ->setBounds (buttonArea.reduced (3*MARGIN, MARGIN/2));
+}
+
+void NewPresetPanel::setNameLabel (const String nameLabelArg)
+{
+    nameLabel->setText(nameLabelArg, dontSendNotification);
+}
+
+void NewPresetPanel::setAuthorLabel (const String authorLabelArg)
+{
+    authorLabel->setText(authorLabelArg, dontSendNotification);
+}
+
+void NewPresetPanel::setVerLabel (const String verLabelArg)
+{
+    verLabel->setText(verLabelArg, dontSendNotification);
+}
+
+void NewPresetPanel::setPluginLabel (const String pluginLabelArg)
+{
+    pluginLabel->setText(pluginLabelArg, dontSendNotification);
 }
 
 void NewPresetPanel::visibilityChanged()
@@ -358,6 +379,12 @@ void NewPresetPanel::saveUserPreset()
 	}
     
     presetXml->deleteAllChildElements();
+
+    const auto headerComp = this->getParentComponent()->findChildWithID("header");
+
+    if (auto header = dynamic_cast<HeaderComponent*>(headerComp))
+        header->createPresetOptionsMenu();
+
 }
 
 void NewPresetPanel::clearLabels ()

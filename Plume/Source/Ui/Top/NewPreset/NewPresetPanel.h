@@ -29,6 +29,12 @@ public:
     //==============================================================================
     void paint (Graphics&) override;
     void resized() override;
+
+    //==============================================================================
+    void setNameLabel(const String nameLabelArg);
+    void setAuthorLabel(const String authorLabelArg);
+    void setVerLabel(const String verLabelArg);
+    void setPluginLabel(const String pluginLabelArg);
     
     //==============================================================================
     void visibilityChanged() override;
