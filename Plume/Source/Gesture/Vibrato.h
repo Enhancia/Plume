@@ -26,7 +26,7 @@ class Vibrato : public Gesture
 public:
     Vibrato (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
              float val = PLUME::gesture::VIBRATO_RANGE_DEFAULT,
-             float thresh = PLUME::gesture::VIBRATO_THRESH_DEFAULT, String description = "");
+             float thresh = PLUME::gesture::VIBRATO_THRESH_DEFAULT, String description = "", const int midiParameterId = -1);
     ~Vibrato();
     
     //==============================================================================

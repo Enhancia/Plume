@@ -11,7 +11,7 @@ Author:  Alex
 #include "Gesture.h"
 
 Gesture::Gesture (String gestName, int gestType, int gestId, const NormalisableRange<float> maxRange,
-         		  AudioProcessorValueTreeState& plumeParameters, const String valueId, String gestureDescription,
+         		  AudioProcessorValueTreeState& plumeParameters, const String valueId, String gestureDescription, const int midiParameterId,
          		  float defaultValue, int defaultCc, Range<float> defaultMidiRange)
         
          		  : type (gestType), name (gestName), id (gestId), range (maxRange), description (gestureDescription), plumeParametersRef (plumeParameters)
@@ -19,6 +19,8 @@ Gesture::Gesture (String gestName, int gestType, int gestId, const NormalisableR
 
     mapped = false;
     midiParameter.reset (new MidiParameter (plumeParametersRef, *this));
+    if (midiParameterId > 0) setMidiParameter (midiParameterId);
+    
     currentMidi = -1;
     setGestureValue (defaultValue);
     setMidiLow (defaultMidiRange.getStart(), false);
@@ -490,6 +492,9 @@ void Gesture::addParameterAtId (AudioProcessorParameter& param,
         // If you're creating a gesture parameter at a specific plume parameter id,
         // the id must not be used by another parameter...
         jassertfalse;
+
+        // Adds parameter at first unused location instead
+        addParameter (param, stateRef, r, rev);
     }
 }
 

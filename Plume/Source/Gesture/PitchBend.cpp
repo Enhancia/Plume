@@ -18,11 +18,11 @@
 using namespace PLUME;
 
 PitchBend::PitchBend (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
-                      float leftLow, float leftHigh, float rightLow, float rightHigh, String description)
+                      float leftLow, float leftHigh, float rightLow, float rightHigh, String description, const int midiParameterId)
                       
     : Gesture (gestName, Gesture::pitchBend, gestId,
                NormalisableRange<float> (PLUME::gesture::PITCHBEND_MIN, PLUME::gesture::PITCHBEND_MAX, 0.1f),
-               plumeParameters, param::valuesIds[param::roll_value], description),
+               plumeParameters, param::valuesIds[param::roll_value], description, midiParameterId),
       pitchBendDisplayRange (PLUME::UI::PITCHBEND_DISPLAY_MIN, PLUME::UI::PITCHBEND_DISPLAY_MAX, 1.0f)
 {
     midiType = Gesture::pitch;

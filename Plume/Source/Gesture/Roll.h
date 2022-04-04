@@ -26,7 +26,7 @@ class Roll : public Gesture
 public:
     Roll (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
           float lowValue = PLUME::gesture::ROLL_DEFAULT_MIN,
-          float highValue = PLUME::gesture::ROLL_DEFAULT_MAX, String description = "");
+          float highValue = PLUME::gesture::ROLL_DEFAULT_MAX, String description = "", const int midiParameterId = -1);
     ~Roll();
     
     //==============================================================================

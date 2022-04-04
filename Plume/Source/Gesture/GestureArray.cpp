@@ -729,7 +729,8 @@ void GestureArray::addGestureFromXml (XmlElement& gesture)
                                        gesture.getIntAttribute ("id", 0), parameters,
 									   float(gesture.getDoubleAttribute ("gain", PLUME::gesture::VIBRATO_RANGE_DEFAULT)),
 									   float(gesture.getDoubleAttribute ("thresh", PLUME::gesture::VIBRATO_THRESH_DEFAULT)),
-                                       gesture.getStringAttribute ("desc", "")));
+                                       gesture.getStringAttribute ("desc", ""),
+                                       gesture.getIntAttribute ("midiParameterId", -1)));
             break;
         
         case Gesture::pitchBend:
@@ -740,7 +741,8 @@ void GestureArray::addGestureFromXml (XmlElement& gesture)
                                          float(gesture.getDoubleAttribute ("endLeft", PLUME::gesture::PITCHBEND_DEFAULT_LEFTMAX)),
                                          float(gesture.getDoubleAttribute ("startRight", PLUME::gesture::PITCHBEND_DEFAULT_RIGHTMIN)),
                                          float(gesture.getDoubleAttribute ("endRight", PLUME::gesture::PITCHBEND_DEFAULT_RIGHTMAX)),
-                                         gesture.getStringAttribute ("desc", "")));
+                                         gesture.getStringAttribute ("desc", ""),
+                                         gesture.getIntAttribute ("midiParameterId", -1)));
             break;
             
         case Gesture::tilt:
@@ -749,7 +751,8 @@ void GestureArray::addGestureFromXml (XmlElement& gesture)
                                     gesture.getIntAttribute("id", 2), parameters,
 				                    float(gesture.getDoubleAttribute ("start", PLUME::gesture::TILT_DEFAULT_MIN)),
                                     float(gesture.getDoubleAttribute ("end", PLUME::gesture::TILT_DEFAULT_MAX)),
-                                    gesture.getStringAttribute ("desc", "")));
+                                    gesture.getStringAttribute ("desc", ""),
+                                    gesture.getIntAttribute ("midiParameterId", -1)));
             break;
 
         /* TODO WAVE
@@ -759,7 +762,8 @@ void GestureArray::addGestureFromXml (XmlElement& gesture)
                                     gesture.getIntAttribute("id", 0), parameters,
 				                    float(gesture.getDoubleAttribute ("start", PLUME::gesture::WAVE_DEFAULT_MIN)),
                                     float(gesture.getDoubleAttribute ("end", PLUME::gesture::WAVE_DEFAULT_MAX)),
-                                    gesture.getStringAttribute ("desc", "")));
+                                    gesture.getStringAttribute ("desc", ""),
+                                    gesture.getIntAttribute ("midiParameterId", -1)));
             break;
         */
         case Gesture::roll:
@@ -768,7 +772,8 @@ void GestureArray::addGestureFromXml (XmlElement& gesture)
                                     gesture.getIntAttribute("id", 3), parameters,
 				                    float(gesture.getDoubleAttribute ("start", PLUME::gesture::ROLL_DEFAULT_MIN)),
                                     float(gesture.getDoubleAttribute ("end", PLUME::gesture::ROLL_DEFAULT_MAX)),
-                                    gesture.getStringAttribute ("desc", "")));
+                                    gesture.getStringAttribute ("desc", ""),
+                                    gesture.getIntAttribute ("midiParameterId", -1)));
             break;
         
         default:
@@ -809,6 +814,7 @@ void GestureArray::createGestureXml (XmlElement& gesturesData)
         gestXml->setAttribute ("midiStart", g->getMidiLow());
         gestXml->setAttribute ("midiEnd", g->getMidiHigh());
         gestXml->setAttribute ("midiType", g->midiType);
+        gestXml->setAttribute ("midiParameterId", g->getMidiParameterReference().parameterId);
         
         // Gesture Specific attributes
         if (g->type == Gesture::vibrato)

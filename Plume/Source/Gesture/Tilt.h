@@ -26,7 +26,7 @@ class Tilt : public Gesture
 public:
     Tilt (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
           float lowValue = PLUME::gesture::TILT_DEFAULT_MIN,
-          float highValue = PLUME::gesture::TILT_DEFAULT_MAX, String description = "");
+          float highValue = PLUME::gesture::TILT_DEFAULT_MAX, String description = "", const int midiParameterId = -1);
     ~Tilt();
     
     //==============================================================================

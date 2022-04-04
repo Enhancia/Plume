@@ -12,9 +12,9 @@
 using namespace PLUME;
 
 Tilt::Tilt (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
-            float lowValue, float highValue, String description)
+            float lowValue, float highValue, String description, const int midiParameterId)
     : Gesture (gestName, Gesture::tilt, gestId, NormalisableRange<float> (PLUME::gesture::TILT_MIN, PLUME::gesture::TILT_MAX, 0.1f),
-               plumeParameters, "", description),
+               plumeParameters, "", description, midiParameterId),
       tiltDisplayRange (NormalisableRange<float> (PLUME::UI::TILT_DISPLAY_MIN, PLUME::UI::TILT_DISPLAY_MAX, 1.0f))
 {
     rangeLow = tiltDisplayRange.convertTo0to1 (lowValue);
