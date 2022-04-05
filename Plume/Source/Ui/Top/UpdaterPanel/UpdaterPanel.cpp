@@ -142,7 +142,7 @@ bool UpdaterPanel::keyPressed (const KeyPress& key)
         closeAndResetPanel();
     }
 
-    return false;
+    return true;
 }
 
 void UpdaterPanel::resetAndOpenPanel (bool updateIsRequired)

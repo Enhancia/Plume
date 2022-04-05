@@ -149,7 +149,7 @@ bool NewGesturePanel::keyPressed (const KeyPress& key)
         hidePanel (true);
     }
 
-    return false;
+    return true;
 }
 
 void NewGesturePanel::createNewGesture()

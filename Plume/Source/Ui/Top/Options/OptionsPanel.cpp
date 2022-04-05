@@ -128,7 +128,7 @@ bool OptionsPanel::keyPressed (const KeyPress &key)
         setVisible (false);
     }
 
-	return false;
+	return true;
 }
 
 void OptionsPanel::mouseUp (const MouseEvent& event)

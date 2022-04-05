@@ -204,7 +204,7 @@ bool PresetBox::keyPressed (const KeyPress& key)
     else if (key == PLUME::keyboard_shortcut::openPreset)
         setPreset (currentRow);
 
-    return false;
+    return true;
 }
 
 void PresetBox::selectedRowsChanged (int)

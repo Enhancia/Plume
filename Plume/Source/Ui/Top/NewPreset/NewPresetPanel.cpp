@@ -192,7 +192,7 @@ bool NewPresetPanel::keyPressed (const KeyPress& key)
         setVisible (false);
     }
 
-    return false;
+    return true;
 }
 
 void NewPresetPanel::labelTextChanged (Label* lbl)
