@@ -275,7 +275,7 @@ void NewGesturePanel::createAndAddTextEditor()
     descriptionTextEditor->setMultiLine (true, true);
     descriptionTextEditor->setReturnKeyStartsNewLine (true);
     descriptionTextEditor->setReadOnly (true);
-    descriptionTextEditor->setScrollbarsShown (true);
+    descriptionTextEditor->setScrollbarsShown (false);
     descriptionTextEditor->setPopupMenuEnabled (false);
     descriptionTextEditor->applyColourToAllText (PLUME::UI::currentTheme.getColour (PLUME::colour::sideBarMainText), true);
     descriptionTextEditor->setJustification (Justification::centred);
