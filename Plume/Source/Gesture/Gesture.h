@@ -155,7 +155,7 @@ public:
      */
     Gesture (String gestName, int gestType, int gestId, const NormalisableRange<float> maxRange,
              AudioProcessorValueTreeState& plumeParameters, const String valueId = String(),
-             String gestureDescription = String(),
+             String gestureDescription = String(), const int midiParameterId = -1,
              float defaultValue = 0.0f, int defaultCc = 1,
              Range<float> defaultMidiRange = Range<float> (0.0f, 1.0f));
     

@@ -12,10 +12,10 @@
 using namespace PLUME;
 
 Vibrato::Vibrato (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
-                  float val, float thresh, String description)
+                  float val, float thresh, String description, const int midiParameterId)
     : Gesture (gestName, Gesture::vibrato, gestId,
                NormalisableRange<float> (-PLUME::gesture::VIBRATO_RANGE_MAX, PLUME::gesture::VIBRATO_RANGE_MAX, 0.1f),
-               plumeParameters, param::valuesIds[param::vibrato_value], description),
+               plumeParameters, param::valuesIds[param::vibrato_value], description, midiParameterId),
       
       gainDisplayRange      (0.0f, PLUME::UI::VIBRATO_DISPLAY_MAX, 1.0f),
       thresholdDisplayRange (0.0f, PLUME::UI::VIBRATO_THRESH_DISPLAY_MAX, 1.0f),
