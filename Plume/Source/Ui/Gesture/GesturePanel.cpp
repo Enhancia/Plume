@@ -408,7 +408,7 @@ bool GesturePanel::keyPressed (const KeyPress& key)
         return true;
     }
 
-    return false;
+    return true;
 }
 
 void GesturePanel::initialiseGestureSlots()

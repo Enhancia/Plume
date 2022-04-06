@@ -101,7 +101,7 @@ bool PlumeAlertPanel::keyPressed (const KeyPress &key)
         exitModalState (0);
     }
 
-	return false;
+	return true;
 }
 
 void PlumeAlertPanel::createAndAddLabel (const String& textToSet)

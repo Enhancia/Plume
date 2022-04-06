@@ -132,7 +132,7 @@ bool BugReportPanel::keyPressed (const KeyPress& keyPress)
         closeAndResetPanel ();
     }
 
-    return false;
+    return true;
 }
 
 void BugReportPanel::labelTextChanged (Label*)

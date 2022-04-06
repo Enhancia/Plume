@@ -339,7 +339,7 @@ bool PlumeEditor::keyPressed (const KeyPress& key)
         }
     }
 
-    return false;
+    return true;
 }
 
 //==============================================================================
@@ -482,8 +482,11 @@ void PlumeEditor::closePendingAlertPanel()
 
 void PlumeEditor::alertPanelCallback (int modalResult, PlumeEditor* interf)
 {
-    interf->closePendingAlertPanel();
-    interf->executePanelAction (modalResult);
+    if (interf)
+    {
+        interf->closePendingAlertPanel();
+        interf->executePanelAction (modalResult);
+    }
 }
 
 void PlumeEditor::executePanelAction (const int panelReturnValue)

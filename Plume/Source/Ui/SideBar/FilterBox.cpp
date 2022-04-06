@@ -99,7 +99,7 @@ bool FilterBox::keyPressed (const KeyPress& key)
     if (key == PLUME::keyboard_shortcut::openPresetType || key == PLUME::keyboard_shortcut::openPresetTypeBis)
         setFilter (currentRow);
 
-    return false;
+    return true;
 }
 
 void FilterBox::setFilter (int row) {
