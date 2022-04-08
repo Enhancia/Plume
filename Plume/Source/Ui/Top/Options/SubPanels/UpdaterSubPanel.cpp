@@ -48,8 +48,9 @@ void UpdaterSubPanel::paintSoftwareArea (Graphics& g)
     {
         g.fillEllipse (softAreaTemp.withTrimmedTop (softAreaTemp.getHeight()*2/3)
                                    .withSizeKeepingCentre (notificationRadius, notificationRadius)
-                                   .withY (softAreaTemp.getY() + softAreaTemp.getHeight()*2/3 + 6 - notificationRadius/2).toFloat()
-                                   .translated (PLUME::font::plumeFont.withHeight (20).getStringWidth ("v" + String (JucePlugin_VersionString))/2 + 5, -5));
+                                   .withY (softAreaTemp.getY() + softAreaTemp.getHeight()*2/3 + 6 - notificationRadius/2)
+                                   .translated (PLUME::font::plumeFont.withHeight (20.0f).getStringWidth ("v" + String (JucePlugin_VersionString))/2 + 5, -5)
+                                   .toFloat());
     }
 
     g.setColour (getPlumeColour (topPanelSubText));
@@ -60,10 +61,10 @@ void UpdaterSubPanel::paintSoftwareArea (Graphics& g)
 
     Path plumePath = PLUME::path::createPath (PLUME::path::plumeLogo);
 
-    plumePath.scaleToFit (softAreaTemp.reduced (softAreaTemp.getHeight()/4).getX(),
-                          softAreaTemp.reduced (softAreaTemp.getHeight()/4).getY(),
-                          softAreaTemp.reduced (softAreaTemp.getHeight()/4).getWidth(),
-                          softAreaTemp.reduced (softAreaTemp.getHeight()/4).getHeight(),
+    plumePath.scaleToFit (softAreaTemp.reduced (softAreaTemp.getHeight()/4).toFloat().getX(),
+                          softAreaTemp.reduced (softAreaTemp.getHeight()/4).toFloat().getY(),
+                          softAreaTemp.reduced (softAreaTemp.getHeight()/4).toFloat().getWidth(),
+                          softAreaTemp.reduced (softAreaTemp.getHeight()/4).toFloat().getHeight(),
                           true);
 
     g.strokePath (plumePath, {1.0f, PathStrokeType::curved});

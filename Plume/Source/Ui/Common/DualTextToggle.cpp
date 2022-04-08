@@ -121,7 +121,7 @@ void DualTextToggle::resized()
 {
 }
 
-void DualTextToggle::mouseUp (const MouseEvent &event)
+void DualTextToggle::mouseUp (const MouseEvent &)
 {
 	switchToggleState();
 }

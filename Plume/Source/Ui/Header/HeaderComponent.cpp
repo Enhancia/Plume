@@ -9,10 +9,12 @@
 */
 
 #include "HeaderComponent.h"
+#include "../Top/NewPreset/NewPresetPanel.h"
+#include "../SideBar/PresetBox.h"
 
 //==============================================================================
 HeaderComponent::HeaderComponent (PlumeProcessor& proc, Component& newPrst)  : processor (proc),
-                                                                               newPresetPanel (newPrst)
+                                                                               userPresetPanel (newPrst)
 {
 	Component::setName ("Header");
     setComponentID ("header");
@@ -39,12 +41,13 @@ HeaderComponent::HeaderComponent (PlumeProcessor& proc, Component& newPrst)  : p
     // Battery
     batteryComponent = std::make_unique<BatteryComponent> (proc.getDataReader ()->getBatteryReference (), *proc.getDataReader());
     addAndMakeVisible (*batteryComponent);
-    //this->setBatteryVisible (true);
 
     createButtons();
     
-	// Plugin List menu
+	// Plugin List Menu
     createPluginMenu (KnownPluginList::sortByManufacturer);
+    // Preset Options Menu
+    createPresetOptionsMenu();
     
     processor.getParameterTree().addParameterListener ("track_arm", this);
 }
@@ -56,6 +59,7 @@ HeaderComponent::~HeaderComponent()
     presetNameLabel = nullptr;
     pluginListButton = nullptr;
     savePresetButton = nullptr;
+    presetOptionsButton = nullptr;
     batteryComponent = nullptr;
 }
 
@@ -107,7 +111,7 @@ void HeaderComponent::paint (Graphics& g)
     g.setColour (getPlumeColour (headerButtonBackground));
     g.fillRoundedRectangle (presetNameLabel->getBounds().reduced (0, 6)
                                                         .withLeft (trackArmButton->getX() - MARGIN_SMALL/2)
-                                                        .withRight (savePresetButton->getRight() + MARGIN_SMALL/2)
+                                                        .withRight (presetOptionsButton->getRight() + MARGIN_SMALL/2)
                                                         .toFloat(),
                             10.0f);
 
@@ -159,7 +163,7 @@ void HeaderComponent::resized()
         auto presetArea = getLocalBounds().withSizeKeepingCentre (270, area.getHeight());
         
         trackArmButton->setBounds (presetArea.removeFromLeft (20).reduced (0, MARGIN));
-        savePresetButton->setBounds (presetArea.removeFromRight (20).reduced (0, MARGIN));
+        presetOptionsButton->setBounds (presetArea.removeFromRight (20).reduced (0, MARGIN));
 
         leftArrowButton->setBounds (presetArea.removeFromLeft (HEADER_HEIGHT - 2*MARGIN).reduced (0, MARGIN));
         rightArrowButton->setBounds (presetArea.removeFromRight (HEADER_HEIGHT - 2*MARGIN).reduced (0, MARGIN));
@@ -211,7 +215,7 @@ void HeaderComponent::buttonClicked (Button* bttn)
 {
     if (bttn == pluginListButton.get())
     {
-        if (processor.getWrapper().getList().getNumTypes() == 0)
+        if (processor.getWrapper().getList().getNumTypes() == 0 || pluginListMenu.getNumItems() == 1)
         {
             processor.sendActionMessage (PLUME::commands::scanRequired);
         }
@@ -240,9 +244,17 @@ void HeaderComponent::buttonClicked (Button* bttn)
             trackArmParameter->endChangeGesture();
         }
     }
-    else if (bttn == savePresetButton.get())
+    else if (bttn == presetOptionsButton.get ())
     {
-        newPresetPanel.setVisible (true);
+        const auto menuPosition = juce::Rectangle<int> (getScreenX () + presetOptionsButton->getX (), getScreenY () + getHeight (), 1, 1);
+
+        presetOptionsMenu.showMenuAsync (PopupMenu::Options ()
+            .withParentComponent (getParentComponent ())
+            .withMinimumWidth (100)
+            .withMaximumNumColumns (3)
+            .withPreferredPopupDirection (PopupMenu::Options::PopupDirection::downwards)
+            .withTargetScreenArea (menuPosition),
+            ModalCallbackFunction::forComponent (presetOptionsMenuCallback, this));
     }
     else if (bttn == leftArrowButton.get())
     {
@@ -255,7 +267,7 @@ void HeaderComponent::buttonClicked (Button* bttn)
 }
 
 
-void HeaderComponent::parameterChanged (const String &parameterID, float newValue)
+void HeaderComponent::parameterChanged (const String &, float newValue)
 {
     trackArmButton->setToggleState (newValue == 1.0f, dontSendNotification);
 }
@@ -266,6 +278,10 @@ void HeaderComponent::pluginMenuCallback (int result, HeaderComponent* header)
     {
 		header->handlePluginChoice (result);
     }
+}
+
+void HeaderComponent::presetOptionsMenuCallback(int result, HeaderComponent* header)
+{
 }
 
 void HeaderComponent::handlePluginChoice (int chosenId)
@@ -296,7 +312,7 @@ void HeaderComponent::handlePluginChoice (int chosenId)
     }
 }
 
-void HeaderComponent::createPluginMenu (KnownPluginList::SortMethod sort)
+void HeaderComponent::createPluginMenu (const KnownPluginList::SortMethod sort)
 {
 	pluginListMenu.clear();
 	pluginListMenu.addSectionHeader ("Plugins:");
@@ -309,6 +325,73 @@ void HeaderComponent::createPluginWindow()
     {
         processor.getWrapper().createWrapperEditor (editor);
     }
+}
+
+void HeaderComponent::createPresetOptionsMenu (bool showNew, bool showSave, bool showEdit, bool showDelete, bool showInExplorer)
+{
+    presetOptionsMenu.clear ();
+
+    auto currentPresetId = processor.getPresetHandler ().getCurrentPresetIdInSearchList ();
+    bool isUserPreset = false;
+
+    // if preset exist
+    if (currentPresetId >= 0)
+        isUserPreset = processor.getPresetHandler ().isUserPreset (currentPresetId);
+    else
+        showInExplorer = false;
+
+    // new preset
+    presetOptionsMenu.addItem ("New Preset", showNew, false, [this]()
+        {
+            if (const auto newPresetPanelObj = dynamic_cast<NewPresetPanel*>(&userPresetPanel))
+            {
+                newPresetPanelObj->setVisible (true);
+                newPresetPanelObj->clearLabels ();
+            }
+        });
+
+    // quick save preset
+    presetOptionsMenu.addItem ("Save", (isUserPreset && showSave), false, [this]()
+        {
+            if (auto* newPresetPanelObj = dynamic_cast<NewPresetPanel*>(&userPresetPanel))
+            {
+                const auto currentPreset = processor.getPresetHandler ().getCurrentPreset ();
+
+                newPresetPanelObj->setNameLabel (presetNameLabel->getText ());
+                newPresetPanelObj->setAuthorLabel (currentPreset.getAuthor ());
+                newPresetPanelObj->setVerLabel (currentPreset.getVersion ());
+                newPresetPanelObj->setPluginLabel (pluginNameLabel->getText ());
+
+                newPresetPanelObj->saveUserPreset ();
+                createPresetOptionsMenu ();
+            }
+        });
+
+    // edit preset
+    presetOptionsMenu.addItem ("Edit", (isUserPreset && showEdit), false, [this]()
+        {
+            this->userPresetPanel.setVisible (true);
+        });
+
+    // delete preset
+    presetOptionsMenu.addItem ("Delete", (isUserPreset && showDelete), false, [this, currentPresetId]()
+        {
+            const auto presetBoxComp = this->getParentComponent ()->
+                findChildWithID ("sideBar")->
+                findChildWithID ("presetComponent")->
+                findChildWithID ("presetBox");
+
+            if (const auto presetBox = dynamic_cast<PresetBox*>(presetBoxComp))
+                presetBox->deletePreset (currentPresetId);
+
+            createPresetOptionsMenu (true, false, false, false, false);
+        });
+
+    // show preset in explorer
+    presetOptionsMenu.addItem ("Show in Explorer", (isUserPreset && showInExplorer), false, [this, currentPresetId]()
+        {
+            processor.getPresetHandler ().showPresetInExplorer (currentPresetId);
+        });
 }
 
 void HeaderComponent::createButtons()
@@ -329,14 +412,14 @@ void HeaderComponent::createButtons()
     pluginListButton->addListener (this);
 
     // Save Preset Button
-    savePresetButton.reset (new PlumeShapeButton ("Save Preset Button",
+    presetOptionsButton.reset (new PlumeShapeButton ("Preset Options Button",
                                                   Colour(0),
                                                   getPlumeColour (headerButtonStroke)));
-    addAndMakeVisible (*savePresetButton);
+    addAndMakeVisible (*presetOptionsButton);
 
 
-    savePresetButton->setShape (PLUME::path::createPath (PLUME::path::floppyDisk), false, true, false);
-    savePresetButton->addListener (this);
+    presetOptionsButton->setShape (PLUME::path::createPath (PLUME::path::burger), false, true, false);
+    presetOptionsButton->addListener (this);
 
     // Preset Change buttons
     Path arrowLeft;
@@ -372,6 +455,7 @@ void HeaderComponent::createButtons()
     trackArmButton->setToggleState (processor.getParameterTree().getParameter ("track_arm")->getValue() == 1.0f, dontSendNotification);
     trackArmButton->setShape (PLUME::path::createPath (PLUME::path::onOff), false, true, false);
     trackArmButton->setClickingTogglesState (true);
+    trackArmButton->setGetsHighlighted(false);
     trackArmButton->addListener (this);
     addAndMakeVisible (*trackArmButton);
 }
@@ -384,21 +468,6 @@ void HeaderComponent::setPreviousPreset()
 void HeaderComponent::setNextPreset()
 {
     setPresetWithOffset (1);
-}
-void HeaderComponent::drawDebugRect (Graphics& g, const juce::Rectangle<float>& rectangle)
-{
-    g.setFont (PLUME::font::plumeFont);
-    g.setColour (juce::Colours::green);
-    g.drawRect (rectangle);
-
-    const int widthText = truncf (rectangle.getWidth ());
-    const int heightText = truncf (rectangle.getHeight ());
-
-    //g.drawText (std::to_string (widthText), rectangle.getWidth () / 2, rectangle.getY () - 10, 15, 10,
-    //    Justification::horizontallyCentred, false);
-
-    //g.drawText (std::to_string (heightText), rectangle.getX () - 10, rectangle.getHeight () / 2, 15, 10,
-    //    Justification::verticallyCentred, false);
 }
 
 void HeaderComponent::setPresetWithOffset (const int offset)
@@ -416,8 +485,10 @@ void HeaderComponent::setPresetWithOffset (const int offset)
     // Loads first or last preset in list
     if (presetHandler.getCurrentPresetIdInSearchList() == -1 && presetHandler.getNumSearchedPresets() > 0)
     {
-        if (offset < 0) prepareGesturePanelAndLoadPreset (presetHandler.getNumSearchedPresets() - 1);
-        else            prepareGesturePanelAndLoadPreset (0);
+        if (offset < 0)
+            prepareGesturePanelAndLoadPreset (presetHandler.getNumSearchedPresets() - 1);
+        else
+            prepareGesturePanelAndLoadPreset (0);
     }
 
     // Valid preset in search list. Loads preset depending on offset
@@ -426,11 +497,11 @@ void HeaderComponent::setPresetWithOffset (const int offset)
         int newPresetId = presetHandler.getCurrentPresetIdInSearchList() + offset;
 
         if (newPresetId >= 0 && newPresetId < presetHandler.getNumSearchedPresets())
-        {
             prepareGesturePanelAndLoadPreset (newPresetId);
-        }
     }
-    
+
+    // recreate preset options menu
+    createPresetOptionsMenu();
 }
 
 
@@ -450,7 +521,7 @@ void HeaderComponent::prepareGesturePanelAndLoadPreset (const int presetId)
     if (std::unique_ptr<XmlElement> presetXml = processor.getPresetHandler().getPresetXmlToLoad (presetId))
     {
 
-        PLUME::log::writeToLog ("Loading preset (using top arrows) : " + processor.getPresetHandler().getPresetForId (presetId).getName(), PLUME::log::presets);
+        PLUME::log::writeToLog ("Loading preset (using top arrows) : " + processor.getPresetHandler().getPresetForId (presetId).getName(), PLUME::log::LogCategory::presets);
 
         MemoryBlock presetData;
         AudioProcessor::copyXmlToBinary (*presetXml, presetData);
@@ -624,8 +695,7 @@ void HeaderComponent::BatteryComponent::repaintBlinkingIndicators ()
 		}
 		else if (numBlinkingIndicators == 1)
 		{
-			//const int indicatorAreaWidth = indicatorsArea.getWidth () / 4;
-            const int indicatorAreaWidth = 15.0f;
+            constexpr int indicatorAreaWidth = 15;
 
 			repaint (indicatorsArea
 				.withWidth (indicatorAreaWidth)
@@ -707,7 +777,7 @@ void HeaderComponent::BatteryComponent::drawBatteryPath (Graphics& g, juce::Rect
     }
 
     //const int indicatorAreaWidth = area.getWidth () / 4;
-    const int indicatorAreaWidth = 15.0f;
+    const float indicatorAreaWidth = 15.0f;
 
 	for (int indicator = 0; indicator < 4; indicator++)
 	{
@@ -780,8 +850,8 @@ void HeaderComponent::BatteryComponent::drawRingPath (Graphics& g, juce::Rectang
 
     // Ring
 	Path ringPath = PLUME::path::createPath (PLUME::path::ring);
-	const auto affineTransform = ringPath.getTransformToScaleToFit (12, 11, 18, 18, true);
-	g.fillPath (ringPath, affineTransform);
+	const auto transform = ringPath.getTransformToScaleToFit (12, 11, 18, 18, true);
+	g.fillPath (ringPath, transform);
 
     // Lightning
 	auto zipzoopArea = area.removeFromRight (7);

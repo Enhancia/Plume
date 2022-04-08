@@ -16,10 +16,10 @@
 
 //==============================================================================
 GesturePanel::GesturePanel (GestureArray& gestArray, PluginWrapper& wrap,
-                            AudioProcessorValueTreeState& params, NewGesturePanel& newGest,
+                            AudioProcessorValueTreeState& params, NewGesturePanel& newGest, Component& newPrst,
                             int freqHz)
                             : gestureArray (gestArray), wrapper (wrap),
-                              parameters (params), newGesturePanel (newGest),
+                              parameters (params), newGesturePanel (newGest), newPresetPanel (newPrst),
                               freq (freqHz)
 {
     setComponentID ("gesturePanel");
@@ -41,6 +41,7 @@ GesturePanel::~GesturePanel()
     stopTimer();
     unselectCurrentGesture();
     newGesturePanel.hidePanel (true);
+    newPresetPanel.setVisible(false);
     removeListenerForAllParameters();
 }
 
@@ -88,7 +89,7 @@ void GesturePanel::paint (Graphics& g)
     paintShadows (g);
 }
 
-void GesturePanel::paintOverChildren (Graphics&)
+void GesturePanel::paintOverChildren (Graphics& g)
 {
     /* TODO paint the component snapshot during a drag.
        Get a snapshot of the component being dragged (might wanna cache it so it is not 
@@ -101,6 +102,8 @@ void GesturePanel::paintOverChildren (Graphics&)
         //g.drawImage (gestureComponentImage, Rectangle_that_is_the_size_of_the_image);
     }
     */
+
+    paintDragAndDropSnapshot (g);
 }
 
 void GesturePanel::paintShadows (Graphics& g)
@@ -129,6 +132,14 @@ void GesturePanel::paintShadows (Graphics& g)
     shadow.drawForPath (g, shadowPath);
 }
 
+void GesturePanel::paintDragAndDropSnapshot (Graphics& g)
+{
+    if(ImageCache::getFromHashCode(hashCode).isValid()) {
+        g.setOpacity(0.4f);
+        g.drawImage (ImageCache::getFromHashCode(hashCode), draggedImgPosition.toFloat ());
+    }
+}
+
 void GesturePanel::resized()
 {
     using namespace PLUME::UI;
@@ -150,7 +161,7 @@ void GesturePanel::timerCallback()
     }
 }
 
-void GesturePanel::buttonClicked (Button* bttn)
+void GesturePanel::buttonClicked (Button*)
 {
 }
 
@@ -184,9 +195,16 @@ void GesturePanel::mouseDrag (const MouseEvent& event)
         if (auto* gestureComponent = dynamic_cast<GestureComponent*> (relativeEvent.originalComponent))
         {
             if (!dragMode)
-            {
-                startDragMode (gestureComponent->id);
-            }
+                startDragMode (*gestureComponent);
+
+            repaint(draggedImgPosition);
+
+            draggedImgPosition.setPosition(
+                static_cast<int> (relativeEvent.position.getX() - gestureComponent->getWidth() / 2.0f),
+                static_cast<int> (relativeEvent.position.getY() - gestureComponent->getHeight() / 2.0f)
+            );
+
+            repaint(draggedImgPosition);
 
 			int formerDraggedOverId = draggedOverSlotId;
 
@@ -238,7 +256,7 @@ void GesturePanel::handleLeftClickUp (const MouseEvent& event)
             if (!gestureComponent->isSelected())
             {
                 PLUME::log::writeToLog ("Gesture " + String (gestureComponent->getGesture().getName()) + " (Id " + String (gestureComponent->id) + ") : Selecting",
-                                        PLUME::log::gesture);
+                                        PLUME::log::LogCategory::gesture);
 
                 selectGestureExclusive (*gestureComponent);
             }
@@ -269,25 +287,128 @@ void GesturePanel::handleLeftClickDrag (const MouseEvent&)
 {
 }
 
-bool GesturePanel::keyPressed (const KeyPress &key)
+bool GesturePanel::keyPressed (const KeyPress& key)
 {
-    if (hasSelectedGesture() && key.isValid())
+    setWantsKeyboardFocus(true);
+
+    if (hasSelectedGesture () && key.isValid ())
     {
-        if (key.getKeyCode() == KeyPress::deleteKey || key.getKeyCode() == KeyPress::backspaceKey)
+        //remove gesture
+        if (key.getKeyCode () == KeyPress::deleteKey || key.getKeyCode () == KeyPress::backspaceKey)
         {
             removeGestureAndGestureComponent (selectedGesture);
+      
+            if(findExistingGesture() != -1)
+                selectGestureExclusive (findExistingGesture());
+        }
+        //rename gesture
+        else if (key.getTextCharacter () == 'r')
+        {
+            if (key.getModifiers ().isCommandDown())
+                renameGestureInSlot (selectedGesture);
+        }
+        //rename gesture
+        else if (key == PLUME::keyboard_shortcut::rename) {
+            renameGestureInSlot (selectedGesture);
+        }
+        //duplicate gesture
+        else if (key == PLUME::keyboard_shortcut::duplicateGesture) {
+            gestureArray.duplicateGesture (selectedGesture);
+            update ();
+        }
+        //save gesture
+        else if (key == PLUME::keyboard_shortcut::saveGesture) {
+            newPresetPanel.setVisible (true);
+        }
+        //moving up
+        else if (key.isKeyCode (KeyPress::upKey)) {
+            if (selectedGesture > 0) {
+
+                auto tempPosition = selectedGesture;
+                selectedGesture--;
+
+                while (gestureArray.getGesture (selectedGesture) == nullptr)
+                {
+                    if (selectedGesture == 0)
+                        break;
+                    selectedGesture--;
+                }
+
+                if (gestureArray.getGesture (selectedGesture) == nullptr)
+                    selectedGesture = tempPosition;
+
+                selectGestureExclusive (selectedGesture);
+            }
+        }
+        //moving down
+        else if (key.isKeyCode (KeyPress::downKey)) {
+            if (selectedGesture < gestureSlots.size () - 1) {
+
+                auto tempPosition = selectedGesture;
+                selectedGesture++;
+
+                while (gestureArray.getGesture (selectedGesture) == nullptr)
+                {
+                    if (selectedGesture == gestureSlots.size () - 1)
+                        break;
+                    selectedGesture++;
+                }
+
+                if (gestureArray.getGesture (selectedGesture) == nullptr)
+                    selectedGesture = tempPosition;
+
+                selectGestureExclusive (selectedGesture);
+            }
+        }
+        //moving left
+        else if (key.isKeyCode (KeyPress::leftKey)) {
+            if (selectedGesture == 4 || selectedGesture == 5 || selectedGesture == 6 || selectedGesture == 7) {
+
+                auto tempPosition = selectedGesture;
+                selectedGesture -= 4;
+
+                if (gestureArray.getGesture (selectedGesture) == nullptr)
+                    selectedGesture = 0;
+
+                while (gestureArray.getGesture (selectedGesture) == nullptr)
+                {
+                    selectedGesture++;
+                    if (selectedGesture == gestureSlots.size () - 1) {
+                        selectedGesture = tempPosition;
+                        break;
+                    }
+                }
+
+                selectGestureExclusive (selectedGesture);
+            }
+        }
+        //moving right
+        else if (key.isKeyCode (KeyPress::rightKey)) {
+            if (selectedGesture == 0 || selectedGesture == 1 || selectedGesture == 2 || selectedGesture == 3) {
+
+                auto tempPosition = selectedGesture;
+                selectedGesture += 4;
+
+                if (gestureArray.getGesture (selectedGesture) == nullptr)
+                    selectedGesture = 4;
+
+                while (gestureArray.getGesture (selectedGesture) == nullptr)
+                {
+                    selectedGesture++;
+                    if (selectedGesture == gestureSlots.size () - 1) {
+                        selectedGesture = tempPosition;
+                        break;
+                    }
+                }
+
+                selectGestureExclusive (selectedGesture);
+            }
         }
 
-        else if (key.getTextCharacter() == 'r')
-        {
-			if (key.getModifiers().isAltDown())
-			{
-				renameGestureInSlot (selectedGesture);
-			}
-        }
+        return true;
     }
 
-	return false;
+    return true;
 }
 
 void GesturePanel::initialiseGestureSlots()
@@ -324,6 +445,7 @@ void GesturePanel::resizeSlotsAndTrimAreaAccordingly (juce::Rectangle<int>& area
 
     int tempWidth = area.getWidth()/4;
 
+    auto initialArea = area;
     
     if (!settingsVisible)
     {
@@ -332,6 +454,10 @@ void GesturePanel::resizeSlotsAndTrimAreaAccordingly (juce::Rectangle<int>& area
 
     auto column1 = area.removeFromLeft (tempWidth);
     auto column2 = area.removeFromRight (tempWidth);
+
+    // move columns to left/right border of global area
+    column1.setX(initialArea.getX());
+    column2.setX(initialArea.getWidth() - column2.getWidth());
 
     int slotHeight = area.getHeight()/numRows;
 
@@ -399,7 +525,7 @@ void GesturePanel::updateSlotIfNeeded (int slotToCheck)
 void GesturePanel::moveGestureToId (int idToMoveFrom, int idToMoveTo)
 {
     PLUME::log::writeToLog ("Gesture " + gestureArray.getGesture (idToMoveFrom)->getName() + " (Id " + String (idToMoveFrom) + ") : Moving to id " + String (idToMoveTo),
-                            PLUME::log::gesture);
+                            PLUME::log::LogCategory::gesture);
 
     bool mustChangeSelection = (selectedGesture == idToMoveFrom);
     
@@ -418,10 +544,10 @@ void GesturePanel::swapGestures (int firstId, int secondId)
 {
     PLUME::log::writeToLog ("Gesture " + gestureArray.getGesture (firstId)->getName() + " (Id " + String (firstId) + ") : Swapping with Gesture "
                                        + gestureArray.getGesture (secondId)->getName() + " (Id " + String (secondId) + ")",
-                            PLUME::log::gesture);
+                            PLUME::log::LogCategory::gesture);
 
     bool mustChangeSelection = (selectedGesture == firstId || selectedGesture == secondId);
-    int idToSelect;
+    int idToSelect = -1;
 
     if (mustChangeSelection)
     {
@@ -462,7 +588,7 @@ void GesturePanel::renameGestureInSlot (int slotNumber)
 void GesturePanel::removeGestureAndGestureComponent (int gestureId)
 {
     PLUME::log::writeToLog ("Gesture " + gestureArray.getGesture (gestureId)->getName() + " (Id " + String (gestureId) + ") : Deleting",
-                            PLUME::log::gesture);
+                            PLUME::log::LogCategory::gesture);
 
     if (gestureId < 0 || gestureId > PLUME::NUM_GEST) return;
     stopTimer();
@@ -601,7 +727,7 @@ void GesturePanel::handleMenuResult (int gestureId, const int menuResult)
             break;
             
         case 2: // Duplicate
-            PLUME::log::writeToLog ("Gesture " + gestureArray.getGesture (gestureId)->getName() + " (Id " + String (gestureId) + ") : Duplicating", PLUME::log::gesture);
+            PLUME::log::writeToLog ("Gesture " + gestureArray.getGesture (gestureId)->getName() + " (Id " + String (gestureId) + ") : Duplicating", PLUME::log::LogCategory::gesture);
             gestureArray.duplicateGesture (gestureId);
             update();
             selectGestureExclusive (gestureId);
@@ -609,6 +735,8 @@ void GesturePanel::handleMenuResult (int gestureId, const int menuResult)
 
         case 3: // Delete gesture
             removeGestureAndGestureComponent (gestureId);
+            if (findExistingGesture () != -1)
+                selectGestureExclusive (findExistingGesture ());
             update();
     }
 }
@@ -694,17 +822,42 @@ void GesturePanel::parameterChanged (const String& parameterID, float)
     }
 }
 
+int GesturePanel::findExistingGesture () {
 
-void GesturePanel::startDragMode (int slotBeingDragged)
+    int gestureId = 0;
+    int result = -1;
+
+    while (gestureArray.getGesture (gestureId) == nullptr)
+    {
+        gestureId++;
+        if(gestureId == gestureSlots.size () - 1)
+            break;
+    }
+
+    if(gestureArray.getGesture (gestureId) != nullptr)
+        result = gestureId;
+
+    return result;
+}
+
+
+void GesturePanel::startDragMode (GestureComponent& gestureComponent)
 {
     dragMode = true;
-    draggedGestureComponentId = slotBeingDragged;
+    draggedGestureComponentId = gestureComponent.id;
     draggedOverSlotId = -1;
 
     for (auto* slot : gestureSlots)
     {
         slot->repaint();
     }
+
+    ImageCache::addImageToCache (gestureComponent.createComponentSnapshot (gestureComponent.getLocalBounds (), false), hashCode);
+
+    draggedImgPosition.setSize (
+        ImageCache::getFromHashCode (hashCode).getWidth (),
+        ImageCache::getFromHashCode (hashCode).getHeight ()
+    );
 }
 
 void GesturePanel::endDragMode()
@@ -717,4 +870,7 @@ void GesturePanel::endDragMode()
     {
         slot->repaint();
     }
+
+    ImageCache::releaseUnusedImages();
+    repaint();
 }

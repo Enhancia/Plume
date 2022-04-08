@@ -142,16 +142,26 @@ void NewGesturePanel::buttonClicked (Button* bttn)
 	}
 }
 
+bool NewGesturePanel::keyPressed (const KeyPress& key)
+{
+    if (key == PLUME::keyboard_shortcut::closeWindow)
+    {
+        hidePanel (true);
+    }
+
+    return true;
+}
+
 void NewGesturePanel::createNewGesture()
 {
 	processor.getGestureArray().addGesture (Gesture::getTypeString (selectedGestureType, true), selectedGestureType, selectedGestureSlot);
 	updateGesturePanel();
 }
 
-void NewGesturePanel::labelTextChanged (Label* lbl)
+void NewGesturePanel::labelTextChanged (Label*)
 {
 }
-void NewGesturePanel::editorShown (Label* lbl, TextEditor& ed)
+void NewGesturePanel::editorShown (Label*, TextEditor&)
 {
 }
 
@@ -175,6 +185,7 @@ void NewGesturePanel::showPanelForGestureID (const int gestureID)
     update();
 
     setVisible (true);
+    grabKeyboardFocus();
 }
 
 void NewGesturePanel::hidePanel (const bool resetSelectedSlot)
@@ -264,7 +275,7 @@ void NewGesturePanel::createAndAddTextEditor()
     descriptionTextEditor->setMultiLine (true, true);
     descriptionTextEditor->setReturnKeyStartsNewLine (true);
     descriptionTextEditor->setReadOnly (true);
-    descriptionTextEditor->setScrollbarsShown (true);
+    descriptionTextEditor->setScrollbarsShown (false);
     descriptionTextEditor->setPopupMenuEnabled (false);
     descriptionTextEditor->applyColourToAllText (PLUME::UI::currentTheme.getColour (PLUME::colour::sideBarMainText), true);
     descriptionTextEditor->setJustification (Justification::centred);
@@ -320,12 +331,12 @@ void NewGesturePanel::GestureTypeSelector::resized()
 {
 }
 
-void NewGesturePanel::GestureTypeSelector::mouseEnter (const MouseEvent &event)
+void NewGesturePanel::GestureTypeSelector::mouseEnter (const MouseEvent &)
 {
 	setHighlighted (true);
 	repaint();
 }
-void NewGesturePanel::GestureTypeSelector::mouseExit (const MouseEvent &event)
+void NewGesturePanel::GestureTypeSelector::mouseExit (const MouseEvent &)
 {
 	setHighlighted (false);
 	repaint();

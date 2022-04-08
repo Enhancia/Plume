@@ -31,7 +31,7 @@ class GesturePanel    : public Component,
 public:
     //==============================================================================
     GesturePanel (GestureArray& gestureArray, PluginWrapper& wrap,
-                  AudioProcessorValueTreeState& params, NewGesturePanel& newGest,
+                  AudioProcessorValueTreeState& params, NewGesturePanel& newGest, Component& newPrst,
                   int freqHz = 60);
     ~GesturePanel();
 
@@ -51,6 +51,12 @@ public:
     void timerCallback() override;
     void buttonClicked (Button*) override;
     void parameterChanged (const String &parameterID, float newValue) override;
+
+    /**
+     * @brief Get the first gesture found in the list
+     * @return Gesture Id
+    */
+    int findExistingGesture ();
 
     void mouseUp (const MouseEvent &event) override;
     void mouseDrag (const MouseEvent &event) override;
@@ -72,6 +78,7 @@ public:
 private:
     //==============================================================================
     void paintShadows (Graphics& g);
+    void paintDragAndDropSnapshot (Graphics& g);
 
     //==============================================================================
     void switchGestureSelectionState (GestureComponent& gestureComponentToSwitch);
@@ -94,7 +101,7 @@ private:
     void createAndAddCloseButton();
 
     //==============================================================================
-    void startDragMode (int slotBeingDragged);
+    void startDragMode (GestureComponent& gestureComponent);
     void endDragMode();
 
     //==============================================================================
@@ -112,6 +119,9 @@ private:
     int draggedGestureComponentId = -1;
     int draggedOverSlotId = -1;
 
+    juce::Rectangle<int> draggedImgPosition;
+    const int64 hashCode = 420;
+
     //==============================================================================
     CriticalSection parameterCallbackLock;
 
@@ -120,6 +130,7 @@ private:
     PluginWrapper& wrapper;
     AudioProcessorValueTreeState& parameters;
     NewGesturePanel& newGesturePanel;
+    Component& newPresetPanel;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GesturePanel)

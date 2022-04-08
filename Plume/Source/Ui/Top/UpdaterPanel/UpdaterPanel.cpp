@@ -134,6 +134,17 @@ void UpdaterPanel::buttonClicked (Button* bttn)
 		}
 	}
 }
+
+bool UpdaterPanel::keyPressed (const KeyPress& key)
+{
+    if (key == PLUME::keyboard_shortcut::closeWindow)
+    {
+        closeAndResetPanel();
+    }
+
+    return true;
+}
+
 void UpdaterPanel::resetAndOpenPanel (bool updateIsRequired)
 {
 	if (currentProgress != inProgress)
@@ -144,6 +155,9 @@ void UpdaterPanel::resetAndOpenPanel (bool updateIsRequired)
 														  									 : noDownloadAvailable);
 
 		setVisible (true);
+		if(!hasKeyboardFocus(false) && (isShowing() || isOnDesktop())) {
+			grabKeyboardFocus();
+		}
 	}
 }
 
@@ -276,13 +290,13 @@ void UpdaterPanel::updateComponentsForSpecificStep (downloadProgress downloadSte
 
 				if (updater.wasSuccessful())
 				{
-					PLUME::log::writeToLog ("Finished downloading installer.", PLUME::log::update);
+					PLUME::log::writeToLog ("Finished downloading installer.", PLUME::log::LogCategory::update);
 					bottomButton->setButtonText ("Start Installer");
 					bodyText->setText ("Successfully downloaded installer!", dontSendNotification);
 				}
 				else
 				{
-					PLUME::log::writeToLog ("Failed to download installer.", PLUME::log::update, PLUME::log::error);
+					PLUME::log::writeToLog ("Failed to download installer.", PLUME::log::LogCategory::update, PLUME::log::LogLevel::error);
 					bottomButton->setButtonText ("Close");
 					bodyText->setText ("Failed to download installer...", dontSendNotification);
 				}

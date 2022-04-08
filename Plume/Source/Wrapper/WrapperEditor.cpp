@@ -21,7 +21,7 @@
 WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc, const Component* componentWhichWindowToAttachTo)
        : wrapperProcessor (wrapProc), topLevelPlumeComponent (*componentWhichWindowToAttachTo->getTopLevelComponent())
 {
-    PLUME::log::writeToLog ("Creating new wrapped plugin window.", PLUME::log::wrappedInterface);
+    PLUME::log::writeToLog ("Creating new wrapped plugin window.", PLUME::log::LogCategory::wrappedInterface);
     
     setSize (400, 300);
 
@@ -89,7 +89,7 @@ WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc, const Comp
 
 WrapperEditorWindow::~WrapperEditorWindow()
 {
-    PLUME::log::writeToLog ("Deleting wrapped plugin window.", PLUME::log::wrappedInterface);
+    PLUME::log::writeToLog ("Deleting wrapped plugin window.", PLUME::log::LogCategory::wrappedInterface);
 
       #if JUCE_WINDOWS
 	PLUME::globalPointers.resetWrappedEditorPeer (this->getPeer());

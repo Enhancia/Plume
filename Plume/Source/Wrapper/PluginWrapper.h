@@ -59,7 +59,7 @@ public:
     bool isWrapping();
     
     //==============================================================================
-    void startScanProcess (bool dontRescanIfAlreadyInList, bool resetBlackList = false);
+    void startScanProcess();
     PluginDirectoryScanner* getDirectoryScannerForFormat (int formatToScan);
     void savePluginListToFile();
     void removeNonInstrumentsFromList();

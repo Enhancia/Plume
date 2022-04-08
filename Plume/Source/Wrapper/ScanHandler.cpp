@@ -42,8 +42,7 @@ void ScanHandler::timerCallback()
     }
 }
 
-void ScanHandler::startScanProcess (const bool forceRescan,
-                                    const Array<File>& directoriesToScan)
+void ScanHandler::startScanProcess (const Array<File>& directoriesToScan)
 {
     if (formatManager->getNumFormats() == 0)
     {
@@ -64,7 +63,7 @@ void ScanHandler::startScanProcess (const bool forceRescan,
     }
 
     fsp.removeRedundantPaths();
-    createFilesToScanArray (fsp);
+    createFilesToScanArray();
 
     scanThread.copyFilesToScan (filesToScan);
 
@@ -127,10 +126,12 @@ void ScanHandler::setPluginFormats (bool useVST, bool useVST3, bool useAUOnMac)
 
   #if JUCE_PLUGINHOST_VST3
     if (useVST3) formatManager->addFormat (new VST3PluginFormat());
+  #else
+    ignoreUnused (useVST3);
   #endif
 }
 
-void ScanHandler::createFilesToScanArray (const FileSearchPath& directoriesToSearchIn)
+void ScanHandler::createFilesToScanArray()
 {
     filesToScan.clear();
 

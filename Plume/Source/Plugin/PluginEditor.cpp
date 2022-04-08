@@ -15,7 +15,7 @@
 PlumeEditor::PlumeEditor (PlumeProcessor& p)
     : AudioProcessorEditor (&p), ComponentMovementWatcher (this), processor (p)
 {
-    PLUME::log::writeToLog ("Creating Plume interface", PLUME::log::ui);
+    PLUME::log::writeToLog ("Creating Plume interface", PLUME::log::LogCategory::ui);
     setComponentID ("plumeEditor");
 
 	setLookAndFeel (&plumeLookAndFeel);
@@ -56,7 +56,7 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
     sideBar->addInfoPanelAsMouseListener (this);
     
     gesturePanel.reset (new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
-                                                        processor.getParameterTree(), *newGesturePanel,
+                                                        processor.getParameterTree(), *newGesturePanel, *newPresetPanel,
                                                         PLUME::UI::FRAMERATE));
 	addAndMakeVisible (*gesturePanel);
                                                         
@@ -97,13 +97,9 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 	PLUME::UI::ANIMATE_UI_FLAG = true;
 
   #if JUCE_WINDOWS
-    if (auto messageManagerPtr = MessageManager::getInstanceWithoutCreating())
-    {
-    	plumeWindowHook = SetWindowsHookExA(WH_CALLWNDPROC, PLUME::messageHook,
-                                            NULL, (DWORD) messageManagerPtr->getCurrentMessageThread());
-
-    	jassert (plumeWindowHook != NULL);
-    }
+    plumeWindowHook = SetWindowsHookExA(WH_CALLWNDPROC, PLUME::messageHook,
+                                            NULL, GetCurrentThreadId());
+    jassert (plumeWindowHook != NULL);
   #endif
 
     newGesturePanel->toFront (false);
@@ -130,7 +126,7 @@ PlumeEditor::PlumeEditor (PlumeProcessor& p)
 
 PlumeEditor::~PlumeEditor()
 {
-    PLUME::log::writeToLog ("Deleting Plume interface", PLUME::log::ui);
+    PLUME::log::writeToLog ("Deleting Plume interface", PLUME::log::LogCategory::ui);
 	if (processor.getWrapper().isWrapping())
 	{
 		processor.getWrapper().clearWrapperEditor();
@@ -174,24 +170,28 @@ void PlumeEditor::paint (Graphics& g)
 
 void PlumeEditor::paintShadows (Graphics& g)
 {
-    Path shadowPath;
-
     // Header Shadow
     {
-        auto headerShadowBounds = header->getBounds();
+        Path headerShadowPath;
+        DropShadow headerShadow(Colour (0x30000000), 10, {2, 3});
 
-        shadowPath.addRoundedRectangle (headerShadowBounds.toFloat(), 3.0f);
+        headerShadowPath.addRoundedRectangle (header->getBounds().toFloat(), 3.0f);
+        headerShadow.drawForPath (g, headerShadowPath);
     }
 
     // Sidebar Button Shadow
     {
-        auto sideBarShadowBounds = sideBar->getBounds();
+        if(!sideBarButton->getToggleState()) {
 
-        shadowPath.addRoundedRectangle (sideBarShadowBounds.toFloat(), 3.0f);
+            Path sidebarShadowPath;
+            DropShadow sidebarShadow;
+
+            sidebarShadowPath.addRoundedRectangle (sideBar->getBounds().toFloat(), 3.0f);
+
+            sidebarShadow = DropShadow(Colour (0x30000000), 10, {2, 3});
+            sidebarShadow.drawForPath (g, sidebarShadowPath);
+        }
     }
-
-    DropShadow shadow (Colour (0x30000000), 10, {2, 3});
-    shadow.drawForPath (g, shadowPath);
 }
 
 void PlumeEditor::resized()
@@ -305,7 +305,7 @@ void PlumeEditor::actionListenerCallback (const String &message)
 
 void PlumeEditor::buttonClicked (Button* bttn)
 {
-    if (bttn == sideBarButton)
+    if (bttn == sideBarButton.get())
     {
 		sideBar->setVisible (!sideBarButton->getToggleState());
         //sideBarButton->repaint();
@@ -313,34 +313,9 @@ void PlumeEditor::buttonClicked (Button* bttn)
     }
 }
 
-void PlumeEditor::createSideBarButtonPath()
-{
-    /*
-    using namespace PLUME::UI;
-
-    Path p;
-    
-    if (sideBarButton->getToggleState())
-    {
-        p.startNewSubPath (0,0);
-        p.lineTo (HEADER_HEIGHT - 2*MARGIN, HEADER_HEIGHT/2 - MARGIN);
-        p.lineTo (0, HEADER_HEIGHT - 2*MARGIN);
-    }
-    else
-    {
-        p.startNewSubPath (HEADER_HEIGHT - 2*MARGIN, 0);
-        p.lineTo (0, HEADER_HEIGHT/2 - MARGIN);
-        p.lineTo (HEADER_HEIGHT - 2*MARGIN, HEADER_HEIGHT - 2*MARGIN);
-    }
-    
-    sideBarButton->setOutline (getPlumeColour(headerStandartText), 2.0f);
-    sideBarButton->setShape (p, false, false, false);
-    */
-}
-
 void PlumeEditor::mouseEnter (const MouseEvent &event)
 {
-    if (event.eventComponent == sideBarButton)
+    if (event.eventComponent == sideBarButton.get())
     {
         //sideBarButton->setOutline (getPlumeColour(headerHighlightedText), 2.0f);
     }
@@ -348,10 +323,23 @@ void PlumeEditor::mouseEnter (const MouseEvent &event)
 
 void PlumeEditor::mouseExit (const MouseEvent &event)
 {
-    if (event.eventComponent == sideBarButton)
+    if (event.eventComponent == sideBarButton.get())
     {
         //sideBarButton->setOutline (getPlumeColour(headerStandartText), 2.0f);
     }
+}
+
+bool PlumeEditor::keyPressed (const KeyPress& key)
+{
+    if (key == PLUME::keyboard_shortcut::help)
+    {
+        if(auto* hideInfoButton = dynamic_cast<Button*>(sideBar->findChildWithID("hideInfoButton")))
+        {
+            hideInfoButton->triggerClick();
+        }
+    }
+
+    return true;
 }
 
 //==============================================================================
@@ -363,12 +351,12 @@ PlumeProcessor& PlumeEditor::getProcessor()
 //==============================================================================
 void PlumeEditor::updateFullInterface()
 {
-    PLUME::log::writeToLog ("Updating full interface display.", PLUME::log::ui);
-    removeChildComponent (gesturePanel);
+    PLUME::log::writeToLog ("Updating full interface display.", PLUME::log::LogCategory::ui);
+    removeChildComponent (gesturePanel.get());
     auto gpbounds = gesturePanel->getBounds();
 
     gesturePanel.reset (new GesturePanel (processor.getGestureArray(), processor.getWrapper(),
-                                          processor.getParameterTree(), *newGesturePanel,
+                                          processor.getParameterTree(), *newGesturePanel, *newPresetPanel,
                                           PLUME::UI::FRAMERATE));
     addAndMakeVisible (*gesturePanel, 0);
 	gesturePanel->setBounds(gpbounds);
@@ -482,6 +470,7 @@ void PlumeEditor::createAndShowAlertPanel (PlumeAlertPanel::SpecificReturnValue 
         alertPanel->setBounds (getLocalBounds());
 
         alertPanel->enterModalState (true, ModalCallbackFunction::forComponent (alertPanelCallback, this), false);
+        alertPanel->grabKeyboardFocus();
     }
 }
 
@@ -493,8 +482,11 @@ void PlumeEditor::closePendingAlertPanel()
 
 void PlumeEditor::alertPanelCallback (int modalResult, PlumeEditor* interf)
 {
-    interf->closePendingAlertPanel();
-    interf->executePanelAction (modalResult);
+    if (interf)
+    {
+        interf->closePendingAlertPanel();
+        interf->executePanelAction (modalResult);
+    }
 }
 
 void PlumeEditor::executePanelAction (const int panelReturnValue)

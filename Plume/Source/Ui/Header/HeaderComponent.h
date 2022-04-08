@@ -51,19 +51,11 @@ public:
     //==============================================================================
     void createPluginMenu (KnownPluginList::SortMethod sort);
     void createPluginWindow();
+    void createPresetOptionsMenu(bool showNew = true, bool showSave = true, bool showEdit = true, bool showDelete = true, bool showInExplorer = true);
 
     //==============================================================================
     void setPreviousPreset();
     void setNextPreset();
-    //==============================================================================
-
-
-    /**
-     * @brief Draws green rectangle and display his width and height
-     * @param g graphics object needed to draw
-     * @param rectangle wanted debug area
-    */
-    static void drawDebugRect (Graphics& g, const juce::Rectangle<float>& rectangle);
 
 private:
 
@@ -150,18 +142,21 @@ private:
 
     //==============================================================================
 	static void pluginMenuCallback (int result, HeaderComponent* header);
-	void handlePluginChoice (int chosenId);
+    static void presetOptionsMenuCallback(int result, HeaderComponent* header);
+    void handlePluginChoice (int chosenId);
     void createButtons();
     void setPresetWithOffset (const int offset);
     void prepareGesturePanelAndLoadPreset (const int presetId);
 
     //==============================================================================
     PlumeProcessor& processor;
-    Component& newPresetPanel;
+    Component& userPresetPanel;
     
     PopupMenu pluginListMenu;
+    PopupMenu presetOptionsMenu;
     std::unique_ptr<PlumeShapeButton> pluginListButton;
     std::unique_ptr<PlumeShapeButton> savePresetButton;
+    std::unique_ptr<PlumeShapeButton> presetOptionsButton;
     std::unique_ptr<PlumeShapeButton> leftArrowButton;
     std::unique_ptr<PlumeShapeButton> rightArrowButton;
     std::unique_ptr<PlumeShapeButton> trackArmButton;

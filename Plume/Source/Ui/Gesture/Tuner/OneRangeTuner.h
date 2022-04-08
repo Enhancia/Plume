@@ -20,14 +20,14 @@ class OneRangeTuner:  public Tuner,
                       private Button::Listener
 {
 public:
-    enum TunerStyle
+    enum class TunerStyle
     {
         tilt =0,
         roll,
         wave
     };
 
-    enum DraggableObject
+    enum class DraggableObject
     {
         none = -1,
         lowThumb,
@@ -37,8 +37,8 @@ public:
 
     //==============================================================================
     OneRangeTuner(const std::atomic<float>& val, NormalisableRange<float> gestureRange,
-                  RangedAudioParameter& rangeL, RangedAudioParameter& rangeH, const NormalisableRange<float> paramMax,
-                  const String unit = "", TunerStyle style = wave);
+                  float& rangeL, float& rangeH, const NormalisableRange<float> paramMax,
+                  const String unit = "", TunerStyle style = TunerStyle::wave);
     ~OneRangeTuner();
     
     //==============================================================================
@@ -78,8 +78,8 @@ private:
     void resizeButtons();
     
     //==============================================================================
-    void setRangeLow (float value, const bool createChangeGesture = false);
-    void setRangeHigh (float value, const bool createChangeGesture = false);
+    void setRangeLow (float value);
+    void setRangeHigh (float value);
     
     float getRangeLow();
     float getRangeHigh();
@@ -106,8 +106,8 @@ private:
 
     //==============================================================================
     const NormalisableRange<float> parameterMax;
-    RangedAudioParameter& rangeLow;
-    RangedAudioParameter& rangeHigh;
+    float& rangeLow;
+    float& rangeHigh;
     
     std::unique_ptr<Slider> lowSlider;
     std::unique_ptr<Slider> highSlider;
@@ -119,7 +119,7 @@ private:
     //==============================================================================
     TunerStyle tunerStyle;
 
-    DraggableObject objectBeingDragged = none;
+    DraggableObject objectBeingDragged = DraggableObject::none;
     float previousCursorAngle = value;
 
     juce::Rectangle<int> sliderBounds;

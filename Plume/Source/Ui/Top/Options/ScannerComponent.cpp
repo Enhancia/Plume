@@ -97,7 +97,7 @@ void ScannerComponent::scanPlugins (bool clearList)
     }
 
     scanButton->setButtonText ("Cancel");
-    processor.getWrapper().startScanProcess (true);
+    processor.getWrapper().startScanProcess();
     bar->setShouldDisplayProgress (true);
     
     startTimer (1000);

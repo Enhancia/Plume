@@ -12,7 +12,7 @@
 
 
 OneRangeTuner::OneRangeTuner(const std::atomic<float>& val, NormalisableRange<float> gestRange,
-                             RangedAudioParameter& rangeL, RangedAudioParameter& rangeH, const NormalisableRange<float> paramMax,
+                             float& rangeL, float& rangeH, const NormalisableRange<float> paramMax,
                              const String unit, TunerStyle style)
     : Tuner (unit),
       value (val), gestureRange (gestRange),
@@ -60,27 +60,27 @@ void OneRangeTuner::resizeSliders()
 {
     switch (tunerStyle)
     {
-        case wave:
+        case TunerStyle::wave:
             sliderRadius = jmin (sliderBounds.getWidth()/2.0f, sliderBounds.getHeight()/2.0f);
             sliderCentre = {getLocalBounds().getCentreX() - (int) sliderRadius/2,
                             sliderBounds.getCentreY()};
             break;
 
-        case tilt:
+        case TunerStyle::tilt:
             sliderRadius = jmin (sliderBounds.getWidth()*2/3.0f, sliderBounds.getHeight()*2/3.0f);
             sliderCentre = {getLocalBounds().getCentreX() + (int) sliderRadius/2,
                             sliderBounds.getCentreY() + (int) sliderRadius/2};
             break;
 
-        case roll:
+        case TunerStyle::roll:
             sliderRadius = jmin (sliderBounds.getWidth()/2.0f, sliderBounds.getHeight()/2.0f);
             sliderCentre = {getLocalBounds().getCentreX(),
                             sliderBounds.getCentreY() + (int) sliderRadius/2};
             break;
     }
 
-    juce::Rectangle<int> adjustedBounds = sliderBounds.withWidth (sliderRadius*2)
-                                                      .withHeight (sliderRadius*2)
+    juce::Rectangle<int> adjustedBounds = sliderBounds.withWidth (static_cast<int> (sliderRadius)*2)
+                                                      .withHeight (static_cast<int> (sliderRadius)*2)
                                                       .expanded (10)
                                                       .withCentre (sliderCentre);
 
@@ -102,7 +102,7 @@ void OneRangeTuner::resizeButtons()
     
 void OneRangeTuner::updateComponents()
 {
-    if (rangeLow.getValue() < rangeHigh.getValue())
+    if (rangeLow < rangeHigh)
     {
         // Sets slider value
         if (lowSlider->getThumbBeingDragged() == -1)
@@ -130,14 +130,14 @@ void OneRangeTuner::updateComponents()
 
 void OneRangeTuner::updateComponents (OneRangeTuner::DraggableObject thumbThatShouldUpdate)
 {
-    if (thumbThatShouldUpdate == lowThumb)
+    if (thumbThatShouldUpdate == DraggableObject::lowThumb)
     {
         // Sets slider value
         if (lowSlider->getThumbBeingDragged() == -1)
         {
-            if (highSlider->getThumbBeingDragged() == -1 && rangeLow.getValue() > rangeHigh.getValue())
+            if (highSlider->getThumbBeingDragged() == -1 && rangeLow > rangeHigh)
             {
-                setRangeHigh (getRangeLow(), true);
+                setRangeHigh (getRangeLow());
 
                 // Allows the DAW to update the value without using slider->setValue() with a notification
                 // The latter causes crashes on Ableton Live
@@ -147,14 +147,14 @@ void OneRangeTuner::updateComponents (OneRangeTuner::DraggableObject thumbThatSh
             lowSlider->setValue (double (getRangeLow()), dontSendNotification);
         }
     }
-    else if (thumbThatShouldUpdate == highThumb)
+    else if (thumbThatShouldUpdate == DraggableObject::highThumb)
     {
         // Sets slider value
         if (highSlider->getThumbBeingDragged() == -1)
         {
-            if (lowSlider->getThumbBeingDragged() == -1 && rangeLow.getValue() > rangeHigh.getValue())
+            if (lowSlider->getThumbBeingDragged() == -1 && rangeLow > rangeHigh)
             {
-                setRangeLow (getRangeHigh(), true);
+                setRangeLow (getRangeHigh());
 
                 // Allows the DAW to update the value without using slider->setValue() with a notification
                 // The latter causes crashes on Ableton Live
@@ -176,13 +176,13 @@ void OneRangeTuner::updateDisplay()
     {
         switch (tunerStyle)
         {
-            case tilt:
+            case TunerStyle::tilt:
                 repaint (lowSlider->getBounds().withTrimmedBottom (lowSlider->getHeight()*6/10)
                                                .withTrimmedRight (lowSlider->getWidth()*4/10)
                                                .translated (0, -10));
                 break;
 
-            case roll:
+            case TunerStyle::roll:
                 repaint (lowSlider->getBounds().withTrimmedBottom (lowSlider->getHeight()*6/10)
                                                .translated (0, -15));
                 break;
@@ -216,17 +216,17 @@ void OneRangeTuner::setStyle (TunerStyle newStyle)
 
     switch (newStyle)
     {
-        case wave:
+        case TunerStyle::wave:
             setAngles (0.0f, MathConstants<float>::pi);
             tunerColour = getPlumeColour (waveHighlight);
             break;
 
-        case tilt:
+        case TunerStyle::tilt:
             setAngles (MathConstants<float>::pi*16/10, MathConstants<float>::twoPi);
             tunerColour = getPlumeColour (tiltHighlight);
             break;
 
-        case roll:
+        case TunerStyle::roll:
             setAngles (MathConstants<float>::pi*5/3, MathConstants<float>::pi*7/3);
             tunerColour = getPlumeColour (rollHighlight);
             break;
@@ -298,9 +298,9 @@ void OneRangeTuner::sliderValueChanged (Slider* sldr)
         rangeLabelMin->setText (String (int (getRangeLow())) + valueUnit, dontSendNotification);
         
         // in case the other thumb is dragged along..
-        if (highSlider->getThumbBeingDragged() == -1 && rangeLow.getValue() > rangeHigh.getValue())
+        if (highSlider->getThumbBeingDragged() == -1 && rangeLow > rangeHigh)
         {
-            setRangeHigh (float (lowSlider->getValue()), true);
+            setRangeHigh (float (lowSlider->getValue()));
             highSlider->setValue (double (getRangeLow()), dontSendNotification);
             updateLabelBounds (rangeLabelMax.get());
             rangeLabelMax->setText (String (float (sldr->getValue())) + valueUnit, dontSendNotification);
@@ -315,9 +315,9 @@ void OneRangeTuner::sliderValueChanged (Slider* sldr)
         rangeLabelMax->setText (String (int (getRangeHigh())) + valueUnit, dontSendNotification);
         
         // in case the other thumb is dragged along..
-        if (lowSlider->getThumbBeingDragged() == -1 && rangeLow.getValue() > rangeHigh.getValue())
+        if (lowSlider->getThumbBeingDragged() == -1 && rangeLow > rangeHigh)
         {
-            setRangeLow (float (highSlider->getValue()), true);
+            setRangeLow (float (highSlider->getValue()));
             lowSlider->setValue (double (getRangeLow()), dontSendNotification);
             updateLabelBounds (rangeLabelMin.get());
             rangeLabelMin->setText (String (float (sldr->getValue())) + valueUnit, dontSendNotification);
@@ -377,28 +377,23 @@ void OneRangeTuner::handleSingleClick (const MouseEvent& e)
 {
     objectBeingDragged = getObjectToDrag (e);
     
-    if (objectBeingDragged == lowThumb)
+    if (objectBeingDragged == DraggableObject::lowThumb)
     {
-        rangeLow.beginChangeGesture();
         lowSlider->mouseDown (e.getEventRelativeTo (lowSlider.get()));
         rangeLabelMin->setVisible (true);
     }
-    else if (objectBeingDragged == highThumb)
+    else if (objectBeingDragged == DraggableObject::highThumb)
     {
-        rangeHigh.beginChangeGesture();
         highSlider->mouseDown (e.getEventRelativeTo (highSlider.get()));
         rangeLabelMax->setVisible (true);
     }
-    else if (objectBeingDragged == middleArea)
+    else if (objectBeingDragged == DraggableObject::middleArea)
     {
-        rangeLow.beginChangeGesture();
-        rangeHigh.beginChangeGesture();
-        
-        lowSlider->setSliderStyle (tunerStyle == wave ? Slider::RotaryVerticalDrag
-                                                      : tunerStyle == tilt ? Slider::RotaryHorizontalVerticalDrag
+        lowSlider->setSliderStyle (tunerStyle == TunerStyle::wave ? Slider::RotaryVerticalDrag
+                                                      : tunerStyle == TunerStyle::tilt ? Slider::RotaryHorizontalVerticalDrag
                                                                            : Slider::RotaryHorizontalDrag);
-        highSlider->setSliderStyle (tunerStyle == wave ? Slider::RotaryVerticalDrag
-                                                       : tunerStyle == tilt ? Slider::RotaryHorizontalVerticalDrag
+        highSlider->setSliderStyle (tunerStyle == TunerStyle::wave ? Slider::RotaryVerticalDrag
+                                                       : tunerStyle == TunerStyle::tilt ? Slider::RotaryHorizontalVerticalDrag
                                                                             : Slider::RotaryHorizontalDrag);
 
         lowSlider->mouseDown (e.getEventRelativeTo (lowSlider.get()));
@@ -413,13 +408,13 @@ void OneRangeTuner::handleSingleClick (const MouseEvent& e)
 
 void OneRangeTuner::handleDoubleClick (const MouseEvent& e)
 {
-    if (getObjectToDrag (e) == lowThumb)
+    if (getObjectToDrag (e) == DraggableObject::lowThumb)
     {
         rangeLabelMin->setVisible (true);
         rangeLabelMin->showEditor();
     }
 
-    else if (getObjectToDrag (e) == highThumb)
+    else if (getObjectToDrag (e) == DraggableObject::highThumb)
     {
         rangeLabelMax->setVisible (true);
         rangeLabelMax->showEditor();
@@ -431,18 +426,18 @@ void OneRangeTuner::mouseDrag (const MouseEvent& e)
 
     if (!e.mods.isLeftButtonDown() || e.getNumberOfClicks() > 1) return;
 
-    if (objectBeingDragged == lowThumb)
+    if (objectBeingDragged == DraggableObject::lowThumb)
     {
         lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider.get()));
     }
-    else if (objectBeingDragged == highThumb)
+    else if (objectBeingDragged == DraggableObject::highThumb)
     {
         highSlider->mouseDrag (e.getEventRelativeTo (highSlider.get()));
     }
     else
     {
 
-        if (tunerStyle == tilt)
+        if (tunerStyle == TunerStyle::tilt)
         {
             lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider.get()));
             highSlider->mouseDrag (e.getEventRelativeTo (highSlider.get()));
@@ -463,21 +458,16 @@ void OneRangeTuner::mouseDrag (const MouseEvent& e)
 
 void OneRangeTuner::mouseUp (const MouseEvent& e)
 {
-    if (objectBeingDragged == lowThumb)
+    if (objectBeingDragged == DraggableObject::lowThumb)
     {
-        rangeLow.endChangeGesture();
         lowSlider->mouseUp (e.getEventRelativeTo (lowSlider.get()));
     }
-    else if (objectBeingDragged == highThumb)
+    else if (objectBeingDragged == DraggableObject::highThumb)
     {
-        rangeHigh.endChangeGesture();
         highSlider->mouseUp (e.getEventRelativeTo (highSlider.get()));
     }
-    else if (objectBeingDragged == middleArea)
+    else if (objectBeingDragged == DraggableObject::middleArea)
     {
-        rangeLow.endChangeGesture();
-        rangeHigh.endChangeGesture();
-        
         lowSlider->setSliderStyle (Slider::Rotary);
         highSlider->setSliderStyle (Slider::Rotary);
 
@@ -485,11 +475,11 @@ void OneRangeTuner::mouseUp (const MouseEvent& e)
         highSlider->mouseUp (e.getEventRelativeTo (highSlider.get()));
     }
 
-    if (objectBeingDragged != none)
+    if (objectBeingDragged != DraggableObject::none)
     {
         rangeLabelMin->setVisible (false);
         rangeLabelMax->setVisible (false);
-        objectBeingDragged = none;
+        objectBeingDragged = DraggableObject::none;
         updateMouseCursor();
         repaint();
     }
@@ -498,12 +488,6 @@ void OneRangeTuner::mouseUp (const MouseEvent& e)
 MouseCursor OneRangeTuner::getMouseCursor()
 {
     return MouseCursor::NormalCursor;
-
-    switch (objectBeingDragged)
-    {
-        case (none): return MouseCursor::NormalCursor; break;
-        default: return MouseCursor::NoCursor;
-    }
 }
 
 void OneRangeTuner::createSliders()
@@ -573,32 +557,24 @@ void OneRangeTuner::createButtons()
     setButtonSettings (*maxAngleButton);
 }
     
-void OneRangeTuner::setRangeLow (float val, const bool createChangeGesture)
-{
-    if (createChangeGesture) rangeLow.beginChangeGesture();
-    
-    rangeLow.setValueNotifyingHost (parameterMax.convertTo0to1 (val));
-    
-    if (createChangeGesture) rangeLow.endChangeGesture();
+void OneRangeTuner::setRangeLow (float val)
+{    
+    rangeLow = parameterMax.convertTo0to1 (val);
 }
     
-void OneRangeTuner::setRangeHigh (float val, const bool createChangeGesture)
-{    
-    if (createChangeGesture) rangeHigh.beginChangeGesture();
-    
-    rangeHigh.setValueNotifyingHost (parameterMax.convertTo0to1 (val));
-    
-    if (createChangeGesture) rangeHigh.endChangeGesture();
+void OneRangeTuner::setRangeHigh (float val)
+{        
+    rangeHigh = parameterMax.convertTo0to1 (val);
 }
     
 float OneRangeTuner::getRangeLow()
 {
-    return parameterMax.convertFrom0to1 (rangeLow.getValue());
+    return parameterMax.convertFrom0to1 (rangeLow);
 }
     
 float OneRangeTuner::getRangeHigh()
 {
-    return parameterMax.convertFrom0to1 (rangeHigh.getValue());
+    return parameterMax.convertFrom0to1 (rangeHigh);
 }
 
 
@@ -614,9 +590,9 @@ double OneRangeTuner::getAngleFromMouseEventRadians (const MouseEvent& e)
 
 double OneRangeTuner::getThumbAngleRadians (const DraggableObject thumb)
 {
-    if (thumb != lowThumb && thumb != highThumb) return -0.01;
+    if (thumb != DraggableObject::lowThumb && thumb != DraggableObject::highThumb) return -0.01;
     
-    Slider& slider = (thumb == lowThumb) ? *lowSlider : *highSlider;
+    Slider& slider = (thumb == DraggableObject::lowThumb) ? *lowSlider : *highSlider;
 
     return startAngle + ((slider.getValue() - slider.getMinimum())/slider.getRange().getLength())
                              *(endAngle - startAngle);
@@ -626,7 +602,7 @@ OneRangeTuner::DraggableObject OneRangeTuner::getObjectToDrag (const MouseEvent&
 {
     //================ Figures out the scenario surrounding the click ==============
 
-    if (e.mods.isShiftDown()) return middleArea;
+    if (e.mods.isShiftDown()) return DraggableObject::middleArea;
 
     double mouseAngle = getAngleFromMouseEventRadians (e);
     bool inverted = startAngle > endAngle;
@@ -658,8 +634,8 @@ OneRangeTuner::DraggableObject OneRangeTuner::getObjectToDrag (const MouseEvent&
 
     //================ Finds the object to drag ==============
 
-    DraggableObject thumb1 = inverted ? lowThumb : highThumb;
-    DraggableObject thumb2 = inverted ? highThumb : lowThumb;
+    DraggableObject thumb1 = inverted ? DraggableObject::lowThumb : DraggableObject::highThumb;
+    DraggableObject thumb2 = inverted ? DraggableObject::highThumb : DraggableObject::lowThumb;
 
     // The 4th of the angle between the two thumbs.
     double tolerance = ((highSlider->getValue() - lowSlider->getValue())*(std::abs (endAngle - startAngle)))
@@ -676,7 +652,7 @@ OneRangeTuner::DraggableObject OneRangeTuner::getObjectToDrag (const MouseEvent&
         {
             if (mouseAngle > getThumbAngleRadians(thumb1) - tolerance)      return thumb1;
             else if (mouseAngle < getThumbAngleRadians(thumb2) + tolerance) return thumb2;
-            else return middleArea;
+            else return DraggableObject::middleArea;
         }
         else
         {
@@ -685,17 +661,17 @@ OneRangeTuner::DraggableObject OneRangeTuner::getObjectToDrag (const MouseEvent&
 
             if (mouseAngle > getThumbAngleRadians(thumb1) - tolerance)      return thumb1;
             else if (mouseAngle < getThumbAngleRadians(thumb2) + tolerance) return thumb2;
-            else return middleArea;
+            else return DraggableObject::middleArea;
         }
     }
     
-    return none; // Somehow no thumb could be chosen...
+    return DraggableObject::none; // Somehow no thumb could be chosen...
 }
 
 void OneRangeTuner::drawTunerSliderBackground (Graphics& g)
 {
     auto outline = getPlumeColour (tunerSliderBackground);
-    auto fill    = objectBeingDragged == middleArea ? tunerColour.interpolatedWith (Colour (0xffffffff), 0.8f)
+    auto fill    = objectBeingDragged == DraggableObject::middleArea ? tunerColour.interpolatedWith (Colour (0xffffffff), 0.8f)
                                                     : tunerColour;
 
     auto lowAngle = startAngle
@@ -708,8 +684,8 @@ void OneRangeTuner::drawTunerSliderBackground (Graphics& g)
     auto arcRadius = sliderRadius - lineW * 0.5f;
 
     Path backgroundArc;
-    backgroundArc.addCentredArc (sliderCentre.x,
-                                 sliderCentre.y,
+    backgroundArc.addCentredArc (sliderCentre.toFloat().x,
+                                 sliderCentre.toFloat().y,
                                  arcRadius,
                                  arcRadius,
                                  0.0f,
@@ -723,25 +699,25 @@ void OneRangeTuner::drawTunerSliderBackground (Graphics& g)
     if (isEnabled())
     {
         Path valueArc;
-        valueArc.addCentredArc (sliderCentre.x,
-                                sliderCentre.y,
+        valueArc.addCentredArc (sliderCentre.toFloat().x,
+                                sliderCentre.toFloat().y,
                                 arcRadius,
                                 arcRadius,
                                 0.0f,
-                                lowAngle,
-                                highAngle,
+                                static_cast<float> (lowAngle),
+                                static_cast<float> (highAngle),
                                 true);
 
         g.setColour (fill);
         g.strokePath (valueArc, PathStrokeType (6.0f, PathStrokeType::curved, PathStrokeType::rounded));
     }
 
-    if (objectBeingDragged == lowThumb || objectBeingDragged == highThumb)
+    if (objectBeingDragged == DraggableObject::lowThumb || objectBeingDragged == DraggableObject::highThumb)
     {
         auto angle = getThumbAngleRadians (objectBeingDragged);
 
-        juce::Point<float> thumbPoint (sliderCentre.x + arcRadius * std::cos (angle - MathConstants<float>::halfPi),
-                                 sliderCentre.y + arcRadius * std::sin (angle - MathConstants<float>::halfPi));
+        juce::Point<float> thumbPoint (sliderCentre.toFloat().x + arcRadius * static_cast<float> (std::cos (angle - MathConstants<double>::halfPi)),
+                                 sliderCentre.toFloat().y + arcRadius * static_cast<float> (std::sin (angle - MathConstants<double>::halfPi)));
 
         g.setColour (fill.withAlpha (0.6f));
         g.fillEllipse (juce::Rectangle<float> (25.0f, 25.0f).withCentre (thumbPoint));
@@ -753,12 +729,12 @@ void OneRangeTuner::drawTunerSliderBackground (Graphics& g)
         double angle;
 
         if (maxAngleBtnIsHovered)
-            angle = getThumbAngleRadians (highThumb);
+            angle = getThumbAngleRadians (DraggableObject::highThumb);
         else
-            angle = getThumbAngleRadians (lowThumb);
+            angle = getThumbAngleRadians (DraggableObject::lowThumb);
 
-        juce::Point<float> thumbPoint (sliderCentre.x + arcRadius * std::cos (angle - MathConstants<float>::halfPi),
-            sliderCentre.y + arcRadius * std::sin (angle - MathConstants<float>::halfPi));
+        juce::Point<float> thumbPoint (sliderCentre.toFloat().x + arcRadius * static_cast<float> (std::cos(angle - MathConstants<double>::halfPi)),
+            sliderCentre.toFloat().y + arcRadius * static_cast<float> (std::sin(angle - MathConstants<double>::halfPi)));
 
         g.setColour (fill.withAlpha (0.3f));
         g.fillEllipse (juce::Rectangle<float> (25.0f, 25.0f).withCentre (thumbPoint));
@@ -771,20 +747,20 @@ void OneRangeTuner::updateLabelBounds (Label* labelToUpdate)
 
     if (labelToUpdate == rangeLabelMin.get())
     {
-        auto radius = sliderRadius + 15;
-        auto angle = getThumbAngleRadians (lowThumb);
+        auto radius = sliderRadius + 15.0f;
+        auto angle = getThumbAngleRadians (DraggableObject::lowThumb);
 
-        rangeLabelMin->setCentrePosition (sliderCentre.x + radius * std::cos (angle - MathConstants<float>::halfPi),
-                                          sliderCentre.y + radius * std::sin (angle - MathConstants<float>::halfPi));
+        rangeLabelMin->setCentrePosition (sliderCentre.x + static_cast<int> (radius * static_cast<float> (std::cos (angle - MathConstants<double>::halfPi))),
+                                          sliderCentre.y + static_cast<int> (radius * static_cast<float> (std::sin (angle - MathConstants<double>::halfPi))));
 
     }
     else if (labelToUpdate == rangeLabelMax.get())
     {
-        auto radius = sliderRadius + 15;
-        auto angle = getThumbAngleRadians (highThumb);
+        auto radius = sliderRadius + 15.0f;
+        auto angle = getThumbAngleRadians (DraggableObject::highThumb);
 
-        rangeLabelMax->setCentrePosition (sliderCentre.x + radius * std::cos (angle - MathConstants<float>::halfPi),
-                                          sliderCentre.y + radius * std::sin (angle - MathConstants<float>::halfPi));
+        rangeLabelMax->setCentrePosition (sliderCentre.x + static_cast<int> (radius * static_cast<float> (std::cos (angle - MathConstants<double>::halfPi))),
+                                          sliderCentre.y + static_cast<int> (radius * static_cast<float> (std::sin (angle - MathConstants<double>::halfPi))));
     }
 }
 
@@ -871,13 +847,13 @@ void OneRangeTuner::drawThumbsAndToleranceLines (Graphics& g)
                          / (lowSlider->getRange().getLength() * 5);
 
     g.setColour (Colour (0xffdedeff));
-    drawLineFromSliderCentre (g, getThumbAngleRadians (lowThumb));
-    drawLineFromSliderCentre (g, getThumbAngleRadians (highThumb));
+    drawLineFromSliderCentre (g, static_cast<float> (getThumbAngleRadians (DraggableObject::lowThumb)));
+    drawLineFromSliderCentre (g, static_cast<float> (getThumbAngleRadians (DraggableObject::highThumb)));
 
     g.setColour (Colour (0xff903030));
     bool invertTolerance = startAngle > endAngle;
-    drawLineFromSliderCentre (g, getThumbAngleRadians (lowThumb) + (invertTolerance ? -tolerance
-                                                                                    : tolerance));
-    drawLineFromSliderCentre (g, getThumbAngleRadians (highThumb) + (invertTolerance ? tolerance
-                                                                                     : -tolerance));
+    drawLineFromSliderCentre (g, static_cast<float> (getThumbAngleRadians (DraggableObject::lowThumb) + (invertTolerance ? -tolerance
+                                                                                    : tolerance)));
+    drawLineFromSliderCentre (g, static_cast<float> (getThumbAngleRadians (DraggableObject::highThumb) + (invertTolerance ? tolerance
+                                                                                     : -tolerance)));
 }

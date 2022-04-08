@@ -36,6 +36,8 @@ public:
 
     //Component* refreshComponentForRow (int rowNumber, bool isRowSelected, Component* existingComponentToUpdate) override;
     void listBoxItemClicked (int row, const MouseEvent& event) override;
+    bool keyPressed (const KeyPress& key) override;
+    void setFilter (int row);
     //void listBoxItemDoubleClicked (int row, const MouseEvent& event) override;
     //void backgroundClicked (const MouseEvent& event) override;
     //void deleteKeyPressed (int lastRowSelected) override;
@@ -48,6 +50,7 @@ public:
 private:
     //==============================================================================
     PlumeProcessor& processor;
+    int currentRow = 0;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterBox)

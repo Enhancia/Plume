@@ -52,11 +52,11 @@ TypeToggleComponent::~TypeToggleComponent()
     toggles.clear();
 }
 
-void TypeToggleComponent::paint (Graphics& g)
+void TypeToggleComponent::paint (Graphics&)
 {
 }
 
-void TypeToggleComponent::paintOverChildren (Graphics& g)
+void TypeToggleComponent::paintOverChildren (Graphics&)
 {
 }
 
@@ -149,7 +149,7 @@ void TypeToggleComponent::Toggle::resized()
 {
 }
 
-void TypeToggleComponent::Toggle::mouseEnter (const MouseEvent &event)
+void TypeToggleComponent::Toggle::mouseEnter (const MouseEvent &)
 {
     if (!state && !highlighted)
     {
@@ -158,7 +158,7 @@ void TypeToggleComponent::Toggle::mouseEnter (const MouseEvent &event)
     }
 }
 
-void TypeToggleComponent::Toggle::mouseExit (const MouseEvent &event)
+void TypeToggleComponent::Toggle::mouseExit (const MouseEvent &)
 {
     if (!state && highlighted)
     {

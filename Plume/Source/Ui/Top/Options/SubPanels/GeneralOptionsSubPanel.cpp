@@ -79,6 +79,7 @@ void ContactSubPanel::buttonClicked (Button* bttn)
                                     ->findChildWithID ("BugReportPanel"))
         {
             bugReportPanel->setVisible (true);
+            bugReportPanel->grabKeyboardFocus();
         }
     } else if (bttn->getComponentID() == "prn")
     {

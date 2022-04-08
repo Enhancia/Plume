@@ -48,7 +48,7 @@ PlumeProcessor::PlumeProcessor()
     
     // Objects
     dataReader.reset (new DataReader());
-    gestureArray.reset (new GestureArray (*dataReader, parameters, getLastArmRef()));
+    gestureArray.reset (new GestureArray (*this, *dataReader, parameters, getLastArmRef()));
     wrapper.reset (new PluginWrapper (*this, *gestureArray, parameters.state.getChildWithName(PLUME::treeId::general)
 		                                                         .getChildWithName(PLUME::treeId::pluginDirs)));
     presetHandler.reset (new PresetHandler (parameters.state.getChildWithName (PLUME::treeId::general)
@@ -62,7 +62,7 @@ PlumeProcessor::PlumeProcessor()
 
 PlumeProcessor::~PlumeProcessor()
 {
-    PLUME::log::writeToLog ("Removing Plume instance.", PLUME::log::general);
+    PLUME::log::writeToLog ("Removing Plume instance.", PLUME::log::LogCategory::general);
 
     dataReader->removeChangeListener(gestureArray.get());
     dataReader->connectionLost();
@@ -135,10 +135,10 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
     //checkForSignedMidi (midiMessages);
     
     // Adds the gesture's MIDI messages to the buffer, and changes parameters if needed
-    int armValue = parameters.getParameter ("track_arm")
+    const int armValue = static_cast<int> (parameters.getParameter ("track_arm")
                              ->convertFrom0to1 (parameters.getParameter ("track_arm")
-                                                          ->getValue());
-    lastArm = (armValue == int (PLUME::param::armed));
+                                                          ->getValue()));
+    lastArm = (armValue == static_cast<int> (PLUME::param::armed));
 
     // Adds the gesture's MIDI messages to the buffer, and changes parameters if needed
     if (!isDetectingAuthSequence)
@@ -218,11 +218,11 @@ void PlumeProcessor::getStateInformation (MemoryBlock& destData)
     wrapperData->deleteAllChildElements();
 }
 
-void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
+void PlumeProcessor::setStateInformation (const void* dataToSet, int sizeInBytes)
 {
     suspendProcessing (true);
     
-    	std::unique_ptr<XmlElement> wrapperData = getXmlFromBinary (data, sizeInBytes);
+    	std::unique_ptr<XmlElement> wrapperData = getXmlFromBinary (dataToSet, sizeInBytes);
     
 	if (wrapperData == nullptr)
 	{
@@ -346,7 +346,7 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
 			MemoryBlock m;
 			m.fromBase64Encoding (state->getAllSubText());
 
-			wrapper->getWrapperProcessor().setStateInformation (m.getData(), (int)m.getSize());
+			wrapper->getWrapperProcessor().setStateInformation (m.getData(), static_cast<int>(m.getSize()));
 
             if (presetHandler->currentPresetRequiresAuth()) startDetectingAuthSequence();
 		}
@@ -358,7 +358,7 @@ void PlumeProcessor::loadGestureXml(const XmlElement& gestureData)
     int i = 0;
     gestureArray->clearAllGestures();
     
-    forEachXmlChildElement (gestureData, gesture)
+    for (auto* gesture : gestureData.getChildIterator())
     {
 		if (i < PLUME::NUM_GEST)
 		{
@@ -389,25 +389,11 @@ AudioProcessorValueTreeState::ParameterLayout PlumeProcessor::initializeParamete
     using namespace PLUME::param;
     AudioProcessorValueTreeState::ParameterLayout layout;
     
-    for (int i =0; i < numValues; i++)
+    for (int i =0; i < PLUME::NUM_GEST*(PLUME::MAX_PARAMETER + 1); i++)
     {
-        layout.add (std::make_unique<AudioParameterFloat> (valuesIds[i],
-                                                           valuesIds[i],
+        layout.add (std::make_unique<PlumeParameter<AudioParameterFloat>> ("Parameter_" + String (i), PLUME::param::defaultParameterName,
                                                            NormalisableRange<float> (0.0f, 1.0f, 0.0001f),
                                                            0.0f));
-    }
-
-    for (int gest =0; gest < PLUME::NUM_GEST; gest++)
-    {
-        for (int i =0; i < numParams; i++)
-        {
-                String description = "Gest " + String(gest + 1)
-                                             + " - Param " + String (i - gesture_param_0 + 1);
-                layout.add (std::make_unique<AudioParameterFloat> (String(gest) + paramIds[i],
-                                                                   description,
-                                                                   NormalisableRange<float> (0.0f, 1.0f, 0.0001f),
-                                                                   0.0f));
-        }
     }
 
     layout.add (std::make_unique<AudioParameterInt> ("track_arm",
@@ -499,7 +485,7 @@ void PlumeProcessor::parameterValueChanged (int parameterIndex, float newValue)
     }
 }
 
-void PlumeProcessor::parameterGestureChanged (int parameterIndex, bool gestureIsStarting)
+void PlumeProcessor::parameterGestureChanged (int , bool)
 {
 }
 
@@ -544,11 +530,11 @@ void PlumeProcessor::checkAndUpdateRecordingStatus()
 {
     bool isRecording = false;
 
-    if (auto* playHead = getPlayHead())
+    if (auto* currentPlayHead = getPlayHead())
     {
         AudioPlayHead::CurrentPositionInfo positionInfo;
 
-        if (playHead->getCurrentPosition (positionInfo))
+        if (currentPlayHead->getCurrentPosition (positionInfo))
         {
             // TODO change isPlaying to isRecording
             isRecording = positionInfo.isRecording;
@@ -673,7 +659,7 @@ void PlumeProcessor::startSendingUnlockParamSequence()
 
     for (auto characterToEncode : presetHandler->getCurrentPresetName())
     {
-        unlockParamSequence.add (int(characterToEncode)/127.0f);
+        unlockParamSequence.add (static_cast<int>(characterToEncode)/127.0f);
     }
 
     //sends first value
@@ -688,7 +674,7 @@ void PlumeProcessor::startSendingUnlockParamSequence()
 
 bool PlumeProcessor::isNextStepInAuthSequence (float receivedValue)
 {
-    const char authChar = char (receivedValue*127);
+    const char authChar = static_cast<char>(receivedValue * 127);
     const bool isnextstep = (authParamSequence[stepInAuthSequence] == authChar);
 
     return isnextstep;
@@ -698,18 +684,18 @@ bool PlumeProcessor::isNextStepInAuthSequence (float receivedValue)
 void PlumeProcessor::setCrashFileToCurrentFormat()
 {
     const PluginHostType currentHostType;
-    const auto wrapperType = currentHostType.getPluginLoadedAs();
+    const auto currentWrapperType = currentHostType.getPluginLoadedAs();
 
   #if JUCE_WINDOWS
     crashFile = File::getSpecialLocation (File::userApplicationDataDirectory)
-                .getChildFile (wrapperType == AudioProcessor::wrapperType_VST  ? "Enhancia/Plume/plumectV.cfg" :
-                               wrapperType == AudioProcessor::wrapperType_VST3 ? "Enhancia/Plume/plumect3.cfg" :
+                .getChildFile (currentWrapperType == AudioProcessor::wrapperType_VST  ? "Enhancia/Plume/plumectV.cfg" :
+                               currentWrapperType == AudioProcessor::wrapperType_VST3 ? "Enhancia/Plume/plumect3.cfg" :
                                "Enhancia/Plume/plumect.cfg");
   #elif JUCE_MAC
     crashFile = File::getSpecialLocation (File::userApplicationDataDirectory)
-                .getChildFile (wrapperType == AudioProcessor::wrapperType_VST       ? "Application Support/Enhancia/Plume/plumectV.cfg" :
-                               wrapperType == AudioProcessor::wrapperType_VST3      ? "Application Support/Enhancia/Plume/plumect3.cfg" :
-                               wrapperType == AudioProcessor::wrapperType_AudioUnit ? "Application Support/Enhancia/Plume/plumectA.cfg" :
+                .getChildFile (currentWrapperType == AudioProcessor::wrapperType_VST       ? "Application Support/Enhancia/Plume/plumectV.cfg" :
+                               currentWrapperType == AudioProcessor::wrapperType_VST3      ? "Application Support/Enhancia/Plume/plumect3.cfg" :
+                               currentWrapperType == AudioProcessor::wrapperType_AudioUnit ? "Application Support/Enhancia/Plume/plumectA.cfg" :
                                "Application Support/Enhancia/Plume/plumect.cfg");
   #endif
 }

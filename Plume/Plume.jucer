@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" pluginFormats="buildAU,buildStandalone,buildVST"
-              version="0.1.15" companyName="Enhancia" buildVST="1" buildVST3="0"
-              buildAU="1" buildAUv3="0" buildRTAS="0" buildAAX="0" enableIAA="0"
-              pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
+<JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1"
+              pluginFormats="buildAU,buildStandalone,buildVST,buildVST3" version="1.0.0"
+              companyName="Enhancia" buildVST="1" buildVST3="1" buildAU="1"
+              buildAUv3="0" buildRTAS="0" buildAAX="0" enableIAA="0" pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
               pluginManufacturer="Enhancia" pluginName="Plume" pluginDesc="Enhancia's Plume. Wraps other plugins, provides customizable and mappable gestures to use with Neova."
               binaryDataNamespace="PlumeData" includeBinaryInJuceHeader="1"
               id="PjN2uz" pluginManufacturerCode="Enhn" pluginCode="Plum" compilerFlagSchemes="NewScheme"
@@ -27,6 +27,8 @@
               file="Source/Plugin/PluginProcessor.cpp"/>
         <FILE id="RmlXrO" name="PluginProcessor.h" compile="0" resource="0"
               file="Source/Plugin/PluginProcessor.h"/>
+        <FILE id="U2YOLB" name="PlumeParameter.h" compile="0" resource="0"
+              file="Source/Plugin/PlumeParameter.h"/>
       </GROUP>
       <GROUP id="{AE0F84C5-94EC-13BD-B9DC-2AC22EE3F6D0}" name="Presets">
         <FILE id="S1sDCS" name="PlumePreset.cpp" compile="1" resource="0" file="Source/Presets/PlumePreset.cpp"/>
@@ -317,7 +319,7 @@
         <MODULEPATH id="juce_audio_plugin_client" path="../../JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
-    <VS2022 targetFolder="Builds/VisualStudio2022">
+    <VS2022 targetFolder="Builds/VisualStudio2022" smallIcon="AnkEeB" bigIcon="AnkEeB">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="Plume"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="Plume"/>

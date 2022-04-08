@@ -103,6 +103,11 @@ void MidiModeComponent::labelTextChanged (Label* lbl)
         	parentComp->repaint();
     }
 }
+
+void MidiModeComponent::editorShown (Label*, TextEditor& ted)
+{
+    ted.setJustification (Justification::centred);
+}
    
 void MidiModeComponent::buttonClicked (Button* bttn)
 {
@@ -120,7 +125,6 @@ void MidiModeComponent::comboBoxChanged (ComboBox* box)
     if (box == midiTypeBox.get())
     {
         bool isCC = (midiTypeBox->getSelectedId() == Gesture::controlChange);
-        const int previousType = gesture.midiType;
         
         // cc Label is visible & editable only if "CC" is selected
         ccLabel->setEditable (isCC, false, false);
@@ -130,12 +134,12 @@ void MidiModeComponent::comboBoxChanged (ComboBox* box)
         gesture.midiType = midiTypeBox->getSelectedId();
 
         // Changes the range default value depending on the type
-        if ((gesture.type == Gesture::tilt || gesture.type == Gesture::roll))
-        {
-            gesture.setMidiHigh (1.0f, false);
-            gesture.setMidiLow (isCC ? 0.0f : 0.5f, false);
-            midiRangeTuner->updateComponents (MidiRangeTuner::middleArea);
-        }
+        //if ((gesture.type == Gesture::tilt || gesture.type == Gesture::roll))
+        //{
+        //    gesture.setMidiHigh (1.0f, false);
+        //    gesture.setMidiLow (isCC ? 0.0f : 0.5f, false);
+        //    midiRangeTuner->updateComponents (MidiRangeTuner::middleArea);
+        //}
 
         gestureArray.checkPitchMerging();
 
@@ -486,9 +490,13 @@ void MidiRangeTuner::mouseUp (const MouseEvent& e)
 
 void MidiRangeTuner::updateDisplay()
 {
-    if (gesture.getRescaledMidiValue() != lastValue)
+    const int newValue = gesture.getMidiValue();
+
+    //DBG ("[" << gesture.getName() << "] Updating MIDI Value : lastValue: " << lastValue << " | newValue : " << newValue);
+
+    if (newValue != lastValue)
     {
-        lastValue = gesture.getRescaledMidiValue();
+        lastValue = newValue;
         
         repaint (lowSlider->getBounds().withY (lowSlider->getBounds().getCentreY() - 13)
                                        .withHeight (8));
@@ -625,27 +633,27 @@ void MidiRangeTuner::createSliders()
         slider.addListener (this);
     };
 
-    setSliderSettings (*lowSlider, (double) gesture.getMidiLow());
-    setSliderSettings (*highSlider, (double) gesture.getMidiHigh());
+    setSliderSettings (*lowSlider, gesture.getMidiLow());
+    setSliderSettings (*highSlider, gesture.getMidiHigh());
 }
 
 float MidiRangeTuner::getThumbX (DraggableObject thumb)
 {
     if (thumb == lowThumb)
     {
-        return lowSlider->getX() + 11.5f + (lowSlider->getWidth() - 23.0f) * lowSlider->getValue();
+        return lowSlider->getX() + 11.5f + (lowSlider->getWidth() - 23.0f) * static_cast<float> (lowSlider->getValue());
     }
 
     if (thumb == highThumb)
     {
-        return highSlider->getX() + 11.5f + (highSlider->getWidth() - 23.0f) * highSlider->getValue();
+        return highSlider->getX() + 11.5f + (highSlider->getWidth() - 23.0f) * static_cast<float> (highSlider->getValue());
     }
 
     return -1.0f;
 }
 
 
-void MidiRangeTuner::handleSliderClick (const MouseEvent& e)
+void MidiRangeTuner::handleSliderClick (const MouseEvent&)
 {
 
 }

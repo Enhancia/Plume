@@ -37,6 +37,7 @@ public:
 
     //==============================================================================
     void buttonClicked (Button* bttn) override;
+    bool keyPressed (const KeyPress& key) override;
     void labelTextChanged (Label* lbl) override;
 
     //==============================================================================
@@ -55,7 +56,7 @@ private:
 
     //==============================================================================
     void sendTicketAndUpdate();
-    URL createURLForTicket (const String& boundary);
+    URL createURLForTicket();
     String createMultipartData (const String& boundary, const Array<File>& txtFilesToAttach);
     void getFilestoAttach (Array<File>& fileArrayToFill);
 

@@ -64,7 +64,7 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
                                 "Specified description for wrapping : " + description.name
                                 + " (Id : " + String (description.uniqueId) + " | Format : "
                                             + description.pluginFormatName + ")",
-                                PLUME::log::pluginWrapping, PLUME::log::error);
+                                PLUME::log::LogCategory::pluginWrapping, PLUME::log::LogLevel::error);
 
         getOwner().sendActionMessage (PLUME::commands::missingPlugin + description.descriptiveName);
         return false;
@@ -72,13 +72,13 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
     
     if (descToWrap->name == "Plume" || descToWrap->name == "Plume Tests")
     {
-        PLUME::log::writeToLog ("Plume tried to wrap itself..", PLUME::log::pluginWrapping, PLUME::log::error);
+        PLUME::log::writeToLog ("Plume tried to wrap itself..", PLUME::log::LogCategory::pluginWrapping, PLUME::log::LogLevel::error);
         return false;
     }
     
     if (!(descToWrap)->isInstrument)
     {
-        PLUME::log::writeToLog ("Attempted to wrap a non-instrument plugin : " + descToWrap->name, PLUME::log::pluginWrapping, PLUME::log::error);
+        PLUME::log::writeToLog ("Attempted to wrap a non-instrument plugin : " + descToWrap->name, PLUME::log::LogCategory::pluginWrapping, PLUME::log::LogLevel::error);
         return false;
     }
     
@@ -96,7 +96,7 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
         unwrapPlugin();
     }
 
-    PLUME::log::writeToLog ("Attempting to load plugin : " + descToWrap->name, PLUME::log::pluginWrapping);
+    PLUME::log::writeToLog ("Attempting to load plugin : " + descToWrap->name, PLUME::log::LogCategory::pluginWrapping);
 	
     String errorMsg;
     if (PLUME::file::deadMansPedal.existsAsFile() || PLUME::file::deadMansPedal.create().wasOk())
@@ -112,7 +112,7 @@ bool PluginWrapper::wrapPlugin (PluginDescription& description)
     if (wrappedInstance == nullptr)
     {
         PLUME::log::writeToLog ("Failed to load plugin.. Error message : " + errorMsg,
-                                PLUME::log::pluginWrapping, PLUME::log::error);
+                                PLUME::log::LogCategory::pluginWrapping, PLUME::log::LogLevel::error);
         return false;
     }
     
@@ -587,14 +587,13 @@ void PluginWrapper::clearCustomDirectories()
     //customDirectories.removeAllChildren (nullptr);
 }
 
-void PluginWrapper::startScanProcess (bool dontRescanIfAlreadyInList, bool resetBlackList)
+void PluginWrapper::startScanProcess()
 {
-    PLUME::log::writeToLog ("Starting plugin scan.", PLUME::log::pluginScan);
+    PLUME::log::writeToLog ("Starting plugin scan.", PLUME::log::LogCategory::pluginScan);
 
     getOrCreateDeadsManPedalFile();
     
-    scanHandler->startScanProcess (!dontRescanIfAlreadyInList,
-                                   createFileList());
+    scanHandler->startScanProcess (createFileList());
 }
 
 void PluginWrapper::addPluginsToMenu (PopupMenu& menu, KnownPluginList::SortMethod sort)
@@ -606,7 +605,7 @@ void PluginWrapper::addPluginsToMenu (PopupMenu& menu, KnownPluginList::SortMeth
         getOwner().sendActionMessage (PLUME::commands::scanRequired);
     }
     
-    else pluginList->addToMenu (menu, sort);
+    else KnownPluginList::addToMenu (menu, pluginList->getTypes(), sort);
 }
 
 std::unique_ptr<PluginDescription> PluginWrapper::getDescriptionToWrap (const PluginDescription& description)
@@ -651,7 +650,7 @@ void PluginWrapper::savePluginListToFile()
     searchSettings->setAttribute ("use_au",     useAudioUnits   ? 1 : 0);
   #endif
 
-    listXml->writeToFile (PLUME::file::pluginList, StringRef());
+    listXml->writeTo (PLUME::file::pluginList);
     listXml->deleteAllChildElements();
 }
 
@@ -752,17 +751,29 @@ void PluginWrapper::fillInPluginDescription (PluginDescription& pd)
 
 
 void PluginWrapper::addParametersToGestureFromXml (XmlElement& gesture, int gestureNum)
-{
-        
+{    
     if (hasWrappedInstance)
     {
-        forEachXmlChildElement (gesture, paramXml)
+        for (auto* paramXml : gesture.getChildIterator())
         {
-            gestArray.addAndSetParameter (wrapperProcessor->getWrappedParameter (paramXml->getIntAttribute("id")),
-                                          gestureNum,
-                                          float (paramXml->getDoubleAttribute("start", 0.0f)),
-                                          float (paramXml->getDoubleAttribute("end", 1.0f)),
-                                          paramXml->getBoolAttribute ("reversed", false));
+            const int parameterIdToUse = paramXml->getIntAttribute ("plumeParameterId", -1);
+
+            if (parameterIdToUse != -1) // parameter is set to a specific plume Id
+            {
+                gestArray.addAndSetParameter (wrapperProcessor->getWrappedParameter (paramXml->getIntAttribute("id")),
+                                              gestureNum, parameterIdToUse,
+                                              float (paramXml->getDoubleAttribute("start", 0.0f)),
+                                              float (paramXml->getDoubleAttribute("end", 1.0f)),
+                                              paramXml->getBoolAttribute ("reversed", false));
+            }
+            else // Automatic id selection
+            {   
+                gestArray.addAndSetParameter (wrapperProcessor->getWrappedParameter (paramXml->getIntAttribute("id")),
+                                              gestureNum,
+                                              float (paramXml->getDoubleAttribute("start", 0.0f)),
+                                              float (paramXml->getDoubleAttribute("end", 1.0f)),
+                                              paramXml->getBoolAttribute ("reversed", false));
+            }
         }
     }
 }
@@ -774,4 +785,6 @@ void PluginWrapper::parameterValueChanged (int parameterIndex, float)
     {
 	    gestArray.addParameterToMapModeGesture (wrapperProcessor->getWrappedParameter (parameterIndex));
     }
+
+    owner.updateHostDisplay (AudioProcessor::ChangeDetails().withParameterInfoChanged (true));
 }

@@ -9,6 +9,7 @@
 */
 
 #include "NewPresetPanel.h"
+#include "../../Header/HeaderComponent.h"
 
 //==============================================================================
 NewPresetPanel::NewPresetPanel (PlumeProcessor& proc)   : processor (proc)
@@ -132,6 +133,26 @@ void NewPresetPanel::resized()
     saveButton  ->setBounds (buttonArea.reduced (3*MARGIN, MARGIN/2));
 }
 
+void NewPresetPanel::setNameLabel (const String nameLabelArg)
+{
+    nameLabel->setText(nameLabelArg, dontSendNotification);
+}
+
+void NewPresetPanel::setAuthorLabel (const String authorLabelArg)
+{
+    authorLabel->setText(authorLabelArg, dontSendNotification);
+}
+
+void NewPresetPanel::setVerLabel (const String verLabelArg)
+{
+    verLabel->setText(verLabelArg, dontSendNotification);
+}
+
+void NewPresetPanel::setPluginLabel (const String pluginLabelArg)
+{
+    pluginLabel->setText(pluginLabelArg, dontSendNotification);
+}
+
 void NewPresetPanel::visibilityChanged()
 {
     if (isVisible())
@@ -158,10 +179,20 @@ void NewPresetPanel::buttonClicked (Button* bttn)
             return;
         }
         
-        createUserPreset();
+        saveUserPreset();
     }
     
     setVisible (false);
+}
+
+bool NewPresetPanel::keyPressed (const KeyPress& key)
+{
+    if (key == PLUME::keyboard_shortcut::closeWindow)
+    {
+        setVisible (false);
+    }
+
+    return true;
 }
 
 void NewPresetPanel::labelTextChanged (Label* lbl)
@@ -317,7 +348,7 @@ void NewPresetPanel::createBox()
     typeBox->setSelectedId (PlumePreset::other+1, dontSendNotification);
 }
 
-void NewPresetPanel::createUserPreset()
+void NewPresetPanel::saveUserPreset()
 {
     auto presetXml = std::make_unique<XmlElement> ("PLUME");
 	processor.createPluginXml (*presetXml);
@@ -348,4 +379,18 @@ void NewPresetPanel::createUserPreset()
 	}
     
     presetXml->deleteAllChildElements();
+
+    const auto headerComp = this->getParentComponent()->findChildWithID("header");
+
+    if (auto header = dynamic_cast<HeaderComponent*>(headerComp))
+        header->createPresetOptionsMenu();
+
+}
+
+void NewPresetPanel::clearLabels ()
+{
+    nameLabel->setText("Preset Name...", dontSendNotification);
+    authorLabel->setText("Author Name...", dontSendNotification);
+    verLabel->setText("1.0", dontSendNotification);
+    typeBox->setSelectedId (static_cast<int>(PlumePreset::other + 1), dontSendNotification);
 }

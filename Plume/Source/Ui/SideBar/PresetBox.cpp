@@ -9,6 +9,7 @@
 */
 
 #include "PresetBox.h"
+#include "../Header/HeaderComponent.h"
 
 PresetBox::PresetBox (const String& componentName, PlumeProcessor& p)  : ListBox (componentName, this),
                                                                          processor (p)
@@ -135,6 +136,8 @@ Component* PresetBox::refreshComponentForRow (int rowNumber,
 
 void PresetBox::listBoxItemClicked (int row, const MouseEvent& event)
 {
+    currentRow = row;
+
     if (event.mods.isPopupMenu())
     {
         rightClickMenu.clear();
@@ -173,20 +176,39 @@ void PresetBox::backgroundClicked (const MouseEvent& event)
     }
 }
 
-void PresetBox::deleteKeyPressed (int lastRowSelected)
+void PresetBox::deleteKeyPressed (int)
 {
-    ignoreUnused(lastRowSelected);
-    //deletePreset (lastRowSelected);
 }
 
-void PresetBox::returnKeyPressed (int lastRowSelected)
+void PresetBox::returnKeyPressed (int selectedRowDuringPress)
 {
-    setPreset (lastRowSelected);
+    setPreset (selectedRowDuringPress);
 }
 
-void PresetBox::selectedRowsChanged (int lastRowSelected)
+bool PresetBox::keyPressed (const KeyPress& key)
 {
-    ignoreUnused (lastRowSelected);
+    ListBox::keyPressed (key);
+
+    if (key.isKeyCode (KeyPress::upKey) && currentRow > 0)
+        currentRow--;
+    else if (key.isKeyCode (KeyPress::downKey) && currentRow < getNumRows () - 1)
+        currentRow++;
+
+    if (key == PLUME::keyboard_shortcut::rename)
+    {
+        bool isUser = processor.getPresetHandler ().isUserPreset (currentRow);
+
+        if (isUser)
+            startRenameEntry (currentRow);
+    }
+    else if (key == PLUME::keyboard_shortcut::openPreset)
+        setPreset (currentRow);
+
+    return true;
+}
+
+void PresetBox::selectedRowsChanged (int)
+{
     if (auto* infoText = dynamic_cast<TextEditor*> (getParentComponent() // presetComp
                                                     ->getParentComponent() // sideBarComp
                                                     ->findChildWithID("infoPanel")
@@ -303,7 +325,7 @@ void PresetBox::deletePreset (const int row)
     bool shouldUpdateHeader = (processor.getPresetHandler().getCurrentPresetName()
                             == processor.getPresetHandler().getTextForPresetId (row));
     
-    PLUME::log::writeToLog ("Deleting preset : " + processor.getPresetHandler().getPresetForId (row).getName(), PLUME::log::presets);
+    PLUME::log::writeToLog ("Deleting preset : " + processor.getPresetHandler().getPresetForId (row).getName(), PLUME::log::LogCategory::presets);
 	
     if (processor.getPresetHandler().deletePresetForId(row))
 	{
@@ -315,6 +337,16 @@ void PresetBox::deletePreset (const int row)
 			updateHeader();
 	    }
     }
+
+    // get header component
+    const auto headerComp = this->getParentComponent()->
+        getParentComponent()->
+        getParentComponent()->
+        findChildWithID("header");
+
+    // recreate preset options menu in the header
+    if(const auto header = dynamic_cast<HeaderComponent*>(headerComp))
+        header->createPresetOptionsMenu();
 }
 //==============================================================================
 void PresetBox::menuCallback (int result, PresetBox* pBox, int row)
@@ -356,7 +388,7 @@ void PresetBox::setPreset (const int row)
     // Gets the preset Xml and loads it using the processor
     if (std::unique_ptr<XmlElement> presetXml = processor.getPresetHandler().getPresetXmlToLoad (row))
     {
-        PLUME::log::writeToLog ("Loading preset (from preset list) : " + processor.getPresetHandler().getPresetForId (row).getName(), PLUME::log::presets);
+        PLUME::log::writeToLog ("Loading preset (from preset list) : " + processor.getPresetHandler().getPresetForId (row).getName(), PLUME::log::LogCategory::presets);
         
         // Easter egg => crash Plume if preset named plumeAnnihilator is opened
         if (processor.getPresetHandler().getPresetForId (row).getName() == "plumeAnnihilator")
@@ -379,6 +411,17 @@ void PresetBox::setPreset (const int row)
     {
         processor.getPresetHandler().resetPreset();
     }
+
+    // get header component
+    const auto headerComp = this->getParentComponent()->
+        getParentComponent()->
+        getParentComponent()->
+        findChildWithID("header");
+
+    // recreate preset options menu in the header
+    if(const auto header = dynamic_cast<HeaderComponent*>(headerComp))
+        header->createPresetOptionsMenu();
+
 }
 
 void PresetBox::createUserPreset (const String& presetName)
@@ -400,7 +443,7 @@ void PresetBox::renamePreset (const String& newName)
     const int currentPresetId = processor.getPresetHandler().getCurrentPresetIdInSearchList();
 
     PLUME::log::writeToLog ("Renaming preset : " + processor.getPresetHandler().getPresetForId (presetIdToEdit).getName()
-                                                 + " => " + newName, PLUME::log::presets);
+                                                 + " => " + newName, PLUME::log::LogCategory::presets);
 
     processor.getPresetHandler().renamePreset (newName, presetIdToEdit);
 

@@ -56,8 +56,7 @@ public:
     void timerCallback();
 
     //==============================================================================
-    void startScanProcess (const bool forceRescan,
-                           const Array<File>& directoriesToScan);
+    void startScanProcess (const Array<File>& directoriesToScan);
     void cancelScan();
     void resetScanInfo (const bool resetProgress);
     void handleScanCrashed();
@@ -66,7 +65,7 @@ public:
 
     //==============================================================================
     void setPluginFormats (bool useVST = true, bool useVST3 = true, bool useAUOnMac = true);
-    void createFilesToScanArray (const FileSearchPath& directoriesToSearchIn);
+    void createFilesToScanArray ();
 
     //==============================================================================
     String getScanInfo();
@@ -143,13 +142,13 @@ private:
 
                             if (!readDmp().isEmpty())
                             {
-                                PLUME::log::writeToLog ("Adding plugin to blacklist, it crashed during scan : " + fileOrIdentifier, PLUME::log::pluginScan);
+                                PLUME::log::writeToLog ("Adding plugin to blacklist, it crashed during scan : " + fileOrIdentifier, PLUME::log::LogCategory::pluginScan);
                                 pluginList.addToBlacklist (fileOrIdentifier);
                                 clearDmp();
                             }
                             else if (exitCode == 0) // Successful scan
                             {
-                                PLUME::log::writeToLog ("Scanner returned 0 (COUNT " + String (count) + "): Attempting to get description", PLUME::log::pluginScan);
+                                PLUME::log::writeToLog ("Scanner returned 0 (COUNT " + String (count) + "): Attempting to get description", PLUME::log::LogCategory::pluginScan);
                                 
                                 // If a description xml was shared by the scanner:
                                 // creates and adds one or several PluginDescription object(s) from it. 
@@ -165,7 +164,7 @@ private:
                                             if (desc.loadFromXml (*descXml))
                                             {
                                                 PLUME::log::writeToLog ("Finished Scanning! Adding plugin to list : " + desc.name +
-                                                                        "(" + desc.version + ")", PLUME::log::pluginScan);
+                                                                        "(" + desc.version + ")", PLUME::log::LogCategory::pluginScan);
                                                 pluginList.addType (desc);
                                             } 
                                         }
@@ -175,7 +174,7 @@ private:
                                 // 'findAllTypesForFile()' might trigger a crash.
                                 else
                                 {
-                                    PLUME::log::writeToLog ("Scanner returned 0 (COUNT " + String (count) + "): No result file: Attempting to create description", PLUME::log::pluginScan);
+                                    PLUME::log::writeToLog ("Scanner returned 0 (COUNT " + String (count) + "): No result file: Attempting to create description", PLUME::log::LogCategory::pluginScan);
                                     OwnedArray<PluginDescription> found;
                                     
                                     addFileToDmp (fileOrIdentifier);
@@ -187,7 +186,7 @@ private:
                                         if (desc->name != "Plume" && desc->name != "Plume Tests")
                                         {
                                             PLUME::log::writeToLog ("Finished Scanning! Adding plugin to list : " + desc->name +
-                                                                    "(" + desc->version + ")", PLUME::log::pluginScan);
+                                                                    "(" + desc->version + ")", PLUME::log::LogCategory::pluginScan);
                                             pluginList.addType (*desc);
                                         }
                                     }
@@ -196,12 +195,12 @@ private:
                             }
                             else // Scanner returned something other than 0
                             {
-                                PLUME::log::writeToLog ("Failed to scan plugin (code " + String (exitCode) + ") : " + fileOrIdentifier, PLUME::log::pluginScan, PLUME::log::error);
+                                PLUME::log::writeToLog ("Failed to scan plugin (code " + String (exitCode) + ") : " + fileOrIdentifier, PLUME::log::LogCategory::pluginScan, PLUME::log::LogLevel::error);
                             }
                         }
                         else // Scanner process still running..
                         {
-                            PLUME::log::writeToLog ("Failed to scan plugin (timeout) : " + fileOrIdentifier, PLUME::log::pluginScan, PLUME::log::error);
+                            PLUME::log::writeToLog ("Failed to scan plugin (timeout) : " + fileOrIdentifier, PLUME::log::LogCategory::pluginScan, PLUME::log::LogLevel::error);
                             jassert (scannerProcess.kill()); // Force kill with dbg alert
                         }
                     }
@@ -230,7 +229,7 @@ private:
 
                 PLUME::log::writeToLog ("Launching scan for plugin/format : " + fileToScan +
                                         " / " + formatString + " Args : " +
-                                        args.joinIntoString (" | "), PLUME::log::pluginScan);
+                                        args.joinIntoString (" | "), PLUME::log::LogCategory::pluginScan);
                 
                 return (scannerProcess.start (args));
             }
@@ -300,6 +299,8 @@ private:
             {
                 return !fileOrIdentifier.contains ("Synths/aumu");
             }
+          #elif JUCE_WINDOWS
+            ignoreUnused (fileOrIdentifier, format);
           #endif
 
             return false;

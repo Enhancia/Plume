@@ -6,7 +6,7 @@
     Author:  Enhancia Dev
 
   ==============================================================================
-*/
+*/ 
 
 #pragma once
 
@@ -45,8 +45,8 @@ private:
     //==============================================================================
 	VibratoTuner (const std::atomic<float>& val, NormalisableRange<float> gestRange,
                   const std::atomic<float>& vibratoIntensity, NormalisableRange<float> intRange,
-                  RangedAudioParameter& vibGain, const NormalisableRange<float> gainMax,
-                  RangedAudioParameter& thresh, const NormalisableRange<float> threshMax);
+                  float& vibGain, const NormalisableRange<float> gainMax,
+                  float& thresh, const NormalisableRange<float> threshMax);
 
     //==============================================================================
     void createSliders();
@@ -60,8 +60,8 @@ private:
     void computeSmoothIntensity (float smoothnessRamp);
 
     //==============================================================================
-    void setGain (float value, const bool createChangeGesture = false);
-    void setThreshold (float value, const bool createChangeGesture = false);
+    void setGain (float value);
+    void setThreshold (float value);
     std::atomic<float>& getIntensityReference();
 
     float getGain();
@@ -80,8 +80,8 @@ private:
     float smoothIntensity = intensity;
     float incrementalSmoothFactor = 1.0f;
 
-    RangedAudioParameter& gain;
-    RangedAudioParameter& threshold;
+    float& gain;
+    float& threshold;
     const NormalisableRange<float> parameterMaxGain;
     const NormalisableRange<float> parameterMaxThreshold;
 

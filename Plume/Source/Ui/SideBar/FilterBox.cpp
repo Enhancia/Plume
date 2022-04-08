@@ -40,7 +40,7 @@ void FilterBox::paint (Graphics& g)
     g.fillRect (getLocalBounds().reduced (1, 0));
 }
 
-void FilterBox::paintOverChildren (Graphics& g)
+void FilterBox::paintOverChildren (Graphics&)
 {
 }
 
@@ -79,17 +79,39 @@ void FilterBox::paintListBoxItem (int rowNumber, Graphics& g, int width, int hei
 
 void FilterBox::listBoxItemClicked (int row, const MouseEvent& event)
 {
+    currentRow = row;
+
     if (event.mods.isLeftButtonDown())
     {
-        processor.getPresetHandler().setFilterSearchSetting (row - 1);
-        
-        if (auto* presetBox = dynamic_cast<ListBox*> (getParentComponent() // presetComp
-                                                          ->findChildWithID ("presetBox"))) 
-	    {
-		    presetBox->updateContent();
-            presetBox->selectRow (0);
-            presetBox->scrollToEnsureRowIsOnscreen (0);
-            presetBox->repaint();
-	    }
+        setFilter(row);
+    }
+}
+
+bool FilterBox::keyPressed (const KeyPress& key)
+{
+    ListBox::keyPressed (key);
+
+    if (key.isKeyCode (KeyPress::upKey) && currentRow > 0)
+        currentRow--;
+    else if (key.isKeyCode (KeyPress::downKey) && currentRow < getNumRows () - 1)
+        currentRow++;
+
+    if (key == PLUME::keyboard_shortcut::openPresetType || key == PLUME::keyboard_shortcut::openPresetTypeBis)
+        setFilter (currentRow);
+
+    return true;
+}
+
+void FilterBox::setFilter (int row) {
+
+    processor.getPresetHandler ().setFilterSearchSetting (row - 1);
+
+    if (auto* presetBox = dynamic_cast<ListBox*> (getParentComponent () // presetComp
+        ->findChildWithID ("presetBox")))
+    {
+        presetBox->updateContent ();
+        presetBox->selectRow (0);
+        presetBox->scrollToEnsureRowIsOnscreen (0);
+        presetBox->repaint ();
     }
 }

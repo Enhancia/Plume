@@ -12,6 +12,7 @@
 
 #include "../../JuceLibraryCode/JuceHeader.h"
 #include "../Common/PlumeCommon.h"
+#include "../Plugin/PlumeParameter.h"
 
 /**
  *  \class Gesture Gesture.h
@@ -62,26 +63,83 @@ public:
      *  This struct is used by the Gesture class to control a parameter from the wrapped plugin, and the range of values that the
      *  gesture should control. The Gesture class implements several methods to modify an array of MappedParameter that it holds.
      */
-    struct MappedParameter
+    struct MappedParameter : public AudioProcessorParameter::Listener,
+                             public AudioProcessorValueTreeState::Listener
     {
-        MappedParameter(AudioProcessorParameter& p, Range<float> pRange, bool rev = false)
-            : parameter (p), range(pRange), reversed (rev)
-        {
-                    }
+        /**
+         * \brief Mapped Parameter struct constructor
+         * 
+         * Creates the mapped parameter struct, storing references to the 2 parameters, and
+         * changing the plume parameter name.
+        */
+        MappedParameter(AudioProcessorParameter& p, AudioProcessorValueTreeState& stateRef, Range<float> pRange, const int gestId, const int paramId, bool rev);
 
-        MappedParameter (const MappedParameter& other)
-            : parameter (other.parameter), range(other.range), reversed (other.reversed)
-        {
-                    }
+        /**
+         * \brief Mapped Parameter struct copy constructor
+        */
+
+        MappedParameter (const MappedParameter& other);
         
-        ~MappedParameter()
-        {
-                    }
+        /**
+         * \brief Mapped Parameter struct destructor
+        */
+        ~MappedParameter();
         
-        AudioProcessorParameter& parameter; /**< \brief Reference to a mapped Parameter from the wrapped Plugin. */
+        void parameterChanged (const String& parameterID, float newValue) override;
+        void parameterValueChanged (int parameterIndex, float newValue) override;
+        void parameterGestureChanged (int, bool) override;
+        AudioProcessorValueTreeState& parametersRef; /**< \brief Reference to the parameters from Plume. */
+        
+        AudioProcessorParameter& wrappedParameter; /**< \brief Reference to a Parameter from the wrapped Plugin. */
+        
+        AudioProcessorParameter& plumeParameter; /**< \brief Reference to the Plume Parameter used for this mapping. */
+
         Range<float> range; /**< \brief Range of values from the parameter that the Gesture controls. */
         bool reversed; /**< \brief Boolean that tells if the parameter's range should be inverted. */
-        float lastComputedValue = 0.0f;
+        float lastComputedValue = 0.0f; /**< \brief Stores the last ring-computed value. Might differ from displayValue due to automations and user changes from the wrapped editor window. */
+        float displayValue = 0.0f; /**< \brief Stores the value that will be displayed in Plume's interface. */
+        bool isBeingChanged = false; /**< \brief Boolean that holds the parameter gesture change state. */
+        const int gestureId; /**< \brief ID of current gesture. */
+        const int parameterId; /**< \brief ID of the plume parameter. */
+    };
+    
+     /**
+     *  \struct MidiParameter
+     *
+     *  \brief Struct that holds a reference to a Plume parameter and its ID, as well as helper methods to create a automatable parameter for the MIDI mode.
+     *
+     *  This struct is used by the Gesture class to automate its MIDI mode value, allowing
+     *  it to record pitch and CC changes in a project.
+     */
+    struct MidiParameter : public AudioProcessorValueTreeState::Listener
+    {
+        /**
+         * \brief Midi Parameter struct constructor
+        */
+        MidiParameter (AudioProcessorValueTreeState& stateRef, Gesture& currentGesture);
+
+        /**
+         * \brief Midi Parameter struct copy constructor
+        */
+        MidiParameter (const MidiParameter& other);
+        
+        /**
+         * \brief Midi Parameter struct destructor
+        */
+        ~MidiParameter();
+
+        MidiParameter& operator= (const MidiParameter& other) noexcept;
+        
+        void parameterChanged (const String& parameterID, float newValue) override;
+
+        void resetParameter();
+        
+        AudioProcessorValueTreeState& parametersRef; /**< \brief Reference to the parameters from Plume. */
+        AudioProcessorParameter* plumeParameterPtr = nullptr; /**< \brief Pointer to the currently used Plume Parameter. */
+
+        bool isBeingChanged = false; /**< \brief Boolean that holds the parameter gesture change state. */
+        Gesture& gestureRef; /**< \brief Reference to the current gesture. */
+        int parameterId = -1; /**< \brief ID of the plume parameter. */
     };
     
     //==============================================================================
@@ -97,7 +155,7 @@ public:
      */
     Gesture (String gestName, int gestType, int gestId, const NormalisableRange<float> maxRange,
              AudioProcessorValueTreeState& plumeParameters, const String valueId = String(),
-             String gestureDescription = String(),
+             String gestureDescription = String(), const int midiParameterId = -1,
              float defaultValue = 0.0f, int defaultCc = 1,
              Range<float> defaultMidiRange = Range<float> (0.0f, 1.0f));
     
@@ -126,13 +184,22 @@ public:
      *  \return The correct value to create a midi message, between 0 and 127.
      */
     int getMidiValue();
+    void setMidiValue (const int newMidiValue);
     
     /**
-     *  \brief Method that stores the value that will be used to create a MIDI message.
+     *  \brief Method that updtaes the value that will be used to create the next MIDI message.
      *
-     *  Override this method to store the right value, according to gesture current value.
+     *  This method will use computeMidiValue() to get the value to use. It also has logic to
+     *  interact with the midiParameter stored in the DAW.
      */
-    virtual void updateMidiValue() =0;
+    virtual void updateMidiValue();
+
+    /**
+     *  \brief Method that computes the value that will be used to create a MIDI message.
+     *
+     *  Override this method to create the right value, according to gesture current parameters.
+     */
+    virtual int computeMidiValue() =0;
 
     /**
      *  \brief Helper function to write the correct values for the mapped parameters.
@@ -230,9 +297,9 @@ public:
     // Getter to the midiValue taking the midi mode range into account
     
     /**
-     *  \brief Getter to the midi value taking the midiRange parameter into account.
+     *  \brief Computes a midi value taking the midiRange parameter into account.
      */
-    int getRescaledMidiValue();
+    int getRescaledMidiValue (const int midiValueToUse);
     
     //==============================================================================
     // Getters and setters to the value and range of the gesture. Used by the display among others.
@@ -423,10 +490,20 @@ public:
     //==============================================================================
     // Parameter related methods
     /**
-     *  \brief Creates a new MappedParameter.
+     *  \brief Creates a new MappedParameter (at the first available plume parameter id).
      */
     void addParameter (AudioProcessorParameter& param,
-                       Range<float> r = Range<float> (0.0f, 1.0f), bool rev = false);
+                       AudioProcessorValueTreeState& stateRef,
+                       Range<float> r = Range<float> (0.0f, 1.0f),
+                       bool rev = false);
+    /**
+     *  \brief Creates a new MappedParameter stored at a specific id in plume's parameter array.
+     */
+    void addParameterAtId (AudioProcessorParameter& param,
+                           const int plumeIdToAddParameterTo,
+                           AudioProcessorValueTreeState& stateRef,
+                           Range<float> r = Range<float> (0.0f, 1.0f),
+                           bool rev = false);
     
     /**
      *  \brief Deletes a MappedParameter.
@@ -438,6 +515,7 @@ public:
      */
     void replaceParameter (int paramIdToReplace,
                            AudioProcessorParameter& param,
+                           AudioProcessorValueTreeState& stateRef,
                            Range<float> r = Range<float> (0.0f, 1.0f), bool rev = false);
     
     /**
@@ -456,16 +534,43 @@ public:
     OwnedArray<MappedParameter>& getParameterArray();
     
     /**
-     *  \brief Checks if a specific parameter is already mapped to the gesture.
+     *  \brief Checks if a specific wrapped parameter is already mapped to the gesture.
      *  
      *  \return True if the parameter is found for this gesture.
      */
     bool parameterIsMapped (int parameterId);
 
     /**
+     *  \brief Checks if a specific plumeParameter is already used by the gesture's parameter array.
+     *  
+     *  \return True if the parameter is found for this gesture.
+     */
+    bool plumeParameterIsUsedByThisGesture (const int parameterId);
+
+    /**
      *  \brief Replaces the mapped parameters with another gesture's.
      */
     void swapParametersWithOtherGesture (Gesture& other);
+
+    /**
+     *  \brief Gets the current MidiParameter.
+     */
+    MidiParameter getMidiParameter();
+
+    /**
+     *  \brief Sets the MidiParameter to a specific id. If the Id is -1, will use the first available one.
+     */
+    void setMidiParameter (int paramIdToUse = -1, const bool cleanFormerParameter = true);
+
+    /**
+     *  \brief Gets the current MidiParameter as a reference to access its memebers.
+     */
+    MidiParameter& getMidiParameterReference();
+
+    /**
+     *  \brief Resets midi parameter name for the DAW and removes the internal parameter pointer.
+     */
+    void removeMidiParameter();
     
     //==============================================================================
     const int type; /**< \brief Type of Gesture. Int value from gestureType enum */
@@ -544,24 +649,30 @@ protected:
      *  \param channel midi channel.
      */
     void addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int channel);
-    void addRightMidiSignalToBuffer (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer, int channel, int value);
+
+    /**
+     * \brief Updates internal state and listening when gesture midi mode state changes.
+    */
+    void handleModeChange();
+    int findFirstUnusedParameter();
+    int findFirstUnusedParameterForMidiParam();
     
     //==============================================================================
     String name; /**< \brief Specific name of the gesture. By default it is the gesture type*/
     String description; /**< \brief User specified description of the gesture. By default it is empty*/
     bool mapped; /**< \brief Boolean that represents if the gesture is mapped or not. */
-    int currentMidi = -1; /**< \brief Integer value that represents the midiValue to send to the next midi buffer*/
-    int lastMidi = -1; /**< \brief Integer value that represents the midiValue supposedely sent to the previous midiBuffer */
+    std::atomic<int> currentMidi; /**< \brief Integer value that represents the midiValue to send to the next midi buffer*/
+    int lastMidi = -1; /**< \brief Integer value that represents the midiValue to send to the next midi buffer*/
+    int computedMidi = -1; /**< \brief Integer value that represents the midiValue computed using the ring data*/
+    bool midiParameterIsPerformingGesture = false;
     
     //==============================================================================
-    std::atomic<float>* valueRef; /**< \brief Parameter that holds the current "raw" value of the gesture. Should be used and updated by subclasses. */
     const NormalisableRange<float> range; /**< \brief Attribute that holds the maximum range of values that the gesture can take. */
 	//int pitchReference = 8192; /**< \brief Base pitch value, that comes from external midi controllers */
 	
     //==============================================================================
-	RangedAudioParameter& value; /**< \brief Float parameter that holds the gesture's raw value in the [0.0f 1.0f]. Should be normalized using "range". */
-    bool wasBeingChanged = false;
-    float lastValue = -1.0f;
+	std::atomic<float> value; /**< \brief Float parameter that holds the gesture's raw value in the [0.0f 1.0f]. Should be normalized using "range". */
+    float lastValue = -1.0f; /**< \brief float that holds last value to compare to the now one, for more efficient updates */
 
     //==============================================================================
 	bool on; /**< \brief Boolean parameter that represents if the gesture is active or not] range. */
@@ -572,6 +683,8 @@ protected:
     //==============================================================================
     OwnedArray<MappedParameter> parameterArray;  /**< \brief Array of all the MappedParameter that the gesture controls. */
     bool parametersWereChangedSinceLastUpdate = false; /**< \brief Bool parameter that tells if a call to updateMappedParameters is needed or not for the next block. */
+    AudioProcessorValueTreeState& plumeParametersRef;
+    std::unique_ptr<MidiParameter> midiParameter;
     
     //==============================================================================
     CriticalSection parameterArrayLock;

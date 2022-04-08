@@ -121,6 +121,16 @@ void OptionsPanel::buttonClicked (Button* bttn)
     }
 }
 
+bool OptionsPanel::keyPressed (const KeyPress &key)
+{
+    if (key == PLUME::keyboard_shortcut::closeWindow)
+    {
+        setVisible (false);
+    }
+
+	return true;
+}
+
 void OptionsPanel::mouseUp (const MouseEvent& event)
 {
     if (!optionsArea.contains (event.getPosition()))
@@ -167,16 +177,9 @@ void OptionsPanel::paintProductInformations(Graphics& g, juce::Rectangle<int> ar
     // Plume Text
     auto plumeTextArea = area.reduced (MARGIN*2, area.getHeight()/6);
     auto logoArea = plumeTextArea.removeFromTop (plumeTextArea.getHeight()*4/5)
-                                 .withSizeKeepingCentre (PLUME::font::plumeFont.withHeight (21.0f)
-                                                                               .getStringWidth ("BETA") +
-                                                         PLUME::font::plumeFontMedium.withHeight (36.0f)
+                                 .withSizeKeepingCentre (PLUME::font::plumeFontMedium.withHeight (36.0f)
                                                                                .getStringWidth ("Plume") + MARGIN_SMALL,
                                                          PLUME::UI::HEADER_HEIGHT);
-
-    // ALPHA text
-    g.setColour (currentTheme.getColour(PLUME::colour::sideBarSubText));
-    g.setFont (PLUME::font::plumeFont.withHeight (21.0f));
-    g.drawText ("BETA", logoArea, Justification::topRight, true);
     
     // Plume text
     g.setColour (currentTheme.getColour(PLUME::colour::sideBarMainText));

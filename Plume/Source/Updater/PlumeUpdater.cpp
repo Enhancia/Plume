@@ -54,7 +54,7 @@ void PlumeUpdater::checkForNewAvailableVersion()
     }
 }
 
-void PlumeUpdater::finished (URL::DownloadTask* task, bool success)
+void PlumeUpdater::finished (URL::DownloadTask*, bool success)
 {
     state = downloadFinished;
     successful = success;
@@ -67,7 +67,7 @@ void PlumeUpdater::finished (URL::DownloadTask* task, bool success)
 	DBG ("Download finished " << (successful ? "Successfully" : "Unsuccessfully"));
 }
 
-void PlumeUpdater::progress (URL::DownloadTask* task,
+void PlumeUpdater::progress (URL::DownloadTask*,
                             int64 bytesDownloaded,
                             int64 totalLength )
 {
@@ -80,7 +80,7 @@ void PlumeUpdater::progress (URL::DownloadTask* task,
 void PlumeUpdater::startDownloadProcess()
 {
     PLUME::log::writeToLog ("Starting downloading update.",
-                            PLUME::log::update);
+                            PLUME::log::LogCategory::update);
 
     if (fileToDownloadURL.isEmpty())
     {
@@ -189,9 +189,10 @@ var PlumeUpdater::fetchRepoJSON()
 {
     // Creating input stream to get file link
     int status;
-    std::unique_ptr<InputStream> urlInStream (REPO_URL.createInputStream (false, nullptr, nullptr,
-                                                                         "Authorization: token " + PLUME::auth::MACHINE_TOKEN,
-                                                                         1000, nullptr, &status));
+    std::unique_ptr<InputStream> urlInStream (REPO_URL.createInputStream (URL::InputStreamOptions (URL::ParameterHandling::inAddress)
+                                                                                .withExtraHeaders ("Authorization: token " + PLUME::auth::MACHINE_TOKEN)
+                                                                                .withConnectionTimeoutMs (1000)
+                                                                                .withStatusCode (&status)));
 
     if (urlInStream == nullptr || status != 200)
     {

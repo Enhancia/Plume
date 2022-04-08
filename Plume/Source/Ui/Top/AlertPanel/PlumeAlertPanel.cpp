@@ -21,6 +21,9 @@ PlumeAlertPanel::PlumeAlertPanel (const String& title, const String& message,
     createAndAddTextEditor (message);
     createAndAddLabel (title);
     createAndAddButtons (buttonText, hasCloseButton);
+	if(!hasKeyboardFocus(false) && (isShowing() || isOnDesktop())) {
+		grabKeyboardFocus();
+	}
 }
 
 PlumeAlertPanel::~PlumeAlertPanel()
@@ -89,6 +92,16 @@ void PlumeAlertPanel::buttonClicked (Button* bttn)
     {
         exitModalState (modalReturnValue);
     }
+}
+
+bool PlumeAlertPanel::keyPressed (const KeyPress &key)
+{
+    if (key == PLUME::keyboard_shortcut::closeWindow)
+    {
+        exitModalState (0);
+    }
+
+	return true;
 }
 
 void PlumeAlertPanel::createAndAddLabel (const String& textToSet)
@@ -229,6 +242,4 @@ PlumeAlertPanel* PlumeAlertPanel::createSpecificAlertPanel (SpecificReturnValue 
                                        "Ok");
 
     }
-
-    return nullptr;
 }

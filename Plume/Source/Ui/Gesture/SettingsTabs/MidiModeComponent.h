@@ -109,6 +109,7 @@ public:
 
     //==============================================================================
     void labelTextChanged (Label* lbl) override;
+    void editorShown (Label* lbl, TextEditor& ted) override;
     void buttonClicked (Button* bttn) override;
     void comboBoxChanged (ComboBox* box) override;
     

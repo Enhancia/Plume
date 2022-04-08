@@ -27,13 +27,14 @@ public:
     PitchBend (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
                float leftLow = PLUME::gesture::PITCHBEND_DEFAULT_LEFTMIN, float leftHigh = PLUME::gesture::PITCHBEND_DEFAULT_LEFTMAX,
                float rightLow = PLUME::gesture::PITCHBEND_DEFAULT_RIGHTMIN, float rightHigh = PLUME::gesture::PITCHBEND_DEFAULT_RIGHTMAX,
-               String description = "");
+               String description = "", const int midiParameterId = -1);
     ~PitchBend();
     
     //==============================================================================
     void addGestureMidi(MidiBuffer& midiMessages, MidiBuffer& plumeBuffer) override;
-    void updateMidiValue () override;
-    
+    int computeMidiValue () override;
+    void updateMidiValue() override;
+
     bool shouldUpdateParameters() override;
     float computeMappedParameterValue (Range<float> paramRange, bool reversed) override;
 
@@ -47,10 +48,10 @@ public:
     bool shouldSend(); /**< \brief Hides Gesture::shouldSend(). Handles the case where the PB is set active while in the middle range */
     
     //==============================================================================
-    RangedAudioParameter& rangeLeftLow; /**< \brief Bend's low range value. The down pitch effect will happen between this and rangeLeftHigh. */
-	RangedAudioParameter& rangeLeftHigh; /**< \brief Bend's high range value. The down pitch effect will happen between rangeLeftLow and this. */
-	RangedAudioParameter& rangeRightLow; /**< \brief Bend's low range value. The up pitch effect will happen between this and rangeRightHigh. */
-	RangedAudioParameter& rangeRightHigh; /**< \brief Bend's high range value. The up pitch effect will happen between rangeRightLow and this. */
+    float rangeLeftLow; /**< \brief Bend's low range value. The down pitch effect will happen between this and rangeLeftHigh. */
+	  float rangeLeftHigh; /**< \brief Bend's high range value. The down pitch effect will happen between rangeLeftLow and this. */
+	  float rangeRightLow; /**< \brief Bend's low range value. The up pitch effect will happen between this and rangeRightHigh. */
+	  float rangeRightHigh; /**< \brief Bend's high range value. The up pitch effect will happen between rangeRightLow and this. */
     NormalisableRange<float> pitchBendDisplayRange;
 
     
