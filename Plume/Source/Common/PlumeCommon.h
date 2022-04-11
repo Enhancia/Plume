@@ -163,7 +163,6 @@ namespace PLUME
         const float WAVE_DEFAULT_MAX =  50.0f;
     }
     
-    
     // parameter suffixs
     namespace param
     {
@@ -281,6 +280,12 @@ namespace PLUME
     namespace auth
     {
         const String MACHINE_TOKEN ("50327c582d22471d2427faed42c9928dcd8b0e98 "); //std::getenv ("MACHINE_ENHANCIA_OAUTH");
+    }
+
+    namespace standalone
+    {
+        static const int minBpm = 10;
+        static const int maxBpm = 400;
     }
     
     namespace path

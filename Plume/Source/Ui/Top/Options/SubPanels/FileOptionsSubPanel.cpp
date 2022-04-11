@@ -43,6 +43,13 @@ FileOptionsSubPanel::FileOptionsSubPanel (PlumeProcessor& proc)   : processor (p
                    File::getSpecialLocation (File::userHomeDirectory), String(),
                    processor.getPresetHandler().getUserDirectory().getFullPathName(),
                    true);
+
+    if (processor.getStandalonePlayHead())
+    {
+        // BPM section
+        addSeparatorRow ("Standalone Options");
+        addLabelRow ("Hosted Plugin bpm", "bpmL", String (static_cast<int> (processor.getStandalonePlayHead()->plumeBpm)));
+    }
 }
 
 FileOptionsSubPanel::~FileOptionsSubPanel()
@@ -96,5 +103,29 @@ void FileOptionsSubPanel::buttonClicked (Button* bttn)
     else if (bttn->getComponentID() == "auT")
     {
         processor.getWrapper().setAuUsage (bttn->getToggleState());
+    }
+}
+
+void FileOptionsSubPanel::labelTextChanged (Label* lbl)
+{
+    if (lbl->getComponentID() == "bpmL")
+    {
+        if (lbl->getText().containsOnly ("0123456789"))
+        {
+            int newBpm = lbl->getText().getIntValue();
+
+            if (newBpm < PLUME::standalone::minBpm || newBpm > PLUME::standalone::maxBpm)
+            {
+                newBpm = jlimit (PLUME::standalone::minBpm, PLUME::standalone::maxBpm, newBpm);
+                lbl->setText (String (static_cast<double> (newBpm)), dontSendNotification);
+            }
+
+            if (processor.getStandalonePlayHead()) processor.getStandalonePlayHead()->plumeBpm = static_cast<double> (newBpm);
+        }
+        else
+        {
+            if (processor.getStandalonePlayHead())
+                lbl->setText (String (static_cast<int> (processor.getStandalonePlayHead()->plumeBpm)), dontSendNotification);
+        }
     }
 }

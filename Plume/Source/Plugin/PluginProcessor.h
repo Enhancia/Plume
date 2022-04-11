@@ -25,6 +25,21 @@
 /**
 */
 
+class PlumeStandalonePlayHead : public AudioPlayHead
+{
+public:
+    PlumeStandalonePlayHead() = default;
+    virtual ~PlumeStandalonePlayHead() = default;
+
+    bool getCurrentPosition (CurrentPositionInfo& result) override
+    {
+        result.bpm = plumeBpm;
+        return true;
+    }
+
+    double plumeBpm = 120.0;
+};
+
 /**
  *  \class PlumeProcessor PluginProcessor.h
  *
@@ -214,6 +229,12 @@ public:
      */
     PlumeUpdater& getUpdater();
     /**
+        \brief PlumeStandalonePlayHead getter.
+        
+        \return Pointer to the PlumeStandalonePlayHead object or nullptr if Plume is not in standalone mode. 
+     */
+    PlumeStandalonePlayHead* getStandalonePlayHead();
+    /**
         \brief Starts the auth detection process.
         
         This method will setup the auth detection, that will either lead to starting the unlock process or end in a timeout.
@@ -352,6 +373,7 @@ private:
     bool shouldSendUnlockSequence = false; /**< \brief Tells Plume if an unlock is needed for the specific preset. */
     bool lastRecordingStatus = false; /**< \brief Tracks the recording status in Plume's track. */
     uint8_t data[1024];
+    std::unique_ptr<PlumeStandalonePlayHead> standalonePlayHead;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeProcessor)

@@ -94,6 +94,7 @@ void SubPanelComponent::resized()
                     getChildComponent (i)->setBounds (compArea.removeFromTop (row.height).withWidth(row.height*3/2));
                     break;
 
+                case Row::label:
                 case Row::button:
                 case Row::buttonWithFeedback:
                     getChildComponent (i)->setBounds (compArea.removeFromTop (row.height).withWidth(4*row.height));
@@ -174,6 +175,7 @@ void SubPanelComponent::addLabelRow (String rowText, String labelID, String labe
     lbl->setFont (PLUME::font::plumeFont.withHeight (11.0f));
     lbl->setEditable (true, false, false);
     lbl->setMouseCursor (MouseCursor (MouseCursor::IBeamCursor));
+    lbl->setJustificationType (Justification::centred);
 
     rows.add (new Row (lbl, rowText, Row::label));
     addAndMakeVisible (lbl);

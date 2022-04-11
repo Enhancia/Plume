@@ -20,7 +20,11 @@ PlumeProcessor::PlumeProcessor()
        , parameters (*this, nullptr, "PARAMETERS", initializeParameters())
 {
     PluginHostType pluginHostType;
-    DBG ("Plugin host type : " << pluginHostType.type << " | Host Path : " << pluginHostType.getHostPath() << " | Plugin Type : " << pluginHostType.getPluginLoadedAs());
+    
+    if (pluginHostType.getPluginLoadedAs() ==  AudioProcessor::wrapperType_Standalone)
+    {
+        standalonePlayHead = std::make_unique<PlumeStandalonePlayHead> ();
+    }
 
     // Logger
     plumeLogger.reset (FileLogger::createDefaultAppLogger (
@@ -147,7 +151,12 @@ void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiM
     // if wrapped plugin, lets the wrapped plugin process all MIDI into sound
     if (wrapper->isWrapping() && !presetIsLocked)
     {
-        // Wrapper uses playhead from the DAW
+        // Sets playhead from the DAW if plugin format, internal otherwise
+        if (standalonePlayHead)
+        {
+            setPlayHead (standalonePlayHead.get());
+        }
+
         wrapper->getWrapperProcessor().setPlayHead (getPlayHead());
         
         // Calls the wrapper processor's processBlock method
@@ -190,6 +199,11 @@ PresetHandler& PlumeProcessor::getPresetHandler()
 PlumeUpdater& PlumeProcessor::getUpdater()
 {
     return *updater;
+}
+
+PlumeStandalonePlayHead* PlumeProcessor::getStandalonePlayHead()
+{
+    return standalonePlayHead.get();
 }
 
 //==============================================================================
