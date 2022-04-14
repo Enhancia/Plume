@@ -62,6 +62,11 @@ public:
 
     void drawComboBox (Graphics& g, int width, int height, bool,
                        int, int, int, int, ComboBox& box) override;
+
+    //==============================================================================
+    void drawDocumentWindowTitleBar (DocumentWindow& window, Graphics& g,
+                                     int w, int h, int titleSpaceX, int titleSpaceW,
+                                     const Image* icon, bool drawTitleTextOnLeft) override;
     
 private:
 	  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlumeLookAndFeel)

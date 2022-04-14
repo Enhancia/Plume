@@ -214,7 +214,19 @@ bool PlumeProcessor::hasEditor() const
 
 AudioProcessorEditor* PlumeProcessor::createEditor()
 {
-    return new PlumeEditor (*this);
+    auto* editor = new PlumeEditor (*this);
+
+    if (wrapperType == wrapperType_Standalone)
+    {
+        if (TopLevelWindow::getNumTopLevelWindows() == 1)
+        {
+            auto* plumeWindow = TopLevelWindow::getTopLevelWindow (0);
+
+            plumeWindow->setLookAndFeel (&editor->getLookAndFeel());
+        }
+    }
+
+    return editor;
 }
 
 //==============================================================================

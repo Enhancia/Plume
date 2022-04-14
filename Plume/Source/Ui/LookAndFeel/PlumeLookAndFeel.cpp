@@ -13,6 +13,11 @@
 using namespace PLUME::UI;
 
 PlumeLookAndFeel::PlumeLookAndFeel()
+    : LookAndFeel_V4 ({ getPlumeColour (plumeBackground), getPlumeColour (headerBackground),
+                        getPlumeColour (popupMenuBackground), getPlumeColour (popupMenuOutline),
+                        getPlumeColour (topPanelMainText), getPlumeColour (popupMenuBackground),
+                        getPlumeColour (popupMenuSelectedText), getPlumeColour (popupMenuSelectedBackground),
+                        getPlumeColour (popupMenuText) })
 {                   
 	setColours();
 }
@@ -56,6 +61,9 @@ void PlumeLookAndFeel::setColours()
 	setColour (PopupMenu::textColourId, getPlumeColour (popupMenuText));
 	setColour (PopupMenu::highlightedBackgroundColourId, getPlumeColour (popupMenuSelectedBackground));
 	setColour (PopupMenu::highlightedTextColourId, getPlumeColour (popupMenuSelectedText));
+
+    //Window
+    setColour (ResizableWindow::backgroundColourId, getPlumeColour (popupMenuBackground));
 }
 /*
 Font PlumeLookAndFeel::getLabelFont (Label& lbl)
@@ -297,6 +305,55 @@ void PlumeLookAndFeel::drawPointer (Graphics& g, const float x, const float y, c
     // Added a outline
     g.setColour (colour2);
     g.strokePath (p, PathStrokeType (2.0f));
+}
+
+void PlumeLookAndFeel::drawDocumentWindowTitleBar (DocumentWindow& window, Graphics& g,
+                                                 int w, int h, int titleSpaceX, int titleSpaceW,
+                                                 const Image* icon, bool drawTitleTextOnLeft)
+{
+    if (w * h == 0)
+        return;
+
+    auto isActive = window.isActiveWindow();
+
+    g.setColour (getPlumeColour (headerBackground));
+    g.fillAll();
+
+    Font font (PLUME::font::plumeFont.withHeight (static_cast<float> (h) * 0.65f));
+    g.setFont (font);
+
+    auto textW = font.getStringWidth (window.getName());
+    auto iconW = 0;
+    auto iconH = 0;
+
+    if (icon != nullptr)
+    {
+        iconH = static_cast<int> (font.getHeight());
+        iconW = icon->getWidth() * iconH / icon->getHeight() + 4;
+    }
+
+    textW = jmin (titleSpaceW, textW + iconW);
+    auto textX = drawTitleTextOnLeft ? titleSpaceX
+                                     : jmax (titleSpaceX, (w - textW) / 2);
+
+    if (textX + textW > titleSpaceX + titleSpaceW)
+        textX = titleSpaceX + titleSpaceW - textW;
+
+    if (icon != nullptr)
+    {
+        g.setOpacity (isActive ? 1.0f : 0.6f);
+        g.drawImageWithin (*icon, textX, (h - iconH) / 2, iconW, iconH,
+                           RectanglePlacement::centred, false);
+        textX += iconW;
+        textW -= iconW;
+    }
+
+    if (window.isColourSpecified (DocumentWindow::textColourId) || isColourSpecified (DocumentWindow::textColourId))
+        g.setColour (window.findColour (DocumentWindow::textColourId));
+    else
+        g.setColour (getPlumeColour (basePanelMainText));
+
+    g.drawText (window.getName(), textX, 0, textW, h, Justification::centredLeft, true);
 }
 
 //==============================================================================================================================
@@ -667,3 +724,4 @@ void TestTunerLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int widt
         }
     }
 }
+
