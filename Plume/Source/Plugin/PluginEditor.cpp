@@ -149,6 +149,15 @@ PlumeEditor::~PlumeEditor()
     instanceHWND = NULL;
   #endif
 
+    if (processor.wrapperType == AudioProcessor::wrapperType_Standalone)
+    {
+        if (TopLevelWindow::getNumTopLevelWindows() == 1)
+        {
+            auto* plumeWindow = TopLevelWindow::getTopLevelWindow (0);
+            plumeWindow->setLookAndFeel (nullptr);
+        }
+    }
+
     processor.removeActionListener (this);
     processor.getGestureArray().removeActionListener (this);
     processor.getDataReader()->removeActionListener(this);
