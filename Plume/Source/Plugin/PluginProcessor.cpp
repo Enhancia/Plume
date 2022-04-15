@@ -223,6 +223,7 @@ AudioProcessorEditor* PlumeProcessor::createEditor()
             auto* plumeWindow = TopLevelWindow::getTopLevelWindow (0);
 
             plumeWindow->setLookAndFeel (&editor->getLookAndFeel());
+            plumeWindow->setColour (ResizableWindow::backgroundColourId, getPlumeColour (popupMenuBackground));
         }
     }
 
