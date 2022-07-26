@@ -10,7 +10,7 @@
 
 #pragma once
 #include "../../../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
+#include "../../Common/PlumeCommon.h"
 
 namespace PLUME
 {
@@ -45,17 +45,28 @@ public:
                         bool isMouseOver, bool isMouseDown) override;
 
     //==============================================================================
+    void drawPopupMenuBackground (Graphics& g, int width, int height) override;
+    int getPopupMenuBorderSize() override;
+
+    //==============================================================================
     //Font getLabelFont (Label& lbl) override;
     Font getTextButtonFont (TextButton& bttn, int buttonHeight) override;
     Font getComboBoxFont (ComboBox& cb) override;
-    
-    //void drawPopupMenuBackground (Graphics&, int width, int height) override;
-	  /*
-    void drawPopupMenuItem (Graphics&, const Rectangle<int>& area,
-                            bool isSeparator, bool isActive, bool isHighlighted, bool isTicked, bool hasSubMenu,
-                            const String& text, const String& shortcutKeyText,
-                            const Drawable* icon, const Colour* textColour) override;
-	  */
+
+    //==============================================================================
+    void drawButtonBackground (Graphics& g,
+                               Button& buttonToDraw,
+                               const Colour &   backgroundColour,
+                               bool  shouldDrawButtonAsHighlighted,
+                               bool  shouldDrawButtonAsDown ) override;
+
+    void drawComboBox (Graphics& g, int width, int height, bool,
+                       int, int, int, int, ComboBox& box) override;
+
+    //==============================================================================
+    void drawDocumentWindowTitleBar (DocumentWindow& window, Graphics& g,
+                                     int w, int h, int titleSpaceX, int titleSpaceW,
+                                     const Image* icon, bool drawTitleTextOnLeft) override;
     
 private:
 	  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlumeLookAndFeel)
@@ -118,7 +129,7 @@ public:
     void drawRotarySlider (Graphics &,
                            int x, int y, int width, int height,
                            float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle,
-                           Slider &);
+                           Slider &) override;
     
     void drawLinearSlider (Graphics&, int x, int y, int width, int height,
                            float sliderPos, float minSliderPos, float maxSliderPos,

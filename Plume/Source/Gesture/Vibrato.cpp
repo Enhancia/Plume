@@ -8,30 +8,24 @@
   ==============================================================================
 */
 
-#include "Gesture/Vibrato.h"
+#include "Vibrato.h"
 using namespace PLUME;
 
 Vibrato::Vibrato (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
-                  float val, float thresh, String description)
+                  float val, float thresh, String description, const int midiParameterId)
     : Gesture (gestName, Gesture::vibrato, gestId,
-               NormalisableRange<float> (-VIBRATO_RANGE_MAX, VIBRATO_RANGE_MAX, 0.1f),
-               plumeParameters, description),
-    
-      gain      (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::vibrato_range]))),
-      intensity (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::vibrato_intensity]))),
-      threshold (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::vibrato_thresh]))),
-      intensityRef (plumeParameters.getRawParameterValue (String (gestId) + PLUME::param::paramIds[PLUME::param::vibrato_intensity]))
+               NormalisableRange<float> (-PLUME::gesture::VIBRATO_RANGE_MAX, PLUME::gesture::VIBRATO_RANGE_MAX, 0.1f),
+               plumeParameters, param::valuesIds[param::vibrato_value], description, midiParameterId),
+      
+      gainDisplayRange      (0.0f, PLUME::UI::VIBRATO_DISPLAY_MAX, 1.0f),
+      thresholdDisplayRange (0.0f, PLUME::UI::VIBRATO_THRESH_DISPLAY_MAX, 1.0f),
+      intensityRange (0.0f, PLUME::gesture::VIBRATO_INTENSITY_MAX, 1.0f)
+      //intensityRef (intensity)
 {
     midiType = Gesture::pitch;
-    midiOnParameterOff.setValueNotifyingHost(1.0f);
 
-    gain.beginChangeGesture();
-    gain.setValueNotifyingHost (gain.convertTo0to1 (val));
-    gain.endChangeGesture();
-    
-    threshold.beginChangeGesture();
-    threshold.setValueNotifyingHost (threshold.convertTo0to1 (thresh));
-    threshold.endChangeGesture();
+    gain = gainDisplayRange.convertTo0to1 (val);    
+    threshold = thresholdDisplayRange.convertTo0to1 (thresh);
 }
 
 Vibrato::~Vibrato()
@@ -41,86 +35,99 @@ Vibrato::~Vibrato()
 //==============================================================================
 void Vibrato::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 {
-    if (on.getValue() == 0.0f) return; // does nothing if the gesture is inactive
-    
-    int vibVal = getMidiValue();
-    
-	if (vibVal == lastMidi) return; // Does nothing if the midi value did not change
+    if (!isActive()) return; // does nothing if the gesture is inactive
 
-    if (send == true)
+    if (send || currentMidi != computedMidi)
     {
         addRightMidiSignalToBuffer (midiMessages, plumeBuffer, 1);
     }
 }
 
-int Vibrato::getMidiValue()
+void Vibrato::updateMidiValue()
 {
-    bool vibTrig = (intensity.convertFrom0to1 (intensity.getValue()) > threshold.convertFrom0to1 (threshold.getValue()));
-    float gainVal = gain.convertFrom0to1 (gain.getValue());
+    Gesture::updateMidiValue();
+
+    if (currentMidi != computedMidi) send = true;
+}
+
+int Vibrato::computeMidiValue()
+{
+    bool vibTrig = (intensityRange.convertFrom0to1 (intensity) > thresholdDisplayRange.convertFrom0to1 (threshold));
+    float gainVal = gainDisplayRange.convertFrom0to1 (gain);
     
     // Vibrato should be triggered
     if (vibTrig && gainVal != 0.0f)
     {
         vibLast = true;
         send = true;
-        
-        return Gesture::normalizeMidi (getGestureValue(), -(500.0f - gainVal), (500.01f - gainVal), true);
+
+        const float normalizedValue = (getGestureValue()/(2*9.80665f)*gainVal/200.0f*0.5f + 0.5f);
+        return Gesture::normalizeMidi (normalizedValue, 0.0f, 1.0f, (midiType == Gesture::pitch), getMidiReverse());
     }
-    
+
     // Vibrato back to neutral
-    else if (vibTrig != vibLast && vibTrig == false)
+    else if (vibTrig != vibLast/* && vibTrig == false*/)
     {
         vibLast = false;
         send = true;
         
-        if (!useDefaultMidi) return 64;
+        if (!(midiType == Gesture::pitch)) return 64;
         else                return 8192;
     }
-    
-    // No vibrato
-    send = false;
-    if (!useDefaultMidi) return 64;
-    else                return 8192;
-}
 
-void Vibrato::updateMappedParameters()
-{
-    if (on.getValue() == 0.0f) return; // does nothing if the gesture is inactive
-    
-    bool vibLastTemp = vibLast;
-    
-    // Goes through the parameterArray to update each value
-    for (auto* param : parameterArray)
+    // No vibrato
+    else
     {
-		vibLast = vibLastTemp;
-		float paramVal = getValueForMappedParameter(param->range, param->reversed);
-        
-        if (send == true)
-        {
-            param->parameter.setValueNotifyingHost (paramVal);
-        }
+        send = false;
+        if (!(midiType == Gesture::pitch)) return 64;
+        else                return 8192;
     }
 }
 
-float Vibrato::getValueForMappedParameter (Range<float> paramRange, bool reversed = false)
+bool Vibrato::shouldUpdateParameters()
 {
-    bool vibTrig = (intensity.convertFrom0to1 (intensity.getValue()) > threshold.convertFrom0to1 (threshold.getValue()));
-    float gainVal = gain.convertFrom0to1 (gain.getValue());
+    if (!isActive()) return false; // does nothing if the gesture is inactive
+    
+    updateSendLogic();
+
+    return (send);
+}
+
+void Vibrato::updateSendLogic()
+{
+    bool vibTrig = (intensityRange.convertFrom0to1 (intensity) > thresholdDisplayRange.convertFrom0to1 (threshold));
+    float gainVal = gainDisplayRange.convertFrom0to1 (gain);
     
     if (vibTrig && gainVal != 0.0f)
     {
         vibLast = true;
         send = true;
-        return (Gesture::mapParameter (getGestureValue(), -(500.0f - gainVal), (500.01f - gainVal), paramRange, reversed));
     }
     else if (vibTrig != vibLast && vibTrig == false)
     {
         vibLast = false;
         send = true;
+    }
+
+    else
+        send = false;
+}
+
+float Vibrato::computeMappedParameterValue (Range<float> paramRange, bool reversed = false)
+{
+    bool vibTrig = (intensityRange.convertFrom0to1 (intensity) > thresholdDisplayRange.convertFrom0to1 (threshold));
+    float gainVal = gainDisplayRange.convertFrom0to1 (gain);
+    
+    if (vibTrig && gainVal != 0.0f)
+    {
+        const float normalizedValue = (getGestureValue()/(2*9.80665f)*gainVal/200.0f*0.5f + 0.5f);
+        return (Gesture::mapParameter (normalizedValue, 0.0f, 1.0f, paramRange, reversed));
+    }
+    else if (vibTrig != vibLast && vibTrig == false)
+    {
         return paramRange.getStart() + paramRange.getLength()/2;
     }
     
-    send = false;
     return paramRange.getStart() + paramRange.getLength()/2;
 }
 
@@ -133,19 +140,39 @@ bool Vibrato::getSend()
 //==============================================================================
 void Vibrato::setIntensityValue (float newVal)
 {
-    intensity.beginChangeGesture();
-    intensity.setValueNotifyingHost (intensity.convertTo0to1 (newVal));
-    intensity.endChangeGesture();
+    if (isActive())
+    {
+        const int roundedNew = roundToInt (intensityRange.convertTo0to1 (newVal) * 100);
+        const int roundedLast = roundToInt (lastIntensity * 100);
+
+        if (roundedNew != roundedLast)
+        {
+            if (!wasBeingChangedIntensity)
+            {
+                wasBeingChangedIntensity = true;
+            }
+
+            intensity = intensityRange.convertTo0to1 (newVal);
+            lastIntensity = intensityRange.convertTo0to1 (newVal);
+        }
+        else
+        {
+            if (wasBeingChangedIntensity)
+            {
+                wasBeingChangedIntensity = false;
+            }
+        }
+    }
 }
 
-float& Vibrato::getIntensityReference()
+std::atomic<float>& Vibrato::getIntensityReference()
 {
-    return *intensityRef;
+    return intensity;
 }
 
 //==============================================================================
 void Vibrato::updateValue (const Array<float> rawData)
 {
-    if (isActive()) setIntensityValue (rawData[1]);
-    setGestureValue (rawData[0]);
+    setIntensityValue (rawData[PLUME::data::acceleration]);
+    setGestureValue (rawData[PLUME::data::variance]);
 }

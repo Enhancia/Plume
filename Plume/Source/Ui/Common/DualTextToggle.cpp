@@ -8,12 +8,11 @@
   ==============================================================================
 */
 
-#include "../../../JuceLibraryCode/JuceHeader.h"
 #include "DualTextToggle.h"
 
 //==============================================================================
 DualTextToggle::DualTextToggle (String falseStateText, String trueStateText, DualToggleStyle initialStyle)
-	: stateFalseText (falseStateText), stateTrueText (trueStateText)
+	: stateFalseText (falseStateText), stateTrueText (trueStateText), style (initialStyle)
 {
 }
 
@@ -21,7 +20,8 @@ DualTextToggle::DualTextToggle (String falseStateText, String trueStateText,
                     		    Colour falseStateColour, Colour trueStateColour,
                     		    DualToggleStyle initialStyle)
 	: stateFalseText (falseStateText), stateTrueText (trueStateText),
-	  stateFalseColour (falseStateColour), stateTrueColour (trueStateColour)
+	  stateFalseColour (falseStateColour), stateTrueColour (trueStateColour),
+	  style (initialStyle)
 {
 }
 
@@ -121,7 +121,7 @@ void DualTextToggle::resized()
 {
 }
 
-void DualTextToggle::mouseUp (const MouseEvent &event)
+void DualTextToggle::mouseUp (const MouseEvent &)
 {
 	switchToggleState();
 }
@@ -179,7 +179,7 @@ void DualTextToggle::setTrueStateColour (const Colour coulourToSet)
 	repaint();
 }
 
-void DualTextToggle::setStateUndependentTextColour (const Colour textColourToSet)
+void DualTextToggle::setStateIndependentTextColour (const Colour textColourToSet)
 {
 	textColour = textColourToSet;
 	repaint();

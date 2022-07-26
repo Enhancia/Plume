@@ -8,13 +8,12 @@
   ==============================================================================
 */
 
-#include "../../../JuceLibraryCode/JuceHeader.h"
 #include "PresetSearchBar.h"
 
 //==============================================================================
-PresetSearchBar::PresetSearchBar (PlumeProcessor& proc) : processor (proc), searchLabel (new Label ("searchLabel", "Search..."))
+PresetSearchBar::PresetSearchBar (PlumeProcessor& proc) : processor (proc), searchLabel (std::make_unique<Label> ("searchLabel", "Search..."))
 {
-    addAndMakeVisible (searchLabel);
+    addAndMakeVisible (*searchLabel);
     searchLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
     searchLabel->setColour (Label::textColourId, getPlumeColour (presetsBoxRowText));
     searchLabel->setFont (PLUME::font::plumeFont.withHeight (PLUME::font::SIDEBAR_LABEL_FONT_H));
@@ -23,9 +22,9 @@ PresetSearchBar::PresetSearchBar (PlumeProcessor& proc) : processor (proc), sear
     searchLabel->setMouseCursor (MouseCursor (MouseCursor::IBeamCursor));
     searchLabel->addListener (this);
     
-    addAndMakeVisible (cancelButton = new PlumeShapeButton ("Cancel Button",
+    addAndMakeVisible (*(cancelButton = std::make_unique<PlumeShapeButton> ("Cancel Button",
                                                             Colour (0x00000000),
-                                                            getPlumeColour (sideBarButtonFill)));
+                                                            getPlumeColour (sideBarButtonFill))));
 	
 	Path p;
 	p.startNewSubPath (0, 0);
@@ -51,20 +50,17 @@ void PresetSearchBar::paint (Graphics& g)
 
     // background
     g.setColour (getPlumeColour (presetsSearchBarFill));
-    g.fillRoundedRectangle (getLocalBounds().withSizeKeepingCentre (getWidth(), jmin (getHeight(), 30))
-                                            .toFloat(),
-                            jmin (getHeight(), 30)/2.0f);
+    g.fillRoundedRectangle (barArea.toFloat(),
+                            barArea.getHeight()/2.0f);
 
     // magnifying glass draw
     Path magnifGlass = PLUME::path::createPath (PLUME::path::magnifyingGlass);
 
-    auto magnifBounds = getLocalBounds().withSize (20, jmin (getHeight(), 30))
-                                        .withX (MARGIN_SMALL)
-                                        .reduced (3);
+    auto magnifBounds = barArea.withX (MARGIN_SMALL).reduced (3).toFloat();
 
     magnifGlass.scaleToFit (magnifBounds.getX(),
                             magnifBounds.getY(),
-                            magnifBounds.getWidth(),
+                            magnifBounds.getHeight(),
                             magnifBounds.getHeight(),
                             true);
 
@@ -75,10 +71,10 @@ void PresetSearchBar::paint (Graphics& g)
 void PresetSearchBar::resized()
 {
     using namespace PLUME::UI;
-    auto area = getLocalBounds().withHeight (jmin (getHeight(), 30));
+    barArea = getLocalBounds().withSizeKeepingCentre (getWidth(), jmin (getHeight()*3/4, 30));
     
-    cancelButton->setBounds (area.removeFromRight (20 + MARGIN_SMALL).reduced (3));
-    searchLabel->setBounds (area.withTrimmedLeft (20 + MARGIN_SMALL));
+    cancelButton->setBounds (barArea.withLeft (getRight() - 20 - MARGIN_SMALL).reduced (3));
+    searchLabel->setBounds (barArea.withTrimmedLeft (20 + MARGIN_SMALL));
 }
 
 
@@ -96,6 +92,8 @@ void PresetSearchBar::buttonClicked (Button*)
 			                                                ->findChildWithID("presetBox")))
 		    {
 			    presetBox->updateContent();
+                presetBox->selectRow (0);
+                presetBox->scrollToEnsureRowIsOnscreen (0);
 		    }
 	    }
 
@@ -146,6 +144,8 @@ void PresetSearchBar::textEditorTextChanged (TextEditor&)
 			                                              ->findChildWithID("presetBox")))
 		{
 			presetBox->updateContent();
+            presetBox->selectRow (0);
+            presetBox->scrollToEnsureRowIsOnscreen (0);
 		}
 	}
 }

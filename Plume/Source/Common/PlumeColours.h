@@ -9,7 +9,7 @@
 */
 
 #pragma once
-#include "../JuceLibraryCode/JuceHeader.h"
+#include "../../JuceLibraryCode/JuceHeader.h"
 #define getPlumeColour(x) (PLUME::UI::currentTheme.getColour (PLUME::colour::x))
 
 namespace PLUME
@@ -52,6 +52,7 @@ enum PlumeColourID
         // General
         headerBackground,
         headerText,
+        headerButtonBackground,
         headerButtonStroke,
 
        // Plugin Display
@@ -108,6 +109,13 @@ enum PlumeColourID
     topPanelTransparentArea,
     topPanelMainText,
     topPanelSubText,
+            
+    // Popup Menu
+    popupMenuOutline,
+    popupMenuBackground,
+    popupMenuSelectedBackground,
+    popupMenuText,
+    popupMenuSelectedText,
     
     numColours
 };

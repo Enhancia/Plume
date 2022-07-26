@@ -11,7 +11,7 @@
 #pragma once
 
 #include "../../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
+#include "../Common/PlumeCommon.h"
 
 class PluginWrapper;
 
@@ -19,7 +19,7 @@ class WrapperProcessor  : public AudioProcessor
 {
 public:
     //==============================================================================
-    WrapperProcessor(AudioPluginInstance&, PluginWrapper&);
+    WrapperProcessor(AudioPluginInstance&, PluginWrapper&, AudioProcessorParameter::Listener& proc);
     ~WrapperProcessor();
 
     //==============================================================================
@@ -29,7 +29,16 @@ public:
     void releaseResources() override
     {   return plugin.releaseResources(); }
     
+    //==============================================================================
     void processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override ;
+
+    //==============================================================================
+    bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
+    bool applyBusLayouts (const BusesLayout &layouts) override;
+
+    //==============================================================================
+    bool canAddBus (bool isInput) const override;
+    bool canRemoveBus (bool isInput) const override;
 
     //==============================================================================
     AudioProcessorEditor* createEditor() override { return plugin.createEditor(); }
@@ -59,6 +68,7 @@ public:
     
     //==============================================================================
     AudioProcessorParameter& getWrappedParameter (int id);
+    AudioProcessorParameter* getControlParameter();
     
     //==============================================================================
     PluginWrapper& getOwnerWrapper();
@@ -67,13 +77,23 @@ public:
 private:
     //==============================================================================
     void initWrappedParameters();
+    
+    //==============================================================================
+    void writeBusesLayoutToLog();
+    void copyWrapperBuffersIntoPlumeBuffer (AudioBuffer<float>& plumeBuffer);
+
+    //==============================================================================
+    static AudioProcessor::BusesProperties createBusesPropertiesFromPluginInstance (AudioPluginInstance& plugin);
 
     //==============================================================================
     class WrappedParameter;
+    AudioProcessorParameter* controlParameter = nullptr;
     
     //==============================================================================
     AudioPluginInstance& plugin;
     PluginWrapper& owner;
+    AudioProcessorParameter::Listener& listener;
+    AudioBuffer<float> wrapperBuffer;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WrapperProcessor)

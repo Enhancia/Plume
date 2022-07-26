@@ -11,18 +11,19 @@
 #pragma once
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
-#include "Plugin/PluginProcessor.h"
-#include "Ui/SideBar/PresetBox.h"
-#include "Ui/SideBar/FilterBox.h"
-#include "Ui/SideBar/TypeToggleComponent.h"
-#include "Ui/SideBar/PresetSearchBar.h"
+#include "../../Common/PlumeCommon.h"
+#include "../../Plugin/PluginProcessor.h"
+#include "PresetBox.h"
+#include "FilterBox.h"
+#include "TypeToggleComponent.h"
+#include "PresetSearchBar.h"
 
 //==============================================================================
 /*
 */
 
-class PresetComponent    : public PlumeComponent,
+class PresetComponent    : public Component,
+                           public PlumeComponent,
                            private ComboBox::Listener
 {
 public:
@@ -54,11 +55,11 @@ private:
     void createComboBox();
     
     //==============================================================================
-    ScopedPointer<PresetBox> presetBox;
-    ScopedPointer<FilterBox> filterBox;
-    ScopedPointer<TypeToggleComponent> typeToggle;
-    ScopedPointer<ComboBox> pluginSelectBox;
-    ScopedPointer<PresetSearchBar> searchBar;
+    std::unique_ptr<PresetBox> presetBox;
+    std::unique_ptr<FilterBox> filterBox;
+    std::unique_ptr<TypeToggleComponent> typeToggle;
+    std::unique_ptr<ComboBox> pluginSelectBox;
+    std::unique_ptr<PresetSearchBar> searchBar;
     
     //==============================================================================
     PlumeProcessor& processor;

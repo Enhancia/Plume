@@ -8,57 +8,81 @@
   ==============================================================================
 */
 
-#include "../../../../../JuceLibraryCode/JuceHeader.h"
 #include "GeneralOptionsSubPanel.h"
 
 //==============================================================================
-GeneralOptionsSubPanel::GeneralOptionsSubPanel (PlumeProcessor& proc) : processor (proc)
+AboutPanel::AboutPanel()
 {
-	addSeparatorRow ("Bug Report");
-	addButtonRow ("Send report", "mailB", "Report");
+    contactComponent.reset (new ContactSubPanel());
+    addAndMakeVisible (*contactComponent);
 }
 
-GeneralOptionsSubPanel::~GeneralOptionsSubPanel()
+AboutPanel::~AboutPanel()
 {
 }
 
-void GeneralOptionsSubPanel::buttonClicked (Button* bttn)
+void AboutPanel::paint (Graphics& g)
 {
-	TRACE_IN;
+    g.setFont (PLUME::font::plumeFont.withHeight (17));
+    g.setColour (getPlumeColour(topPanelSubText));
+
+    String osString;
+    #if JUCE_WINDOWS
+    osString = "Win x64";
+    #elif JUCE_MAC
+    osString = "MacOS";
+    #endif
+
+    g.drawText ("Plume " + String (JucePlugin_VersionString)
+                         + " " + osString
+                         + "  |  Copyright 2021 Enhancia, inc.",
+                      aboutArea,
+                      Justification::centred);
+}
+
+void AboutPanel::resized()
+{
+    auto area = getLocalBounds();
+
+    aboutArea = area.removeFromBottom (area.getHeight()/5);
+    contactArea = area;
     
-    if (bttn->getComponentID() == "mailB")
+    contactComponent->setBounds (contactArea);
+}
+
+ContactSubPanel::ContactSubPanel()
+{
+    addSeparatorRow ("Contact");
+    addButtonRow ("Contact Enhancia", "cnt", "Contact");
+    addButtonRow("Send Bug Report", "sbr", "Send");
+    addButtonRow ("Plume Release Notes", "prn", "View");
+}
+
+ContactSubPanel::~ContactSubPanel()
+{
+}
+
+void ContactSubPanel::buttonClicked (Button* bttn)
+{
+    if (bttn->getComponentID() == "cnt")
     {
-        if (auto* plumeLogger = dynamic_cast<FileLogger*> (Logger::getCurrentLogger()))
+        URL ("https://www.enhancia-music.com/contact/").launchInDefaultBrowser();
+    }
+
+    else if (bttn->getComponentID() == "sbr")
+    {
+        // Send bug report
+        if (auto bugReportPanel = getParentComponent() // AboutPanel
+                                    ->getParentComponent() // Tabbed Options
+                                    ->getParentComponent() // Options Panel
+                                    ->getParentComponent() // Plume Editor
+                                    ->findChildWithID ("BugReportPanel"))
         {
-            String fullLog = plumeLogger->getLogFile().loadFileAsString().removeCharacters ("\n");
-            
-            /* Only keeps the last 3 entries of the log: the one that had an issue, 
-               the one used to send the report, and one more to cover cases where the plugin
-               has to be checked (For instance the plugin check when launching Ableton..)
-               If too long, keeps the 6000 last characters.. */
-            int startIndex = jmax (fullLog.upToLastOccurrenceOf("Plume Log", false, false)
-                                          .upToLastOccurrenceOf("Plume Log", false, false)
-								          .lastIndexOf("Plume Log"),
-								          fullLog.length() - 6000);
-			
-		      #if JUCE_WINDOWS					          
-			      String mail_str ("mailto:damien.leboulaire@enhancia.co"
-                             "?Subject=[Plume Report]"
-			                       "&cc=alex.levacher@enhancia.co"
-		                         "&body=" + fullLog.substring (startIndex));
-		        LPCSTR mail_lpc = mail_str.toUTF8();
-
-            ShellExecute (NULL, "open", mail_lpc,
-		                      "", "", SW_SHOWNORMAL);
-
-		      #elif JUCE_MAC					          
-			      String mail_str ("open mailto:damien.leboulaire@enhancia.co"
-                             "?Subject=\"[Plume Report]\""
-			                       "\\&cc=alex.levacher@enhancia.co"
-		                         "\\&body=\"" + fullLog.substring (startIndex) + "\"");
-		    
-		        system (mail_str.toUTF8());
-		      #endif
+            bugReportPanel->setVisible (true);
+            bugReportPanel->grabKeyboardFocus();
         }
+    } else if (bttn->getComponentID() == "prn")
+    {
+        URL ("https://www.enhancia-music.com/plume-release-notes/").launchInDefaultBrowser();
     }
 }

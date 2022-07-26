@@ -11,10 +11,11 @@
 #pragma once
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
-#include "Gesture/GestureArray.h"
+#include "../../Common/PlumeCommon.h"
+#include "../../Gesture/GestureArray.h"
 
-class GestureComponent : public PlumeComponent,
+class GestureComponent : public Component,
+                         public PlumeComponent,
                          private Label::Listener
 {
 public:
@@ -66,8 +67,8 @@ private:
     //==============================================================================
     Gesture& gesture;
     GestureArray& gestureArray;
-    ScopedPointer<Label> gestureNameLabel;
-    ScopedPointer<PlumeShapeButton> muteButton;
+    std::unique_ptr<Label> gestureNameLabel;
+    std::unique_ptr<PlumeShapeButton> muteButton;
     
     bool on = gesture.isActive(), selected = false, highlighted = false, solo = false;
 
@@ -80,7 +81,8 @@ private:
 };
 
 
-class EmptyGestureSlotComponent : public PlumeComponent
+class EmptyGestureSlotComponent : public Component,
+                                  public PlumeComponent
 {
 public:
     //==============================================================================

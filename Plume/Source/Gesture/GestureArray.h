@@ -10,16 +10,17 @@
 
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
+#include "../../JuceLibraryCode/JuceHeader.h"
+#include "../Common/PlumeCommon.h"
 
-#include "DataReader/DataReader.h"
+#include "../DataReader/DataReader.h"
+#include "../Plugin/PlumeParameter.h"
 
-#include "Gesture/Gesture.h"
-#include "Gesture/Vibrato.h"
-#include "Gesture/PitchBend.h"
-#include "Gesture/Tilt.h"
-#include "Gesture/Roll.h"
+#include "Gesture.h"
+#include "Vibrato.h"
+#include "PitchBend.h"
+#include "Tilt.h"
+#include "Roll.h"
 
 /**
  *  \class GestureArray GestureArray.h
@@ -29,10 +30,13 @@
  *
  */
 class GestureArray	: public ChangeListener,
-                      public ChangeBroadcaster
+                      public ChangeBroadcaster,
+                      public ActionBroadcaster,
+                      public AudioProcessorValueTreeState
+::Listener
 {
 public:
-    GestureArray(DataReader& reader, AudioProcessorValueTreeState& params);
+    GestureArray(AudioProcessor& proc, DataReader& reader, AudioProcessorValueTreeState& params, bool& lastArmValue);
     ~GestureArray();
 
     //==============================================================================
@@ -121,10 +125,30 @@ public:
     /**
      *  \brief Helper method to know if a specific parameter is already mapped.
      *
+     *  If specified, the String reference will hold the name of the gesture that already has the parameter.
+     * 
      *  \return True if the parameter is found in any of the gestures.
      */
-    bool parameterIsMapped (int parameterId);
+    bool parameterIsMapped (int parameterId, String& gestureToWhichTheParameterIsMapped);
+
+    /**
+     *  \brief Helper method to know if a specific CC is already in use.
+     *
+     *  \return True if any of the gestures generate this CC.
+     */
+    bool isCCInUse (int controllerNumber);
      
+    /**
+     *  \brief Helper method to know if Pitch midi is already in use.
+     *
+     *  \return True if any of the gestures generate pitch.
+     */
+    bool isPitchInUse();
+
+    /**
+     *  \brief Getter for the Plume Processor (as an AudioProcessor) 
+     */
+    AudioProcessor& getOwnerProcessor(); 
     
     //==============================================================================
     // Modifiers
@@ -162,6 +186,10 @@ public:
      *
      */
     void addAndSetParameter (AudioProcessorParameter& param, int gestureId, float start, float end, bool rev);
+    /**
+     *  \brief Method to add a parameter to the gesture in mapMode. Overloaded to use a specific parameterId.
+     */
+    void addAndSetParameter (AudioProcessorParameter& param, int gestureId, const int parameterId, float start, float end, bool rev);
     
     /**
      *  \brief Deletes all gestures in the array.
@@ -213,6 +241,8 @@ public:
      */
     void createParameterXml(XmlElement& gestureXml, OwnedArray<Gesture::MappedParameter>& mParams);
     
+    AudioProcessorValueTreeState& getParametersReference();
+
     //==============================================================================
     //Callbacks 
     
@@ -223,6 +253,9 @@ public:
      *  This method will call updateValues() to change all the gestures' values to the updated ones.
      */
     void changeListenerCallback(ChangeBroadcaster* source) override;
+
+
+    void parameterChanged (const String &parameterID, float newValue) override;
     
     bool mapModeOn = false; /**< \brief Boolean to assess if one of the gestures in currently in mapMode*/
     
@@ -247,6 +280,8 @@ private:
     void addGestureCopyingOther (Gesture* other, int gestureId, String gestureName = String());
     int findClosestIdToDuplicate (int idToDuplicateFrom, bool prioritizeHigherId = true);
     String createDuplicateName (String originalGestureName);
+
+    void notifyGestureParametersShouldBeUpdatedForType (Gesture::GestureType);
     
     //==============================================================================
     bool shouldMergePitch = false;
@@ -255,6 +290,9 @@ private:
     OwnedArray<Gesture> gestures; /**< \brief OwnedArray that holds all gesture objects*/
     DataReader& dataReader; /**< \brief Reference to the data reader object, to access the raw data from the ring*/
     AudioProcessorValueTreeState& parameters;
+    AudioProcessor& owner;
+
+    bool& armValue;
     
     CriticalSection gestureArrayLock;
 

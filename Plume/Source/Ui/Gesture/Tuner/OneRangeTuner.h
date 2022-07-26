@@ -11,8 +11,8 @@
 #pragma once
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
-#include "Ui/Gesture/Tuner/Tuner.h"
-#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
+#include "../../LookAndFeel/PlumeLookAndFeel.h"
+#include "Tuner.h"
 
 class OneRangeTuner:  public Tuner,
                       private Slider::Listener,
@@ -20,17 +20,25 @@ class OneRangeTuner:  public Tuner,
                       private Button::Listener
 {
 public:
-    enum TunerStyle
+    enum class TunerStyle
     {
         tilt =0,
         roll,
         wave
     };
 
+    enum class DraggableObject
+    {
+        none = -1,
+        lowThumb,
+        highThumb,
+        middleArea
+    };
+
     //==============================================================================
-    OneRangeTuner(const float& val, NormalisableRange<float> gestureRange,
-                  RangedAudioParameter& rangeL, RangedAudioParameter& rangeH, const Range<float> paramMax,
-                  const String unit = "", TunerStyle style = wave);
+    OneRangeTuner(const std::atomic<float>& val, NormalisableRange<float> gestureRange,
+                  float& rangeL, float& rangeH, const NormalisableRange<float> paramMax,
+                  const String unit = "", TunerStyle style = TunerStyle::wave);
     ~OneRangeTuner();
     
     //==============================================================================
@@ -38,6 +46,8 @@ public:
     void resized() override;
     
     void updateComponents() override;
+    void updateComponents (DraggableObject thumbThatShouldUpdate);
+
     void updateDisplay() override;
 
     void setColour (const Colour newColour) override;
@@ -47,6 +57,7 @@ public:
     void editorHidden (Label* lbl, TextEditor& ted) override;
     void sliderValueChanged (Slider* sldr) override;
     void buttonClicked (Button* bttn) override;
+    void buttonStateChanged (Button* btn) override;
 
     //==============================================================================
     void mouseDown (const MouseEvent& e) override;
@@ -73,15 +84,6 @@ private:
     float getRangeLow();
     float getRangeHigh();
 
-    //==============================================================================
-    enum DraggableObject
-    {
-        none = -1,
-        lowThumb,
-        highThumb,
-        middleArea
-    };
-
     double getAngleFromMouseEventRadians (const MouseEvent& e);
     double getThumbAngleRadians (const DraggableObject thumb);
 
@@ -99,32 +101,34 @@ private:
     void drawThumbsAndToleranceLines (Graphics& g);
     
     //==============================================================================
-    const float& value;
+    const std::atomic<float>& value;
     const NormalisableRange<float> gestureRange;
 
     //==============================================================================
-    const Range<float> parameterMax;
-    RangedAudioParameter& rangeLow;
-    RangedAudioParameter& rangeHigh;
+    const NormalisableRange<float> parameterMax;
+    float& rangeLow;
+    float& rangeHigh;
     
-    ScopedPointer<Slider> lowSlider;
-    ScopedPointer<Slider> highSlider;
-    ScopedPointer<Label> rangeLabelMin;
-    ScopedPointer<Label> rangeLabelMax;
-    ScopedPointer<TextButton> minAngleButton;
-    ScopedPointer<TextButton> maxAngleButton;
+    std::unique_ptr<Slider> lowSlider;
+    std::unique_ptr<Slider> highSlider;
+    std::unique_ptr<Label> rangeLabelMin;
+    std::unique_ptr<Label> rangeLabelMax;
+    std::unique_ptr<TextButton> minAngleButton;
+    std::unique_ptr<TextButton> maxAngleButton;
     
     //==============================================================================
     TunerStyle tunerStyle;
 
-    DraggableObject objectBeingDragged = none;
+    DraggableObject objectBeingDragged = DraggableObject::none;
     float previousCursorAngle = value;
 
     juce::Rectangle<int> sliderBounds;
     float sliderRadius;
-    Point<int> sliderCentre;
+    juce::Point<int> sliderCentre;
     float startAngle;
     float endAngle;
+    bool maxAngleBtnIsHovered = false;
+    bool minAngleBtnIsHovered = false;
 
     //==============================================================================
     PLUME::UI::OneRangeTunerLookAndFeel oneRangeTunerLookAndFeel;

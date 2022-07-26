@@ -12,20 +12,13 @@
 using namespace PLUME;
 
 Tilt::Tilt (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
-            float lowValue, float highValue, String description)
-    : Gesture (gestName, Gesture::tilt, gestId, NormalisableRange<float> (TILT_MIN, TILT_MAX, 0.1f),
-               plumeParameters, description),
-    
-      rangeLow  (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::tilt_low]))),
-      rangeHigh (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::tilt_high])))
+            float lowValue, float highValue, String description, const int midiParameterId)
+    : Gesture (gestName, Gesture::tilt, gestId, NormalisableRange<float> (PLUME::gesture::TILT_MIN, PLUME::gesture::TILT_MAX, 0.1f),
+               plumeParameters, "", description, midiParameterId),
+      tiltDisplayRange (NormalisableRange<float> (PLUME::UI::TILT_DISPLAY_MIN, PLUME::UI::TILT_DISPLAY_MAX, 1.0f))
 {
-    rangeLow.beginChangeGesture();
-	rangeLow.setValueNotifyingHost (rangeLow.convertTo0to1 (lowValue));
-    rangeLow.endChangeGesture();
-    
-    rangeHigh.beginChangeGesture();
-	rangeHigh.setValueNotifyingHost (rangeHigh.convertTo0to1 (highValue));
-    rangeHigh.endChangeGesture();
+    rangeLow = tiltDisplayRange.convertTo0to1 (lowValue);
+    rangeHigh = tiltDisplayRange.convertTo0to1 (highValue);
 }
 
 Tilt::~Tilt()
@@ -36,7 +29,7 @@ Tilt::~Tilt()
 void Tilt::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 {
     // Checks if Gesture is on and if value is within the right range
-    if (on.getValue() == 0.0f || getGestureValue() >= 120.0f || getGestureValue() <= -120.0f)
+    if (isActive() == 0.0f || getGestureValue() >= 100.0f || getGestureValue() <= -100.0f)
     {
         return;
     }
@@ -44,39 +37,31 @@ void Tilt::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
     addRightMidiSignalToBuffer (midiMessages, plumeBuffer, 1);
 }
 
-int Tilt::getMidiValue()
+int Tilt::computeMidiValue()
 {
     return Gesture::normalizeMidi (getGestureValue(),
-                                   rangeLow.convertFrom0to1 (rangeLow.getValue()),
-                                   rangeHigh.convertFrom0to1 (rangeHigh.getValue()),
-                                   (midiType == Gesture::pitch));
+                                   tiltDisplayRange.convertFrom0to1 (rangeLow),
+                                   tiltDisplayRange.convertFrom0to1 (rangeHigh),
+                                   (midiType == Gesture::pitch),
+                                   getMidiReverse());
 }
 
-void Tilt::updateMappedParameters()
+bool Tilt::shouldUpdateParameters()
 {
     // Checks if Gesture is on and if value is within the right range
-    if (on.getValue() == 0.0f || getGestureValue() >= 120.0f || getGestureValue() <= -120.0f)
-    {
-        return;
-    }
-    
-    // Goes through the parameterArray to update each value
-    for (auto* param : parameterArray)
-    {   
-        param->parameter.setValueNotifyingHost (getValueForMappedParameter (param->range, param->reversed));
-    }
+    return (getGestureValue() < 100.0f && getGestureValue() > -100.0f);
 }
 
-float Tilt::getValueForMappedParameter (Range<float> paramRange, bool reversed = false)
+float Tilt::computeMappedParameterValue (Range<float> paramRange, bool reversed = false)
 {
 	return Gesture::mapParameter (getGestureValue(),
-                                  rangeLow.convertFrom0to1 (rangeLow.getValue()),
-                                  rangeHigh.convertFrom0to1 (rangeHigh.getValue()),
+                                  tiltDisplayRange.convertFrom0to1 (rangeLow),
+                                  tiltDisplayRange.convertFrom0to1 (rangeHigh),
                                   paramRange, reversed);
 }
-    
+
 //==============================================================================
 void Tilt::updateValue (const Array<float> rawData)
 {
-    setGestureValue (rawData[4]);
+    setGestureValue (-rawData[PLUME::data::tilt]);
 }

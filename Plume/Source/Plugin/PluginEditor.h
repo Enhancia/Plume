@@ -10,18 +10,21 @@
 
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
+#include "../../JuceLibraryCode/JuceHeader.h"
+#include "../Common/PlumeCommon.h"
 
-#include "Ui/SideBar/SideBarComponent.h"
-#include "Ui/SideBar/PresetComponent.h"
-#include "Ui/SideBar/HideSideBarButton.h"
-#include "Ui/Header/HeaderComponent.h"
-#include "Ui/Gesture/GesturePanel.h"
-#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
-#include "Ui/Top/Options/OptionsPanel.h"
-#include "Ui/Top/NewPreset/NewPresetPanel.h"
-#include "Ui/Top/NewGesture/NewGesturePanel.h"
+#include "../Ui/SideBar/SideBarComponent.h"
+#include "../Ui/SideBar/PresetComponent.h"
+#include "../Ui/SideBar/HideSideBarButton.h"
+#include "../Ui/Header/HeaderComponent.h"
+#include "../Ui/Gesture/GesturePanel.h"
+#include "../Ui/LookAndFeel/PlumeLookAndFeel.h"
+#include "../Ui/Top/Options/OptionsPanel.h"
+#include "../Ui/Top/Options/BugReportPanel.h"
+#include "../Ui/Top/NewPreset/NewPresetPanel.h"
+#include "../Ui/Top/NewGesture/NewGesturePanel.h"
+#include "../Ui/Top/UpdaterPanel/UpdaterPanel.h"
+#include "../Ui/Top/AlertPanel/PlumeAlertPanel.h"
 
 //==============================================================================
 /**
@@ -74,13 +77,14 @@ public:
     //==============================================================================
     void mouseEnter (const MouseEvent &event) override;
     void mouseExit (const MouseEvent &event) override;
+    bool keyPressed (const KeyPress& key) override;
     
     //==============================================================================
     void broughtToFront() override;
     void minimisationStateChanged (bool) override;
 
     //==============================================================================
-    void componentMovedOrResized (bool wasMoved, bool wasResized) override {}
+    void componentMovedOrResized (bool, bool) override {}
     void componentPeerChanged() override;
     void componentVisibilityChanged() override {}
 
@@ -108,25 +112,74 @@ public:
     void updateFullInterface();
     
     void setInterfaceUpdates (bool shouldUpdate);
+
+    //==============================================================================
+    /** 
+        \brief  Modal alert panel creator.
+
+        This method will create a floating alert panel above the interface, that can be close either by
+        calling closePendingAlertPanel() or by using its button, provided a button was created using the
+        buttonText attribute.
+
+        \param title      Title text, written on the upper part of the panel.
+        \param message    Core text, written on the center of the panel.
+        \param buttonText Text button. Provide an empty String to create no button instead.
+    */
+    void createAndShowAlertPanel (const String& title, const String& message,
+                                                       const String& buttonText = String(),
+                                                       const bool hasCloseButton = true,
+                                                       int returnValue = 0);
+
+    void createAndShowAlertPanel (PlumeAlertPanel::SpecificReturnValue returnValue, const String& specificText = "");
+
+    /** 
+        \brief  Modal alert panel destructor.
+
+        Call this method to end the modal alert panel.
+    */
+    void closePendingAlertPanel();
     
 private:
     //==============================================================================
     PlumeProcessor& processor; /**< \brief Reference to Plume's processor object */
-    ScopedPointer<GesturePanel> gesturePanel; /**< \brief Object that handles the different gesture gui objects */
-    ScopedPointer<SideBarComponent> sideBar; /**< \brief Hideable SideBar object that displays the preset list, help, and buttons */
-    ScopedPointer<HeaderComponent> header; /**< \brief Header object that displays the preset, and the wrapping features */
-    ScopedPointer<HideSideBarButton> sideBarButton; /**< \brief Button that hides or shows the sidebar */
-    ScopedPointer<OptionsPanel> optionsPanel;
-    ScopedPointer<NewPresetPanel> newPresetPanel;
-    ScopedPointer<NewGesturePanel> newGesturePanel;
-    
+    std::unique_ptr<GesturePanel> gesturePanel; /**< \brief Object that handles the different gesture gui objects */
+    std::unique_ptr<SideBarComponent> sideBar; /**< \brief Hideable SideBar object that displays the preset list, help, and buttons */
+    std::unique_ptr<HeaderComponent> header; /**< \brief Header object that displays the preset, and the wrapping features */
+    std::unique_ptr<HideSideBarButton> sideBarButton; /**< \brief Button that hides or shows the sidebar */
+    std::unique_ptr<OptionsPanel> optionsPanel;
+    std::unique_ptr<BugReportPanel> bugReportPanel;
+    std::unique_ptr<NewPresetPanel> newPresetPanel;
+    std::unique_ptr<NewGesturePanel> newGesturePanel;
+    std::unique_ptr<UpdaterPanel> updaterPanel;
+    std::unique_ptr<PlumeAlertPanel> alertPanel; /**< \brief Interface's modal alert panel. */
     
     //==============================================================================
-    void createSideBarButtonPath(); //TODO mettre dans common avec les autres chemins
+    /** 
+        \brief  Modal alert panel callback.
+
+        Callback method upon clicking the button or closing the panel.
+        Will properly end the modal loop and delete the component.
+
+        \param modalResult   Result from the modal loop.
+        \param interf        Pointer to the interface.
+    */
+    static void alertPanelCallback (int modalResult, PlumeEditor* interf);
+
+    /** 
+        \brief  Modal alert panel action.
+
+        Executes a panel-specific action depending on the modal result from the DashAlertPanel.
+
+        \param panelReturnValue Result from the modal loop.
+    */
+    void executePanelAction (const int panelReturnValue);
+
+    //==============================================================================
+    void paintShadows (Graphics& g);
 
     //==============================================================================
   #if JUCE_WINDOWS
-    HHOOK plumeWindowHook;
+    HHOOK plumeWindowHook = NULL;
     void registerEditorHWND();
 
     bool plumeHWNDIsSet = false;
@@ -135,7 +188,8 @@ private:
     
     //==============================================================================
     PLUME::UI::PlumeLookAndFeel plumeLookAndFeel;
-    ScopedPointer<ResizableCornerComponent> resizableCorner;
+    std::unique_ptr<ResizableCornerComponent> resizableCorner;
 
+    //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeEditor)
 };

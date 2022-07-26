@@ -11,18 +11,25 @@
 #pragma once
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
-#include "Plugin/PluginProcessor.h"
-#include "Ui/Gesture/GesturePanel.h"
+#include "../../Common/PlumeCommon.h"
+#include "../../Plugin/PluginProcessor.h"
+#include "../Gesture/GesturePanel.h"
 
 class PresetBox    : public ListBox,
                      public ListBoxModel,
+                     public PlumeComponent,
                      private Label::Listener
 {
 public:
     //==============================================================================
     PresetBox (const String &componentName, PlumeProcessor& p);
     ~PresetBox();
+    
+    //==============================================================================
+    //PlumeComponent methods
+    
+    const String getInfoString() override;
+    void update() override;
     
     //==============================================================================
     //ListBox methods
@@ -41,10 +48,12 @@ public:
     void listBoxItemDoubleClicked (int row, const MouseEvent& event) override;
     void backgroundClicked (const MouseEvent& event) override;
     void deleteKeyPressed (int lastRowSelected) override;
-    //void returnKeyPressed (int lastRowSelected) override;
+    void returnKeyPressed (int lastRowSelected) override;
+    bool keyPressed (const KeyPress& key) override;
+    void selectedRowsChanged (int lastRowSelected) override;
     //void listWasScrolled() override;
     //var getDragSourceDescription (const SparseSet<int>& rowsToDescribe) override;
-    //String getTooltipForRow (int row) override;
+    String getTooltipForRow (int row) override;
     //MouseCursor getMouseCursorForRow (int row) override;
     
     //==============================================================================
@@ -59,10 +68,14 @@ public:
     void startNewPresetEntry();
     void startRenameEntry (const int row);
     void deletePreset (const int row);
+
     
 private:
     //==============================================================================
+    static void menuCallback (int result, PresetBox* pBox, int row);
     void handleMenuResult (const int row, const int menuResult);
+    
+    //==============================================================================
     void setPreset (const int row);
     void createUserPreset (const String& presetName);
     void renamePreset (const String& newName);
@@ -74,8 +87,10 @@ private:
     PlumeProcessor& processor;
     int presetIdToEdit = -1;
     bool newPresetEntry = false;
-    ScopedPointer<Label> editLabel;
+    std::unique_ptr<Label> editLabel;
+    std::unique_ptr<Label> dreamCrusher; /**< @Brief Evil's pointer, always null*/
     PopupMenu rightClickMenu;
+    int currentRow = 0;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PresetBox)

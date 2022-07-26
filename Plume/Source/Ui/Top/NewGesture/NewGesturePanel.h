@@ -11,13 +11,14 @@
 #pragma once
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
-#include "Plugin/PluginProcessor.h"
+#include "../../../Common/PlumeCommon.h"
+#include "../../../Plugin/PluginProcessor.h"
 
 //==============================================================================
 /*
 */
-class NewGesturePanel    : public PlumeComponent,
+class NewGesturePanel    : public Component,
+                           public PlumeComponent,
                            private Label::Listener,
                            private Button::Listener
 {
@@ -33,8 +34,8 @@ public:
     
     //==============================================================================
     // PlumeComponent Methods
-    const String getInfoString();
-    void update();
+    const String getInfoString() override;
+    void update() override;
     
     //==============================================================================
     // Callbacks
@@ -42,6 +43,7 @@ public:
     void mouseEnter (const MouseEvent &event) override;
     void mouseUp (const MouseEvent &event) override;
     void buttonClicked (Button* bttn) override;
+    bool keyPressed (const KeyPress& key) override;
     void labelTextChanged (Label* lbl) override;
     void editorShown (Label* lbl, TextEditor& ed) override;
 
@@ -53,7 +55,8 @@ public:
     const int getLastSelectedSlot();
 
 private:
-    class GestureTypeSelector : public PlumeComponent
+    class GestureTypeSelector : public Component,
+                                public PlumeComponent
     {
     public:
         GestureTypeSelector (int gestType);
@@ -102,8 +105,8 @@ private:
     PlumeProcessor& processor;
     
     //==============================================================================
-    ScopedPointer<ShapeButton> closeButton;
-    ScopedPointer<TextEditor> descriptionTextEditor;
+    std::unique_ptr<ShapeButton> closeButton;
+    std::unique_ptr<TextEditor> descriptionTextEditor;
     OwnedArray<GestureTypeSelector> gestureSelectors;
 
     //==============================================================================

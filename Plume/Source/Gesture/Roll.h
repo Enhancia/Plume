@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
-#include "Gesture/Gesture.h"
+#include "../../JuceLibraryCode/JuceHeader.h"
+#include "Gesture.h"
 
 /**
  *  \class Roll Roll.h
@@ -25,22 +25,25 @@ class Roll : public Gesture
 {
 public:
     Roll (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
-          float lowValue = -30.0f, float highValue = 30.0f, String description = "");
+          float lowValue = PLUME::gesture::ROLL_DEFAULT_MIN,
+          float highValue = PLUME::gesture::ROLL_DEFAULT_MAX, String description = "", const int midiParameterId = -1);
     ~Roll();
     
     //==============================================================================
     void addGestureMidi(MidiBuffer& midiMessages, MidiBuffer& plumeBuffer) override;
-    int getMidiValue () override;
+    int computeMidiValue () override;
     
-    void updateMappedParameters() override;
-    float getValueForMappedParameter (Range<float> paramRange, bool reversed) override;
+    bool shouldUpdateParameters() override;
+    float computeMappedParameterValue (Range<float> paramRange, bool reversed) override;
     
     //==============================================================================
     void updateValue (const Array<float> rawData) override;
 
     //==============================================================================
-    RangedAudioParameter& rangeLow; /**< \brief Tilt's low range value. The full effect will happend between this and rangeHigh. */
-	RangedAudioParameter& rangeHigh; /**< \brief Tilt's high range value. The full effect will happend between rangeLow and this. */
+    float rangeLow; /**< \brief Tilt's low range value. The full effect will happend between this and rangeHigh. */
+	  float rangeHigh; /**< \brief Tilt's high range value. The full effect will happend between rangeLow and this. */
+    
+    NormalisableRange<float> rollDisplayRange;
 
 private:
     //==============================================================================

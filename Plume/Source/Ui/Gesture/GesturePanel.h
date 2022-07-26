@@ -11,18 +11,19 @@
 #pragma once
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
-#include "Gesture/GestureArray.h"
-#include "Wrapper/PluginWrapper.h"
+#include "../../Common/PlumeCommon.h"
+#include "../../Gesture/GestureArray.h"
+#include "../../Wrapper/PluginWrapper.h"
+#include "../LookAndFeel/PlumeLookAndFeel.h"
+#include "../Top/NewGesture/NewGesturePanel.h"
 #include "GestureSettingsComponent.h"
-#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
-#include "Ui/Top/NewGesture/NewGesturePanel.h"
 #include "GesturePanelSlots.h"
 
 //==============================================================================
 /*
 */
-class GesturePanel    : public PlumeComponent,
+class GesturePanel    : public Component,
+                        public PlumeComponent,
                         public Timer,
                         private Button::Listener,
                         private AudioProcessorValueTreeState::Listener
@@ -30,7 +31,7 @@ class GesturePanel    : public PlumeComponent,
 public:
     //==============================================================================
     GesturePanel (GestureArray& gestureArray, PluginWrapper& wrap,
-                  AudioProcessorValueTreeState& params, NewGesturePanel& newGest,
+                  AudioProcessorValueTreeState& params, NewGesturePanel& newGest, Component& newPrst,
                   int freqHz = 60);
     ~GesturePanel();
 
@@ -51,6 +52,12 @@ public:
     void buttonClicked (Button*) override;
     void parameterChanged (const String &parameterID, float newValue) override;
 
+    /**
+     * @brief Get the first gesture found in the list
+     * @return Gesture Id
+    */
+    int findExistingGesture ();
+
     void mouseUp (const MouseEvent &event) override;
     void mouseDrag (const MouseEvent &event) override;
     bool keyPressed (const KeyPress &key) override;
@@ -70,6 +77,10 @@ public:
 
 private:
     //==============================================================================
+    void paintShadows (Graphics& g);
+    void paintDragAndDropSnapshot (Graphics& g);
+
+    //==============================================================================
     void switchGestureSelectionState (GestureComponent& gestureComponentToSwitch);
     void selectGestureExclusive (const int idToSelect);
     void selectGestureExclusive (GestureComponent& gestureComponentToSelect);
@@ -80,6 +91,7 @@ private:
 
     //==============================================================================
     void createMenuForGestureId (int id);
+    static void menuCallback(int result, GesturePanel* gPanel, int id);
     void handleMenuResult (int gestureId, const int menuResult);
     void handleLeftClickUp (const MouseEvent &event);
     void handleLeftClickDrag (const MouseEvent &event);
@@ -89,17 +101,13 @@ private:
     void createAndAddCloseButton();
 
     //==============================================================================
-    void startDragMode (int slotBeingDragged);
+    void startDragMode (GestureComponent& gestureComponent);
     void endDragMode();
 
     //==============================================================================
-    Image backgroundImage = ImageFileFormat::loadFrom (PlumeData::homePageEnhancia_jpg,
-                                                       PlumeData::homePageEnhancia_jpgSize);
-
-    OwnedArray<PlumeComponent> gestureSlots;
-    ScopedPointer<GestureSettingsComponent> gestureSettings;
-    ScopedPointer<PlumeShapeButton> closeButton;
-    DropShadowEffect shadowEffect;
+    OwnedArray<Component> gestureSlots;
+    std::unique_ptr<GestureSettingsComponent> gestureSettings;
+    //DropShadowEffect shadowEffect;
 
     //==============================================================================
     int selectedGesture = -1;
@@ -111,11 +119,18 @@ private:
     int draggedGestureComponentId = -1;
     int draggedOverSlotId = -1;
 
+    juce::Rectangle<int> draggedImgPosition;
+    const int64 hashCode = 420;
+
+    //==============================================================================
+    CriticalSection parameterCallbackLock;
+
     //==============================================================================
     GestureArray& gestureArray;
     PluginWrapper& wrapper;
     AudioProcessorValueTreeState& parameters;
     NewGesturePanel& newGesturePanel;
+    Component& newPresetPanel;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GesturePanel)

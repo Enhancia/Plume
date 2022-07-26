@@ -52,11 +52,11 @@ TypeToggleComponent::~TypeToggleComponent()
     toggles.clear();
 }
 
-void TypeToggleComponent::paint (Graphics& g)
+void TypeToggleComponent::paint (Graphics&)
 {
 }
 
-void TypeToggleComponent::paintOverChildren (Graphics& g)
+void TypeToggleComponent::paintOverChildren (Graphics&)
 {
 }
 
@@ -110,7 +110,8 @@ void TypeToggleComponent::toggleButton (int buttonId)
 			                                              ->findChildWithID("presetBox")))
 		{
 			presetBox->updateContent();
-            presetBox->repaint();
+            presetBox->selectRow (0);
+            presetBox->scrollToEnsureRowIsOnscreen (0);
 		}
 	}
 }
@@ -131,7 +132,7 @@ TypeToggleComponent::Toggle::~Toggle()
 void TypeToggleComponent::Toggle::paint (Graphics& g)
 {
     g.setColour (state ? backgroundOnColour : backgroundOffColour);
-    g.fillRect (getLocalBounds().withTop (getLocalBounds().getBottom() - 3));
+    g.fillRect (getLocalBounds().withTop (getLocalBounds().getBottom() - 2));
 
     g.setColour (state ? textOnColour : textOffColour);
     g.setFont (PLUME::font::plumeFontBold.withHeight (PLUME::font::SIDEBAR_LABEL_FONT_H + 2.0f));
@@ -148,7 +149,7 @@ void TypeToggleComponent::Toggle::resized()
 {
 }
 
-void TypeToggleComponent::Toggle::mouseEnter (const MouseEvent &event)
+void TypeToggleComponent::Toggle::mouseEnter (const MouseEvent &)
 {
     if (!state && !highlighted)
     {
@@ -157,7 +158,7 @@ void TypeToggleComponent::Toggle::mouseEnter (const MouseEvent &event)
     }
 }
 
-void TypeToggleComponent::Toggle::mouseExit (const MouseEvent &event)
+void TypeToggleComponent::Toggle::mouseExit (const MouseEvent &)
 {
     if (!state && highlighted)
     {

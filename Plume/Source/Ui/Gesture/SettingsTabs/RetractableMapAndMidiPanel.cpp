@@ -8,26 +8,25 @@
   ==============================================================================
 */
 
-#include "../../../../JuceLibraryCode/JuceHeader.h"
 #include "RetractableMapAndMidiPanel.h"
 
 //==============================================================================
 RetractableMapAndMidiPanel::RetractableMapAndMidiPanel (Gesture& gest, GestureArray& gestArr,
-														PluginWrapper& wrap, Colour gestureColour)
+														PluginWrapper& wrap)
     : gesture (gest), gestureArray (gestArr), wrapper (wrap)
 {
-	addAndMakeVisible (parametersBanner = new MapperBanner (gesture, gestureArray, wrapper));
-	addAndMakeVisible (parametersBody = new MapperComponent (gesture, gestureArray, wrapper));
-	addAndMakeVisible (midiBanner = new MidiBanner (gesture));
-	addAndMakeVisible (midiBody = new MidiModeComponent (gesture, gestureArray));
+	addAndMakeVisible (*(parametersBanner = std::make_unique<MapperBanner> (gesture, gestureArray, wrapper)));
+	addAndMakeVisible (*(parametersBody = std::make_unique<MapperComponent> (gesture, gestureArray, wrapper)));
+	addAndMakeVisible (*(midiBanner = std::make_unique<MidiBanner> (gesture)));
+	addAndMakeVisible (*(midiBody = std::make_unique<MidiModeComponent> (gesture, gestureArray)));
 
-	parametersRetractable.setComponents (parametersBanner, parametersBody);
-	midiRetractable.setComponents (midiBanner, midiBody);
+	parametersRetractable.setComponents (parametersBanner.get(), parametersBody.get());
+	midiRetractable.setComponents (midiBanner.get(), midiBody.get());
 
-	addAndMakeVisible (hideBodyButton = new ShapeButton ("Hide Body Button",
+	addAndMakeVisible (*(hideBodyButton = std::make_unique<ShapeButton> ("Hide Body Button",
                                                          Colour (0x00000000),
                                                          Colour (0x00000000),
-                                                         Colour (0x00000000)));
+                                                         Colour (0x00000000))));
 	initializeHideBodyButton();
 
 	setPanelMode (parameterMode);
@@ -46,14 +45,16 @@ RetractableMapAndMidiPanel::~RetractableMapAndMidiPanel()
 
 const String RetractableMapAndMidiPanel::getInfoString()
 {
+    const String bullet = " " + String::charToString (juce_wchar(0x2022));
+    
 	if (panelMode == parameterMode)
 	{
-		return String ("Parameters Panel:\n\n - Map plugin parameters to the gesture using the \"Map\" button.\n") +
-			   String (!wrapper.isWrapping() ? "- You must have a wrapped plugin to use this feature!" : "");
+		return String ("Parameters Panel:\n\n" + bullet + " Map plugin parameters to the gesture using the \"Map\" button.\n") +
+			   String (!wrapper.isWrapping() ? (bullet + " You must have a wrapped plugin to use this feature!") : "");
 	}
 	else
 	{
-		return String ("MIDI Panel:\n\n - Select the type of MIDI to send to ") +
+		return String ("MIDI Panel:\n\n" + bullet + " Select the type of MIDI to send to ") +
 			   String (wrapper.isWrapping() ? wrapper.getWrappedPluginName() : "the plugin") +
 			   + ".\n";
 	}
@@ -79,9 +80,18 @@ void RetractableMapAndMidiPanel::updateDisplay()
 	{
 		parametersBody->updateDisplay();
 	}
+	else if (panelMode == midiMode)
+	{
+		midiBody->updateDisplay();
+	}
 }
 
-void RetractableMapAndMidiPanel::paint (Graphics& g)
+void RetractableMapAndMidiPanel::updateMidiRange (MidiRangeTuner::DraggableObject thumbToUpdate)
+{
+	midiBody->getTuner().updateComponents (thumbToUpdate);
+}	
+
+void RetractableMapAndMidiPanel::paint (Graphics&)
 {
 }
 
@@ -89,8 +99,6 @@ void RetractableMapAndMidiPanel::resized()
 {
 	resized (parametersRetractable);
 	resized (midiRetractable);
-
-	auto bannerArea = getLocalBounds().removeFromTop (bannerHeight);
 }
 
 void RetractableMapAndMidiPanel::resized (Retractable& retractableToResize)
@@ -103,7 +111,7 @@ void RetractableMapAndMidiPanel::resized (Retractable& retractableToResize)
 
 void RetractableMapAndMidiPanel::buttonClicked (Button* bttn)
 {
-	if (bttn == hideBodyButton)
+	if (bttn == hideBodyButton.get())
 	{
 		setRetracted (hideBodyButton->getToggleState());
 	}
@@ -111,16 +119,6 @@ void RetractableMapAndMidiPanel::buttonClicked (Button* bttn)
 
 void RetractableMapAndMidiPanel::changeListenerCallback(ChangeBroadcaster* source)
 {
-	/* [OUTDATED.. You can only map one gesture at the time with the new interface]
-    // if Another gesture wants to be mapped
-    // Draws the map button in non-map colour
-    if (source == &gestureArray && gestureArray.mapModeOn && gesture.mapModeOn == false)
-    {
-        mapButton->setColour (TextButton::buttonColourId, getLookAndFeel().findColour (TextButton::buttonColourId));
-        return;
-    }
-    */
-
     // If gesture mapping changed
     // Recreates the array of parameterComponent, and redraws the mapperComponent
     if (source == &gesture)
@@ -128,13 +126,14 @@ void RetractableMapAndMidiPanel::changeListenerCallback(ChangeBroadcaster* sourc
         parametersBody->updateParamCompArray();
         parametersBody->resized();
 
-        if (gesture.mapModeOn)
+        if (!gestureArray.mapModeOn) // Wrapper cancelled mapMode after adding parameter
         {
         	wrapper.clearWrapperEditor();
-            gestureArray.cancelMapMode();
         }
 
-        getParentComponent()->repaint();
+        getParentComponent()->getParentComponent()->repaint();
+        gestureArray.getOwnerProcessor()
+        			.updateHostDisplay (AudioProcessor::ChangeDetails().withParameterInfoChanged (true));
     }
     
     // If the editor is closed with map mode still on
@@ -149,6 +148,8 @@ void RetractableMapAndMidiPanel::changeListenerCallback(ChangeBroadcaster* sourc
 
 void RetractableMapAndMidiPanel::setPanelMode (PanelMode newMode)
 {
+	panelMode = newMode;
+	
 	if (newMode == parameterMode)
 	{
 		midiRetractable.banner->setVisible (false);
@@ -178,10 +179,10 @@ void RetractableMapAndMidiPanel::setRetracted (bool shouldBeRetracted)
 		setRetracted (midiRetractable);
 
 		resized();
-		if (auto* parentComponent = getParentComponent())
+		if (auto* parentComp = getParentComponent())
 		{
-			parentComponent->resized();
-			parentComponent->repaint();
+			parentComp->resized();
+			parentComp->repaint();
 		}
 	}
 }

@@ -8,17 +8,15 @@
   ==============================================================================
 */
 
-#include "Ui/Gesture/Tuner/GesturesTuner.h"
-#include "Ui/Gesture/SettingsTabs/MapperComponent.h"
+#include "Tuner/GesturesTuner.h"
+#include "SettingsTabs/mappercomponent.h"
 #include "GestureSettingsComponent.h"
 
 //==============================================================================
-GestureSettingsComponent::GestureSettingsComponent (Gesture& gest, GestureArray& gestArray,
-                                                    PluginWrapper& wrap, PlumeShapeButton& closeBttn)
+GestureSettingsComponent::GestureSettingsComponent (Gesture& gest, GestureArray& gestArray, PluginWrapper& wrap)
                             : gesture (gest), gestureArray (gestArray),
-                              wrapper (wrap), closeButton (closeBttn), gestureId (gest.id)
+                              wrapper (wrap), gestureId (gest.id)
 {
-    TRACE_IN;
     setComponentID ("Gesture Settings");
 
     createTuner();
@@ -28,7 +26,6 @@ GestureSettingsComponent::GestureSettingsComponent (Gesture& gest, GestureArray&
 
 GestureSettingsComponent::~GestureSettingsComponent()
 {
-    TRACE_IN;
     gestureArray.cancelMapMode();
     disabled = true;
     gestTuner = nullptr;
@@ -39,8 +36,10 @@ GestureSettingsComponent::~GestureSettingsComponent()
 //==============================================================================
 const String GestureSettingsComponent::getInfoString()
 {
+    const String bullet = " " + String::charToString (juce_wchar(0x2022));
+
     return "Gesture settings:\n\n"
-           "- Use this panel to configure the selected gesture.";
+           + bullet + " Use this panel to configure the selected gesture.";
 }
 
 void GestureSettingsComponent::update()
@@ -59,16 +58,48 @@ void GestureSettingsComponent::update()
 void GestureSettingsComponent::update (const String& parameterThatChanged)
 {
     if (disabled) return;
-    DBG ("GSC update with parameter : " << parameterThatChanged);
 
-    if (parameterThatChanged.startsWith ("_midi"))
-    {
-        midiParameterToggle->setToggleState (gesture.generatesMidi());
-        retractablePanel->update();
-    }
-    else if (parameterThatChanged.compare ("_on") == 0)
+    if (parameterThatChanged.isEmpty())
     {
         update();
+    }
+    else
+    {
+        if (auto* oneRangeTuner = dynamic_cast<OneRangeTuner*> (gestTuner.get()))
+        {
+            if (parameterThatChanged.endsWith ("m_0"))
+            {
+                oneRangeTuner->updateComponents (OneRangeTuner::DraggableObject::lowThumb);
+            }
+            else if (parameterThatChanged.endsWith ("m_1"))
+            {
+                oneRangeTuner->updateComponents (OneRangeTuner::DraggableObject::highThumb);
+            }
+        }
+
+        else if (auto* twoRangeTuner = dynamic_cast<TwoRangeTuner*> (gestTuner.get()))
+        {
+            if (parameterThatChanged.endsWith ("m_0"))
+            {
+                twoRangeTuner->updateComponents (TwoRangeTuner::leftLowThumb);
+            }
+            else if (parameterThatChanged.endsWith ("m_1"))
+            {
+                twoRangeTuner->updateComponents (TwoRangeTuner::leftHighThumb);
+            }
+            else if (parameterThatChanged.endsWith ("m_2"))
+            {
+                twoRangeTuner->updateComponents (TwoRangeTuner::rightLowThumb);
+            }
+            else if (parameterThatChanged.endsWith ("m_3"))
+            {
+                twoRangeTuner->updateComponents (TwoRangeTuner::rightHighThumb);
+            }
+        }
+        else
+        {
+            gestTuner->updateComponents();
+        }
     }
 }
 
@@ -76,9 +107,6 @@ void GestureSettingsComponent::update (const String& parameterThatChanged)
 void GestureSettingsComponent::paint (Graphics& g)
 {
     using namespace PLUME::UI;
-
-    // Enhancia Text
-
     // Background
     paintBackground (g);
 
@@ -93,11 +121,14 @@ void GestureSettingsComponent::paint (Graphics& g)
                 Justification::bottomLeft, false);
 
     // Gesture Name text
-    g.setColour (getPlumeColour (detailPanelMainText));                    
-    g.setFont (PLUME::font::plumeFontBold.withHeight (15.0f));
-    g.drawText (gesture.getName().toUpperCase(),
-                headerArea.removeFromLeft (getWidth()/3).reduced (MARGIN, 0),
-                Justification::centred, false);
+    if (auto* gesturePtr = gestureArray.getGesture (gestureId))
+    {
+        g.setColour (getPlumeColour (detailPanelMainText));                    
+        g.setFont (PLUME::font::plumeFontMedium.withHeight (15.0f));
+        g.drawText (gesturePtr->getName().toUpperCase(),
+                    headerArea.removeFromLeft (getWidth()/3).reduced (MARGIN, 0),
+                    Justification::centred, false);
+    }
 }
 
 void GestureSettingsComponent::paintBackground (Graphics& g)
@@ -152,25 +183,16 @@ void GestureSettingsComponent::resized()
     auto area = getLocalBounds();
     auto headerArea = area.removeFromTop (HEADER_HEIGHT).reduced (MARGIN_SMALL);
 
-    closeButton.setBounds (getBoundsInParent().removeFromTop (HEADER_HEIGHT)
-                                              .reduced (MARGIN_SMALL)
-                                              .removeFromRight (25)
-                                              .withSizeKeepingCentre (18, 18));
-    headerArea.removeFromRight (25);
-
-    muteButton->setBounds (headerArea.removeFromRight (30).withSizeKeepingCentre (18, 18));
+    muteButton->setBounds (headerArea.removeFromRight (20).withSizeKeepingCentre (18, 18));
 
     retractablePanel->setBounds (area.removeFromBottom (getHeight()/2 - HEADER_HEIGHT));
     area.removeFromBottom (MARGIN);
     gestTuner->setBounds (area);
 
-    if (gesture.type != Gesture::pitchBend && gesture.type != Gesture::vibrato)
-    {
-        midiParameterToggle->setBounds (retractablePanel->getBounds()
+    midiParameterToggle->setBounds (retractablePanel->getBounds()
                                             .withHeight (retractablePanel->bannerHeight)
                                             .withLeft (getWidth() - 50)
                                             .reduced (3*MARGIN_SMALL, MARGIN));
-    }
 }
 
 //==============================================================================
@@ -220,31 +242,36 @@ void GestureSettingsComponent::createTuner()
 	if (gesture.type == Gesture::vibrato)
     {
         Vibrato& vib = dynamic_cast<Vibrato&> (gesture);
-        addAndMakeVisible (gestTuner = new VibratoTuner (vib));
+        gestTuner.reset (new VibratoTuner (vib));
+        addAndMakeVisible (*gestTuner);
     }
     
     else if (gesture.type == Gesture::pitchBend)
     {
         PitchBend& pitchBend = dynamic_cast<PitchBend&> (gesture);
-        addAndMakeVisible (gestTuner = new PitchBendTuner (pitchBend));
+        gestTuner.reset (new PitchBendTuner (pitchBend));
+        addAndMakeVisible (*gestTuner);
     }
     
     else if (gesture.type == Gesture::tilt)
     {
         Tilt& tilt = dynamic_cast<Tilt&> (gesture);
-        addAndMakeVisible (gestTuner = new TiltTuner (tilt));
+        gestTuner.reset (new TiltTuner (tilt));
+        addAndMakeVisible (*gestTuner);
     }
     /*  Un-comment when the wave gesture is implemented
     else if (gesture.type == Gesture::wave)
     {
         Wave& wave = dynamic_cast<Wave&> (gesture);
-        addAndMakeVisible (gestTuner = new WaveTuner (wave));
+        gestTuner.reset (new WaveTuner (wave));
+        addAndMakeVisible (*gestTuner);
     }
     */
     else if (gesture.type == Gesture::roll)
     {
         Roll& roll = dynamic_cast<Roll&> (gesture);
-        addAndMakeVisible (gestTuner = new RollTuner (roll));
+        gestTuner.reset (new RollTuner (roll));
+        addAndMakeVisible (*gestTuner);
     }
     else
     {
@@ -256,44 +283,48 @@ void GestureSettingsComponent::createTuner()
 
 void GestureSettingsComponent::createToggles()
 {
-    addAndMakeVisible (midiParameterToggle = new DualTextToggle ("MIDI", "MIDI",
+    addAndMakeVisible (*(midiParameterToggle = std::make_unique<DualTextToggle> ("MIDI", "MIDI",
                                                                  getPlumeColour (plumeBackground),
-                                                                 gesture.getHighlightColour()));
+                                                                 gesture.getHighlightColour())));
     midiParameterToggle->setStyle (DualTextToggle::toggleWithTopText);
     midiParameterToggle->setToggleState (gesture.generatesMidi());
-    midiParameterToggle->setStateUndependentTextColour (getPlumeColour (detailPanelMainText));
+    midiParameterToggle->setStateIndependentTextColour (getPlumeColour (detailPanelMainText));
     midiParameterToggle->setToggleThumbColour (getPlumeColour (tunerSliderBackground));
     midiParameterToggle->onStateChange = [this] ()
     {
         gesture.setGeneratesMidi (midiParameterToggle->getToggleState());
+        gestureArray.getOwnerProcessor().updateHostDisplay (AudioProcessor::ChangeDetails().withParameterInfoChanged (true));
         showAppropriatePanel();
         getParentComponent()->repaint();
     };
 
-    addAndMakeVisible (muteButton = new PlumeShapeButton ("Mute Button",
+    addAndMakeVisible (*(muteButton = std::make_unique<PlumeShapeButton> ("Mute Button",
                                                           getPlumeColour (plumeBackground),
-                                                          getPlumeColour (mutedHighlight),
-                                                          Gesture::getHighlightColour (gesture.type)));
+                                                          Gesture::getHighlightColour (gesture.type, false),
+                                                          Gesture::getHighlightColour (gesture.type))));
 
     muteButton->setShape (PLUME::path::createPath (PLUME::path::onOff), false, true, false);
     muteButton->setToggleState (gesture.isActive(), dontSendNotification);
+    muteButton->setGetsHighlighted (false);
     muteButton->setClickingTogglesState (true);
     muteButton->onClick = [this] ()
     {
         gesture.setActive (muteButton->getToggleState());
-        closeButton.setToggleState (gesture.isActive(), dontSendNotification);
-    };
 
-    closeButton.setStrokeOffAndOnColours (getPlumeColour (mutedHighlight),
-                                          Gesture::getHighlightColour(gesture.type));
-    closeButton.setToggleState (gesture.isActive(), dontSendNotification);
+        PLUME::log::writeToLog ("Gesture " + gesture.getName() + " (Id " + String (gesture.id) + (muteButton->getToggleState() ? ") Muting." : ") Unmuting."),
+                                PLUME::log::LogCategory::gesture);
+        update();
+        if (auto* gestComp = dynamic_cast<PlumeComponent*> (getParentComponent()->findChildWithID ("gestComp" + String (gestureId))))
+        {
+            gestComp->update();
+        }
+    };
 }
 
 void GestureSettingsComponent::createPanels()
 {
-    addAndMakeVisible (descriptionPanel = new DescriptionPanel (gesture));
-    addAndMakeVisible (retractablePanel = new RetractableMapAndMidiPanel (gesture, gestureArray,
-																		  wrapper, gestTuner->getColour()));
+    addAndMakeVisible (*(descriptionPanel = std::make_unique<DescriptionPanel> (gesture)));
+    addAndMakeVisible (*(retractablePanel = std::make_unique <RetractableMapAndMidiPanel> (gesture, gestureArray, wrapper)));
 	showAppropriatePanel();
 }
 

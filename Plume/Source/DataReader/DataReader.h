@@ -11,11 +11,12 @@
 
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
-#include "../juce_serialport/juce_serialport.h"
+#include "../../JuceLibraryCode/JuceHeader.h"
+#include "../../juce_serialport/juce_serialport.h"
+#include "../Common/PlumeCommon.h"
 
 #if JUCE_MAC
-#include "DataReader/StatutPipe.h"
+#include "StatutPipe.h"
 #endif
 
 //==============================================================================
@@ -32,27 +33,64 @@
  *  This is a class that is instanciated by the PlumeProcessor object. It inherits from InterprocessConnection
  *  so that it can create a pipe, to which a RawDataReader app can connect to send data.
  */
-class DataReader   : public Component,
-                     private InterprocessConnection,
-                     public ChangeBroadcaster,
-                     public ChangeListener
+class DataReader :
+	public ActionBroadcaster,
+	public ChangeBroadcaster,
+	public ChangeListener,
+	public Component,
+	private InterprocessConnection,
+	public MultiTimer
 {
 public:
-    static constexpr int DATA_SIZE = 7;
-    
-    //==============================================================================
-    DataReader();
-    ~DataReader();
+    static constexpr int DATA_SIZE = PLUME::data::numDatas;
 
-    //==============================================================================
+    // Getters Setters
+    float& getBatteryReference ();
+
+    bool getHubIsConnected () const;
+    bool getRingIsConnected () const;
+    bool getRingIsCharging () const;
+
+    void setHubIsConnected (bool value);
+    void setRingIsConnected (bool value);
+    void setRingIsCharging (bool value);
+    
+    // Constructor Destructor
+	DataReader();
+    ~DataReader() override;
+
+    // Editor logic
     void paint (Graphics&) override;
     void resized() override;
 
-    //==============================================================================
+    // Processor logic
     bool readData(String s);
     const String getRawData(int index);
     bool getRawDataAsFloatArray(Array<float>& arrayToFill);
+    const float& getFloatValueReference (const PLUME::data::PlumeData data);
     
+    //==============================================================================
+    void sendString(uint8_t* data, int data_size);
+
+    //==============================================================================
+    void timerCallback (int timerID) override;
+    
+    /**
+        @Brief Tracks statutPipe messages
+
+        Calls connectToExistingPipe(int nbPipe) with the pipe ID received by statutPipe
+        MacOs only
+     */
+    void changeListenerCallback(ChangeBroadcaster* source) override;
+    
+    /**
+        @Brief Instantiate StatutPipe object
+
+        Instantiate and add listener on StatutPipe
+        MacOs only
+     */
+    void instantiateStatutPipe();
+        
     //==============================================================================
     bool connectToExistingPipe();
     bool connectToExistingPipe(int nbPipe);
@@ -62,19 +100,23 @@ public:
     void connectionMade() override;
     void connectionLost() override;
     void messageReceived(const MemoryBlock &message) override;
-    void changeListenerCallback(ChangeBroadcaster* source) override;
+    
     
 private:
     //==============================================================================
     bool connected;
     int pipeNumber = -1;
     
-    ScopedPointer<StringArray> data;
-    ScopedPointer<Label> connectedLabel;
+    std::unique_ptr<StringArray> data;
+	float batteryValue = 0.0f;
 
-	#if JUCE_MAC
+    bool hubIsConnected = false;
+    bool ringIsConnected = false;
+    bool ringIsCharging = false;
+
+  #if JUCE_MAC
     std::unique_ptr<StatutPipe> statutPipe;
-	#endif
+  #endif
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DataReader)
 };

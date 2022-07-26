@@ -11,8 +11,8 @@
 #pragma once
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
-#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
-#include "Common/PlumeCommon.h"
+#include "../../Ui/LookAndFeel/PlumeLookAndFeel.h"
+#include "../../Common/PlumeCommon.h"
 
 //==============================================================================
 /*
@@ -56,7 +56,7 @@ public:
     void setTrueStatetext (String textToSet);
     void setFalseStateColour (const Colour coulourToSet);
     void setTrueStateColour (const Colour coulourToSet);
-    void setStateUndependentTextColour (const Colour textColourToSet);
+    void setStateIndependentTextColour (const Colour textColourToSet);
     void setToggleThumbColour (const Colour thumbColourToSet);
 
     std::function<void()> onStateChange = nullptr;

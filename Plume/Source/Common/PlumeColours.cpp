@@ -91,6 +91,7 @@ PlumeTheme PlumeTheme::createDefaultTheme()
                          // General
                          0xfff8f8f8, //headerBackground
                          0xff393939, //headerText
+                         0xff424656, //headerButtonBackground 
                          0xff393939, //headerButtonStroke
  
                          // Plugin Display
@@ -136,17 +137,24 @@ PlumeTheme PlumeTheme::createDefaultTheme()
  
                     // Gesture Colours
                          0xff808080, //mutedHighlight
-                         0xffec6565, //vibratoHighlight
-                         0xff1fcaa8, //pitchBendHighlight
-                         0xfff3a536, //tiltHighlight
-                         0xffa255f3, //rollHighlight
+                         0xffff5ba1, //vibratoHighlight
+                         0xffb859f2, //pitchBendHighlight
+                         0xffffa21d, //tiltHighlight
+                         0xff1ec0b7, //rollHighlight
                          0xff7c80de, //waveHighlight
  
                     // Top Panel
                          0xff494949, //topPanelBackground
                          0xc0000000, //topPanelTransparentArea
                          0xffffffff, //topPanelMainText
-                         0x50ffffff //topPanelSubText
+                         0x50ffffff, //topPanelSubText
+
+                    // Popup Menu
+                         0xff22252e, //popupMenuOutline
+                         0xff323643, //popupMenuBackground
+                         0xff4a5063, //popupMenuSelectedBackground
+                         0xffe5e5e5, //popupMenuText
+                         0xffe5e5e5  //popupMenuSelectedText
                        }));
 }
 
@@ -190,6 +198,7 @@ PlumeTheme PlumeTheme::createRedTheme()
                          // General
                          0xfff8f8f8, //headerBackground
                          0xff532323, //headerText
+                         0xff424656, //headerButtonBackground
                          0xff532323, //headerButtonStroke
  
                          // Plugin Display
@@ -235,17 +244,24 @@ PlumeTheme PlumeTheme::createRedTheme()
  
                     // Gesture Colours
                          0xff808080, //mutedHighlight
-                         0xffe04040, //vibratoHighlight
-                         0xffe04040, //pitchBendHighlight
-                         0xffe04040, //tiltHighlight
-                         0xffe04040, //rollHighlight
-                         0xffe04040, //waveHighlight
+                         0xffff5ba1, //vibratoHighlight
+                         0xffb859f2, //pitchBendHighlight
+                         0xffffa21d, //tiltHighlight
+                         0xff1ec0b7, //rollHighlight
+                         0xff7c80de, //waveHighlight
  
                     // Top Panel
                          0xff604040, //topPanelBackground
                          0xc0000000, //topPanelTransparentArea
                          0xffffffff, //topPanelMainText
-                         0x50ffffff //topPanelSubText
+                         0x50ffffff, //topPanelSubText
+
+                    // Popup Menu
+                         0xff22252e, //popupMenuOutline
+                         0xff323643, //popupMenuBackground
+                         0xff4a5063, //popupMenuSelectedBackground
+                         0xffe5e5e5, //popupMenuText
+                         0xffe5e5e5  //popupMenuSelectedText
                        }));
 }
 
@@ -261,7 +277,7 @@ PlumeTheme PlumeTheme::createTestTheme()
                          0xff21252f, //sideBarObjectFillBackground
                          0xff2c303e, //sideBarObjectFill
                          0xffffffff, //sideBarMainText
-                         0xffffffff, //sideBarSubText
+                         0x70ffffff, //sideBarSubText
                          0xffffffff, //sideBarButtonFill
  
                          // Presets
@@ -271,7 +287,7 @@ PlumeTheme PlumeTheme::createTestTheme()
                          0xffffffff, //presetsBoxRowText
                          0xffffffff, //presetsBoxRowTextHighlighted
                          0xfff8f8f9, //presetsBoxScrollBar
-                         0xfff3a536, //presetTypeToggleSelected
+                         0xffffa21d, //presetTypeToggleSelected
                          0xff3b3f4b, //presetTypeToggleUnselected
                          0xff393c4e, //presetsSearchBarFill
  
@@ -285,6 +301,7 @@ PlumeTheme PlumeTheme::createTestTheme()
                          // General
                          0xff363c4e, //headerBackground
                          0xffffffff, //headerText
+                         0xff4a5063, //headerButtonBackground 
                          0xffffffff, //headerButtonStroke 
  
                          // Plugin Display
@@ -330,16 +347,23 @@ PlumeTheme PlumeTheme::createTestTheme()
  
                       // Gesture Colours
                          0xff808080, //mutedHighlight
-                         0xffec6565, //vibratoHighlight
-                         0xff1fcaa8, //pitchBendHighlight
-                         0xfff3a536, //tiltHighlight
-                         0xffa255f3, //rollHighlight
+                         0xffff5ba1, //vibratoHighlight
+                         0xffb859f2, //pitchBendHighlight
+                         0xffffa21d, //tiltHighlight
+                         0xff1ec0b7, //rollHighlight
                          0xff7c80de, //waveHighlight
  
                     // Top Panel
                          0xff363c4e, //topPanelBackground
                          0xc0000005, //topPanelTransparentArea
                          0xffffffff, //topPanelMainText
-                         0x50ffffff //topPanelSubText
+                         0x50ffffff, //topPanelSubText
+
+                    // Popup Menu
+                         0xff22252e, //popupMenuOutline
+                         0xff323643, //popupMenuBackground
+                         0xff4a5063, //popupMenuSelectedBackground
+                         0xffe5e5e5, //popupMenuText
+                         0xffe5e5e5  //popupMenuSelectedText
                        }));
 }

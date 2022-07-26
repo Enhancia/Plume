@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
+#include "../../JuceLibraryCode/JuceHeader.h"
+#include "../Common/PlumeCommon.h"
 
 class PlumePreset
 {
@@ -21,13 +21,14 @@ public:
 	{
 		arp = 0,
 		bass,
-		custom,
-		harsh,
+		brassWinds,
+		strings,
 		keys,
 		lead,
 		pad,
-		percussion,
+		percussive,
 		sfx,
+		other,
 		
 		numFilters
 	};
@@ -42,9 +43,9 @@ public:
 	};
 
 	//==============================================================================
-	PlumePreset (String name, File pathToPreset, PresetType pType =userPreset, FilterType category =custom,
+	PlumePreset (String name, File pathToPreset, PresetType pType =userPreset, FilterType category =other,
 	             String auth ="", String ver ="1.0", String plug = "");
-	PlumePreset (File pathToPreset, PresetType pType=userPreset);
+	PlumePreset (File pathToPreset, PresetType pType=userPreset, String pName = "", bool prioritizeFileInfo = false);
 	PlumePreset();
 	PlumePreset (const PlumePreset& other);
 	
@@ -52,9 +53,12 @@ public:
 
 	PlumePreset& operator= (const PlumePreset& other) noexcept;
 	bool operator== (const PlumePreset& other) noexcept;
+    static int compareElements (PlumePreset& preset1, PlumePreset& preset2);
+    static int compareElements (PlumePreset* preset1, PlumePreset* preset2);
+    
 	//==============================================================================
 	static String getFilterTypeString (int filterTypeId);
-	static void addPresetInfoXml (XmlElement& presetXml, String author, String version,
+	static void addPresetInfoXml (XmlElement& presetXml, String name, String author, String version,
                                   String plugin, int presetType, int filterType);
 	
 	//==============================================================================
@@ -64,15 +68,20 @@ public:
 	//==============================================================================
 	bool isValid();
 	void setName (const String newName);
-	const String getName();
-	const String getFilterString();
+	const String getName() const;
+	const String getAuthor() const;
+	const String getVersion() const;
+	const int getFilter() const;
+	const String getFilterString() const;
+	const String getDescriptiveName () const;
+	const String getDescription() const;
 	bool matchesSettings (int filter, String pluginName, String nameSearch);
 
 	int presetType;
 
 private:
 	//==============================================================================
-	bool hasInfoXml();
+	bool hasInfoXml (File filePathToLookAt = File());
 	void loadPresetInfoFromFile();
 	void loadPresetFromFile (File& file);
 	void getPluginFromFile (File& file);
@@ -81,7 +90,7 @@ private:
 	//==============================================================================
 	File presetFile;
 	int filterType;
-	String name, author, plugin, version;
+	String name, descriptiveName, author, plugin, version;
 	bool valid = false;
 
 	//==============================================================================

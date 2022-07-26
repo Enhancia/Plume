@@ -11,12 +11,13 @@
 #pragma once
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
-#include "Plugin/PluginProcessor.h"
-#include "Ui/Top/Options/ScannerComponent.h"
-#include "Ui/Common/TabbedPanelComponent.h"
-#include "Ui/Top/Options/SubPanels/FileOptionsSubPanel.h"
-#include "Ui/Top/Options/SubPanels/GeneralOptionsSubPanel.h"
+#include "../../../Common/PlumeCommon.h"
+#include "../../../Plugin/PluginProcessor.h"
+#include "../../Common/TabbedPanelComponent.h"
+#include "ScannerComponent.h"
+#include "SubPanels/FileOptionsSubPanel.h"
+#include "SubPanels/GeneralOptionsSubPanel.h"
+#include "SubPanels/UpdaterSubPanel.h"
 
 //==============================================================================
 /*
@@ -26,7 +27,7 @@ class OptionsPanel    : public Component,
 {
 public:
     //==============================================================================
-    explicit OptionsPanel (PlumeProcessor& proc);
+    explicit OptionsPanel (PlumeProcessor& proc, UpdaterPanel& updtrPanel);
     ~OptionsPanel();
 
     //==============================================================================
@@ -35,16 +36,27 @@ public:
     
     //==============================================================================
     void buttonClicked (Button* bttn) override;
+    bool keyPressed (const KeyPress& key) override;
     void mouseUp (const MouseEvent& event) override;
     void mouseEnter (const MouseEvent& event) override;
     void mouseExit (const MouseEvent& event) override;
     void visibilityChanged() override;
+    void paintProductInformations (Graphics& g, juce::Rectangle<int> area);
 
+    //==============================================================================
+    TabbedPanelComponent& getOptions();
+    
 private:
     //==============================================================================
+    Image enhanciaLogo = ImageFileFormat::loadFrom (PlumeData::BRANDPopupgrey_png,
+                                                    PlumeData::BRANDPopupgrey_pngSize);
+    
+    //==============================================================================
     juce::Rectangle<int> optionsArea;
-    ScopedPointer<TabbedPanelComponent> tabbedOptions;
-    ScopedPointer<ShapeButton> closeButton;
+    std::unique_ptr<TabbedPanelComponent> tabbedOptions;
+    std::unique_ptr<ShapeButton> closeButton;
+
+    //==============================================================================
     PlumeProcessor& processor;
     
     //==============================================================================

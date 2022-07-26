@@ -17,12 +17,13 @@ GestureComponent::GestureComponent (Gesture& gest, GestureArray& gestArray,
                                     const bool& dragModeReference,
                                     const int& draggedGestureReference,
                                     const int& draggedOverSlotReference)
-    : gesture (gest), gestureArray (gestArray),
-      id (gest.id),
+    : gestureArray (gestArray),
+      id (gest.id), gesture (gest),
       dragMode (dragModeReference),
       draggedGesture (draggedGestureReference),
       draggedOverSlot (draggedOverSlotReference)
 {
+    setComponentID ("gestComp" + String(id));
     createLabel();
     createButton();
 }
@@ -31,15 +32,21 @@ GestureComponent::~GestureComponent()
 {
     gestureNameLabel->removeListener (this);
     gestureNameLabel = nullptr;
+    muteButton->removeMouseListener (this);
     muteButton = nullptr;
 }
 
 const String GestureComponent::getInfoString()
 {
-    return gesture.getName() + " | " + gesture.getTypeString (true) + "\n\n" +
-           "State : " + (gesture.isActive() ? "Enabled" : "Disabled") +
-           " | Mode : " + (gesture.generatesMidi() ? "MIDI\n" : "Parameters\n")
-           + "\n" + gesture.getDescription();
+    if (auto* gesturePtr = gestureArray.getGesture (id))
+    {
+        return gesturePtr->getName() + " | " + gesturePtr->getTypeString (true) + "\n\n" +
+               "State : " + (gesturePtr->isActive() ? "Enabled" : "Disabled") +
+               " | Mode : " + (gesturePtr->generatesMidi() ? "MIDI\n" : "Parameters\n")
+               + "\n" + gesturePtr->getDescription();
+    }
+    else return "";
+
 }
 
 void GestureComponent::update()
@@ -55,22 +62,28 @@ void GestureComponent::paint (Graphics& g)
     g.setColour (getPlumeColour (basePanelBackground));
     g.fillRoundedRectangle (getLocalBounds().toFloat(), 10.0f);
 
+    // Gesture Image
+    Path roundedRectangleBackground;
+    roundedRectangleBackground.addRoundedRectangle (selected ? getLocalBounds().toFloat().reduced (1.0f)
+                                                             : getLocalBounds().toFloat(),
+                                                    10.0f);
+
     g.saveState();
-    g.reduceClipRegion (0, 0, getWidth(), 30);
-    g.setColour (getPlumeColour (basePanelHeaderFill));
-    g.fillRoundedRectangle (getLocalBounds().toFloat(), 10.0f);
+    g.reduceClipRegion (roundedRectangleBackground);
+    drawGesturePath (g, getLocalBounds().withSizeKeepingCentre (jmax (getWidth(), getHeight()),
+                                                                jmax (getWidth(), getHeight())));
     g.restoreState();
 
     // Outline
     if (dragMode && draggedGesture != id && draggedOverSlot == id)
     {
         g.setColour (gestureArray.getGesture (draggedGesture)->getHighlightColour());
-        g.drawRoundedRectangle (getLocalBounds().reduced (1.0f).toFloat(), 10.0f, 3.0f);
+        g.drawRoundedRectangle (getLocalBounds().toFloat().reduced(1.0f), 10.0f, 3.0f);
     }
     else if (selected)
     {
         g.setColour (gesture.getHighlightColour());
-        g.drawRoundedRectangle (getLocalBounds().reduced (1.0f).toFloat(), 10.0f, 1.0f);
+        g.drawRoundedRectangle (getLocalBounds().toFloat().reduced (1.0f), 10.0f, 1.0f);
     }
 
     auto area = getLocalBounds().withTrimmedTop (30);
@@ -92,9 +105,6 @@ void GestureComponent::paint (Graphics& g)
     {
         paintParameterSlotDisplay (g, stateArea, 1, 6, PLUME::UI::MARGIN);
     }
-    
-    // Gesture Image
-    drawGesturePath (g, area);
 
     // Highlight
     if (!selected && highlighted)
@@ -108,34 +118,38 @@ void GestureComponent::resized()
 {
     auto headerArea = getLocalBounds().removeFromTop (30);
 
-    gestureNameLabel->setBounds (headerArea.withSizeKeepingCentre (getWidth()*2/3, 25));
+    gestureNameLabel->setBounds (getLocalBounds().withSizeKeepingCentre (getWidth()*2/3, 32));
     muteButton->setBounds (headerArea.removeFromRight (30 + PLUME::UI::MARGIN)
                                      .withSizeKeepingCentre (18, 18));
 }
-void GestureComponent::editorShown (Label* lbl, TextEditor& ted)
+void GestureComponent::editorShown (Label*, TextEditor& ted)
 {
     ted.setColour (TextEditor::highlightColourId, Colour (0xff101010));
     ted.setColour (TextEditor::textColourId, Colour (0xff959595));
     ted.setJustification (Justification::centred);
+    ted.setInputRestrictions(26);
 }
 
-void GestureComponent::labelTextChanged (Label* lbl)
+void GestureComponent::labelTextChanged (Label*)
 {
-    gesture.setName (gestureNameLabel->getText());
-    gestureNameLabel->setText (gesture.getName(), dontSendNotification);
+    auto truncatedName = gestureNameLabel->getText().substring(0, 26);
+
+    gesture.setName(truncatedName);
+    gestureNameLabel->setText(truncatedName.toUpperCase(), dontSendNotification);
     
     dynamic_cast<PlumeComponent*> (getParentComponent())->update();
 }
 
-void GestureComponent::mouseEnter (const MouseEvent &event)
+void GestureComponent::mouseEnter (const MouseEvent &)
 {
-    setHighlighted (true);
+    if (isMouseOver (true)) setHighlighted (true);
 }
-void GestureComponent::mouseExit (const MouseEvent &event)
+void GestureComponent::mouseExit (const MouseEvent &)
 {
-    setHighlighted (false);
+    if (!isMouseOver (true))
+        setHighlighted (false);
 }
-void GestureComponent::mouseDrag (const MouseEvent &event)
+void GestureComponent::mouseDrag (const MouseEvent &)
 {
 }
 
@@ -169,11 +183,11 @@ void GestureComponent::startNameEntry()
 
 void GestureComponent::createLabel()
 {
-    addAndMakeVisible (gestureNameLabel = new Label ("gestureNameLabel", gesture.getName().toUpperCase()));
+    addAndMakeVisible (*(gestureNameLabel = std::make_unique<Label> ("gestureNameLabel", gesture.getName().toUpperCase())));
     gestureNameLabel->setEditable (false, false, false);
     gestureNameLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
     gestureNameLabel->setColour (Label::textColourId, getPlumeColour (basePanelMainText));
-    gestureNameLabel->setFont (PLUME::font::plumeFontBold.withHeight (15.0f));
+    gestureNameLabel->setFont (PLUME::font::plumeFontMedium.withHeight (15.0f).withExtraKerningFactor (0.06f));
     gestureNameLabel->setJustificationType (Justification::centred);
     gestureNameLabel->setInterceptsMouseClicks (false, false);
     gestureNameLabel->addListener (this);
@@ -181,23 +195,32 @@ void GestureComponent::createLabel()
 
 void GestureComponent::createButton()
 {
-    addAndMakeVisible (muteButton = new PlumeShapeButton ("Mute Button",
+    addAndMakeVisible (*(muteButton = std::make_unique<PlumeShapeButton> ("Mute Button",
                                                           getPlumeColour (plumeBackground),
-                                                          getPlumeColour (mutedHighlight),
-                                                          Gesture::getHighlightColour (gesture.type)));
+                                                          Gesture::getHighlightColour (gesture.type, false),
+                                                          Gesture::getHighlightColour (gesture.type))));
 
     muteButton->setShape (PLUME::path::createPath (PLUME::path::onOff), false, true, false);
     muteButton->setToggleState (gesture.isActive(), dontSendNotification);
+    muteButton->setGetsHighlighted (false);
     muteButton->setClickingTogglesState (true);
+    muteButton->addMouseListener (this, false);
     muteButton->onClick = [this] ()
     { 
         gesture.setActive (muteButton->getToggleState());
-        
+
+        PLUME::log::writeToLog ("Gesture " + gesture.getName() + " (Id " + String (gesture.id) + (muteButton->getToggleState() ? ") Muting." : ") Unmuting."),
+                                PLUME::log::LogCategory::gesture);
+
         if (selected)
         {
             if (auto* closeButton = dynamic_cast<Button*> (getParentComponent()
     														  ->findChildWithID ("Close Button")))
     			closeButton->setToggleState (gesture.isActive(), dontSendNotification);
+            
+            if (auto* gestureSettings = dynamic_cast<PlumeComponent*> (getParentComponent()
+                                                                         ->findChildWithID ("Gesture Settings")))
+                gestureSettings->update();
         }
 
         repaint();
@@ -238,57 +261,50 @@ void GestureComponent::paintParameterSlotDisplay  (Graphics& g, juce::Rectangle<
 
 void GestureComponent::drawGesturePath (Graphics& g, juce::Rectangle<int> area)
 {
-    g.setColour (Colour (0xfff3f3f3));
+    Path gesturePath;
 
-    // Icon Fill
-    Path iconFill;
-
-    if (gesture.type == Gesture::tilt) iconFill = PLUME::path::createPath (PLUME::path::handTilt);
-    else if (gesture.type == Gesture::roll) iconFill = PLUME::path::createPath (PLUME::path::handRoll);
-    else iconFill = PLUME::path::createPath (PLUME::path::handFingerDown);
-
-    auto areaFloat = (gesture.type == Gesture::tilt || gesture.type == Gesture::roll)
-                          ? area.reduced (area.getWidth()/8, area.getHeight()/4).toFloat()
-                          : area.reduced (area.getWidth()/4, area.getHeight()/8).toFloat();
-
-	iconFill.scaleToFit (areaFloat.getX(), areaFloat.getY(),
-                         areaFloat.getWidth(), areaFloat.getHeight(), true);
-
-    g.fillPath (iconFill);
-
-    // Icon stroke
-    /*
-    Path iconStroke;
-
-    if (gesture.type == Gesture::tilt)
+    switch (gesture.type)
     {
-        iconStroke = PLUME::path::createPath (PLUME::path::tiltArrow);
-        areaFloat = areaFloat.withTrimmedLeft (areaFloat.getWidth()*2/3)
-                             .withTrimmedBottom (areaFloat.getHeight()/2);
-    }
-    else if (gesture.type == Gesture::roll)
-    {
-        iconStroke = PLUME::path::createPath (PLUME::path::rollArrow);
-        areaFloat = areaFloat.withTrimmedRight (areaFloat.getWidth()/2)
-                             .withTrimmedBottom (areaFloat.getHeight()/2);
-    }
-    else if (gesture.type == Gesture::pitchBend)
-    {
-        iconStroke = PLUME::path::createPath (PLUME::path::pitchBendArrow);
-        areaFloat = areaFloat.withTrimmedTop (areaFloat.getHeight()*2/3)
-                             .translated (areaFloat.getWidth()/12, 0);
-    }
-    else if (gesture.type == Gesture::vibrato)
-    {
-        iconStroke = PLUME::path::createPath (PLUME::path::vibratoRipple);
-        areaFloat = areaFloat.withTrimmedTop (areaFloat.getHeight()*2/3)
-                             .translated (areaFloat.getWidth()/12, 0);
-    }
-    else return;
+        case (int (Gesture::tilt)):
+            gesturePath = PLUME::path::createPath (PLUME::path::tilt);
+            break;
 
-    iconStroke.scaleToFit (areaFloat.getX(), areaFloat.getY(),
-                           areaFloat.getWidth(), areaFloat.getHeight(), true);
-    g.strokePath (iconStroke, PathStrokeType (1.0f));*/
+        case (int (Gesture::vibrato)):
+            gesturePath = PLUME::path::createPath (PLUME::path::vibrato);
+            break;
+
+        case (int (Gesture::pitchBend)):
+            gesturePath = PLUME::path::createPath (PLUME::path::pitchBend);
+            break;
+
+        case (int (Gesture::roll)):
+            gesturePath = PLUME::path::createPath (PLUME::path::roll);
+            break;
+
+        default:
+            return;
+    }
+
+    gesturePath.scaleToFit (area.toFloat().getX(),
+                            area.toFloat().getY(),
+                            area.toFloat().getWidth(),
+                            area.toFloat().getHeight(),
+                            false);
+
+    Colour pathColour (0xff808080);
+    ColourGradient gesturePathGradient (pathColour.withAlpha (0.4f),
+                                        {area.toFloat().getX(),
+                                         area.toFloat().getY() + area.toFloat().getHeight() },
+                                        pathColour.withAlpha (0.4f),
+                                        {area.toFloat().getX() + area.toFloat().getWidth(),
+                                         area.toFloat().getY()},
+                                        false);
+
+    gesturePathGradient.addColour (0.35, pathColour.withAlpha (0.0f));
+    gesturePathGradient.addColour (0.65, pathColour.withAlpha (0.0f));
+
+    g.setGradientFill (gesturePathGradient);
+    g.strokePath (gesturePath, PathStrokeType (2.0f));
 }
 
 //==============================================================================
@@ -305,6 +321,7 @@ EmptyGestureSlotComponent::EmptyGestureSlotComponent (const int slotId,
                    draggedOverSlot (draggedOverSlotReference)
 {
 }
+
 EmptyGestureSlotComponent::~EmptyGestureSlotComponent()
 {
 }
@@ -313,6 +330,7 @@ const String EmptyGestureSlotComponent::getInfoString()
 {
     return String();
 }
+
 void EmptyGestureSlotComponent::update()
 {
 }
@@ -321,7 +339,7 @@ void EmptyGestureSlotComponent::paint (Graphics& g)
 {
     Path outline, plusIcon;
 
-    outline.addRoundedRectangle (getLocalBounds().reduced (1.0f), 10.0f);
+    outline.addRoundedRectangle (getLocalBounds().toFloat().reduced(1.0f), 10.0f);
 
     plusIcon.startNewSubPath ({getWidth()/2.0f - 10.0f, getHeight()/2.0f});
     plusIcon.lineTo          ({getWidth()/2.0f + 10.0f, getHeight()/2.0f});
@@ -347,12 +365,22 @@ void EmptyGestureSlotComponent::paint (Graphics& g)
     // Plus Icon
     g.strokePath (plusIcon, {2.0f, PathStrokeType::mitered, PathStrokeType::rounded});
 
+    // Shadow
+    Path shadowPath;
+    shadowPath.addRectangle (getLocalBounds().expanded (3));
+    shadowPath.addRoundedRectangle (getLocalBounds().reduced (5).toFloat(), 6.0f);
+    shadowPath.setUsingNonZeroWinding (false);
+
+    g.saveState();
+    g.reduceClipRegion (outline);
+    DropShadow (Colour (0x30000000), 15, {0, 0}).drawForPath (g, shadowPath);
+    g.restoreState();
     
     // Outline
     if (dragMode && draggedGesture != id && draggedOverSlot == id)
     {
         g.setColour (gestureArray.getGesture (draggedGesture)->getHighlightColour());
-		g.drawRoundedRectangle(getLocalBounds().reduced (1.0f).toFloat(), 10.0f, 3.0f);
+		g.drawRoundedRectangle(getLocalBounds().toFloat().reduced (1.0f), 10.0f, 3.0f);
     }
 
     else //if (highlighted)
@@ -372,16 +400,16 @@ void EmptyGestureSlotComponent::resized()
 {
 }
 
-void EmptyGestureSlotComponent::mouseEnter (const MouseEvent &event)
+void EmptyGestureSlotComponent::mouseEnter (const MouseEvent &)
 {
     highlighted = true;
     repaint();
 }
-void EmptyGestureSlotComponent::mouseExit (const MouseEvent &event)
+void EmptyGestureSlotComponent::mouseExit (const MouseEvent &)
 {
     highlighted = false;
     repaint();
 }
-void EmptyGestureSlotComponent::mouseDrag (const MouseEvent &event)
+void EmptyGestureSlotComponent::mouseDrag (const MouseEvent &)
 {
 }

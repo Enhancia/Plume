@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
-#include "Gesture/Gesture.h"
+#include "../../JuceLibraryCode/JuceHeader.h"
+#include "Gesture.h"
 
 /**
  *  \class Vibrato Vibrato.h
@@ -25,35 +25,43 @@ class Vibrato : public Gesture
 {
 public:
     Vibrato (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
-             float val = 400.0f, float thresh = 40.0f, String description = "");
+             float val = PLUME::gesture::VIBRATO_RANGE_DEFAULT,
+             float thresh = PLUME::gesture::VIBRATO_THRESH_DEFAULT, String description = "", const int midiParameterId = -1);
     ~Vibrato();
     
     //==============================================================================
     void addGestureMidi(MidiBuffer& midiMessages, MidiBuffer& plumeBuffer) override;
-    int getMidiValue () override;
+    int computeMidiValue () override;
+    void updateMidiValue() override;
     
-    void updateMappedParameters() override;
-    float getValueForMappedParameter (Range<float> paramRange, bool reversed) override;
+    bool shouldUpdateParameters() override;
+    float computeMappedParameterValue (Range<float> paramRange, bool reversed) override;
     
     //==============================================================================
     void setIntensityValue (float newVal);
-    float& getIntensityReference();
+    std::atomic<float>& getIntensityReference();
     void updateValue (const Array<float> rawData) override;
     
     //==============================================================================
     bool getSend(); /**< \brief Getter for the send boolean value */
     
     //==============================================================================
-    RangedAudioParameter& gain; /**< Sensibility of the vibrato. From 0.0f (no effect) to 500.0f (maximum effect)*/
-	RangedAudioParameter& threshold; /**< threshold used to trigger the effect*/
-	RangedAudioParameter& intensity; /**< Current intensity of the vibrato. The effect is triggered if this is above the threshold parameter*/
+    float gain; /**< Sensibility of the vibrato. From 0.0f (no effect) to 500.0f (maximum effect)*/
+    float threshold; /**< threshold used to trigger the effect*/
     
+    NormalisableRange<float> gainDisplayRange;
+    NormalisableRange<float> thresholdDisplayRange;
+    NormalisableRange<float> intensityRange;
+
 private:
-    float* intensityRef; /**< Value that will be checked to trigger the vibrato if higher than the treshold */
+    void updateSendLogic();
+    std::atomic<float> intensity; /**< Current intensity of the vibrato. The effect is triggered if this is above the threshold parameter*/
     
     // Booleans that represent the state of the vibrato
     bool send = false; /**< \brief Boolean to know if the gesture should send midi */
     bool vibLast = false; /**< \brief Boolean to know if the gesture sent midi in the last buffer*/
+    float lastIntensity = -1.0f;
+    bool wasBeingChangedIntensity = false;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Vibrato)

@@ -11,7 +11,7 @@
 #pragma once
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
+#include "../../Common/PlumeCommon.h"
 
 //==============================================================================
 /*
@@ -35,7 +35,7 @@ public:
 private:
     //==============================================================================
     bool alerted = false;
-    ScopedPointer<TextEditor> textEditor;
+    std::unique_ptr<TextEditor> textEditor;
     Button& hideInfoButton;
     
     //==============================================================================

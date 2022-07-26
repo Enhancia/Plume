@@ -11,8 +11,8 @@
 #pragma once
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
-#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
-#include "Common/PlumeCommon.h"
+#include "../../Common/PlumeCommon.h"
+#include "../../Ui/LookAndFeel/PlumeLookAndFeel.h"
 
 //==============================================================================
 /*
@@ -23,7 +23,7 @@ public:
     static constexpr int BAR_H = 10;
     
     //==============================================================================
-    PlumeProgressBar (float& prog, String& message,
+    PlumeProgressBar (std::atomic<float>& prog, String& message,
                       const String prefix = "", const String finish = "Finished Scanning");
     ~PlumeProgressBar();
 
@@ -31,12 +31,16 @@ public:
     void paint (Graphics&) override;
     void resized() override;
 
+    //==============================================================================
+    void setShouldDisplayProgress (const bool shouldDisplay);
+
 private:
     //==============================================================================
-    float& progress;
+    std::atomic<float>& progress;
     String& progressMessage;
     const String messagePrefix;
     const String finishMessage;
+    bool showProgress = false;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlumeProgressBar)

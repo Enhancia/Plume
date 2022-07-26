@@ -12,11 +12,14 @@
 
 #include "../../JuceLibraryCode/JuceHeader.h"
 
-#include "Common/PlumeCommon.h"
+#include "../Common/PlumeCommon.h"
 
-#include "Gesture/GestureArray.h"
-#include "Wrapper/WrapperEditor.h"
+#include "../Gesture/GestureArray.h"
+#include "WrapperEditor.h"
+#include "ScanHandler.h"
 
+
+class PlumeProcessor;
 
 /**
  *  \class PluginWrapper PluginWrapper.h
@@ -26,8 +29,6 @@
  *  The class holds pointers to a wrapperProcessor, an AudioPluginInstance and a WrapperEditorWindow.
  *  It can be used to wrap a plugin, unwrap it, create or destroy its editor.
  */
-class PlumeProcessor;
-
 class PluginWrapper : public AudioProcessorParameter::Listener,
                       public ChangeBroadcaster
 {
@@ -51,15 +52,18 @@ public:
     //==============================================================================
     bool wrapPlugin (PluginDescription& description);
     bool wrapPlugin (int pluginMenuId);
-    void unwrapPlugin();
+    void unwrapPlugin (bool clearGestureParameters = true);
+    void unwrapPluginDelayed (const unsigned int delay = 1000, bool clearGestureParameters = true);
     bool rewrapPlugin (PluginDescription& description);
     bool rewrapPlugin (int pluginMenuId);
     bool isWrapping();
     
     //==============================================================================
-    void scanAllPluginsInDirectories (bool dontRescanIfAlreadyInList, bool ignoreBlackList = false);
+    void startScanProcess();
     PluginDirectoryScanner* getDirectoryScannerForFormat (int formatToScan);
     void savePluginListToFile();
+    void removeNonInstrumentsFromList();
+    void resetDeadsManPedalFile();
     
     AudioPluginFormat* getPluginFormat (File pluginFile);
     
@@ -70,6 +74,9 @@ public:
     
     void addPluginsToMenu (PopupMenu& menu, KnownPluginList::SortMethod sort);
     KnownPluginList& getList();
+    ScanHandler& getScanner();
+    void handleScanFinished();
+    void blacklistCrashedPlugin();
     
     //==============================================================================
     void createWrapperEditor (const Component* componentWhichWindowToAttachTo);
@@ -98,35 +105,44 @@ public:
     void setDefaultPathUsage (bool shouldUseDefaultPaths);
     void setCustomPathUsage (bool shouldUseCustomPath);
     void setAuUsage (bool shouldUseAudioUnits);
+    bool usesDefaultPaths();
+    bool usesCustomPaths();
+    bool usesAudioUnits();
     
 private:
     //==============================================================================
-    Array<File*> createFileList();
-    PluginDescription* getDescriptionToWrap (const PluginDescription& description);
+    Array<File> createFileList();
+    std::unique_ptr<PluginDescription> getDescriptionToWrap (const PluginDescription& description);
     void loadPluginListFromFile();
+    File getOrCreatePluginListFile();
+    File getOrCreateDeadsManPedalFile();
     
     //==============================================================================
     bool hasWrappedInstance;
     bool hasOpenedEditor;
     bool useDefaultPaths = true;
-    bool useCustomPaths = true;
+    bool useCustomPaths = false;
   #if JUCE_MAC
-    bool useAudioUnits = true;
+    bool useAudioUnits = false;
   #endif
+
     float scanProgress = 0.0f;
     String pluginBeingScanned;
     
     //==============================================================================
-    ScopedPointer<WrapperProcessor> wrapperProcessor;
-    ScopedPointer<AudioPluginInstance> wrappedInstance;
-    ScopedPointer<WrapperEditorWindow> wrapperEditor;
-    ScopedPointer<AudioProcessorEditor> wrapEd;
-    ScopedPointer<PlumeProgressBar> bar;
+    std::unique_ptr<WrapperProcessor> wrapperProcessor;
+    std::unique_ptr<AudioPluginInstance> wrappedInstance;
+    std::unique_ptr<AudioPluginInstance> wrappedInstanceToDelete;
+    std::unique_ptr<WrapperEditorWindow> wrapperEditor;
+    std::unique_ptr<AudioProcessorEditor> wrapEd;
 
     //==============================================================================
     ValueTree customDirectories;
-    ScopedPointer<KnownPluginList> pluginList;
-    ScopedPointer<AudioPluginFormatManager> formatManager;
+    std::unique_ptr<KnownPluginList> pluginList;
+    CriticalSection pluginListLock;
+
+    std::unique_ptr<AudioPluginFormatManager> formatManager;
+    std::unique_ptr<ScanHandler> scanHandler;
  
     PlumeProcessor& owner;
     GestureArray& gestArray;

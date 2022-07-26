@@ -10,43 +10,26 @@
 
 #include "PitchBend.h"
 
-#define rangeLeftStart rangeLeftLow.convertFrom0to1 (rangeLeftLow.getValue())
-#define rangeLeftEnd rangeLeftHigh.convertFrom0to1 (rangeLeftHigh.getValue())
-#define rangeRightStart rangeRightLow.convertFrom0to1 (rangeRightLow.getValue())
-#define rangeRightEnd rangeRightHigh.convertFrom0to1 (rangeRightHigh.getValue())
+#define rangeLeftStart  pitchBendDisplayRange.convertFrom0to1 (rangeLeftLow)
+#define rangeLeftEnd    pitchBendDisplayRange.convertFrom0to1 (rangeLeftHigh)
+#define rangeRightStart pitchBendDisplayRange.convertFrom0to1 (rangeRightLow)
+#define rangeRightEnd   pitchBendDisplayRange.convertFrom0to1 (rangeRightHigh)
 
 using namespace PLUME;
 
 PitchBend::PitchBend (String gestName, int gestId, AudioProcessorValueTreeState& plumeParameters,
-                      float leftLow, float leftHigh, float rightLow, float rightHigh, String description)
+                      float leftLow, float leftHigh, float rightLow, float rightHigh, String description, const int midiParameterId)
                       
     : Gesture (gestName, Gesture::pitchBend, gestId,
-               NormalisableRange<float> (PITCHBEND_MIN, PITCHBEND_MAX, 0.1f),
-               plumeParameters, description),
-    
-      rangeLeftLow   (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::bend_leftLow]))),
-      rangeLeftHigh  (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::bend_leftHigh]))),
-      rangeRightLow  (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::bend_rightLow]))),
-      rangeRightHigh (*(plumeParameters.getParameter (String (gestId) + param::paramIds[param::bend_rightHigh])))
+               NormalisableRange<float> (PLUME::gesture::PITCHBEND_MIN, PLUME::gesture::PITCHBEND_MAX, 0.1f),
+               plumeParameters, param::valuesIds[param::roll_value], description, midiParameterId),
+      pitchBendDisplayRange (PLUME::UI::PITCHBEND_DISPLAY_MIN, PLUME::UI::PITCHBEND_DISPLAY_MAX, 1.0f)
 {
     midiType = Gesture::pitch;
-	midiOnParameterOff.setValueNotifyingHost(1.0f);
-    
-    rangeLeftLow.beginChangeGesture();
-    rangeLeftLow.setValueNotifyingHost   (rangeLeftLow.convertTo0to1 (leftLow));
-    rangeLeftLow.endChangeGesture();
-    
-    rangeLeftHigh.beginChangeGesture();
-	rangeLeftHigh.setValueNotifyingHost  (rangeLeftHigh.convertTo0to1 (leftHigh));
-    rangeLeftHigh.endChangeGesture();
-	
-	rangeRightLow.beginChangeGesture();
-	rangeRightLow.setValueNotifyingHost  (rangeRightLow.convertTo0to1 (rightLow));
-    rangeRightLow.endChangeGesture();
-    
-    rangeRightHigh.beginChangeGesture();
-	rangeRightHigh.setValueNotifyingHost (rangeRightHigh.convertTo0to1 (rightHigh));
-    rangeRightHigh.endChangeGesture();
+    rangeLeftLow   = pitchBendDisplayRange.convertTo0to1 (leftLow);
+	rangeLeftHigh  = pitchBendDisplayRange.convertTo0to1 (leftHigh);
+	rangeRightLow  = pitchBendDisplayRange.convertTo0to1 (rightLow);
+	rangeRightHigh = pitchBendDisplayRange.convertTo0to1 (rightHigh);
 }
 
 PitchBend::~PitchBend()
@@ -54,23 +37,31 @@ PitchBend::~PitchBend()
 }
     
 //==============================================================================
-void PitchBend::addGestureMidi (MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
+void PitchBend::addGestureMidi(MidiBuffer& midiMessages, MidiBuffer& plumeBuffer)
 {
-    if (on.getValue() == 0.0f) return; // does nothing if the gesture is inactive or mapped
-    
-    int pbVal = getMidiValue();
+    if (!isActive()) return; // does nothing if the gesture is inactive or mapped
 
-	if (pbVal == lastMidi) return; // Does nothing if the midi value did not change
-
-    if (send == true)
+    if (send || currentMidi != computedMidi)
     {
         // Creates the pitchwheel message
-        addRightMidiSignalToBuffer (midiMessages, plumeBuffer, 1);
+        addRightMidiSignalToBuffer(midiMessages, plumeBuffer, 1);
+
+        //if (lastMidi == (midiType == Gesture::pitch) ? 8192 : 64) pbLast = false;
     }
 }
 
-int PitchBend::getMidiValue()
+void PitchBend::updateMidiValue()
 {
+    Gesture::updateMidiValue();
+
+    if (currentMidi != computedMidi) send = true;
+}
+
+int PitchBend::computeMidiValue()
+{
+    const int midiRangeHigh   = (midiType == Gesture::pitch) ? 16383 : 127;
+    const int midiRangeMiddle = (midiType == Gesture::pitch) ? 8192 : 64;
+
     // Right side
     if (getGestureValue() >= rangeRightStart && getGestureValue() < 140.0f)
     {
@@ -78,23 +69,25 @@ int PitchBend::getMidiValue()
         pbLast = true;
         
         // if the range is empty just returns the max value
-        if (rangeRightLow.getValue() == rangeRightHigh.getValue()) return 16383;
+        if (rangeRightLow == rangeRightHigh) return midiRangeMiddle;
         
         // Normal case, maps to an interval from neutral to max pitch
-        return Gesture::map (getGestureValue(), rangeRightStart, rangeRightEnd, 8192, 16383);
+        if (!getMidiReverse()) return Gesture::map (getGestureValue(), rangeRightStart, rangeRightEnd, midiRangeMiddle, midiRangeHigh);
+        else   return midiRangeHigh - Gesture::map (getGestureValue(), rangeRightStart, rangeRightEnd, midiRangeMiddle, midiRangeHigh);
     }
     
     // Left side
-    else if (getGestureValue() < rangeLeftEnd && getGestureValue() > -140.0f)
+    else if (getGestureValue() <= rangeLeftEnd && getGestureValue() > -140.0f)
     {
         send = true;
         pbLast = true;
         
         // if the range is empty just returns the min value
-        if (rangeLeftLow.getValue() == rangeLeftHigh.getValue()) return 0;
+        if (rangeLeftLow == rangeLeftHigh) return 0;
         
         // Normal case, maps to an interval from min pitch to neutral
-        return Gesture::map (getGestureValue(), rangeLeftStart, rangeLeftEnd, 0, 8191);
+        if (!getMidiReverse()) return Gesture::map (getGestureValue(), rangeLeftStart, rangeLeftEnd, 0, midiRangeMiddle);
+        else   return midiRangeHigh - Gesture::map (getGestureValue(), rangeLeftStart, rangeLeftEnd, 0, midiRangeMiddle);
     }
     
     // If back to central zone
@@ -102,99 +95,99 @@ int PitchBend::getMidiValue()
     {
         send = true;
         pbLast = false;
-        return 8192;
+        return midiRangeMiddle;
     }
-    
-    send = false;
-    return 8192;
+    else
+    {
+        send = false;
+        return midiRangeMiddle;
+    }
 }
 
 bool PitchBend::shouldSend()
 {
-    const float val = getGestureValue();
+    const float val = static_cast<float> (currentMidi);
 
-    if ((val >= rangeRightStart && val < 140.0f) || // Right side
-        (val < rangeLeftEnd && val > -140.0f) || // Left side
-        (val > rangeLeftEnd && val < rangeRightStart && pbLast == true)) // Back to center
-    {
-        return true;
-    }
-    
-    return false;
+    return ((val >= rangeRightStart && val < 140.0f) || // Right side
+            (val <= rangeLeftEnd && val > -140.0f) || // Left side
+            (val > rangeLeftEnd && val < rangeRightStart && pbLast == true)); // Back to center
 }
    
-void PitchBend::updateMappedParameters()
+bool PitchBend::shouldUpdateParameters()
 {
-    if (on.getValue() == 0.0f) return; // does nothing if the gesture is inactive
+    if (!isActive()) return false; // does nothing if the gesture is inactive
     
-    bool pbLastTemp = pbLast;
-    
-    // Goes through the parameterArray to update each value
-    for (auto* param : parameterArray)
-    {
-        pbLast = pbLastTemp;
-		    
-        if (getValueForMappedParameter(param->range, param->reversed) != param->parameter.getValue() && send == true)
-        {
-            param->parameter.setValueNotifyingHost (getValueForMappedParameter(param->range, param->reversed));
-        }
-    }
+    updateSendLogic();
+
+    return (send);
 }
 
-float PitchBend::getValueForMappedParameter (Range<float> paramRange, bool reversed = false)
+void PitchBend::updateSendLogic()
 {
+    const float gestureValue = getGestureValue();
+
     // Right side
-    if (getGestureValue() >= rangeRightStart && getGestureValue() < 140.0f)
+    if (gestureValue >= rangeRightStart && gestureValue < 140.0f)
     {
         send = true;
 		pbLast = true;
-		
-		// if the range is empty just returns the max value
-        if (rangeRightLow.getValue() == rangeRightHigh.getValue()) return reversed ? paramRange.getStart() : paramRange.getEnd();
-        
+    }
+    
+    // Left side
+    else if (gestureValue < rangeLeftEnd && gestureValue > -140.0f)
+    {
+        send = true;
+        pbLast = true;
+    }
+    
+    // If back to central zone
+    else if (gestureValue > rangeLeftEnd && gestureValue < rangeRightStart && pbLast == true)
+    {
+        send = true;
+        pbLast = false;
+    }
+    
+    else
+        send = false;
+}
+
+float PitchBend::computeMappedParameterValue (Range<float> paramRange, bool reversed = false)
+{
+    const float gestureValue = getGestureValue();
+    
+    // Right side
+    if (gestureValue >= rangeRightStart && gestureValue < 140.0f)
+    {
         // Normal case, maps to an interval from neutral to max
-        if (!reversed) return (Gesture::mapParameter (getGestureValue(), rangeRightStart, rangeRightEnd,
+        if (!reversed) return (Gesture::mapParameter (gestureValue, rangeRightStart, rangeRightEnd,
                                                       Range<float> (paramRange.getStart() + paramRange.getLength()/2,
                                                                     paramRange.getEnd()),
                                                       false));
         // reversed
-        else           return (Gesture::mapParameter (getGestureValue(), rangeRightStart, rangeRightEnd,
+        else           return (Gesture::mapParameter (gestureValue, rangeRightStart, rangeRightEnd,
                                                       Range<float> (paramRange.getStart(),
                                                                     paramRange.getStart() + paramRange.getLength()/2),
                                                       true));
     }
     
     // Left side
-    else if (getGestureValue() < rangeLeftEnd && getGestureValue() > -140.0f)
+    else if (gestureValue < rangeLeftEnd && gestureValue > -140.0f)
     {
-        send = true;
-        pbLast = true;
-        
         // if the range is empty just returns the min value
-        if (rangeLeftLow.getValue() == rangeLeftHigh.getValue()) return reversed ? paramRange.getEnd() : paramRange.getStart();
+        if (rangeLeftLow == rangeLeftHigh) return reversed ? paramRange.getEnd() : paramRange.getStart();
         
         // Normal case, maps to an interval from min to neutral
-        if (!reversed) return (Gesture::mapParameter (getGestureValue(), rangeLeftStart, rangeLeftEnd,
+        if (!reversed) return (Gesture::mapParameter (gestureValue, rangeLeftStart, rangeLeftEnd,
                                                       Range<float> (paramRange.getStart(),
                                                                     paramRange.getStart() + paramRange.getLength()/2),
                                                       false));
         // reversed
-        else           return (Gesture::mapParameter (getGestureValue(), rangeLeftStart, rangeLeftEnd,
+        else           return (Gesture::mapParameter (gestureValue, rangeLeftStart, rangeLeftEnd,
                                                       Range<float> (paramRange.getStart() + paramRange.getLength()/2,
                                                                     paramRange.getEnd()),
                                                       true));
     }
-    
-    // If back to central zone
-    else if (getGestureValue() > rangeLeftEnd && getGestureValue() < rangeRightStart && pbLast == true)
-    {
-        send = true;
-        pbLast = false;
-        
-        return paramRange.getStart() + paramRange.getLength()/2;
-    }
-    
-    send = false;
+
     return paramRange.getStart() + paramRange.getLength()/2;
 }
 
@@ -207,9 +200,8 @@ bool PitchBend::getSend()
 //==============================================================================
 void PitchBend::updateValue (const Array<float> rawData)
 {
-    setGestureValue (-rawData[5]);
+    setGestureValue (rawData[PLUME::data::roll]);
 }
-
 
 void PitchBend::setActive (bool shouldBeOn)
 {

@@ -8,62 +8,94 @@
   ==============================================================================
 */
 
-#include "Plugin/PluginProcessor.h"
-#include "Plugin/PluginEditor.h"
+#include "PluginProcessor.h"
+#include "PluginEditor.h"
 
 //==============================================================================
 PlumeProcessor::PlumeProcessor()
-#ifndef JucePlugin_PreferredChannelConfigurations
      : AudioProcessor (BusesProperties()
-                       .withInput  ("Input",  AudioChannelSet::stereo(), true)
-                       .withOutput ("Output", AudioChannelSet::stereo(), true)
+                       //.withInput ("Main Inout", AudioChannelSet::stereo(), false)
+                       .withOutput ("Main Output", AudioChannelSet::stereo(), true)
                        )
-#endif
-       , parameters (*this, nullptr /*, PLUME::parametersIdentifier, {}*/)
+       , parameters (*this, nullptr, "PARAMETERS", initializeParameters())
 {
-    TRACE_IN;
+    PluginHostType pluginHostType;
     
+    if (pluginHostType.getPluginLoadedAs() ==  AudioProcessor::wrapperType_Standalone)
+    {
+        standalonePlayHead = std::make_unique<PlumeStandalonePlayHead> ();
+    }
+
     // Logger
-    Time t;
-    plumeLogger = FileLogger::createDefaultAppLogger ("Enhancia/Plume/Logs/",
-                                                      "plumeLog.txt",
-                                                      "Plume Log | Host application : "
-                                                      + File::getSpecialLocation (File::hostApplicationPath)
-                                                            .getFullPathName()
-                                                      + " | OS :"
+    plumeLogger.reset (FileLogger::createDefaultAppLogger (
                                                       #if JUCE_MAC
-                                                        " MAC "
+                                                        "Enhancia/Plume/",
                                                       #elif JUCE_WINDOWS
-                                                        " Windows "
+                                                        "Enhancia/Plume/Logs/",
                                                       #endif
-                                                      + " | Plume v" + JucePlugin_VersionString + " \n");
+                                                      "plumeLog.txt",
+                                                      "[Plume Log Entry]"
+                                                      "\n | Host application : id=" + String (pluginHostType.type)
+                                                      + " path=" + pluginHostType.getHostPath()
+                                                      + "\n | OS : " + SystemStats::getOperatingSystemName()
+                                                      + "\n | Plume v" + JucePlugin_VersionString
+                                                      + " (formatId=" + String (pluginHostType.getPluginLoadedAs()) + ")\n"));
     
-    Logger::setCurrentLogger (plumeLogger);
+    Logger::setCurrentLogger (plumeLogger.get());
     
+    PLUME::nbInstance = PLUME::nbInstance + 1;
+
     // Parameters
     initializeParameters();
     initializeSettings();
+    initializeParamSequences();
     
     // Objects
-    dataReader = new DataReader();
-    gestureArray = new GestureArray (*dataReader, parameters);
-    wrapper = new PluginWrapper (*this, *gestureArray, parameters.state.getChildWithName(PLUME::treeId::general)
-		                                                         .getChildWithName(PLUME::treeId::pluginDirs));
-    presetHandler = new PresetHandler (parameters.state.getChildWithName (PLUME::treeId::general)
-		                                               .getChildWithName (PLUME::treeId::presetDir));
+    dataReader.reset (new DataReader());
+    gestureArray.reset (new GestureArray (*this, *dataReader, parameters, getLastArmRef()));
+    wrapper.reset (new PluginWrapper (*this, *gestureArray, parameters.state.getChildWithName(PLUME::treeId::general)
+		                                                         .getChildWithName(PLUME::treeId::pluginDirs)));
+    presetHandler.reset (new PresetHandler (parameters.state.getChildWithName (PLUME::treeId::general)
+		                                               .getChildWithName (PLUME::treeId::presetDir)));
+    updater.reset (new PlumeUpdater());
     
-    dataReader->addChangeListener (gestureArray);
+    dataReader->addChangeListener (gestureArray.get());
+
+    detectPlumeCrashFromPreviousSession();
 }
 
 PlumeProcessor::~PlumeProcessor()
 {
-    TRACE_IN;
+    PLUME::log::writeToLog ("Removing Plume instance.", PLUME::log::LogCategory::general);
+
+    dataReader->removeChangeListener(gestureArray.get());
     dataReader->connectionLost();
-    dataReader->removeChangeListener(gestureArray);
     dataReader = nullptr;
+    
     gestureArray = nullptr;
     wrapper = nullptr;
+    updater = nullptr;
+    presetHandler = nullptr;
+
+    removeLogger();
     
+    if(PLUME::nbInstance>0)
+    {
+        PLUME::nbInstance = PLUME::nbInstance - 1;
+        
+        if (PLUME::nbInstance == 0 && !plumeCrashed)
+        {
+            crashFile.deleteFile();
+        }
+    }
+
+  #if JUCE_MAC
+    //MessageManager::getInstance()->runDispatchLoopUntil (1000);
+  #endif
+}
+
+void PlumeProcessor::removeLogger()
+{
     Logger::setCurrentLogger (nullptr);
     plumeLogger = nullptr;
 }
@@ -85,56 +117,52 @@ void PlumeProcessor::releaseResources()
     }
 }
 
-#ifndef JucePlugin_PreferredChannelConfigurations
 bool PlumeProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
-  #if JucePlugin_IsMidiEffect
-    ignoreUnused (layouts);
-    return true;
-  #else
-    // This is the place where you check if the layout is supported.
-    // In this template code we only support mono or stereo.
-    if (layouts.getMainOutputChannelSet() != AudioChannelSet::mono()
-     && layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
-        return false;
-
-    // This checks if the input layout matches the output layout
-   #if ! JucePlugin_IsSynth
-    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
-        return false;
-   #endif
-
-    return true;
-  #endif
+    if (wrapper->isWrapping())
+    {
+        return wrapper->getWrapperProcessor().isBusesLayoutSupported (layouts);
+    }
+    
+    return (layouts.getMainOutputChannelSet() == AudioChannelSet::mono()
+                || layouts.getMainOutputChannelSet() == AudioChannelSet::stereo());
 }
-#endif
 
 void PlumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {   
     MidiBuffer plumeBuffer;
-    /* 
-    if (auto* pHead = getPlayHead())
-    {
-		AudioPlayHead::CurrentPositionInfo pos;
 
-		if (pHead->getCurrentPosition(pos))
-		{
-			DBG ("Playing ? " << String(int(pos.isPlaying)));
-			//Logger::writeToLog("Playing ? " + String(int(pos.isPlaying)));
-		}
-    }
-    */
+    checkAndUpdateRecordingStatus();
+
+    filterInputMidi (midiMessages);
+    
+    //checkForSignedMidi (midiMessages);
     
     // Adds the gesture's MIDI messages to the buffer, and changes parameters if needed
-    gestureArray->process (midiMessages, plumeBuffer);
-        
+    const int armValue = static_cast<int> (parameters.getParameter ("track_arm")
+                             ->convertFrom0to1 (parameters.getParameter ("track_arm")
+                                                          ->getValue()));
+    lastArm = (armValue == static_cast<int> (PLUME::param::armed));
+
+    // Adds the gesture's MIDI messages to the buffer, and changes parameters if needed
+    if (!isDetectingAuthSequence)
+        gestureArray->process (midiMessages, plumeBuffer);
+    
     // if wrapped plugin, lets the wrapped plugin process all MIDI into sound
-    if (wrapper->isWrapping())
+    if (wrapper->isWrapping() && !presetIsLocked)
     {
+        // Sets playhead from the DAW if plugin format, internal otherwise
+        if (standalonePlayHead)
+        {
+            setPlayHead (standalonePlayHead.get());
+        }
+
+        wrapper->getWrapperProcessor().setPlayHead (getPlayHead());
+        
         // Calls the wrapper processor's processBlock method
         if (!(wrapper->getWrapperProcessor().isSuspended()))
         {
-            wrapper->getWrapperProcessor().processBlock(buffer, midiMessages);
+            wrapper->getWrapperProcessor().processBlock (buffer, midiMessages);
         }
     }
     
@@ -150,7 +178,7 @@ PluginWrapper& PlumeProcessor::getWrapper()
 
 DataReader* PlumeProcessor::getDataReader()
 {
-    return dataReader;
+    return dataReader.get();
 }
 
 GestureArray& PlumeProcessor::getGestureArray()
@@ -163,10 +191,19 @@ AudioProcessorValueTreeState& PlumeProcessor::getParameterTree()
     return parameters;
 }
 
-
 PresetHandler& PlumeProcessor::getPresetHandler()
 {
     return *presetHandler;
+}
+
+PlumeUpdater& PlumeProcessor::getUpdater()
+{
+    return *updater;
+}
+
+PlumeStandalonePlayHead* PlumeProcessor::getStandalonePlayHead()
+{
+    return standalonePlayHead.get();
 }
 
 //==============================================================================
@@ -177,14 +214,26 @@ bool PlumeProcessor::hasEditor() const
 
 AudioProcessorEditor* PlumeProcessor::createEditor()
 {
-    return new PlumeEditor (*this);
+    auto* editor = new PlumeEditor (*this);
+
+    if (wrapperType == wrapperType_Standalone)
+    {
+        if (TopLevelWindow::getNumTopLevelWindows() == 1)
+        {
+            auto* plumeWindow = TopLevelWindow::getTopLevelWindow (0);
+
+            plumeWindow->setLookAndFeel (&editor->getLookAndFeel());
+            plumeWindow->setColour (ResizableWindow::backgroundColourId, getPlumeColour (popupMenuBackground));
+        }
+    }
+
+    return editor;
 }
 
 //==============================================================================
 void PlumeProcessor::getStateInformation (MemoryBlock& destData)
 {
-    TRACE_IN;
-    ScopedPointer<XmlElement> wrapperData = new XmlElement ("PLUME");
+    std::unique_ptr<XmlElement> wrapperData (new XmlElement ("PLUME"));
     
     // Adds plugin and gestures data, and saves them in a binary file
     createGeneralXml (*wrapperData);
@@ -196,12 +245,11 @@ void PlumeProcessor::getStateInformation (MemoryBlock& destData)
     wrapperData->deleteAllChildElements();
 }
 
-void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
+void PlumeProcessor::setStateInformation (const void* dataToSet, int sizeInBytes)
 {
     suspendProcessing (true);
     
-    TRACE_IN;
-    ScopedPointer<XmlElement> wrapperData = getXmlFromBinary (data, sizeInBytes);
+    	std::unique_ptr<XmlElement> wrapperData = getXmlFromBinary (dataToSet, sizeInBytes);
     
 	if (wrapperData == nullptr)
 	{
@@ -214,10 +262,11 @@ void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
 	bool notifyEditor = false;
 	
 	// Plugin configuration loading
-    if (wrapperData->getChildByName ("GENERAL") != nullptr)
+    if (wrapperData->getChildByName ("PLUME") != nullptr)
     {
 		PLUME::UI::ANIMATE_UI_FLAG = false;
         parameters.replaceState (ValueTree::fromXml (*wrapperData->getChildByName ("PLUME")));
+        presetHandler->loadInfoFromTreeState (parameters.state.getChildWithName (PLUME::treeId::general));
         notifyEditor = true;
     }
     
@@ -247,14 +296,15 @@ void PlumeProcessor::setStateInformation (const void* data, int sizeInBytes)
 }
 
 void PlumeProcessor::createGeneralXml(XmlElement& wrapperData)
-{
-    wrapperData.addChildElement (parameters.state.createXml());
+{    
+    presetHandler->saveInfoToTreeState (parameters);
+	wrapperData.addChildElement (new XmlElement (*parameters.state.createXml()));
 }
 
 void PlumeProcessor::createPluginXml(XmlElement& wrapperData)
 {
     // Creates the child Xml and stores hasWrappedPlugin bool value
-    ScopedPointer<XmlElement> pluginData = new XmlElement ("WRAPPED_PLUGIN");
+    std::unique_ptr<XmlElement> pluginData (new XmlElement ("WRAPPED_PLUGIN"));
     
     pluginData->setAttribute ("hasWrappedPlugin", wrapper->isWrapping());
     
@@ -264,7 +314,7 @@ void PlumeProcessor::createPluginXml(XmlElement& wrapperData)
 	        // Saves the description of current wrapped plugin
 	        PluginDescription pd;
 	        wrapper->fillInPluginDescription (pd);
-	        pluginData->addChildElement (pd.createXml());
+	        pluginData->addChildElement (new XmlElement (*pd.createXml()));
 	    }
 	    
 	    {
@@ -282,7 +332,7 @@ void PlumeProcessor::createPluginXml(XmlElement& wrapperData)
 
 void PlumeProcessor::createGestureXml(XmlElement& wrapperData)
 {
-    ScopedPointer<XmlElement> gesturesData = new XmlElement ("GESTURES");
+    std::unique_ptr<XmlElement> gesturesData (new XmlElement ("GESTURES"));
     
 	gestureArray->createGestureXml(*gesturesData);
 	wrapperData.addChildElement (new XmlElement (*gesturesData));
@@ -306,57 +356,6 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
                 else                       wrapper->wrapPlugin (pd);
             }
 			
-            /*
-            // First searches the direct path
-            if (!(pd.fileOrIdentifier.isEmpty()))
-            {
-                if (wrapper->isWrapping()) requiresSearch = !(wrapper->rewrapPlugin (pd.fileOrIdentifier));
-                else                       requiresSearch = !(wrapper->wrapPlugin (pd.fileOrIdentifier));
-            }
-            // Then the directory where plume is located
-            if (requiresSearch && File (pd.fileOrIdentifier).exists())
-            {
-                File pluginDir (File::getSpecialLocation (File::currentApplicationFile).getParentDirectory());
-                String pluginToSearch (pd.name);
-                
-                if (pd.pluginFormatName.compare ("VST") == 0)
-                {
-                  #if JUCE_WINDOWS
-                    pluginToSearch += ".dll";
-                  #elif JUCE_MAC
-                    pluginToSearch += ".vst";
-                  #endif
-                }
-                else if (pd.pluginFormatName.compare ("VST3") == 0)
-                {
-                    pluginToSearch += ".vst3";
-                }
-                else if (pd.pluginFormatName.compare ("AudioUnit") == 0)
-                {
-                    pluginToSearch += ".component";
-                }
-                else if (pd.pluginFormatName.compare ("Aax") == 0)
-                {
-                    pluginToSearch += ".aax";
-                }
-                
-                Array<File> searchResult = pluginDir.findChildFiles (File::findFiles + File::ignoreHiddenFiles, true, pluginToSearch);
-                
-                if (!searchResult.isEmpty())
-                {
-                    if (wrapper->isWrapping()) wrapper->rewrapPlugin (searchResult[0].getFullPathName());
-                    else                       wrapper->wrapPlugin (searchResult[0].getFullPathName());
-                }
-                else 
-                {
-                    DBG ("Failed to find the plugin in Plume's directory.");
-                    if (wrapper->isWrapping()) wrapper->unwrapPlugin();
-                    return;
-                }
-                
-            }
-			*/
-            
         }
     }
     // If there is no plugin in the preset only unwraps
@@ -374,7 +373,9 @@ void PlumeProcessor::loadPluginXml(const XmlElement& pluginData)
 			MemoryBlock m;
 			m.fromBase64Encoding (state->getAllSubText());
 
-			wrapper->getWrapperProcessor().setStateInformation (m.getData(), (int)m.getSize());
+			wrapper->getWrapperProcessor().setStateInformation (m.getData(), static_cast<int>(m.getSize()));
+
+            if (presetHandler->currentPresetRequiresAuth()) startDetectingAuthSequence();
 		}
     }
 }
@@ -384,7 +385,7 @@ void PlumeProcessor::loadGestureXml(const XmlElement& gestureData)
     int i = 0;
     gestureArray->clearAllGestures();
     
-    forEachXmlChildElement (gestureData, gesture)
+    for (auto* gesture : gestureData.getChildIterator())
     {
 		if (i < PLUME::NUM_GEST)
 		{
@@ -410,82 +411,23 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 
 
 //==============================================================================
-void PlumeProcessor::initializeParameters()
+AudioProcessorValueTreeState::ParameterLayout PlumeProcessor::initializeParameters()
 {
     using namespace PLUME::param;
-            
-    for (int gest =0; gest < PLUME::NUM_GEST; gest++)
+    AudioProcessorValueTreeState::ParameterLayout layout;
+    
+    for (int i =0; i < PLUME::NUM_GEST*(PLUME::MAX_PARAMETER + 1); i++)
     {
-        for (int i =0; i < numParams; i++)
-        {
-            // boolean parameters
-            if (i == on || i == midi_on)
-            {
-                parameters.createAndAddParameter (std::make_unique<AudioParameterBool> (String(gest) + paramIds[i],
-                                                                                        String(gest) + paramIds[i],
-                                                                                        false));
-            }
-            // float parameters
-            else
-            {
-                NormalisableRange<float> range;
-                float defVal;
-                switch (i)
-                {
-                    case vibrato_range:
-                        range = NormalisableRange<float> (0.0f, 500.0f, 1.0f);
-                        defVal = 400.0f;
-                        break;
-			        case vibrato_thresh:
-                        range = NormalisableRange<float> (0.0f, 500.0f, 1.0f);
-                        defVal = 40.0f;
-                        break;
-                    case vibrato_intensity:
-                        range = NormalisableRange<float> (0.0f, 1000.0f, 1.0f);
-                        defVal = 0.0f;
-                        break;
-			        case bend_leftLow:
-                        range = NormalisableRange<float> (-90.0f, 90.0f, 1.0f);
-                        defVal = -50.0f;
-                        break;
-			        case bend_leftHigh:
-                        range = NormalisableRange<float> (-90.0f, 90.0f, 1.0f);
-                        defVal = -20.0f;
-                        break;
-			        case bend_rightLow:
-                        range = NormalisableRange<float> (-90.0f, 90.0f, 1.0f);
-                        defVal = 30.0f;
-                        break;
-			        case bend_rightHigh:
-                        range = NormalisableRange<float> (-90.0f, 90.0f, 1.0f);
-                        defVal = 60.0f;
-                        break;
-			        case roll_low:
-			        case tilt_low:
-                        range = NormalisableRange<float> (-90.0f, 90.0f, 1.0f);
-                        defVal = 0.0f;
-                        break;
-			        case roll_high:
-			        case tilt_high:
-                        range = NormalisableRange<float> (-90.0f, 90.0f, 1.0f);
-                        defVal = 50.0f;
-                        break;
-					case midi_cc:
-						range = NormalisableRange<float>(0.0f, 127.0f, 1.0f);
-						defVal = 1.0f;
-						break;
-			        default:
-                        range = NormalisableRange<float> (0.0f, 1.0f, 0.001f);
-                        break;
-                }
-				
-                parameters.createAndAddParameter (std::make_unique<AudioParameterFloat> (String(gest) + paramIds[i],
-                                                                                         String(gest) + paramIds[i],
-                                                                                         range,
-                                                                                         defVal));
-            }
-        }
+        layout.add (std::make_unique<PlumeParameter<AudioParameterFloat>> ("Parameter_" + String (i), PLUME::param::defaultParameterName,
+                                                           NormalisableRange<float> (0.0f, 1.0f, 0.0001f),
+                                                           0.0f));
     }
+
+    layout.add (std::make_unique<AudioParameterInt> ("track_arm",
+                                                     "track_arm",
+                                                     0, 1, 1));
+
+    return layout;
 }
 
 void PlumeProcessor::initializeSettings()
@@ -495,8 +437,15 @@ void PlumeProcessor::initializeSettings()
     parameters.state.addChild (ValueTree (general), 0, nullptr);
     
 	auto generalTree = parameters.state.getChildWithName (general);
-    generalTree.addChild (ValueTree (winW).setProperty (value, var (PLUME::UI::DEFAULT_WINDOW_WIDTH), nullptr), 0, nullptr);
-    generalTree.addChild (ValueTree (winH).setProperty (value, var (PLUME::UI::DEFAULT_WINDOW_HEIGHT), nullptr), 1, nullptr);
+    generalTree.addChild (ValueTree (winX).setProperty (value, var (-1), nullptr), 0, nullptr);
+    generalTree.addChild (ValueTree (winY).setProperty (value, var (-1), nullptr), 1, nullptr);
+    generalTree.addChild (ValueTree (winW).setProperty (value, var (PLUME::UI::DEFAULT_WINDOW_WIDTH), nullptr), 2, nullptr);
+    generalTree.addChild (ValueTree (winH).setProperty (value, var (PLUME::UI::DEFAULT_WINDOW_HEIGHT), nullptr), 3, nullptr);
+    generalTree.addChild (ValueTree (wrapped_winX).setProperty (value, var (-1), nullptr), 4, nullptr);
+    generalTree.addChild (ValueTree (wrapped_winY).setProperty (value, var (-1), nullptr), 5, nullptr);
+    generalTree.addChild (ValueTree (wrapped_winW).setProperty (value, var (-1), nullptr), 6, nullptr);
+    generalTree.addChild (ValueTree (wrapped_winH).setProperty (value, var (-1), nullptr), 7, nullptr);
+    generalTree.addChild (ValueTree (wrapped_visible).setProperty (value, var (false), nullptr), 8, nullptr);
 
   #if JUCE_WINDOWS
     generalTree.addChild (ValueTree (presetDir).setProperty (value,
@@ -508,16 +457,272 @@ void PlumeProcessor::initializeSettings()
     generalTree.addChild (ValueTree (presetDir).setProperty (value,
                                                              File::getSpecialLocation (File::userApplicationDataDirectory)
                                                                 .getFullPathName()
-                                                                + "\\Enhancia\\Plume\\Presets\\User\\",
+                                                                + "/Audio/Presets/Enhancia/Plume/User/",
                                                              nullptr), 2, nullptr);
   #endif
     
     generalTree.addChild (ValueTree (pluginDirs), 3, nullptr);
     generalTree.getChild (3).addChild (ValueTree (directory).setProperty (value, "", nullptr),
                                        0, nullptr);
+
+    generalTree.addChild (ValueTree (currentPreset).setProperty (currentPresetName, "", nullptr)
+                                                   .setProperty (currentPresetType, "", nullptr)
+                                                   .setProperty (currentPresetFile, "", nullptr),
+                          4, nullptr);
+}
+
+void PlumeProcessor::parameterValueChanged (int parameterIndex, float newValue)
+{    
+    if (wrapper->isWrapping() && parameterIndex == 127)
+    {
+        if (isDetectingAuthSequence)
+        {
+            if (isNextStepInAuthSequence (newValue))
+            {
+                stepInAuthSequence++;
+
+                if (stepInAuthSequence >= authParamSequence.size())
+                {
+                    stopAuthDetection (true);
+                }
+            }
+            else
+            {
+                stopAuthDetection (false);            
+            }
+        }
+        else if (isSendingAuthSequence && newValue == 0.0f)
+        {
+            if (stepInUnlockSequence >= unlockParamSequence.size())
+            {
+                stepInUnlockSequence = 0;
+                isSendingAuthSequence = false;
+            }
+            else
+            {   
+                Timer::callAfterDelay (10, [this]()
+                {
+                    if (auto* controlParameter = getWrapper().getWrapperProcessor().getControlParameter())
+                    {
+                        controlParameter->setValue (unlockParamSequence[stepInUnlockSequence++]);
+                    }
+                });
+            }
+        }
+    }
+}
+
+void PlumeProcessor::parameterGestureChanged (int , bool)
+{
 }
 
 void PlumeProcessor::updateTrackProperties (const AudioProcessor::TrackProperties& properties)
 {
+	ignoreUnused (properties);
     DBG ("Name : " << properties.name << " | Colour : " << properties.colour.toDisplayString(false));
+}
+
+void PlumeProcessor::detectPlumeCrashFromPreviousSession()
+{
+    setCrashFileToCurrentFormat();
+    
+    if (PLUME::file::deadMansPedal.existsAsFile() &&
+        PLUME::file::deadMansPedal.loadFileAsString().isNotEmpty() &&
+        File (PLUME::file::deadMansPedal.loadFileAsString()).exists() &&
+        Time::getCurrentTime().toMilliseconds()
+           - PLUME::file::deadMansPedal.getLastModificationTime().toMilliseconds() > 3000)
+    {
+        wrapper->getScanner().setLastCrash (PLUME::file::deadMansPedal.loadFileAsString());
+    }
+    else
+    {
+        PluginHostType currentHostType;
+
+        if (PLUME::nbInstance == 1 && !currentHostType.isBitwigStudio())
+        {
+            if (crashFile.existsAsFile())
+            {
+                //File shouldnt be here : there was a crash
+                plumeCrashed = true;
+            }
+            else
+            {
+                crashFile.create();
+            }
+        }
+    }
+}
+
+void PlumeProcessor::checkAndUpdateRecordingStatus()
+{
+    bool isRecording = false;
+
+    if (auto* currentPlayHead = getPlayHead())
+    {
+        AudioPlayHead::CurrentPositionInfo positionInfo;
+
+        if (currentPlayHead->getCurrentPosition (positionInfo))
+        {
+            // TODO change isPlaying to isRecording
+            isRecording = positionInfo.isRecording;
+
+            /*//TO DELETE
+            DBG("BPM            : " << String(positionInfo.bpm));
+            DBG("Time (s)       : " << String(positionInfo.timeInSeconds));
+            DBG("Playing        : " << (positionInfo.isPlaying ? "Y" : "N"));
+            DBG("Recording      : " << (positionInfo.isRecording ? "Y" : "N"));
+            DBG("Ppq Position   : " << String(positionInfo.ppqPosition));
+            DBG("Time (samples) : " << String(positionInfo.timeInSamples));
+            DBG("Time sig denom : " << String(positionInfo.timeSigDenominator));
+            DBG("Time sig num   : " << String(positionInfo.timeSigNumerator));
+            */
+        }
+    }
+
+    if (lastRecordingStatus != isRecording)
+    {
+        lastRecordingStatus = isRecording;
+
+        // TODO send recording status change to HUB
+        // This will allow the HUB to send the right MIDI sequence
+                //test change aftertouch seq sur enregistrement
+        if (isRecording)
+        {
+            memcpy(data, "reco", sizeof("reco"));
+            dataReader->sendString(data, 4);
+        }
+        else 
+        {
+            memcpy(data, "play", sizeof("play"));
+            dataReader->sendString(data, 4);
+        }
+    }
+}
+
+void PlumeProcessor::initializeParamSequences()
+{
+    authParamSequence.add ('P');
+    authParamSequence.add ('l');
+    authParamSequence.add ('u');
+    authParamSequence.add ('m');
+    authParamSequence.add ('e');
+}
+
+void PlumeProcessor::startDetectingAuthSequence()
+{   
+    isDetectingAuthSequence = true;
+    stepInAuthSequence = 0;
+
+    Timer::callAfterDelay (1000, [this]()
+    {
+        stopAuthDetection (false);        
+    });
+}
+
+bool PlumeProcessor::hasLastSessionCrashed()
+{
+    return plumeCrashed;
+}
+
+void PlumeProcessor::resetLastSessionCrashed()
+{
+    plumeCrashed = false;
+}
+
+void PlumeProcessor::stopAuthDetection (bool isDetectionSuccessful)
+{
+    if (isDetectingAuthSequence)
+    {    
+        isDetectingAuthSequence = false;
+        stepInAuthSequence = 0;
+
+        if (isDetectionSuccessful)
+        {
+            startSendingUnlockParamSequence();
+        }
+    }
+}
+
+void PlumeProcessor::filterInputMidi (MidiBuffer& midiMessages)
+{
+    if (!midiMessages.isEmpty())
+    {
+        MidiBuffer filteredBuffer;
+        
+        for (const MidiMessageMetadata metadata : midiMessages)
+        {
+            if (messageShouldBeKept (metadata.getMessage()))
+            {
+                filteredBuffer.addEvent (metadata.getMessage(), metadata.samplePosition);
+            }
+        }
+
+        midiMessages.swapWith (filteredBuffer);
+    }
+}
+
+bool PlumeProcessor::messageShouldBeKept (const MidiMessage& midiMessage)
+{
+    if ((midiMessage.isPitchWheel() && gestureArray->isPitchInUse()) ||
+        (midiMessage.isController() && midiMessage.getControllerNumber() < 120
+                                    && gestureArray->isCCInUse (midiMessage.getControllerNumber())))
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool& PlumeProcessor::getLastArmRef()
+{
+    return lastArm;
+}
+
+void PlumeProcessor::startSendingUnlockParamSequence()
+{
+    stepInUnlockSequence = 0;
+    isSendingAuthSequence = true;
+    unlockParamSequence.clear();
+
+    for (auto characterToEncode : presetHandler->getCurrentPresetName())
+    {
+        unlockParamSequence.add (static_cast<int>(characterToEncode)/127.0f);
+    }
+
+    //sends first value
+    if (wrapper->isWrapping())
+    {
+        if (auto* controlParameter = getWrapper().getWrapperProcessor().getControlParameter())
+        {
+            controlParameter->setValue (unlockParamSequence[stepInUnlockSequence++]);
+        }
+    }
+}
+
+bool PlumeProcessor::isNextStepInAuthSequence (float receivedValue)
+{
+    const char authChar = static_cast<char>(receivedValue * 127);
+    const bool isnextstep = (authParamSequence[stepInAuthSequence] == authChar);
+
+    return isnextstep;
+}
+
+
+void PlumeProcessor::setCrashFileToCurrentFormat()
+{
+    const PluginHostType currentHostType;
+    const auto currentWrapperType = currentHostType.getPluginLoadedAs();
+
+  #if JUCE_WINDOWS
+    crashFile = File::getSpecialLocation (File::userApplicationDataDirectory)
+                .getChildFile (currentWrapperType == AudioProcessor::wrapperType_VST  ? "Enhancia/Plume/plumectV.cfg" :
+                               currentWrapperType == AudioProcessor::wrapperType_VST3 ? "Enhancia/Plume/plumect3.cfg" :
+                               "Enhancia/Plume/plumect.cfg");
+  #elif JUCE_MAC
+    crashFile = File::getSpecialLocation (File::userApplicationDataDirectory)
+                .getChildFile (currentWrapperType == AudioProcessor::wrapperType_VST       ? "Application Support/Enhancia/Plume/plumectV.cfg" :
+                               currentWrapperType == AudioProcessor::wrapperType_VST3      ? "Application Support/Enhancia/Plume/plumect3.cfg" :
+                               currentWrapperType == AudioProcessor::wrapperType_AudioUnit ? "Application Support/Enhancia/Plume/plumectA.cfg" :
+                               "Application Support/Enhancia/Plume/plumect.cfg");
+  #endif
 }

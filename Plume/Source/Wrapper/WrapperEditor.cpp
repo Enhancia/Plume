@@ -13,21 +13,23 @@
 #if (JUCE_WINDOWS || defined(__OBJC__))
 
 #if JUCE_MAC
-#define Component juce::Component
+#define Component juce::Component // MacOS' API apparently has a Component object that conflicts with JUCE's
 #endif
-#include "Wrapper/PluginWrapper.h"
+#include "PluginWrapper.h"
 
 //==============================================================================
 WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc, const Component* componentWhichWindowToAttachTo)
        : wrapperProcessor (wrapProc), topLevelPlumeComponent (*componentWhichWindowToAttachTo->getTopLevelComponent())
 {
-    TRACE_IN;
+    PLUME::log::writeToLog ("Creating new wrapped plugin window.", PLUME::log::LogCategory::wrappedInterface);
+    
     setSize (400, 300);
 
     if (auto* ui = createProcessorEditor (wrapperProcessor.getWrappedInstance()))
     {
         // Adds the interface and sets the component size in accordance
         addAndMakeVisible (wrappedUi = ui);
+        
         childBoundsChanged (wrappedUi);
 
         // Creates the desktop window, attached to a component (Plume's editor)
@@ -87,13 +89,15 @@ WrapperEditorWindow::WrapperEditorWindow (WrapperProcessor& wrapProc, const Comp
 
 WrapperEditorWindow::~WrapperEditorWindow()
 {
-    TRACE_IN;
-  #if JUCE_WINDOWS
+    PLUME::log::writeToLog ("Deleting wrapped plugin window.", PLUME::log::LogCategory::wrappedInterface);
+
+      #if JUCE_WINDOWS
 	PLUME::globalPointers.resetWrappedEditorPeer (this->getPeer());
   #endif
 
     wrappedUi.deleteAndZero();
     if (isOnDesktop()) removeFromDesktop();
+    DBG ("Finished deleting wrapper editor window");
 }
 
 void WrapperEditorWindow::paint (Graphics&) {}
@@ -155,7 +159,7 @@ void* WrapperEditorWindow::findHostHandle()
     }
   #endif
   
-	// If Plume's window is not owned by / related to the DAW. This is the case on mac (and is really not likely on win).
+	// If Plume's window is not owned by / related to the DAW. This is the case on mac (and is really unlikely on win).
     return nullptr;
 }
 

@@ -11,13 +11,14 @@
 #pragma once
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
-#include "Gesture/Gesture.h"
+#include "../../../Common/PlumeCommon.h"
+#include "../../../Gesture/Gesture.h"
 
 //==============================================================================
 /*
 */
-class DescriptionPanel    : public PlumeComponent,
+class DescriptionPanel    : public Component,
+                            public PlumeComponent,
                             private Label::Listener
 {
 public:
@@ -37,7 +38,7 @@ public:
 
 private:
     Gesture& gesture;
-    ScopedPointer<Label> descriptionLabel;
+    std::unique_ptr<Label> descriptionLabel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DescriptionPanel)
 };

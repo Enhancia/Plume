@@ -93,8 +93,10 @@ void NewGesturePanel::resized()
 // PlumeComponent Methods
 const String NewGesturePanel::getInfoString()
 {
+    const String bullet = " " + String::charToString (juce_wchar(0x2022));
+    
 	return "Gesture creation Panel:\n\n"
-		   "- Select a gesture type and add a custom name and description.";
+		   + bullet + " Select a gesture type and add a custom name and description.";
 }
 void NewGesturePanel::update()
 {
@@ -134,10 +136,20 @@ void NewGesturePanel::mouseUp (const MouseEvent &event)
 }
 void NewGesturePanel::buttonClicked (Button* bttn)
 {
-	if (bttn == closeButton)
+	if (bttn == closeButton.get())
 	{
 		hidePanel (true);
 	}
+}
+
+bool NewGesturePanel::keyPressed (const KeyPress& key)
+{
+    if (key == PLUME::keyboard_shortcut::closeWindow)
+    {
+        hidePanel (true);
+    }
+
+    return true;
 }
 
 void NewGesturePanel::createNewGesture()
@@ -146,10 +158,10 @@ void NewGesturePanel::createNewGesture()
 	updateGesturePanel();
 }
 
-void NewGesturePanel::labelTextChanged (Label* lbl)
+void NewGesturePanel::labelTextChanged (Label*)
 {
 }
-void NewGesturePanel::editorShown (Label* lbl, TextEditor& ed)
+void NewGesturePanel::editorShown (Label*, TextEditor&)
 {
 }
 
@@ -173,6 +185,7 @@ void NewGesturePanel::showPanelForGestureID (const int gestureID)
     update();
 
     setVisible (true);
+    grabKeyboardFocus();
 }
 
 void NewGesturePanel::hidePanel (const bool resetSelectedSlot)
@@ -213,9 +226,9 @@ void NewGesturePanel::unselectGestureType()
 //==============================================================================
 void NewGesturePanel::createCloseButton()
 {
-    addAndMakeVisible (closeButton = new ShapeButton ("Close Settings Button", Colour(0x00000000),
+    addAndMakeVisible (*(closeButton = std::make_unique<ShapeButton> ("Close Settings Button", Colour(0x00000000),
                                                                                Colour(0x00000000),
-                                                                               Colour(0x00000000)));
+                                                                               Colour(0x00000000))));
 
     Path p;
     p.startNewSubPath (0, 0);
@@ -258,11 +271,11 @@ void NewGesturePanel::resizeGestureSelectorButtons (juce::Rectangle<int> buttons
 
 void NewGesturePanel::createAndAddTextEditor()
 {
-	addAndMakeVisible (descriptionTextEditor = new TextEditor ("Gesture Description Text Editor"));
+	addAndMakeVisible (*(descriptionTextEditor = std::make_unique<TextEditor> ("Gesture Description Text Editor")));
     descriptionTextEditor->setMultiLine (true, true);
     descriptionTextEditor->setReturnKeyStartsNewLine (true);
     descriptionTextEditor->setReadOnly (true);
-    descriptionTextEditor->setScrollbarsShown (true);
+    descriptionTextEditor->setScrollbarsShown (false);
     descriptionTextEditor->setPopupMenuEnabled (false);
     descriptionTextEditor->applyColourToAllText (PLUME::UI::currentTheme.getColour (PLUME::colour::sideBarMainText), true);
     descriptionTextEditor->setJustification (Justification::centred);
@@ -297,30 +310,33 @@ void NewGesturePanel::GestureTypeSelector::paint (Graphics& g)
 		g.setColour (Gesture::getHighlightColour (gestureType).withAlpha (0.15f));
 		g.fillRoundedRectangle (getLocalBounds().reduced (2).toFloat(), 10.0f);
 
-/*
 		// Outline
 		g.setColour (Gesture::getHighlightColour (gestureType));
-		g.drawRoundedRectangle (getLocalBounds().reduced (2).toFloat(), 10.0f, 1.0f);*/
+		g.drawRoundedRectangle (getLocalBounds().reduced (2).toFloat(), 10.0f, 1.0f);
 	}
 	else
 	{
+        // Fill
 		g.setColour (getPlumeColour (basePanelBackground));
 		g.fillRoundedRectangle (getLocalBounds().reduced (2).toFloat(), 10.0f);
+
+        // Outline
+        g.setColour (Gesture::getHighlightColour (gestureType).withAlpha (0.2f));
+        g.drawRoundedRectangle (getLocalBounds().reduced (2).toFloat(), 10.0f, 1.0f);
 	}
 
-	g.setColour (PLUME::UI::currentTheme.getColour (PLUME::colour::topPanelMainText));
-	drawGesturePath (g, getLocalBounds().reduced (PLUME::UI::MARGIN));
+	drawGesturePath (g, getLocalBounds());
 }
 void NewGesturePanel::GestureTypeSelector::resized()
 {
 }
 
-void NewGesturePanel::GestureTypeSelector::mouseEnter (const MouseEvent &event)
+void NewGesturePanel::GestureTypeSelector::mouseEnter (const MouseEvent &)
 {
 	setHighlighted (true);
 	repaint();
 }
-void NewGesturePanel::GestureTypeSelector::mouseExit (const MouseEvent &event)
+void NewGesturePanel::GestureTypeSelector::mouseExit (const MouseEvent &)
 {
 	setHighlighted (false);
 	repaint();
@@ -338,54 +354,57 @@ void NewGesturePanel::GestureTypeSelector::setHighlighted (bool shouldBeHighligh
 void NewGesturePanel::GestureTypeSelector::drawGesturePath (Graphics& g, juce::Rectangle<int> area)
 {
     g.setColour (Colour (0xfff3f3f3));
+    g.drawText (Gesture::getTypeString (gestureType, true), area,
+               Justification::centred, true);
 
-    // Icon Fill
-    Path iconFill;
-
-    if (gestureType == (int) Gesture::tilt) iconFill = PLUME::path::createPath (PLUME::path::handTilt);
-    else if (gestureType == (int) Gesture::roll) iconFill = PLUME::path::createPath (PLUME::path::handRoll);
-    else iconFill = PLUME::path::createPath (PLUME::path::handFingerDown);
-
-    auto areaFloat = (gestureType == (int) Gesture::tilt || gestureType == (int) Gesture::roll)
-                          ? area.reduced (area.getWidth()/8, area.getHeight()/4).toFloat()
-                          : area.reduced (area.getWidth()/4, area.getHeight()/8).toFloat();
-
-	iconFill.scaleToFit (areaFloat.getX(), areaFloat.getY(),
-                         areaFloat.getWidth(), areaFloat.getHeight(), true);
-
-    g.fillPath (iconFill);
-
-    // Icon stroke
-    /*
-    Path iconStroke;
-
-    if (gesture.type == Gesture::tilt)
+    Path gesturePath;
+    switch (gestureType)
     {
-        iconStroke = PLUME::path::createPath (PLUME::path::tiltArrow);
-        areaFloat = areaFloat.withTrimmedLeft (areaFloat.getWidth()*2/3)
-                             .withTrimmedBottom (areaFloat.getHeight()/2);
-    }
-    else if (gesture.type == Gesture::roll)
-    {
-        iconStroke = PLUME::path::createPath (PLUME::path::rollArrow);
-        areaFloat = areaFloat.withTrimmedRight (areaFloat.getWidth()/2)
-                             .withTrimmedBottom (areaFloat.getHeight()/2);
-    }
-    else if (gesture.type == Gesture::pitchBend)
-    {
-        iconStroke = PLUME::path::createPath (PLUME::path::pitchBendArrow);
-        areaFloat = areaFloat.withTrimmedTop (areaFloat.getHeight()*2/3)
-                             .translated (areaFloat.getWidth()/12, 0);
-    }
-    else if (gesture.type == Gesture::vibrato)
-    {
-        iconStroke = PLUME::path::createPath (PLUME::path::vibratoRipple);
-        areaFloat = areaFloat.withTrimmedTop (areaFloat.getHeight()*2/3)
-                             .translated (areaFloat.getWidth()/12, 0);
-    }
-    else return;
+        case (Gesture::tilt):
+            gesturePath = PLUME::path::createPath (PLUME::path::tilt);
+            break;
 
-    iconStroke.scaleToFit (areaFloat.getX(), areaFloat.getY(),
-                           areaFloat.getWidth(), areaFloat.getHeight(), true);
-    g.strokePath (iconStroke, PathStrokeType (1.0f));*/
+        case (Gesture::vibrato):
+            gesturePath = PLUME::path::createPath (PLUME::path::vibrato);
+            break;
+
+        case (Gesture::pitchBend):
+            gesturePath = PLUME::path::createPath (PLUME::path::pitchBend);
+            break;
+
+        case (Gesture::roll):
+            gesturePath = PLUME::path::createPath (PLUME::path::roll);
+            break;
+
+        default:
+            return;
+    }
+
+
+    gesturePath.scaleToFit (area.toFloat().getX(),
+                            area.toFloat().getY(),
+                            area.toFloat().getWidth(),
+                            area.toFloat().getHeight(),
+                        false);
+
+    Colour pathColour (0xff808080);
+    ColourGradient gesturePathGradient (pathColour.withAlpha (0.2f),
+                                        {area.toFloat().getX(),
+                                         area.toFloat().getY() + area.toFloat().getHeight()},
+                                        pathColour.withAlpha (0.2f),
+                                        {area.toFloat().getX() + area.toFloat().getWidth(),
+                                         area.toFloat().getY()},
+                                        false);
+
+    gesturePathGradient.addColour (0.3, pathColour.withAlpha (0.0f));
+    gesturePathGradient.addColour (0.7, pathColour.withAlpha (0.0f));
+
+    Path pathClip;
+    pathClip.addRoundedRectangle (area.toFloat(), 10.0f);
+    g.setGradientFill (gesturePathGradient);
+
+    g.saveState();
+    g.reduceClipRegion (pathClip);
+    g.strokePath (gesturePath, PathStrokeType (2.0f));
+    g.restoreState();
 }

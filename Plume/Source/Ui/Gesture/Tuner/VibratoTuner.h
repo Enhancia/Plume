@@ -6,14 +6,14 @@
     Author:  Enhancia Dev
 
   ==============================================================================
-*/
+*/ 
 
 #pragma once
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
-#include "Ui/Gesture/Tuner/Tuner.h"
-#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
-#include "Gesture/Vibrato.h"
+#include "../../../Gesture/Vibrato.h"
+#include "../../LookAndFeel/PlumeLookAndFeel.h"
+#include "Tuner.h"
 
 class VibratoTuner:    public Tuner,
                        private Slider::Listener,
@@ -43,10 +43,10 @@ public:
     
 private:
     //==============================================================================
-	VibratoTuner (const float& val, NormalisableRange<float> gestRange,
-					  const float& vibratoIntensity, float maxIntens,
-    				  RangedAudioParameter& gain, const Range<float> gainMax,
-    				  RangedAudioParameter& thresh, const Range<float> threshMax);
+	VibratoTuner (const std::atomic<float>& val, NormalisableRange<float> gestRange,
+                  const std::atomic<float>& vibratoIntensity, NormalisableRange<float> intRange,
+                  float& vibGain, const NormalisableRange<float> gainMax,
+                  float& thresh, const NormalisableRange<float> threshMax);
 
     //==============================================================================
     void createSliders();
@@ -62,32 +62,34 @@ private:
     //==============================================================================
     void setGain (float value);
     void setThreshold (float value);
-    float& getIntensityReference();
+    std::atomic<float>& getIntensityReference();
 
     float getGain();
     float getThreshold();
+    float getIntensity();
     
     //==============================================================================
-    const float& value;
+    const std::atomic<float>& value;
     float lastValue = -1.0f;
-
+    juce::Rectangle<int> tunerArea;
     const NormalisableRange<float> gestureRange;
-    const float& intensity;
-    const float maxIntensity;
+
+    const std::atomic<float>& intensity;
 	float lastIntensity = -1.0f;
+    const NormalisableRange<float> intensityRange;
     float smoothIntensity = intensity;
     float incrementalSmoothFactor = 1.0f;
 
-    RangedAudioParameter& gain;
-    RangedAudioParameter& threshold;
-    const Range<float> parameterMaxGain;
-    const Range<float> parameterMaxThreshold;
+    float& gain;
+    float& threshold;
+    const NormalisableRange<float> parameterMaxGain;
+    const NormalisableRange<float> parameterMaxThreshold;
 
     
-    ScopedPointer<Slider> gainSlider;
-    ScopedPointer<Slider> thresholdSlider;
-    ScopedPointer<Label> gainLabel;
-    ScopedPointer<Label> thresholdLabel;
+    std::unique_ptr<Slider> gainSlider;
+    std::unique_ptr<Slider> thresholdSlider;
+    std::unique_ptr<Label> gainLabel;
+    std::unique_ptr<Label> thresholdLabel;
     
     PLUME::UI::TestTunerLookAndFeel vibratoTunerLookAndFeel;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VibratoTuner)

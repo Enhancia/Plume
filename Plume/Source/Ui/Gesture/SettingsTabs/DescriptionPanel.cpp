@@ -8,7 +8,6 @@
   ==============================================================================
 */
 
-#include "../../../../JuceLibraryCode/JuceHeader.h"
 #include "DescriptionPanel.h"
 
 //==============================================================================
@@ -16,7 +15,7 @@ DescriptionPanel::DescriptionPanel (Gesture& g)	: gesture (g)
 {
 	setComponentID ("descriptionPanel");
 
-    addAndMakeVisible (descriptionLabel = new Label ("Description Panel Text Editor"));
+    addAndMakeVisible (*(descriptionLabel = std::make_unique<Label> ("Description Panel Text Editor")));
     descriptionLabel->setColour (Label::textColourId, Colours::black);
     descriptionLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
     descriptionLabel->setColour (Label::outlineColourId, Colour (0x20000000));
@@ -48,8 +47,10 @@ DescriptionPanel::~DescriptionPanel()
 
 const String DescriptionPanel::getInfoString()
 {
+    const String bullet = " " + String::charToString (juce_wchar(0x2022));
+    
 	return "Description Editor:\n\n"
-           "- Use this area to write a short description for the gesture.";
+           + bullet + " Use this area to write a short description for the gesture.";
 }
 
 void DescriptionPanel::update()
@@ -57,7 +58,7 @@ void DescriptionPanel::update()
 	descriptionLabel->setText (gesture.getDescription(), sendNotification);
 }
     
-void DescriptionPanel::paint (Graphics& g)
+void DescriptionPanel::paint (Graphics&)
 {
 }
 

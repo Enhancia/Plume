@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "Ui/Gesture/SettingsTabs/MapperComponent.h"
+#include "mappercomponent.h"
 
 #ifndef W 
 #define W Component::getWidth()
@@ -22,19 +22,17 @@
 MapperComponent::MapperComponent (Gesture& gest, GestureArray& gestArr, PluginWrapper& wrap)
     :   gesture (gest), gestureArray (gestArr), wrapper (wrap)
 {
-    TRACE_IN;
-
+    
     initializeParamCompArray();
 }
 
 MapperComponent::~MapperComponent()
 {
-    TRACE_IN;
-    paramCompArray.clear();
+        paramCompArray.clear();
 }
 
 //==============================================================================
-void MapperComponent::paint (Graphics& g)
+void MapperComponent::paint (Graphics&)
 {
 }
 
@@ -53,6 +51,8 @@ void MapperComponent::updateDisplay()
     
     if (PLUME::UI::ANIMATE_UI_FLAG)
     {
+        ScopedLock paramComplock (paramCompArrayLock);
+        
         for (auto* comp : paramCompArray)
         {
             comp->updateDisplay();
@@ -72,7 +72,6 @@ void MapperComponent::updateComponents()
 
 void MapperComponent::initializeParamCompArray()
 {
-    TRACE_IN;
     ScopedLock paramComplock (paramCompArrayLock);
     paramCompArray.clear();
     
@@ -89,8 +88,7 @@ void MapperComponent::initializeParamCompArray()
 
 void MapperComponent::updateParamCompArray()
 {
-    TRACE_IN;
-    ScopedLock paramComplock (paramCompArrayLock);
+        ScopedLock paramComplock (paramCompArrayLock);
     
     if (paramCompArray.size() < gesture.getParameterArray().size()) // Parameters were added
     {
@@ -173,10 +171,9 @@ void MapperComponent::resizeArray (juce::Rectangle<int> bounds, const int numCol
 MapperBanner::MapperBanner (Gesture& gest, GestureArray& gestArr, PluginWrapper& wrap)
     :   gesture (gest), gestureArray (gestArr), wrapper (wrap)
 {
-    TRACE_IN;
-    
+        
     // map button
-    addAndMakeVisible (mapButton = new TextButton ("Map Button"));
+    addAndMakeVisible (*(mapButton = std::make_unique<TextButton> ("Map Button")));
     mapButton->setButtonText ("MAP");
     mapButton->setColour (TextButton::buttonColourId, gesture.getHighlightColour());
     mapButton->setColour (TextButton::buttonOnColourId, gesture.getHighlightColour()
@@ -208,19 +205,19 @@ void MapperBanner::resized()
 
 void MapperBanner::buttonClicked (Button* bttn)
 {
-    if (bttn == mapButton)
+    if (bttn == mapButton.get())
     {
         // Map: clears mapMode for every other gesture, puts it on for the right one and changes the button color.
         if (gesture.mapModeOn == false && gesture.getParameterArray().size() < PLUME::MAX_PARAMETER)
         {
             gestureArray.cancelMapMode();
             gesture.mapModeOn = true;
-            gestureArray.mapModeOn = true;
             mapButton->setColour (TextButton::buttonColourId,
                                   gesture.getHighlightColour().interpolatedWith (Colour (0xffffffff),
                                                                                  0.4f));
             
             wrapper.createWrapperEditor (findParentComponentOfClass<AudioProcessorEditor> ());
+            gestureArray.mapModeOn = true;
         }
         
         // Cancels map mode for the gesture and colours it accordingly

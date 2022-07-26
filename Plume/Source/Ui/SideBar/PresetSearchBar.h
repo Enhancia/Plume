@@ -11,8 +11,8 @@
 #pragma once
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
-#include "Plugin/PluginProcessor.h"
+#include "../../Common/PlumeCommon.h"
+#include "../../Plugin/PluginProcessor.h"
 
 //==============================================================================
 /*
@@ -40,8 +40,9 @@ public:
 
 private:
     //==============================================================================
-    ScopedPointer<Label> searchLabel;
-    ScopedPointer<PlumeShapeButton> cancelButton;
+    std::unique_ptr<Label> searchLabel;
+    std::unique_ptr<PlumeShapeButton> cancelButton;
+    juce::Rectangle<int> barArea;
     
     //==============================================================================
     PlumeProcessor& processor;

@@ -8,12 +8,16 @@
   ==============================================================================
 */
 
-#include "../../../JuceLibraryCode/JuceHeader.h"
 #include "PlumeLookAndFeel.h"
 
 using namespace PLUME::UI;
 
 PlumeLookAndFeel::PlumeLookAndFeel()
+    : LookAndFeel_V4 ({ getPlumeColour (plumeBackground), getPlumeColour (headerBackground),
+                        getPlumeColour (popupMenuBackground), getPlumeColour (popupMenuOutline),
+                        getPlumeColour (topPanelMainText), getPlumeColour (popupMenuBackground),
+                        getPlumeColour (popupMenuSelectedText), getPlumeColour (popupMenuSelectedBackground),
+                        getPlumeColour (popupMenuText) })
 {                   
 	setColours();
 }
@@ -28,7 +32,7 @@ void PlumeLookAndFeel::setColours()
     
     // Label
 	setColour (Label::textColourId, Colour (0xffffffff));
-	setColour (Label::backgroundColourId, Colour (0xff000000));
+	setColour (Label::backgroundColourId, Colour (0x00000000));
 	setColour (Label::outlineColourId, Colour (0x00000000));
 
     // Text 
@@ -44,7 +48,7 @@ void PlumeLookAndFeel::setColours()
 	setColour (Slider::backgroundColourId, Colour (0xff101010));
 
 	// TextButton
-	setColour (TextButton::buttonColourId, Colour (0xff505050));
+    setColour (TextButton::buttonColourId, getPlumeColour (tunerButtonFill));
 
 	// ComboBox
 	setColour (ComboBox::backgroundColourId, Colour (0x00000000));
@@ -53,10 +57,13 @@ void PlumeLookAndFeel::setColours()
 	setColour (ComboBox::outlineColourId, Colour (0x00000000)); // Necessary to not draw Label outlines due to an Error in the JUCE code..
 	
 	// PopupMenu
-	setColour (PopupMenu::backgroundColourId, Colour (0xff323232));
-	setColour (PopupMenu::textColourId, Colour (0xffe5e5e5));
-	setColour (PopupMenu::highlightedBackgroundColourId, Colour (0xaae5e5e5));
-	setColour (PopupMenu::highlightedTextColourId, Colour (0xff323232));
+	setColour (PopupMenu::backgroundColourId, getPlumeColour (popupMenuBackground));
+	setColour (PopupMenu::textColourId, getPlumeColour (popupMenuText));
+	setColour (PopupMenu::highlightedBackgroundColourId, getPlumeColour (popupMenuSelectedBackground));
+	setColour (PopupMenu::highlightedTextColourId, getPlumeColour (popupMenuSelectedText));
+
+    //Window
+    setColour (ResizableWindow::backgroundColourId, getPlumeColour (popupMenuBackground));
 }
 /*
 Font PlumeLookAndFeel::getLabelFont (Label& lbl)
@@ -101,6 +108,81 @@ void PlumeLookAndFeel::drawScrollbar (Graphics& g, ScrollBar& scrollbar,
     g.fillRect (thumbBounds.reduced (1).toFloat());
 }
 
+void PlumeLookAndFeel::drawButtonBackground (Graphics& g,
+                                             Button& button,
+                                             const Colour& backgroundColour,
+                                             bool shouldDrawButtonAsHighlighted,
+                                             bool shouldDrawButtonAsDown)
+{
+    const int width = button.getWidth();
+    const int height = button.getHeight();
+
+    const float outlineThickness = button.isEnabled() ? ((shouldDrawButtonAsDown || shouldDrawButtonAsHighlighted) ? 1.2f : 0.7f) : 0.4f;
+    const float halfThickness = outlineThickness * 0.5f;
+
+    const float indentL = button.isConnectedOnLeft()   ? 0.1f : halfThickness;
+    const float indentR = button.isConnectedOnRight()  ? 0.1f : halfThickness;
+    const float indentT = button.isConnectedOnTop()    ? 0.1f : halfThickness;
+    const float indentB = button.isConnectedOnBottom() ? 0.1f : halfThickness;
+
+    const Colour baseColour (backgroundColour.darker (shouldDrawButtonAsDown ? 0.1f : 0.0f)
+                                             .brighter (shouldDrawButtonAsHighlighted ? 0.05f : 0.0f)
+                                             .withMultipliedAlpha (button.isEnabled() ? 1.0f : 0.5f));
+
+    // Button panel outline
+    auto gradOut = ColourGradient::horizontal (Colour (0x10ffffff),
+                                               indentL, 
+                                               Colour (0x10ffffff),
+                                               width - indentL - indentR);
+    gradOut.addColour (0.5, Colour (0x35ffffff));
+
+    g.setColour (baseColour);
+    g.fillRoundedRectangle (indentL,
+                            indentT,
+                            width - indentL - indentR,
+                            height - indentT - indentB, 
+                            6.0f);
+
+    g.setGradientFill (gradOut);
+    g.drawRoundedRectangle (indentL,
+                            indentT,
+                            width - indentL - indentR,
+                            height - indentT - indentB, 
+                            6.0f,
+                            outlineThickness);
+}
+
+void PlumeLookAndFeel::drawComboBox (Graphics& g, int width, int height, bool,
+                                     int, int, int, int, ComboBox& box)
+{
+    auto cornerSize = box.findParentComponentOfClass<ChoicePropertyComponent>() != nullptr ? 0.0f : 3.0f;
+    juce::Rectangle<int> boxBounds (0, 0, width, height);
+
+    g.setColour (box.findColour (ComboBox::backgroundColourId));
+    g.fillRoundedRectangle (boxBounds.toFloat(), cornerSize);
+
+    g.setColour (box.findColour (ComboBox::outlineColourId));
+    g.drawRoundedRectangle (boxBounds.toFloat().reduced (0.5f, 0.5f), cornerSize, 1.0f);
+
+    juce::Rectangle<int> arrowZone (width - 30, 0, 20, height);
+    Path path;
+    path.startNewSubPath ((float) arrowZone.getCentreX() - 3.0f, (float) arrowZone.getCentreY() - 1.0f);
+    path.lineTo ((float) arrowZone.getCentreX(), (float) arrowZone.getCentreY() + 2.0f);
+    path.lineTo ((float) arrowZone.getCentreX() + 3.0f, (float) arrowZone.getCentreY() - 1.0f);
+
+    g.setColour (box.findColour (ComboBox::arrowColourId).withAlpha ((box.isEnabled() ? 0.9f : 0.2f)));
+    g.strokePath (path, PathStrokeType (1.0f));
+}
+
+void PlumeLookAndFeel::drawPopupMenuBackground (Graphics& g, int width, int height)
+{
+    g.fillAll (findColour (PopupMenu::backgroundColourId));
+    g.setColour (getPlumeColour (popupMenuOutline));
+    g.drawRect (0, 0, width, height);
+}
+
+int PlumeLookAndFeel::getPopupMenuBorderSize() { return 0; }
+
 void PlumeLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int width, int height,
                                          float sliderPos,
                                          float minSliderPos,
@@ -120,10 +202,10 @@ void PlumeLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int width, i
 
         auto trackWidth = jmin (6.0f, slider.isHorizontal() ? height * 0.25f : width * 0.25f);
 
-        Point<float> startPoint (slider.isHorizontal() ? x : x + width * 0.5f,
+        juce::Point<float> startPoint (slider.isHorizontal() ? x : x + width * 0.5f,
                                  slider.isHorizontal() ? y + height * 0.5f : height + y);
 
-        Point<float> endPoint (slider.isHorizontal() ? width + x : startPoint.x,
+        juce::Point<float> endPoint (slider.isHorizontal() ? width + x : startPoint.x,
                                slider.isHorizontal() ? startPoint.y : y);
 
         Path backgroundTrack;
@@ -133,7 +215,7 @@ void PlumeLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int width, i
         g.strokePath (backgroundTrack, {  2.0f /*trackWidth*/, PathStrokeType::curved, PathStrokeType::rounded }); // changed track width
 
         Path valueTrack;
-        Point<float> minPoint, maxPoint, thumbPoint;
+        juce::Point<float> minPoint, maxPoint, thumbPoint;
 
         if (isTwoVal || isThreeVal)
         {
@@ -225,6 +307,55 @@ void PlumeLookAndFeel::drawPointer (Graphics& g, const float x, const float y, c
     g.strokePath (p, PathStrokeType (2.0f));
 }
 
+void PlumeLookAndFeel::drawDocumentWindowTitleBar (DocumentWindow& window, Graphics& g,
+                                                 int w, int h, int titleSpaceX, int titleSpaceW,
+                                                 const Image* icon, bool drawTitleTextOnLeft)
+{
+    if (w * h == 0)
+        return;
+
+    auto isActive = window.isActiveWindow();
+
+    g.setColour (getPlumeColour (headerBackground));
+    g.fillAll();
+
+    Font font (PLUME::font::plumeFont.withHeight (static_cast<float> (h) * 0.65f));
+    g.setFont (font);
+
+    auto textW = font.getStringWidth (window.getName());
+    auto iconW = 0;
+    auto iconH = 0;
+
+    if (icon != nullptr)
+    {
+        iconH = static_cast<int> (font.getHeight());
+        iconW = icon->getWidth() * iconH / icon->getHeight() + 4;
+    }
+
+    textW = jmin (titleSpaceW, textW + iconW);
+    auto textX = drawTitleTextOnLeft ? titleSpaceX
+                                     : jmax (titleSpaceX, (w - textW) / 2);
+
+    if (textX + textW > titleSpaceX + titleSpaceW)
+        textX = titleSpaceX + titleSpaceW - textW;
+
+    if (icon != nullptr)
+    {
+        g.setOpacity (isActive ? 1.0f : 0.6f);
+        g.drawImageWithin (*icon, textX, (h - iconH) / 2, iconW, iconH,
+                           RectanglePlacement::centred, false);
+        textX += iconW;
+        textW -= iconW;
+    }
+
+    if (window.isColourSpecified (DocumentWindow::textColourId) || isColourSpecified (DocumentWindow::textColourId))
+        g.setColour (window.findColour (DocumentWindow::textColourId));
+    else
+        g.setColour (getPlumeColour (basePanelMainText));
+
+    g.drawText (window.getName(), textX, 0, textW, h, Justification::centredLeft, true);
+}
+
 //==============================================================================================================================
 // OneRangeTunerLookAndFeel:
 
@@ -288,7 +419,7 @@ void OneRangeTunerLookAndFeel::drawRotarySlider (Graphics& g, int x, int y, int 
     }
 
     auto thumbWidth = 6.0f;
-    Point<float> thumbPoint (bounds.getCentreX() + arcRadius * std::cos (toAngle - MathConstants<float>::halfPi),
+    juce::Point<float> thumbPoint (bounds.getCentreX() + arcRadius * std::cos (toAngle - MathConstants<float>::halfPi),
                              bounds.getCentreY() + arcRadius * std::sin (toAngle - MathConstants<float>::halfPi));
 
     g.setColour (slider.findColour (Slider::thumbColourId));
@@ -317,10 +448,10 @@ void TwoRangeTunerLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int 
 
         auto trackWidth = jmin (6.0f, slider.isHorizontal() ? height * 0.25f : width * 0.25f);
 
-        Point<float> startPoint (slider.isHorizontal() ? x : x + width * 0.5f,
+        juce::Point<float> startPoint (slider.isHorizontal() ? x : x + width * 0.5f,
                                  slider.isHorizontal() ? y + height * 0.5f : height + y);
 
-        Point<float> endPoint (slider.isHorizontal() ? width + x : startPoint.x,
+        juce::Point<float> endPoint (slider.isHorizontal() ? width + x : startPoint.x,
                                slider.isHorizontal() ? startPoint.y : y);
 
         Path backgroundTrack;
@@ -331,7 +462,7 @@ void TwoRangeTunerLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int 
 									      , PathStrokeType::curved, PathStrokeType::rounded }); // changed track width
 
         Path valueTrack;
-        Point<float> minPoint, maxPoint, thumbPoint;
+        juce::Point<float> minPoint, maxPoint, thumbPoint;
 
         if (isTwoVal || isThreeVal)
         {
@@ -484,7 +615,7 @@ void TestTunerLookAndFeel::drawRotarySlider (Graphics& g, int x, int y, int widt
     }
 
     auto thumbWidth = 6.0f;
-    Point<float> thumbPoint (bounds.getCentreX() + arcRadius * std::cos (toAngle - MathConstants<float>::halfPi),
+    juce::Point<float> thumbPoint (bounds.getCentreX() + arcRadius * std::cos (toAngle - MathConstants<float>::halfPi),
                              bounds.getCentreY() + arcRadius * std::sin (toAngle - MathConstants<float>::halfPi));
 	if (slider.getThumbBeingDragged() != -1)
 	{
@@ -515,23 +646,20 @@ void TestTunerLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int widt
         auto isTwoVal   = (style == Slider::SliderStyle::TwoValueVertical   || style == Slider::SliderStyle::TwoValueHorizontal);
         auto isThreeVal = (style == Slider::SliderStyle::ThreeValueVertical || style == Slider::SliderStyle::ThreeValueHorizontal);
 
-        auto trackWidth = jmin (6.0f, slider.isHorizontal() ? height * 0.25f : width * 0.25f);
-
-        Point<float> startPoint (slider.isHorizontal() ? x : x + width * 0.5f,
+        juce::Point<float> startPoint (slider.isHorizontal() ? x : x + width * 0.5f,
                                  slider.isHorizontal() ? y + height * 0.5f : height + y);
 
-        Point<float> endPoint (slider.isHorizontal() ? width + x : startPoint.x,
+        juce::Point<float> endPoint (slider.isHorizontal() ? width + x : startPoint.x,
                                slider.isHorizontal() ? startPoint.y : y);
 
         Path backgroundTrack;
         backgroundTrack.startNewSubPath (startPoint);
         backgroundTrack.lineTo (endPoint);
         g.setColour (slider.findColour (Slider::backgroundColourId));
-        g.strokePath (backgroundTrack, {  12.0f //Old: trackWidth
-                                          , PathStrokeType::curved, PathStrokeType::rounded }); // changed track width
+        g.strokePath (backgroundTrack, {  12.0f, PathStrokeType::curved, PathStrokeType::rounded }); // changed track width
 
         Path valueTrack;
-        Point<float> minPoint, maxPoint, thumbPoint;
+        juce::Point<float> minPoint, maxPoint, thumbPoint;
 
         if (isTwoVal || isThreeVal)
         {
@@ -596,3 +724,4 @@ void TestTunerLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int widt
         }
     }
 }
+

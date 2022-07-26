@@ -8,39 +8,42 @@
   ==============================================================================
 */
 
-#include "Ui/SideBar/PresetComponent.h"
+#include "PresetComponent.h"
 
 PresetComponent::PresetComponent (PlumeProcessor& p)  : processor (p)
 {
-    TRACE_IN;
-    
+        
     setName ("Preset List");
     setComponentID ("presetComponent");
     
     // PresetBox
-    addAndMakeVisible (presetBox = new PresetBox (TRANS ("presetBox"), processor));
+    presetBox.reset (new PresetBox (TRANS ("presetBox"), processor));
+    addAndMakeVisible (*presetBox);
     presetBox->updateContent();
     
     // ComboBox
-    addAndMakeVisible (pluginSelectBox = new ComboBox ("pluginSelectBox"));
+    pluginSelectBox.reset (new ComboBox ("pluginSelectBox"));
+    addAndMakeVisible (*pluginSelectBox);
     createComboBox();
     
     // FilterBox
-    addAndMakeVisible (filterBox = new FilterBox (TRANS ("filterBox"), processor));
+    filterBox.reset (new FilterBox (TRANS ("filterBox"), processor));
+    addAndMakeVisible (*filterBox);
     filterBox->updateContent();
     filterBox->selectRow (0);
     
     // Type toggle
-    addAndMakeVisible (typeToggle = new TypeToggleComponent (processor));
-    
+    typeToggle.reset (new TypeToggleComponent (processor));
+    addAndMakeVisible (*typeToggle);
+
     // Search Bar
-    addAndMakeVisible (searchBar = new PresetSearchBar (processor));
+    searchBar.reset (new PresetSearchBar (processor));
+    addAndMakeVisible (*searchBar);
 }
 
 PresetComponent::~PresetComponent()
 {
-    TRACE_IN;
-    presetBox = nullptr;
+        presetBox = nullptr;
     filterBox = nullptr;
 	typeToggle = nullptr;
 	pluginSelectBox = nullptr;
@@ -51,17 +54,15 @@ void PresetComponent::paint (Graphics& g)
 {
     using namespace PLUME::UI;
     
-    auto area = getLocalBounds();
-    
     // Top background
     g.setColour (getPlumeColour (sideBarObjectFillBackground));
 
     g.fillRoundedRectangle (getLocalBounds().withBottom (filterBox->getBounds().getBottom() + 1).toFloat(),
-                            8.0f);
+                            6.0f);
 
     // Bottom background
     g.fillRoundedRectangle (getLocalBounds().withTop (presetBox->getBounds().getY() - 1).toFloat(),
-                            8.0f);
+                            6.0f);
     // SearchBarFill
     g.saveState();
     g.reduceClipRegion (searchBar->getBounds().expanded (MARGIN, MARGIN_SMALL));
@@ -71,7 +72,7 @@ void PresetComponent::paint (Graphics& g)
     g.restoreState();
 }
 
-void PresetComponent::paintOverChildren (Graphics& g)
+void PresetComponent::paintOverChildren (Graphics&)
 {
 }
 
@@ -82,9 +83,9 @@ void PresetComponent::resized()
     auto area = getLocalBounds();
     
     typeToggle->setBounds (area.removeFromTop (PRESET_BUTTONS_HEIGHT)
-                               .reduced (2*MARGIN, 0));
+                               .reduced (MARGIN, 0));
 
-    searchBar->setBounds (area.removeFromTop (PRESET_SEARCHBAR_HEIGHT).reduced (MARGIN, MARGIN_SMALL));
+    searchBar->setBounds (area.removeFromTop (PRESET_SEARCHBAR_HEIGHT).reduced (MARGIN, 3));
     
     filterBox->setBounds (area.removeFromTop (80 + MARGIN)
                               .withTrimmedBottom (MARGIN_SMALL)
@@ -99,27 +100,19 @@ void PresetComponent::resized()
 //==============================================================================
 const String PresetComponent::getInfoString()
 {
+    const String bullet = " " + String::charToString (juce_wchar(0x2022));
+    
     return "Preset List :\n\n"
-           "- Manages all your presets.\n"
-           "- Use the upper part to filter the presets you want. \n"
-           "- Double click a preset to load it.";
+           + bullet + " Manages all your presets.\n"
+           + bullet + " Use the upper part to filter the presets you want. \n"
+           + bullet + " Double click a preset to load it.";
 }
 
 void PresetComponent::update()
 {
-    if (processor.getPresetHandler().getCurrentPresetIdInSearchList() != -1)
-    {
-        presetBox->selectRow (processor.getPresetHandler().getCurrentPresetIdInSearchList());
-    }
-    else
-    {
-        presetBox->deselectRow (presetBox->getLastRowSelected());
-    }
-
     presetBox->updateContent();
-
-
     createComboBox();
+    presetBox->update();
 }
 
 //==============================================================================
@@ -133,16 +126,23 @@ void PresetComponent::focusLost (Component::FocusChangeType cause)
 
 void PresetComponent::comboBoxChanged (ComboBox* cmbx)
 {
-    if (cmbx->getSelectedId() == 1) processor.getPresetHandler().setPluginSearchSetting (String());
-    else                            processor.getPresetHandler().setPluginSearchSetting (cmbx->getText());
-    
-    presetBox->deselectRow (presetBox->getLastRowSelected());
-    presetBox->updateContent();
+    if (!(cmbx->getSelectedId() == 1 && processor.getPresetHandler().getCurrentSettings().descriptiveName.isEmpty()) &&
+        cmbx->getText() != processor.getPresetHandler().getCurrentSettings().descriptiveName)
+    {
+        if (cmbx->getSelectedId() == 1)
+            processor.getPresetHandler().setPluginSearchSetting (String());
+        else
+            processor.getPresetHandler().setPluginSearchSetting (cmbx->getText());
+        
+        presetBox->updateContent();
+        presetBox->selectRow (0);
+        presetBox->scrollToEnsureRowIsOnscreen (0);
+    }
 }
 
 void PresetComponent::savePreset()
 {
-    ScopedPointer<XmlElement> presetXml = new XmlElement (processor.getPresetHandler().getCurrentPresetName());
+    auto presetXml = std::make_unique<XmlElement> (processor.getPresetHandler().getCurrentPresetName());
 	processor.createPluginXml (*presetXml);
 	processor.createGestureXml (*presetXml);
 	    
@@ -156,6 +156,8 @@ void PresetComponent::addNewPreset()
     presetBox->startNewPresetEntry();
 }
 
+//bool compareFunction (String a, String b) { return a < b; }
+
 void PresetComponent::createComboBox()
 {
     // Combo bex items
@@ -163,13 +165,31 @@ void PresetComponent::createComboBox()
     pluginSelectBox->addItem ("All Plugins", 1);
     
     KnownPluginList& kpl = processor.getWrapper().getList();
+    int searchedPlugin = 1;
+
+	Array<String> listPlugins;
+
+	// fill list of plugins and set uppercase first letter
+	for (int i = 0; i < kpl.getNumTypes (); i++)
+	{
+		std::string currentName = kpl.getTypes()[i].descriptiveName.toStdString();
+		currentName[0] = static_cast<char> (toupper (currentName[0]));
+		listPlugins.add ((String)currentName);
+	}
+
+	// sort the plugins list
+	std::sort (listPlugins.begin (), listPlugins.end (), [](String a, String b) { return a < b; });
+
+	// add plugins to combobox
+	for (int i = 0; i < listPlugins.size (); i++)
+	{
+		pluginSelectBox->addItem (listPlugins[i], i + 2);
+
+		if (listPlugins[i] == processor.getPresetHandler ().getCurrentSettings ().descriptiveName)
+			searchedPlugin = i + 2;
+	}
     
-    for (int i=0; i<kpl.getNumTypes(); i++)
-    {
-        pluginSelectBox->addItem (kpl.getType (i)->name, i+2);
-    }
-    
-    pluginSelectBox->setSelectedId (1, sendNotification);
+    pluginSelectBox->setSelectedId (searchedPlugin, dontSendNotification);
 
     // Combo box look
     pluginSelectBox->setJustificationType (Justification::centredLeft);

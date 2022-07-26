@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1" jucerVersion="5.4.3"
-              pluginFormats="buildAU,buildStandalone,buildVST" version="1.4.0"
-              companyName="Enhancia" buildVST="1" buildVST3="0" buildAU="1"
+<JUCERPROJECT name="Plume" projectType="audioplug" buildStandalone="1"
+              pluginFormats="buildAU,buildStandalone,buildVST,buildVST3" version="1.0.0"
+              companyName="Enhancia" buildVST="1" buildVST3="1" buildAU="1"
               buildAUv3="0" buildRTAS="0" buildAAX="0" enableIAA="0" pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
               pluginManufacturer="Enhancia" pluginName="Plume" pluginDesc="Enhancia's Plume. Wraps other plugins, provides customizable and mappable gestures to use with Neova."
               binaryDataNamespace="PlumeData" includeBinaryInJuceHeader="1"
-              id="PjN2uz" pluginManufacturerCode="Enhn" pluginCode="Plum" compilerFlagSchemes="NewScheme">
+              id="PjN2uz" pluginManufacturerCode="Enhn" pluginCode="Plum" compilerFlagSchemes="NewScheme"
+              jucerFormatVersion="1">
   <MAINGROUP id="RYgD59" name="Plume">
     <GROUP id="{9375F276-9F56-CF4A-C1B1-D4B5B9CE68B9}" name="Source">
+      <GROUP id="{A52FBFC7-37D0-2099-CA5B-989B8D3A840B}" name="Updater">
+        <FILE id="csAjpO" name="GitAssetDownloader.cpp" compile="1" resource="0"
+              file="Source/Updater/GitAssetDownloader.cpp"/>
+        <FILE id="eK0wYA" name="GitAssetDownloader.h" compile="0" resource="0"
+              file="Source/Updater/GitAssetDownloader.h"/>
+        <FILE id="zJnoeW" name="PlumeUpdater.cpp" compile="1" resource="0"
+              file="Source/Updater/PlumeUpdater.cpp"/>
+        <FILE id="Nigrk2" name="PlumeUpdater.h" compile="0" resource="0" file="Source/Updater/PlumeUpdater.h"/>
+      </GROUP>
       <GROUP id="{C4265A58-C7CC-0AD4-EB4C-B191A90D4C34}" name="Plugin">
         <FILE id="QcTe6y" name="PluginEditor.cpp" compile="1" resource="0"
               file="Source/Plugin/PluginEditor.cpp"/>
@@ -17,6 +27,8 @@
               file="Source/Plugin/PluginProcessor.cpp"/>
         <FILE id="RmlXrO" name="PluginProcessor.h" compile="0" resource="0"
               file="Source/Plugin/PluginProcessor.h"/>
+        <FILE id="U2YOLB" name="PlumeParameter.h" compile="0" resource="0"
+              file="Source/Plugin/PlumeParameter.h"/>
       </GROUP>
       <GROUP id="{AE0F84C5-94EC-13BD-B9DC-2AC22EE3F6D0}" name="Presets">
         <FILE id="S1sDCS" name="PlumePreset.cpp" compile="1" resource="0" file="Source/Presets/PlumePreset.cpp"/>
@@ -35,8 +47,10 @@
       <GROUP id="{9B740626-EAB3-638F-41B5-B9DE410DDCF6}" name="DataReader">
         <FILE id="vdUcyM" name="DataReader.cpp" compile="1" resource="0" file="Source/DataReader/DataReader.cpp"/>
         <FILE id="xokgvb" name="DataReader.h" compile="0" resource="0" file="Source/DataReader/DataReader.h"/>
+        <FILE id="vBxYg3" name="DataReader.mm" compile="1" resource="0" file="Source/DataReader/DataReader.mm"/>
         <FILE id="tYhzCi" name="StatutPipe.cpp" compile="1" resource="0" file="Source/DataReader/StatutPipe.cpp"/>
         <FILE id="DA42aZ" name="StatutPipe.h" compile="0" resource="0" file="Source/DataReader/StatutPipe.h"/>
+        <FILE id="C1RG1V" name="StatutPipe.mm" compile="1" resource="0" file="Source/DataReader/StatutPipe.mm"/>
       </GROUP>
       <GROUP id="{D6346BB4-85D0-4DE6-B98D-2B6F2B878441}" name="Gesture">
         <FILE id="BGrET6" name="Gesture.cpp" compile="1" resource="0" file="Source/Gesture/Gesture.cpp"/>
@@ -59,6 +73,8 @@
         <FILE id="js1EYd" name="PluginWrapper.cpp" compile="1" resource="0"
               file="Source/Wrapper/PluginWrapper.cpp"/>
         <FILE id="qz9CdB" name="PluginWrapper.h" compile="0" resource="0" file="Source/Wrapper/PluginWrapper.h"/>
+        <FILE id="V4reEl" name="ScanHandler.cpp" compile="1" resource="0" file="Source/Wrapper/ScanHandler.cpp"/>
+        <FILE id="YiEMOR" name="ScanHandler.h" compile="0" resource="0" file="Source/Wrapper/ScanHandler.h"/>
         <FILE id="yRXN8O" name="WrapperEditor.cpp" compile="1" resource="0"
               file="Source/Wrapper/WrapperEditor.cpp"/>
         <FILE id="j6GR6E" name="WrapperEditor.h" compile="0" resource="0" file="Source/Wrapper/WrapperEditor.h"/>
@@ -100,6 +116,12 @@
           <FILE id="QhDpZl" name="MovingCursor.h" compile="0" resource="0" file="Source/Ui/Common/MovingCursor.h"/>
         </GROUP>
         <GROUP id="{B4604567-1941-DD36-C775-AB9FE7EF3408}" name="Top">
+          <GROUP id="{5F9D9692-6474-8003-BDE0-1C4AC52A9AF4}" name="AlertPanel">
+            <FILE id="THNAUC" name="PlumeAlertPanel.cpp" compile="1" resource="0"
+                  file="Source/Ui/Top/AlertPanel/PlumeAlertPanel.cpp"/>
+            <FILE id="m0kd32" name="PlumeAlertPanel.h" compile="0" resource="0"
+                  file="Source/Ui/Top/AlertPanel/PlumeAlertPanel.h"/>
+          </GROUP>
           <GROUP id="{3B670344-8B9E-60BC-E91B-56E589C27872}" name="NewGesture">
             <FILE id="ip2Hp8" name="NewGesturePanel.cpp" compile="1" resource="0"
                   file="Source/Ui/Top/NewGesture/NewGesturePanel.cpp"/>
@@ -126,7 +148,15 @@
                     file="Source/Ui/Top/Options/SubPanels/SubPanelComponent.cpp"/>
               <FILE id="AjlIkJ" name="SubPanelComponent.h" compile="0" resource="0"
                     file="Source/Ui/Top/Options/SubPanels/SubPanelComponent.h"/>
+              <FILE id="Lypk58" name="UpdaterSubPanel.cpp" compile="1" resource="0"
+                    file="Source/Ui/Top/Options/SubPanels/UpdaterSubPanel.cpp"/>
+              <FILE id="UgL6MT" name="UpdaterSubPanel.h" compile="0" resource="0"
+                    file="Source/Ui/Top/Options/SubPanels/UpdaterSubPanel.h"/>
             </GROUP>
+            <FILE id="sYBSWy" name="BugReportPanel.cpp" compile="1" resource="0"
+                  file="Source/Ui/Top/Options/BugReportPanel.cpp"/>
+            <FILE id="oIDIzb" name="BugReportPanel.h" compile="0" resource="0"
+                  file="Source/Ui/Top/Options/BugReportPanel.h"/>
             <FILE id="BLC4C2" name="OptionsPanel.cpp" compile="1" resource="0"
                   file="Source/Ui/Top/Options/OptionsPanel.cpp"/>
             <FILE id="XScjx7" name="OptionsPanel.h" compile="0" resource="0" file="Source/Ui/Top/Options/OptionsPanel.h"/>
@@ -134,6 +164,11 @@
                   file="Source/Ui/Top/Options/ScannerComponent.cpp"/>
             <FILE id="ylLF43" name="ScannerComponent.h" compile="0" resource="0"
                   file="Source/Ui/Top/Options/ScannerComponent.h"/>
+          </GROUP>
+          <GROUP id="{36BC13E2-DC54-A7FF-AB49-1762BA76CFC3}" name="UpdaterPanel">
+            <FILE id="DwnQ2S" name="UpdaterPanel.cpp" compile="1" resource="0"
+                  file="Source/Ui/Top/UpdaterPanel/UpdaterPanel.cpp"/>
+            <FILE id="vKinEj" name="UpdaterPanel.h" compile="0" resource="0" file="Source/Ui/Top/UpdaterPanel/UpdaterPanel.h"/>
           </GROUP>
         </GROUP>
         <GROUP id="{ACEA364D-47F4-BE67-B3B0-D0FEC5CE7BA7}" name="Header">
@@ -242,69 +277,29 @@
         </GROUP>
       </GROUP>
       <GROUP id="{C68567B8-DFE3-8FC9-B013-03678584A057}" name="Images">
-        <GROUP id="{3FD5E2A0-1ED1-28E0-6BB9-5FF273A9EF0B}" name="Backgrounds">
-          <FILE id="esWm6n" name="gesturesBackground.jpg" compile="0" resource="1"
-                file="Resources/Images/Backgrounds/gesturesBackground.jpg"/>
-          <FILE id="nuFIiw" name="gesturesBackground1.jpeg" compile="0" resource="1"
-                file="Resources/Images/Backgrounds/gesturesBackground1.jpeg"/>
-          <FILE id="ViiXLg" name="gesturesBackground2.jpeg" compile="0" resource="1"
-                file="Resources/Images/Backgrounds/gesturesBackground2.jpeg"/>
-          <FILE id="i6J5N0" name="homePageEnhancia.jpg" compile="0" resource="1"
-                file="Resources/Images/Backgrounds/homePageEnhancia.jpg"/>
-        </GROUP>
         <GROUP id="{20DFADED-00CA-0C8D-0252-C1692DB76059}" name="Gestures">
           <FILE id="imHDAT" name="Close.png" compile="0" resource="1" file="Resources/Images/Gestures/Close.png"/>
           <FILE id="CXrCc0" name="OnOff.png" compile="0" resource="1" file="Resources/Images/Gestures/OnOff.png"/>
-          <FILE id="OyT0Q1" name="pitchBend.png" compile="0" resource="1" file="Resources/Images/Gestures/pitchBend.png"/>
-          <FILE id="CcJ0Sl" name="reverse.png" compile="0" resource="1" file="Resources/Images/Gestures/reverse.png"/>
-          <FILE id="crL2PT" name="roll.png" compile="0" resource="1" file="Resources/Images/Gestures/roll.png"/>
-          <FILE id="oFcoGt" name="tilt.png" compile="0" resource="1" file="Resources/Images/Gestures/tilt.png"/>
-          <FILE id="iUhiZn" name="vibrato.png" compile="0" resource="1" file="Resources/Images/Gestures/vibrato.png"/>
-          <FILE id="npAAWO" name="wave.png" compile="0" resource="1" file="Resources/Images/Gestures/wave.png"/>
+          <FILE id="S4IwM7" name="reverse.png" compile="0" resource="1" file="Resources/Images/Gestures/reverse.png"/>
         </GROUP>
         <GROUP id="{F93B62CD-63A5-A9FA-49F9-786C5A767BCC}" name="Logo">
-          <FILE id="YXx8Ce" name="Logo_ENHANCIA_Round.png" compile="0" resource="1"
-                file="Resources/Images/Logo/Logo_ENHANCIA_Round.png"/>
-        </GROUP>
-        <GROUP id="{F6FAAEE0-96DB-E95C-4118-7E49BA1F7C90}" name="Wrapper">
-          <FILE id="eMeLtE" name="eye.png" compile="0" resource="1" file="Resources/Images/Wrapper/eye.png"/>
-          <FILE id="rrePb0" name="folder.png" compile="0" resource="1" file="Resources/Images/Wrapper/folder.png"/>
+          <FILE id="J5oaDj" name="BRAND-Popup-grey.png" compile="0" resource="1"
+                file="Resources/Images/Logo/BRAND-Popup-grey.png"/>
+          <FILE id="AnkEeB" name="plumeLogo.png" compile="0" resource="1" file="Resources/Images/Logo/plumeLogo.png"/>
         </GROUP>
       </GROUP>
     </GROUP>
   </MAINGROUP>
   <LIVE_SETTINGS>
-    <WINDOWS buildEnabled="0"/>
+    <WINDOWS buildEnabled="0" warningsEnabled="0"/>
+    <OSX/>
   </LIVE_SETTINGS>
   <EXPORTFORMATS>
-    <VS2017 targetFolder="Builds/VisualStudio2017" bigIcon="YXx8Ce" smallIcon="YXx8Ce">
-      <CONFIGURATIONS>
-        <CONFIGURATION isDebug="0" name="Release" headerPath="C:\Users\Enhancia Dev\Documents\Dev\Git_Workspace\Plume\Plume\Source"/>
-        <CONFIGURATION isDebug="1" name="Debug" headerPath="C:\Users\Enhancia Dev\Documents\Dev\Git_Workspace\Plume\Plume\Source"/>
-      </CONFIGURATIONS>
-      <MODULEPATHS>
-        <MODULEPATH id="juce_core" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_events" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_graphics" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_video" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_opengl" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../../../../Programmes/JUCE/modules"/>
-      </MODULEPATHS>
-    </VS2017>
-    <XCODE_MAC targetFolder="Builds/MacOSX" smallIcon="YXx8Ce" bigIcon="YXx8Ce"
+    <XCODE_MAC targetFolder="Builds/MacOSX" smallIcon="AnkEeB" bigIcon="AnkEeB"
                extraLinkerFlags="-framework SystemConfiguration">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" headerPath="/Users/macbook/Documents/Dev Plume/Plume/Plume/Source"/>
-        <CONFIGURATION isDebug="0" name="Release" headerPath="/Users/macbook/Documents/Dev Plume/Plume/Plume/Source"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="Plume"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="Plume"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_video" path="../../../../Programmes/JUCE/modules"/>
@@ -318,12 +313,35 @@
         <MODULEPATH id="juce_core" path="../../../../Programmes/JUCE/modules"/>
         <MODULEPATH id="juce_audio_utils" path="../../../../Programmes/JUCE/modules"/>
         <MODULEPATH id="juce_audio_processors" path="../../../../Programmes/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="../../../../Programmes/JUCE/modules"/>
         <MODULEPATH id="juce_audio_formats" path="../../../../Programmes/JUCE/modules"/>
         <MODULEPATH id="juce_audio_devices" path="../../../../Programmes/JUCE/modules"/>
         <MODULEPATH id="juce_audio_basics" path="../../../../Programmes/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
+    <VS2022 targetFolder="Builds/VisualStudio2022" smallIcon="AnkEeB" bigIcon="AnkEeB">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="Plume"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="Plume"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="C:\Users\alexl\Documents\Dev\Git\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_devices" path="C:\Users\alexl\Documents\Dev\Git\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_formats" path="C:\Users\alexl\Documents\Dev\Git\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="C:\Users\alexl\Documents\Dev\Git\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_processors" path="C:\Users\alexl\Documents\Dev\Git\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_utils" path="C:\Users\alexl\Documents\Dev\Git\JUCE\modules"/>
+        <MODULEPATH id="juce_core" path="C:\Users\alexl\Documents\Dev\Git\JUCE\modules"/>
+        <MODULEPATH id="juce_cryptography" path="C:\Users\alexl\Documents\Dev\Git\JUCE\modules"/>
+        <MODULEPATH id="juce_data_structures" path="C:\Users\alexl\Documents\Dev\Git\JUCE\modules"/>
+        <MODULEPATH id="juce_events" path="C:\Users\alexl\Documents\Dev\Git\JUCE\modules"/>
+        <MODULEPATH id="juce_graphics" path="C:\Users\alexl\Documents\Dev\Git\JUCE\modules"/>
+        <MODULEPATH id="juce_gui_basics" path="C:\Users\alexl\Documents\Dev\Git\JUCE\modules"/>
+        <MODULEPATH id="juce_gui_extra" path="C:\Users\alexl\Documents\Dev\Git\JUCE\modules"/>
+        <MODULEPATH id="juce_opengl" path="C:\Users\alexl\Documents\Dev\Git\JUCE\modules"/>
+        <MODULEPATH id="juce_video" path="C:\Users\alexl\Documents\Dev\Git\JUCE\modules"/>
+      </MODULEPATHS>
+    </VS2022>
   </EXPORTFORMATS>
   <MODULES>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
@@ -343,5 +361,5 @@
     <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_video" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
   </MODULES>
-  <JUCEOPTIONS JUCE_PLUGINHOST_VST="1" JUCE_PLUGINHOST_AU="1" JUCE_ENABLE_REPAINT_DEBUGGING="0"/>
+  <JUCEOPTIONS JUCE_ENABLE_REPAINT_DEBUGGING="0" JUCE_PLUGINHOST_AU="1" JUCE_PLUGINHOST_VST="1"/>
 </JUCERPROJECT>

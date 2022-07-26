@@ -11,8 +11,9 @@
 #pragma once
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
-#include "Ui/Gesture/Tuner/Tuner.h"
-#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
+using namespace juce;
+#include "../../LookAndFeel/PlumeLookAndFeel.h"
+#include "Tuner.h"
 
 class TwoRangeTuner:    public Tuner,
                         private Slider::Listener,
@@ -20,11 +21,22 @@ class TwoRangeTuner:    public Tuner,
                         private Button::Listener
 {
 public:
+    enum DraggableObject
+    {
+        none = -1,
+        leftLowThumb,
+        leftHighThumb,
+        rightLowThumb,
+        rightHighThumb,
+        middleAreaLeft,
+        middleAreaRight
+    };
+
     //==============================================================================
-    TwoRangeTuner(const float& val, const NormalisableRange<float> gestureRange,
-                  RangedAudioParameter& rangeLL, RangedAudioParameter& rangeLH,
-                  RangedAudioParameter& rangeRL, RangedAudioParameter& rangeRH,
-                  const Range<float> paramMax, const String unit = "");
+    TwoRangeTuner(const std::atomic<float>& val, const NormalisableRange<float> gestureRange,
+                  float& rangeLL, float& rangeLH,
+                  float& rangeRL, float& rangeRH,
+                  const NormalisableRange<float> paramMax, const String unit = "");
     ~TwoRangeTuner();
     
     //==============================================================================
@@ -32,6 +44,8 @@ public:
     void resized() override;
     
     void updateComponents() override;
+    void updateComponents (DraggableObject thumbThatShouldUpdate);
+
     void updateDisplay() override;
 
     void setColour (const Colour newColour) override;
@@ -41,6 +55,7 @@ public:
     void editorHidden (Label* lbl, TextEditor& ted) override;
     void sliderValueChanged (Slider* sldr) override;
     void buttonClicked (Button* bttn) override;
+    void buttonStateChanged (Button* btn);
     
     //==============================================================================
     void mouseDown (const MouseEvent& e) override;
@@ -71,17 +86,6 @@ private:
     float getRangeRightHigh();
     
     //==============================================================================
-    enum DraggableObject
-    {
-        none = -1,
-        leftLowThumb,
-        leftHighThumb,
-        rightLowThumb,
-        rightHighThumb,
-        middleAreaLeft,
-        middleAreaRight
-    };
-
     double getAngleFromMouseEventRadians (const MouseEvent& e);
     double getThumbAngleRadians (const DraggableObject thumb);
 
@@ -98,31 +102,31 @@ private:
     void drawThumbsAndToleranceLines (Graphics& g);
     
     //==============================================================================
-    const float& value;
+    const std::atomic<float>& value;
     const NormalisableRange<float> gestureRange;
     
     //==============================================================================
-    RangedAudioParameter& rangeLeftLow;
-    RangedAudioParameter& rangeLeftHigh;
-    RangedAudioParameter& rangeRightLow;
-    RangedAudioParameter& rangeRightHigh;
-    const Range<float> parameterMax;
+    float& rangeLeftLow;
+    float& rangeLeftHigh;
+    float& rangeRightLow;
+    float& rangeRightHigh;
+    const NormalisableRange<float> parameterMax;
     
     //==============================================================================
-    ScopedPointer<Slider> leftLowSlider;
-    ScopedPointer<Slider> leftHighSlider;
-    ScopedPointer<Slider> rightLowSlider;
-    ScopedPointer<Slider> rightHighSlider;
+    std::unique_ptr<Slider> leftLowSlider;
+    std::unique_ptr<Slider> leftHighSlider;
+    std::unique_ptr<Slider> rightLowSlider;
+    std::unique_ptr<Slider> rightHighSlider;
     
-    ScopedPointer<Label> rangeLabelMinLeft;
-    ScopedPointer<Label> rangeLabelMaxLeft;
-    ScopedPointer<Label> rangeLabelMinRight;
-    ScopedPointer<Label> rangeLabelMaxRight;
+    std::unique_ptr<Label> rangeLabelMinLeft;
+    std::unique_ptr<Label> rangeLabelMaxLeft;
+    std::unique_ptr<Label> rangeLabelMinRight;
+    std::unique_ptr<Label> rangeLabelMaxRight;
 
-    ScopedPointer<TextButton> minLeftAngleButton;
-    ScopedPointer<TextButton> maxLeftAngleButton;
-    ScopedPointer<TextButton> minRightAngleButton;
-    ScopedPointer<TextButton> maxRightAngleButton;
+    std::unique_ptr<TextButton> minLeftAngleButton;
+    std::unique_ptr<TextButton> maxLeftAngleButton;
+    std::unique_ptr<TextButton> minRightAngleButton;
+    std::unique_ptr<TextButton> maxRightAngleButton;
     
     //==============================================================================
     DraggableObject objectBeingDragged = none;
@@ -130,9 +134,13 @@ private:
 
     juce::Rectangle<int> sliderBounds;
     float sliderRadius;
-    Point<int> sliderCentre;
+    juce::Point<int> sliderCentre;
     float startAngle;
     float endAngle;
+    bool maxLeftAngleBtnIsHovered = false;
+    bool minLeftAngleBtnIsHovered = false;
+    bool maxRightAngleBtnIsHovered = false;
+    bool minRightAngleBtnIsHovered = false;
 
     //==============================================================================
     PLUME::UI::OneRangeTunerLookAndFeel slidersLookAndFeel;

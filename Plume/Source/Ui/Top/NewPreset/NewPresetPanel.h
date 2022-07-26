@@ -11,8 +11,8 @@
 #pragma once
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
-#include "Plugin/PluginProcessor.h"
+#include "../../../Common/PlumeCommon.h"
+#include "../../../Plugin/PluginProcessor.h"
 
 //==============================================================================
 /*
@@ -29,12 +29,22 @@ public:
     //==============================================================================
     void paint (Graphics&) override;
     void resized() override;
+
+    //==============================================================================
+    void setNameLabel(const String nameLabelArg);
+    void setAuthorLabel(const String authorLabelArg);
+    void setVerLabel(const String verLabelArg);
+    void setPluginLabel(const String pluginLabelArg);
     
     //==============================================================================
     void visibilityChanged() override;
     void buttonClicked (Button* bttn) override;
+    bool keyPressed (const KeyPress& key) override;
     void labelTextChanged (Label* lbl) override;
     void editorShown (Label* lbl, TextEditor& ed) override;
+
+    void saveUserPreset();
+    void clearLabels();
 
 private:
     //==============================================================================
@@ -42,18 +52,17 @@ private:
     void createLabels();
     void setLabelProperties (Label& labelToSet, bool editable =true);
     void createBox();
-    void createUserPreset();
     
     //==============================================================================
     juce::Rectangle<int> panelArea;
     
-    ScopedPointer<Label> nameLabel;
-    ScopedPointer<Label> authorLabel;
-    ScopedPointer<Label> verLabel;
-    ScopedPointer<Label> pluginLabel;
-    ScopedPointer<ComboBox> typeBox;
-    ScopedPointer<TextButton> cancelButton;
-    ScopedPointer<TextButton> saveButton;
+    std::unique_ptr<Label> nameLabel;
+    std::unique_ptr<Label> authorLabel;
+    std::unique_ptr<Label> verLabel;
+    std::unique_ptr<Label> pluginLabel;
+    std::unique_ptr<ComboBox> typeBox;
+    std::unique_ptr<TextButton> cancelButton;
+    std::unique_ptr<TextButton> saveButton;
     
     PlumeProcessor& processor;
     

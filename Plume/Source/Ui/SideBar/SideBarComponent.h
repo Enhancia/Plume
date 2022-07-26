@@ -11,16 +11,17 @@
 #pragma once
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
-#include "Ui/SideBar/PresetComponent.h"
-#include "Ui/SideBar/InfoPanel.h"
-#include "Plugin/PluginProcessor.h"
+#include "../../Common/PlumeCommon.h"
+#include "../../Plugin/PluginProcessor.h"
+#include "PresetComponent.h"
+#include "InfoPanel.h"
 
 
 //==============================================================================
 /*
 */
-class SideBarComponent    : public PlumeComponent,
+class SideBarComponent    : public Component,
+                            public PlumeComponent,
                             private Button::Listener
 {
 public:
@@ -53,10 +54,10 @@ private:
     //==============================================================================
     PlumeProcessor& processor;
     Component& optionsPanel;
-    ScopedPointer<PresetComponent> presetComponent;
-    ScopedPointer<InfoPanel> infoPanel;
-    ScopedPointer<ShapeButton> optionsButton;
-    ScopedPointer<ShapeButton> hideInfoButton;
+    std::unique_ptr<PresetComponent> presetComponent;
+    std::unique_ptr<InfoPanel> infoPanel;
+    std::unique_ptr<ShapeButton> optionsButton;
+    std::unique_ptr<PlumeShapeButton> hideInfoButton;
 
     bool infoHidden = false;
 

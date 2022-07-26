@@ -11,19 +11,20 @@
 #pragma once
 
 #include "../../../../JuceLibraryCode/JuceHeader.h"
-#include "Ui/LookAndFeel/PlumeLookAndFeel.h"
-#include "Common/PlumeCommon.h"
-#include "Ui/Common/MovingCursor.h"
+#include "../../../Common/PlumeCommon.h"
+#include "../../LookAndFeel/PlumeLookAndFeel.h"
+#include "../../Common/MovingCursor.h"
 
 //==============================================================================
 /*
 */
-class Tuner    : public PlumeComponent
+class Tuner    : public Component,
+                 public PlumeComponent
 {
 public:
     //==============================================================================
 	Tuner (const String unit = String(), Colour colour = Colour (0xff7c80de))
-        : valueUnit(unit), tunerColour (colour)
+        : tunerColour (colour), valueUnit(unit)
     {}
 
 	~Tuner() {}
@@ -35,10 +36,10 @@ public:
                "- Use the sliders to tweak the gesture's behaviour.\n";
     }
 
-    virtual void update() {}
+    virtual void update() override {}
 
     //==============================================================================
-	virtual void paint(Graphics& g) override {}
+	virtual void paint(Graphics&) override {}
 	virtual void resized() override {}
     
     //==============================================================================

@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
-#include "Gesture/Gesture.h"
+#include "../../JuceLibraryCode/JuceHeader.h"
+#include "Gesture.h"
 
 /**
  *  \class Vibrato Vibrato.h
@@ -30,10 +30,10 @@ public:
     
     //==============================================================================
     void addGestureMidi(MidiBuffer& midiMessages, MidiBuffer& plumeBuffer) override;
-    int getMidiValue () override;
+    int computeMidiValue () override;
     
-    void updateMappedParameters() override;
-    float getValueForMappedParameter (Range<float> paramRange, bool reversed) override;
+    bool shouldUpdateParameters() override;
+    float computeMappedParameterValue (Range<float> paramRange, bool reversed) override;
     
     //==============================================================================
     void updateValue (const Array<float> rawData) override;

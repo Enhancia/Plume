@@ -14,7 +14,7 @@
 //==============================================================================
 PlumePreset::PlumePreset (String presetName, File pathToPreset, PresetType pType,
                           FilterType category, String auth, String ver, String plug)
-                            : name (presetName), author (auth), version (ver), plugin (plug)
+                            : name (presetName), plugin (plug), author (auth), version (ver)
 {
     presetType = (int) pType;
     filterType = (int) category;
@@ -28,30 +28,38 @@ PlumePreset::PlumePreset (String presetName, File pathToPreset, PresetType pType
     }
 }
 
-PlumePreset::PlumePreset (File pathToPreset, PresetType pType)
-                            : name (""), plugin (""),
-                                         author ((pType == defaultPreset) ? "Enhancia" : ""),
+PlumePreset::PlumePreset (File pathToPreset, PresetType pType, String pName, bool prioritizeFileInfo)
+                            : name (pName), author ((pType == defaultPreset) ? "Enhancia" : ""),
+                                         plugin (""),
                                          version ("1.0")
 {
-    presetType = (int) pType;
-    filterType = custom;
-     
-    
     if (pathToPreset.exists())
     {
         presetFile = File (pathToPreset);
-        name = presetFile.getFileNameWithoutExtension();
         valid = true;
         
         if (hasInfoXml())
         {
             loadPresetInfoFromFile();
 			
-			if (presetType != (int) pType)
-			{
-				presetType = int(pType);
-				setPresetInfoToFile();
-			}
+            if (!prioritizeFileInfo)
+            {
+                bool overrideInfo = false;
+
+    			if (presetType != (int) pType)
+    			{
+                    presetType = int(pType);
+                    overrideInfo = true;
+    			}
+
+                if (pName.isNotEmpty() && pName != name)
+                {
+    				name = pName;
+                    overrideInfo = true;
+                }
+
+    			if (overrideInfo) setPresetInfoToFile();
+            }
         }
         else
         {
@@ -64,7 +72,7 @@ PlumePreset::PlumePreset (File pathToPreset, PresetType pType)
 PlumePreset::PlumePreset() : name (""), author (""), plugin (""), version ("1.0")
 {
     presetType = (int) PresetType::userPreset;
-    filterType = (int) FilterType::custom;
+    filterType = (int) FilterType::other;
 }
 
 PlumePreset::~PlumePreset()
@@ -75,7 +83,7 @@ PlumePreset::PlumePreset (const PlumePreset& other) : name (""), author (""), pl
 
 {
 	presetType = (int)PresetType::userPreset;
-	filterType = (int)FilterType::custom;
+	filterType = (int)FilterType::other;
 
     File f = other.getFile();
     loadPresetFromFile (f);
@@ -100,6 +108,8 @@ bool PlumePreset::setFile (const File& newFile)
     
     if (presetFile.exists())
     {
+        loadPresetInfoFromFile();
+
         valid = true;
         return true;
     }
@@ -119,15 +129,17 @@ String PlumePreset::getFilterTypeString (int filterTypeId)
 {
     switch (filterTypeId)
     {
-        case arp:        return "Arp";
+        case arp:        return "Sequence / Arp";
 		case bass:       return "Bass";
-		case harsh:      return "Harsh";
+		case brassWinds: return "Brass & Winds";
+        case strings:    return "Strings";
 		case keys:       return "Keys";
 		case lead:       return "Lead";
 		case pad:        return "Pad";
-		case percussion: return "Percussion";
-		case sfx:        return "Sfx";
-		default:         return "Custom";
+		case percussive: return "Percussive";
+		case sfx:        return "SFX / Experiment";
+
+		default:         return "Other";
     }
 }
 
@@ -136,32 +148,64 @@ bool PlumePreset::isValid()
 	return valid;
 }
 
-bool PlumePreset::matchesSettings (int filter, String pluginName, String nameSearch)
+bool PlumePreset::matchesSettings (int filter, String pDescriptiveName, String nameSearch)
 {
     return (filter == -1 || filter == filterType)         &&
-           (pluginName.isEmpty() || pluginName == plugin) &&
+           (pDescriptiveName.isEmpty() || pDescriptiveName == descriptiveName) &&
            (nameSearch.isEmpty() || name.removeCharacters (" -_").containsIgnoreCase(nameSearch));
 }
 
 void PlumePreset::setName (const String newName)
 {
     name = newName;
-    valid = presetFile.exists() && !name.isEmpty();
+    setPresetInfoToFile();
+    valid = presetFile.exists() && name.isNotEmpty();
 }
 
-const String PlumePreset::getName()
+const String PlumePreset::getName() const
 {
     return name;
 }
 
-const String PlumePreset::getFilterString()
+const String PlumePreset::getDescriptiveName() const
+{
+    return descriptiveName;
+}
+
+const String PlumePreset::getAuthor() const
+{
+    return author;
+}
+
+const String PlumePreset::getVersion() const
+{
+    return version;
+}
+
+const int PlumePreset::getFilter() const
+{
+    return filterType;
+}
+
+const String PlumePreset::getDescription() const
+{
+    const String bullet = " " + String::charToString (juce_wchar(0x2022));
+    
+    return name + " - " + author + " (v" + version + ") :\n\n"
+         + bullet + " Plugin   : " + (plugin.isEmpty() ? "-" : descriptiveName) + "\n"
+         + bullet + " Category : " + getFilterTypeString (filterType);
+}
+
+const String PlumePreset::getFilterString() const
 {
     return getFilterTypeString (filterType);
 }
 
-bool PlumePreset::hasInfoXml()
+bool PlumePreset::hasInfoXml (File fileToLookAt)
 {
-    ScopedPointer<XmlElement> xml = XmlDocument::parse (presetFile);
+    if (fileToLookAt.getFullPathName().isEmpty()) fileToLookAt = presetFile;
+
+    std::unique_ptr<XmlElement> xml = XmlDocument::parse (fileToLookAt);
     
     if (xml != nullptr)
     {
@@ -177,21 +221,39 @@ bool PlumePreset::hasInfoXml()
     return false;
 }
 
+/**
+ * Load preset from file.
+ * 
+ */
 void PlumePreset::loadPresetInfoFromFile()
 {
     if (hasInfoXml())
     {
-		ScopedPointer<XmlElement> xml = XmlDocument::parse (presetFile);
+		std::unique_ptr<XmlElement> xml = XmlDocument::parse (presetFile);
 		
-		XmlElement* info = xml->getChildByName("INFO");
-        
-        if (info != nullptr)
+        if (auto* info = xml->getChildByName("INFO"))
         {
+            name = info->getStringAttribute ("name", "");
             author = info->getStringAttribute ("author", "");
             version = info->getStringAttribute ("version", "1.0");
             plugin = info->getStringAttribute ("plugin", "");
             presetType = info->getIntAttribute ("type", 1);
-            filterType = info->getIntAttribute ("filter", PlumePreset::FilterType::custom);
+            filterType = info->getIntAttribute ("filter", PlumePreset::FilterType::other);
+        }
+
+        if(const auto* wrappedPlugin = xml->getChildByName("WRAPPED_PLUGIN"))
+        {
+            if(const auto* pluginElement = wrappedPlugin->getChildByName("PLUGIN"))
+            {
+                // ensure retrocompatibilty with preset which doesn't have descriptiveName
+                if (pluginElement->getStringAttribute ("descriptiveName") == "") {
+                    descriptiveName = plugin;
+                }
+                else {
+                    plugin = pluginElement->getStringAttribute ("descriptiveName");
+                    descriptiveName = pluginElement->getStringAttribute ("descriptiveName");
+                }
+            }
         }
         
         xml = nullptr;
@@ -202,19 +264,16 @@ void PlumePreset::loadPresetFromFile (File& file)
 {
     if (file.exists())
     {
-        setFile (file);
-        name = presetFile.getFileNameWithoutExtension();
-        
-        if (hasInfoXml())
+        if (hasInfoXml (file))
         {
-            loadPresetInfoFromFile();
+            setFile (file);
         }
     }
 }
 
 void PlumePreset::getPluginFromFile (File& file)
 {
-    ScopedPointer<XmlElement> xml = XmlDocument::parse (file);
+	std::unique_ptr<XmlElement> xml = XmlDocument::parse (file);
 	if (xml == nullptr) return;
 
 	XmlElement* wrap = xml->getChildByName ("WRAPPED_PLUGIN");
@@ -225,7 +284,7 @@ void PlumePreset::getPluginFromFile (File& file)
         {
             if (wrap->getChildByName ("PLUGIN") != nullptr)
             {
-                plugin = wrap->getChildByName ("PLUGIN")->getStringAttribute ("name", "");
+                plugin = wrap->getChildByName ("PLUGIN")->getStringAttribute ("descriptiveName", "");
             }
         }
     }   
@@ -235,15 +294,17 @@ void PlumePreset::getPluginFromFile (File& file)
 
 void PlumePreset::setPresetInfoToFile()
 {
-    ScopedPointer<XmlElement> xml = XmlDocument::parse (presetFile);
+    std::unique_ptr<XmlElement> xml = XmlDocument::parse (presetFile);
     
     if (xml != nullptr)
     {
         auto info= new XmlElement ("INFO");
         
+        info->setAttribute ("name", name);
+        info->setAttribute ("descriptiveName", descriptiveName);
         info->setAttribute ("author", author);
         info->setAttribute ("version", version);
-        info->setAttribute ("plugin", plugin);
+        info->setAttribute ("plugin", descriptiveName);
         info->setAttribute ("type", presetType);
         info->setAttribute ("filter", filterType);
         
@@ -256,7 +317,7 @@ void PlumePreset::setPresetInfoToFile()
         
 		if (presetType != PresetType::userPreset) presetFile.getParentDirectory().setReadOnly (false);
 
-        xml->writeToFile (presetFile, String());
+        xml->writeTo (presetFile);
 
 		if (presetType != PresetType::userPreset) presetFile.getParentDirectory().setReadOnly (true);
     }
@@ -264,19 +325,39 @@ void PlumePreset::setPresetInfoToFile()
     xml = nullptr;
 }
 
-void PlumePreset::addPresetInfoXml (XmlElement& presetXml, String author,
-                                                           String version,
-                                                           String plugin,
-                                                           int presetType,
-                                                           int filterType)
+/**
+ * Save Preset into file.
+ * 
+ * \param presetXml
+ * \param name
+ * \param author
+ * \param version
+ * \param plugin
+ * \param presetType
+ * \param filterType
+ */
+void PlumePreset::addPresetInfoXml(XmlElement& presetXml,   String name,
+                                                            String author,
+                                                            String version,
+                                                            String plugin,
+                                                            int presetType,
+                                                            int filterType)
 {
     auto* info= new XmlElement ("INFO");
         
+    info->setAttribute ("name", name);
     info->setAttribute ("author", author);
     info->setAttribute ("version", version);
     info->setAttribute ("plugin", plugin);
     info->setAttribute ("type", presetType);
     info->setAttribute ("filter", filterType);
 
+    auto* wrap = presetXml.getChildByName ("WRAPPED_PLUGIN");
+
+	if (wrap != nullptr)
+		if (wrap->getChildByName ("PLUGIN") != nullptr)
+			wrap->getChildByName ("PLUGIN")->setAttribute ("descriptiveName", plugin);
+
+    presetXml.replaceChildElement (wrap, wrap);
     presetXml.insertChildElement (info, 0);
 }

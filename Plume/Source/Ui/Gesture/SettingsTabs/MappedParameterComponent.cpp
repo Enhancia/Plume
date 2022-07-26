@@ -16,11 +16,10 @@ MappedParameterComponent::MappedParameterComponent (Gesture& gest,  GestureArray
     : gesture (gest), gestureArray (gestArr), mappedParameter (mappedParam), wrapper (wrap),
       paramId (id), highlightColour (gest.getHighlightColour())
 {
-    TRACE_IN;
-    // Creates the close button
+        // Creates the close button
     Image close = ImageFileFormat::loadFrom (PlumeData::Close_png, PlumeData::Close_pngSize);
 
-    addAndMakeVisible (closeButton = new ImageButton ("Close Button"));
+    addAndMakeVisible (*(closeButton = std::make_unique<ImageButton> ("Close Button")));
     closeButton->setImages (false, true, true,
 							close, 1.0f, Colour (0x00000000),
 							close, 0.5f, Colour (0x00000000),
@@ -30,7 +29,7 @@ MappedParameterComponent::MappedParameterComponent (Gesture& gest,  GestureArray
     // Creates the reverse button
     Image reverse = ImageFileFormat::loadFrom (PlumeData::reverse_png, PlumeData::reverse_pngSize);
     
-    addAndMakeVisible (reverseButton = new TextButton ("Reverse Button"));
+    addAndMakeVisible (*(reverseButton = std::make_unique<TextButton> ("Reverse Button")));
     reverseButton->setButtonText ("R");
     reverseButton->setColour (TextButton::buttonColourId, getPlumeColour (midiMapSliderBackground));
     reverseButton->setColour (TextButton::buttonOnColourId, highlightColour);
@@ -47,12 +46,11 @@ MappedParameterComponent::MappedParameterComponent (Gesture& gest,  GestureArray
 
 MappedParameterComponent::~MappedParameterComponent()
 {
-    TRACE_IN;
+    lowSlider->removeListener (this);
     lowSlider->setLookAndFeel (nullptr);
-    lowSlider = nullptr;
-
+    
+    lowSlider->removeListener (this);
     highSlider->setLookAndFeel (nullptr);
-    highSlider = nullptr;
 
     closeButton = nullptr;
     reverseButton = nullptr;
@@ -98,12 +96,12 @@ void MappedParameterComponent::resized()
 //==============================================================================
 void MappedParameterComponent::buttonClicked (Button* bttn)
 {
-    if (bttn == closeButton)
+    if (bttn == closeButton.get())
     {
         gesture.deleteParameter (paramId);
         allowDisplayUpdate = false;
     }
-    else if (bttn == reverseButton)
+    else if (bttn == reverseButton.get())
     {
         mappedParameter.reversed = !(mappedParameter.reversed);
     }
@@ -114,8 +112,8 @@ void MappedParameterComponent::labelTextChanged (Label* lbl)
     // checks that the string is numbers only (and dot)
     if (lbl->getText().containsOnly ("-.0123456789") == false)
     {
-        if (lbl == rangeLabelMin)       lbl->setText (String (mappedParameter.range.getStart(), 1), dontSendNotification);
-        else if (lbl == rangeLabelMax)  lbl->setText (String (mappedParameter.range.getEnd(), 1), dontSendNotification);
+        if (lbl == rangeLabelMin.get())       lbl->setText (String (mappedParameter.range.getStart(), 1), dontSendNotification);
+        else if (lbl == rangeLabelMax.get())  lbl->setText (String (mappedParameter.range.getEnd(), 1), dontSendNotification);
 
         return;
     }
@@ -127,7 +125,7 @@ void MappedParameterComponent::labelTextChanged (Label* lbl)
     else if (val > 1.0f) val = 1.0f;
     
     // Sets slider and labels accordingly
-    if (lbl == rangeLabelMin)
+    if (lbl == rangeLabelMin.get())
     {
         // Min > Max
         if ( val > mappedParameter.range.getEnd()) val = mappedParameter.range.getEnd();
@@ -141,7 +139,7 @@ void MappedParameterComponent::labelTextChanged (Label* lbl)
             rangeLabelMin->setVisible (false);
         }
     }
-    else if (lbl == rangeLabelMax)
+    else if (lbl == rangeLabelMax.get())
     {
         // Max < Min
         if ( val < mappedParameter.range.getStart()) val = mappedParameter.range.getStart();
@@ -165,7 +163,7 @@ void MappedParameterComponent::editorHidden (Label* lbl, TextEditor&)
 
 void MappedParameterComponent::sliderValueChanged (Slider* sldr)
 {
-    if (sldr == lowSlider)
+    if (sldr == lowSlider.get())
     {
         mappedParameter.range.setStart (float (lowSlider->getValue()));
         rangeLabelMin->setText (String (lowSlider->getValue(), 1), dontSendNotification);
@@ -180,7 +178,7 @@ void MappedParameterComponent::sliderValueChanged (Slider* sldr)
         }
     }
 
-    else if (sldr == highSlider)
+    else if (sldr == highSlider.get())
     {
         mappedParameter.range.setEnd (float (highSlider->getValue()));
 		rangeLabelMax->setText (String (highSlider->getValue(), 1), dontSendNotification);
@@ -197,7 +195,7 @@ void MappedParameterComponent::sliderValueChanged (Slider* sldr)
 }
 void MappedParameterComponent::mouseEnter (const MouseEvent& e)
 {
-    if (e.eventComponent == paramNameLabel)
+    if (e.eventComponent == paramNameLabel.get())
     {
         paramNameLabel->setColour (Label::textColourId, getPlumeColour (detailPanelMainText).withAlpha (0.5f));
     }
@@ -205,7 +203,7 @@ void MappedParameterComponent::mouseEnter (const MouseEvent& e)
 
 void MappedParameterComponent::mouseExit (const MouseEvent& e)
 {
-    if (e.eventComponent == paramNameLabel)
+    if (e.eventComponent == paramNameLabel.get())
     {
         paramNameLabel->setColour (Label::textColourId, getPlumeColour (detailPanelMainText));
     }
@@ -231,7 +229,7 @@ void MappedParameterComponent::mouseDown (const MouseEvent& e)
                                          ModalCallbackFunction::forComponent (rightClickMenuCallback, this));
     }
     
-    else if (e.eventComponent == paramNameLabel)
+    else if (e.eventComponent == paramNameLabel.get())
     {
         handleLabelClick (e);
     }
@@ -253,9 +251,10 @@ void MappedParameterComponent::handleLabelClick (const MouseEvent& e)
 
 		for (auto* param : wrapper.getWrapperProcessor().getParameters())
 		{
+            String temp;
             parameterListMenu.addItem (param->getParameterIndex() + 2,
                                        param->getName (20),
-                                       !gestureArray.parameterIsMapped (param->getParameterIndex()));
+                                       !gestureArray.parameterIsMapped (param->getParameterIndex(), temp));
 		}
 
         parameterListMenu.showMenuAsync (PopupMenu::Options().withParentComponent (getParentComponent())
@@ -295,18 +294,19 @@ void MappedParameterComponent::handleMenuResult (const int result, const bool is
 
         else if (result == 1)
         {
+            allowDisplayUpdate = false;
             gesture.deleteParameter (paramId);
         }
 
         else if (result < wrapper.getWrapperProcessor().getParameters().size() + 2)
         {
             AudioProcessorParameter& newParam = *wrapper.getWrapperProcessor().getParameters()[result-2];
+            String temp;
 
-            if (!gestureArray.parameterIsMapped (newParam.getParameterIndex()))
+            if (!gestureArray.parameterIsMapped (newParam.getParameterIndex(), temp))
             {
                 allowDisplayUpdate = false;
-
-                gesture.replaceParameter (paramId, newParam,
+                gesture.replaceParameter (paramId, newParam, gestureArray.getParametersReference(),
                                           mappedParameter.range, mappedParameter.reversed);
             }
         }
@@ -329,13 +329,13 @@ void MappedParameterComponent::handleSliderClick (const MouseEvent& e)
             if (objectBeingDragged == lowThumb)
             {
                 rangeLabelMin->setVisible (true);
-                lowSlider->mouseDown (e.getEventRelativeTo (lowSlider));
+                lowSlider->mouseDown (e.getEventRelativeTo (lowSlider.get()));
             }
 
             else if (objectBeingDragged == highThumb)
             {
                 rangeLabelMax->setVisible (true);
-                highSlider->mouseDown (e.getEventRelativeTo (highSlider));
+                highSlider->mouseDown (e.getEventRelativeTo (highSlider.get()));
             }
 
             else if (objectBeingDragged == middleArea)
@@ -346,8 +346,8 @@ void MappedParameterComponent::handleSliderClick (const MouseEvent& e)
                 lowSlider->setSliderSnapsToMousePosition (false);
                 highSlider->setSliderSnapsToMousePosition (false);
                 
-                lowSlider->mouseDown (e.getEventRelativeTo (lowSlider));
-                highSlider->mouseDown (e.getEventRelativeTo (highSlider));
+                lowSlider->mouseDown (e.getEventRelativeTo (lowSlider.get()));
+                highSlider->mouseDown (e.getEventRelativeTo (highSlider.get()));
             }
 
             repaint();
@@ -383,18 +383,18 @@ void MappedParameterComponent::mouseDrag (const MouseEvent& e)
 
     if (objectBeingDragged == lowThumb)
     {
-        lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider));
+        lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider.get()));
     }
 
     else if (objectBeingDragged == highThumb)
     {
-        highSlider->mouseDrag (e.getEventRelativeTo (highSlider));
+        highSlider->mouseDrag (e.getEventRelativeTo (highSlider.get()));
     }
 
     else if (objectBeingDragged == middleArea)
     {
-        lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider));
-        highSlider->mouseDrag (e.getEventRelativeTo (highSlider));
+        lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider.get()));
+        highSlider->mouseDrag (e.getEventRelativeTo (highSlider.get()));
     }
 }
 
@@ -406,20 +406,20 @@ void MappedParameterComponent::mouseUp (const MouseEvent& e)
         {
             if (objectBeingDragged == lowThumb)
             {
-                lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider));
+                lowSlider->mouseUp (e.getEventRelativeTo (lowSlider.get()));
                 rangeLabelMin->setVisible (false);
             }
 
             else if (objectBeingDragged == highThumb)
             {
-                highSlider->mouseDrag (e.getEventRelativeTo (highSlider));
+                highSlider->mouseUp (e.getEventRelativeTo (highSlider.get()));
                 rangeLabelMax->setVisible (false);
             }
 
             else if (objectBeingDragged == middleArea)
             {
-                lowSlider->mouseDrag (e.getEventRelativeTo (lowSlider));
-                highSlider->mouseDrag (e.getEventRelativeTo (highSlider));
+                lowSlider->mouseUp (e.getEventRelativeTo (lowSlider.get()));
+                highSlider->mouseUp (e.getEventRelativeTo (highSlider.get()));
                 lowSlider->setSliderSnapsToMousePosition (true);
                 highSlider->setSliderSnapsToMousePosition (true);
 
@@ -442,11 +442,11 @@ void MappedParameterComponent::updateDisplay()
 {
     if (allowDisplayUpdate)
     {
-        if (gesture.getValueForMappedParameter (mappedParameter.range, mappedParameter.reversed)
-                != lastValue)
+        const float currentMappedParameterValue = mappedParameter.wrappedParameter.getValue();
+
+        if (currentMappedParameterValue != lastValue)
         {
-            lastValue = gesture.getValueForMappedParameter (mappedParameter.range,
-                                                            mappedParameter.reversed);
+            lastValue = currentMappedParameterValue;
             
             repaint (lowSlider->getBounds().withX (lowSlider->getBounds().getCentreX() - 13)
                                            .withWidth (8));
@@ -480,7 +480,7 @@ void MappedParameterComponent::updateHighlightColour()
 void MappedParameterComponent::createLabels()
 {
     //=== Value label ===
-    addAndMakeVisible (paramNameLabel = new Label ("Value Label", mappedParameter.parameter.getName (20)));
+    addAndMakeVisible (*(paramNameLabel = std::make_unique<Label> ("Value Label", mappedParameter.wrappedParameter.getName (20))));
     paramNameLabel->setEditable (false, false, false);
     paramNameLabel->setFont (PLUME::font::plumeFont.withHeight (11.0f));
     paramNameLabel->setColour (Label::textColourId, getPlumeColour (detailPanelMainText));
@@ -489,8 +489,8 @@ void MappedParameterComponent::createLabels()
     paramNameLabel->addMouseListener (this, false);
     
     //=== range Control labels ===
-    addAndMakeVisible (rangeLabelMin = new Label ("Min Label", String (mappedParameter.range.getStart(), 1)));
-    addAndMakeVisible (rangeLabelMax = new Label ("Max Label", String (mappedParameter.range.getEnd(), 1)));
+    addAndMakeVisible (*(rangeLabelMin = std::make_unique<Label> ("Min Label", String (mappedParameter.range.getStart(), 1))));
+    addAndMakeVisible (*(rangeLabelMax = std::make_unique<Label> ("Max Label", String (mappedParameter.range.getEnd(), 1))));
     
     // LabelMin style
     rangeLabelMin->setEditable (true, false, false);
@@ -527,12 +527,12 @@ void MappedParameterComponent::createLabels()
 
 void MappedParameterComponent::setLabelBounds (Label& labelToResize)
 {
-    if (&labelToResize == rangeLabelMin)
+    if (&labelToResize == rangeLabelMin.get())
     {
         rangeLabelMin->setCentrePosition (lowSlider->getBounds().getCentreX() + 16,
                                           (int) getThumbY (lowThumb));
     }
-    else if (&labelToResize == rangeLabelMax)
+    else if (&labelToResize == rangeLabelMax.get())
     {
         rangeLabelMax->setCentrePosition (highSlider->getBounds().getCentreX() + 16,
                                           (int) getThumbY (highThumb));
@@ -541,8 +541,8 @@ void MappedParameterComponent::setLabelBounds (Label& labelToResize)
 
 void MappedParameterComponent::createSliders()
 {
-    addAndMakeVisible (lowSlider = new Slider ("Range Low Slider"));
-    addAndMakeVisible (highSlider = new Slider ("Range High Slider"));
+    addAndMakeVisible (*(lowSlider = std::make_unique<Slider> ("Range Low Slider")));
+    addAndMakeVisible (*(highSlider = std::make_unique<Slider> ("Range High Slider")));
     
     auto setSliderSettings = [this] (Slider& slider, float valueToSet)
     {
@@ -557,8 +557,8 @@ void MappedParameterComponent::createSliders()
         slider.addListener (this);
     };
 
-    setSliderSettings (*lowSlider, (double) mappedParameter.range.getStart());
-    setSliderSettings (*highSlider, (double) mappedParameter.range.getEnd());
+    setSliderSettings (*lowSlider, mappedParameter.range.getStart());
+    setSliderSettings (*highSlider, mappedParameter.range.getEnd());
 }
 
 //==============================================================================
@@ -566,17 +566,17 @@ float MappedParameterComponent::getThumbY (MappedParameterComponent::DraggableOb
 {
     if (thumb == lowThumb)
     {
-        return lowSlider->getY() + 11.5f + (lowSlider->getHeight() - 23.0f) *
-                                          (1.0f - lowSlider->getValue());
+        return float (lowSlider->getY()) + 11.5f + (float (lowSlider->getHeight()) - 23.0f) *
+                                          (1.0f - float (lowSlider->getValue()));
     }
 
     if (thumb == highThumb)
     {
-        return highSlider->getY() + 11.5f + (highSlider->getHeight() - 23.0f) *
-                                          (1.0f - highSlider->getValue());
+        return float (highSlider->getY()) + 11.5f + (float (highSlider->getHeight()) - 23.0f) *
+                                          (1.0f - float (highSlider->getValue()));
     }
 
-    return -1;
+    return -1.0f;
 }
 
 MappedParameterComponent::DraggableObject MappedParameterComponent::getObjectToDrag (const MouseEvent& e)
@@ -605,10 +605,9 @@ void MappedParameterComponent::drawCursor (Graphics& g)
     Path cursorPath;
     float cursorY = lowSlider->getY() + 11.5f +
                         (lowSlider->getHeight() - 23.0f) *
-                        (1.0f - gesture.getValueForMappedParameter (mappedParameter.range,
-                                                                    mappedParameter.reversed));
+                        (1.0f - mappedParameter.displayValue);
 
-    Point<float> cursorPoint = {lowSlider->getBounds().getCentreX() - 9.0f,
+    juce::Point<float> cursorPoint = {lowSlider->getBounds().getCentreX() - 9.0f,
                                 cursorY};
 
     cursorPath.addTriangle ({cursorPoint.x - 3.0f, cursorPoint.y - 3.0f},
@@ -627,10 +626,10 @@ void MappedParameterComponent::drawSliderBackground (Graphics& g)
                                                   .toFloat(),
                             3.0f);
 
-    Point<float> startPoint (lowSlider->getX() + lowSlider->getWidth() * 0.5f,
+    juce::Point<float> startPoint (lowSlider->getX() + lowSlider->getWidth() * 0.5f,
                              getThumbY (lowThumb));
 
-    Point<float> endPoint (lowSlider->getX() + lowSlider->getWidth() * 0.5f,
+    juce::Point<float> endPoint (lowSlider->getX() + lowSlider->getWidth() * 0.5f,
                            getThumbY (highThumb));
 
     Path valueTrack;

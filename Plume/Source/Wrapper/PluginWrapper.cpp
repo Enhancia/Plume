@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "Plugin/PluginProcessor.h"
+#include "../Plugin/PluginProcessor.h"
 
 #if ! (JUCE_PLUGINHOST_VST || JUCE_PLUGINHOST_VST3 || JUCE_PLUGINHOST_AU)
  #error "If you're building the wrapper, you probably want to enable VST and/or AU support"
@@ -17,13 +17,12 @@
 PluginWrapper::PluginWrapper (PlumeProcessor& p, GestureArray& gArr, ValueTree pluginDirs)
     : owner (p), gestArray (gArr), customDirectories (pluginDirs)
 {
-    TRACE_IN;
     // Initializes the booleans
     hasWrappedInstance = false;
     hasOpenedEditor = false;
     
     // Creates the objects to wrap the plugin
-    formatManager = new AudioPluginFormatManager();
+    formatManager.reset (new AudioPluginFormatManager());
     formatManager->addFormat (new VSTPluginFormat());
   #if JUCE_MAC
     formatManager->addFormat (new AudioUnitPluginFormat());
@@ -32,138 +31,110 @@ PluginWrapper::PluginWrapper (PlumeProcessor& p, GestureArray& gArr, ValueTree p
     formatManager->addFormat (new VST3PluginFormat());
   #endif
     
-    pluginList = new KnownPluginList();
+    pluginList.reset (new KnownPluginList());
+    scanHandler.reset (new ScanHandler (*pluginList));
     loadPluginListFromFile();
 }
 
 PluginWrapper::~PluginWrapper()
 {
-    TRACE_IN;
     removeAllChangeListeners();
     
-    clearWrapperEditor();
-	wrapperProcessor = nullptr;
-    wrappedInstance = nullptr;
-    
+  #if JUCE_MAC
+    unwrapPluginDelayed (1, false);
+  #else
+    unwrapPlugin (false);
+  #endif
+
     pluginList->clear();
     pluginList = nullptr;
-    
     formatManager = nullptr;
 }
 
 //==============================================================================
 bool PluginWrapper::wrapPlugin (PluginDescription& description)
 {
+    ScopedLock plLock (pluginListLock);
+
     auto descToWrap = getDescriptionToWrap (description);
     
     if (descToWrap == nullptr)
     {
-        DBG ("Error: Couldn't find the plugin for the specified description..\n" <<
-			 "Specified description = Name : " << description.name << " | Id : " <<
-			 description.uid << " | Format : " << description.pluginFormatName << "\n");
+        PLUME::log::writeToLog ("Failed to find the plugin to wrap..  "
+                                "Specified description for wrapping : " + description.name
+                                + " (Id : " + String (description.uniqueId) + " | Format : "
+                                            + description.pluginFormatName + ")",
+                                PLUME::log::LogCategory::pluginWrapping, PLUME::log::LogLevel::error);
+
+        getOwner().sendActionMessage (PLUME::commands::missingPlugin + description.descriptiveName);
         return false;
     }
     
-    if (descToWrap->name == "Plume")
+    if (descToWrap->name == "Plume" || descToWrap->name == "Plume Tests")
     {
-        DBG ("Can't wrap yourself my dude..");
-        
+        PLUME::log::writeToLog ("Plume tried to wrap itself..", PLUME::log::LogCategory::pluginWrapping, PLUME::log::LogLevel::error);
         return false;
     }
     
     if (!(descToWrap)->isInstrument)
     {
-        DBG ("Specified plugin is not an instrument!!");
-        
+        PLUME::log::writeToLog ("Attempted to wrap a non-instrument plugin : " + descToWrap->name, PLUME::log::LogCategory::pluginWrapping, PLUME::log::LogLevel::error);
         return false;
     }
-        
+    
+    // TO DELETE when implementing AU
+  #if JUCE_MAC
+    if (descToWrap->pluginFormatName.compare (AudioUnitPluginFormat::getFormatName()) == 0)
+    {
+        return false;
+    }
+  #endif
+
+    jassert (!hasWrappedInstance);
     if (hasWrappedInstance)
-	{
-		unwrapPlugin();
-	}
+    {
+        unwrapPlugin();
+    }
+
+    PLUME::log::writeToLog ("Attempting to load plugin : " + descToWrap->name, PLUME::log::LogCategory::pluginWrapping);
 	
     String errorMsg;
-    DBG ("\n[create Plugin Instance]");
+    if (PLUME::file::deadMansPedal.existsAsFile() || PLUME::file::deadMansPedal.create().wasOk())
+        PLUME::file::deadMansPedal.replaceWithText (descToWrap->fileOrIdentifier);
+
     wrappedInstance = formatManager->createPluginInstance (*descToWrap,
                                                            owner.getSampleRate(),
 														   owner.getBlockSize(),
                                                            errorMsg);
-                                                             
+    if (PLUME::file::deadMansPedal.existsAsFile())
+        PLUME::file::deadMansPedal.replaceWithText (String());
+
     if (wrappedInstance == nullptr)
     {
-        DBG ("Error: Failed to create an instance of the plugin, error message:\n\n" << errorMsg);
+        PLUME::log::writeToLog ("Failed to load plugin.. Error message : " + errorMsg,
+                                PLUME::log::LogCategory::pluginWrapping, PLUME::log::LogLevel::error);
         return false;
     }
     
     //Creates the wrapped processor object using the instance
-    wrappedInstance->enableAllBuses();
     
-    wrapperProcessor = new WrapperProcessor (*wrappedInstance, *this);
+    wrapperProcessor.reset (new WrapperProcessor (*wrappedInstance, *this, getOwner()));
     wrapperProcessor->prepareToPlay (owner.getSampleRate(), owner.getBlockSize());
     hasWrappedInstance = true;
-	
+    
     return true;
 }
 
 bool PluginWrapper::wrapPlugin (int pluginMenuId)
 {
-    int pluginId = pluginList->getIndexChosenByMenu (pluginMenuId);
+    PluginDescription descToWrap = pluginList->getTypes() [KnownPluginList::getIndexChosenByMenu (pluginList->getTypes(),
+                                                                                                  pluginMenuId)];
     
-    if (pluginList->getType (pluginId) == nullptr)
-    {
-        DBG ("Error: Couldn't find the plugin at the specified Id..\nSize of the plugin list: " << pluginList->getNumTypes()
-                                                                                                << " | Specified id : "
-                                                                                                << pluginId
-                                                                                                << "\n");
-        return false;
-    }
-    
-    if (pluginList->getType (pluginId)->name == "Plume")
-    {
-        DBG ("Can't wrap yourself..");
-        
-        return false;
-    }
-    
-    if (!(pluginList->getType (pluginId)->isInstrument))
-    {
-        DBG ("Specified plugin is not an instrument..");
-        
-        return false;
-    }
-        
-    if (hasWrappedInstance)
-	{
-		unwrapPlugin();
-	}
-	
-    String errorMsg;
-    DBG ("\n[create Plugin Instance]");
-    wrappedInstance = formatManager->createPluginInstance (*pluginList->getType (pluginId),
-                                                           owner.getSampleRate(),
-														   owner.getBlockSize(),
-                                                           errorMsg);
-                                                             
-    if (wrappedInstance == nullptr)
-    {
-        DBG ("Error: Failed to create an instance of the plugin, error message:\n\n" << errorMsg);
-        return false;
-    }
-    
-    //Creates the wrapped processor object using the instance
-    wrappedInstance->enableAllBuses();
-    
-    wrapperProcessor = new WrapperProcessor (*wrappedInstance, *this);
-    wrapperProcessor->prepareToPlay (owner.getSampleRate(), owner.getBlockSize());
-    hasWrappedInstance = true;
-	
-    return true;
+    return wrapPlugin (descToWrap);
 }
 
-void PluginWrapper::unwrapPlugin()
+void PluginWrapper::unwrapPlugin (bool clearGestureParameters)
 {
-    TRACE_IN;
     if (hasWrappedInstance == false)
     {
         return;
@@ -175,22 +146,79 @@ void PluginWrapper::unwrapPlugin()
     }
     
     hasWrappedInstance = false;
-    
-	wrapEd.reset();
-    owner.getGestureArray().clearAllParameters();
+
+    wrapEd.reset();
+    if (clearGestureParameters) owner.getGestureArray().clearAllParameters();
     wrapperProcessor.reset();
     wrappedInstance.reset();
 }
 
+void PluginWrapper::unwrapPluginDelayed (const unsigned int delay, bool clearGestureParameters)
+{
+    if (hasWrappedInstance == false)
+    {
+        return;
+    }
+    
+    if (hasOpenedEditor)
+    {
+        clearWrapperEditor();
+    }
+    
+    hasWrappedInstance = false;
+
+    if (clearGestureParameters) owner.getGestureArray().clearAllParameters();
+    wrapEd.reset();
+    wrapperProcessor.reset();
+
+    wrappedInstanceToDelete = std::move (wrappedInstance);
+
+    auto instanceDeletionLambda = [this] ()
+    {
+        wrappedInstanceToDelete.reset();
+    };
+
+    Timer::callAfterDelay (delay, instanceDeletionLambda);
+}
+
+/*
+bool PluginWrapper::rewrapPluginDelayed (int pluginId)
+{
+    if (hasWrappedInstance == false)
+    {
+        return wrapPlugin (pluginId);
+    }
+    
+    if (hasOpenedEditor)
+    {
+        clearWrapperEditor();
+    }
+    
+    hasWrappedInstance = false;
+
+    auto processorDeletionLambda = [this] ()
+    {
+        DBG ("Deleting Wrapper Processor and Instance, delayed.");
+        wrapEd.reset();
+        owner.getGestureArray().clearAllParameters();
+        wrapperProcessor.reset();
+        wrappedInstance.reset();
+    };
+
+    Timer::callAfterDelay (100, processorDeletionLambda);
+
+    return wrapPlugin(description);
+}*/
+
 bool PluginWrapper::rewrapPlugin (PluginDescription& description)
 {
-    unwrapPlugin();
+    unwrapPluginDelayed();
     return wrapPlugin(description);
 }
 
 bool PluginWrapper::rewrapPlugin(int pluginId)
 {
-    unwrapPlugin();
+    unwrapPluginDelayed();
     return wrapPlugin(pluginId);
 }
 
@@ -234,8 +262,6 @@ bool PluginWrapper::isWrapping()
 //==============================================================================
 void PluginWrapper::createWrapperEditor (const Component* componentWhichWindowToAttachTo)
 {
-    TRACE_IN;
-    
     jassert (wrapperProcessor != nullptr);
     
     if (wrapperProcessor == nullptr)
@@ -253,7 +279,7 @@ void PluginWrapper::createWrapperEditor (const Component* componentWhichWindowTo
         
     if (wrapperEditor == nullptr)
     {
-        wrapperEditor = new WrapperEditorWindow (*wrapperProcessor, componentWhichWindowToAttachTo);
+        wrapperEditor.reset (new WrapperEditorWindow (*wrapperProcessor, componentWhichWindowToAttachTo));
 		wrapperEditor->toFront (true);
         return;
     }
@@ -265,7 +291,7 @@ WrapperEditorWindow* PluginWrapper::getWrapperEditorWindow()
 {
     if (hasWrappedInstance)
     {
-        return wrapperEditor;
+        return wrapperEditor.get();
     }
 
 	return nullptr;
@@ -275,7 +301,9 @@ void PluginWrapper::clearWrapperEditor()
 {
     if (hasWrappedInstance && hasOpenedEditor)
     {
-        wrapperEditor.reset();
+        wrapperEditor->setVisible (false);
+
+        wrapperEditor.reset (nullptr);
         hasOpenedEditor = false;
         
         // Message for the components needing an update upon closing the wrapped editor (ie mapper components)
@@ -329,7 +357,7 @@ String PluginWrapper::getWrappedPluginName()
 {
     if (hasWrappedInstance)
     {
-        return wrappedInstance->getPluginDescription().name;
+        return wrappedInstance->getPluginDescription().descriptiveName;
     }
     
     return "No plugin";
@@ -368,71 +396,92 @@ KnownPluginList& PluginWrapper::getList()
     return *pluginList;
 }
 
-//==============================================================================
-Array<File*> PluginWrapper::createFileList()
+ScanHandler& PluginWrapper::getScanner()
 {
-    Array<File*> directories;
+    return *scanHandler;
+}
+
+void PluginWrapper::handleScanFinished()
+{
+    //loadPluginListFromFile();
+    removeNonInstrumentsFromList();
+    savePluginListToFile();
+}
+
+void PluginWrapper::blacklistCrashedPlugin()
+{
+    if (scanHandler->hasLastScanCrashed())
+    {
+        if (auto typeToBlacklist = pluginList->getTypeForFile (scanHandler->getLastCrashedPluginId()))
+        {
+            pluginList->removeType (*typeToBlacklist);
+        }
+
+        pluginList->addToBlacklist (scanHandler->getLastCrashedPluginId());
+        PLUME::file::deadMansPedal.replaceWithText(String());
+        savePluginListToFile();
+        getOwner().sendActionMessage (PLUME::commands::updateInterface);
+    }
+}
+
+//==============================================================================
+Array<File> PluginWrapper::createFileList()
+{
+    Array<File> directories;
+
+    auto addFileToDirectories = [] (Array<File>& dirs, File fileToAdd)
+    {
+        if (fileToAdd.exists()) dirs.add (fileToAdd);
+    };
     
     // Adds OS specific paths if they exist
   #if JUCE_WINDOWS
 
     if (useDefaultPaths)
     {
-        File f;
         // C:\Program Files\VSTPlugins 
-        f = File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("VSTPlugins/");
-        
-        if (f.exists()) directories.add (new File (f));
+        addFileToDirectories (directories, File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("VSTPlugins/"));
         
         // C:\Program Files\Steinberg\VSTPlugins
-        f = File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("Steinberg/")
-                                                                        .getChildFile ("VSTPlugins/");
-        if (f.exists()) directories.add (new File (f));
+        addFileToDirectories (directories, File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("Steinberg/")
+                                                                        .getChildFile ("VSTPlugins/"));
         
         // C:\Program Files\Common Files\VST2\                                                              
-        f = File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("Common Files/")
-                                                                        .getChildFile ("VST2/");
-        if (f.exists()) directories.add (new File (f));
+        addFileToDirectories (directories, File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("Common Files/")
+                                                                        .getChildFile ("VST2/"));
         
         // C:\Program Files\Common Files\Steinberg\VST2                                                              
-        f = File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("Common Files/")
+        addFileToDirectories (directories, File::getSpecialLocation (File::globalApplicationsDirectory).getChildFile ("Common Files/")
                                                                         .getChildFile ("Steinberg/")
-                                                                        .getChildFile ("VST2/");
-        if (f.exists()) directories.add (new File (f));
+                                                                        .getChildFile ("VST2/"));
     }
 
   #elif JUCE_MAC
 
     if (useAudioUnits)
     {
-        File f;
         // Macintosh HD:/Library/Audio/Plug-Ins/Components/
-        f = File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Audio/")
+        addFileToDirectories (directories, File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Audio/")
                                                                            .getChildFile ("Plug-Ins/")
-                                                                           .getChildFile ("Components/");
-        if (f.exists()) directories.add (new File (f));
+                                                                           .getChildFile ("Components/"));
         
         // ~/Library/Audio/Plug-Ins/Components/                                                               
-        f = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Audio/")
+        addFileToDirectories (directories, File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Audio/")
                                                                          .getChildFile ("Plug-Ins/")
-                                                                         .getChildFile ("Components/");
-        if (f.exists()) directories.add (new File (f));
+                                                                         .getChildFile ("Components/"));
     }
 
     if (useDefaultPaths)
     {
-        File f;
         // Macintosh HD:/Library/Audio/Plug-Ins/VST/                                                               
-        f = File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Audio/")
+        addFileToDirectories (directories, File::getSpecialLocation (File::commonApplicationDataDirectory).getChildFile ("Audio/")
                                                                            .getChildFile ("Plug-Ins/")
-                                                                           .getChildFile ("VST/");
-        if (f.exists()) directories.add (new File (f));
+                                                                           .getChildFile ("VST/"));
         
         // ~/Library/Audio/Plug-Ins/VST/                                                            
-        f = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Audio/")
+        addFileToDirectories (directories, File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Audio/")
                                                                          .getChildFile ("Plug-Ins/")
-                                                                         .getChildFile ("VST/");
-        if (f.exists()) directories.add (new File (f));    
+                                                                         .getChildFile ("VST/"));
     } 
 
   #endif
@@ -441,7 +490,7 @@ Array<File*> PluginWrapper::createFileList()
     {
 		for (int i = 0; i < customDirectories.getNumChildren(); i++)
 		{
-			directories.add (new File (getCustomDirectory (i)));
+			directories.add (getCustomDirectory (i));
 		}
     }
 
@@ -451,11 +500,13 @@ Array<File*> PluginWrapper::createFileList()
 void PluginWrapper::setDefaultPathUsage (bool shouldUseDefaultPaths)
 {
     useDefaultPaths = shouldUseDefaultPaths;
+    savePluginListToFile();
 }
 
 void PluginWrapper::setCustomPathUsage (bool shouldUseCustomPath)
 {
     useCustomPaths = shouldUseCustomPath;
+    savePluginListToFile();
 }
 
 void PluginWrapper::setAuUsage (bool                    
@@ -465,16 +516,36 @@ void PluginWrapper::setAuUsage (bool
                                 )
 {
   #if JUCE_MAC
+    // TO UNCOMMENT when implementing AU
     useAudioUnits = shouldUseAudioUnits;
-  #endif 
+    scanHandler->setPluginFormats (true, true, shouldUseAudioUnits);
+    savePluginListToFile();
+  #endif
+}
+bool PluginWrapper::usesDefaultPaths()
+{
+    return useDefaultPaths;
+}
+bool PluginWrapper::usesCustomPaths()
+{
+    return useCustomPaths;
+}
+bool PluginWrapper::usesAudioUnits()
+{
+    #if JUCE_MAC
+    return useAudioUnits;
+    #else
+    return false;
+    #endif
 }
 
 void PluginWrapper::addCustomDirectory (File newDir)
 {
     // TODO virer cette ligne et decommenter code quand implémentation plusieurs path
-    customDirectories.getChild (0).setProperty (PLUME::treeId::value,
-                                                newDir.getFullPathName(),
-                                                nullptr);
+    customDirectories.getOrCreateChildWithName (PLUME::treeId::directory, nullptr)
+                     .setProperty (PLUME::treeId::value,
+                                   newDir.getFullPathName(),
+                                   nullptr);
     
     /*
     if (newDir.exists() && newDir.isDirectory())
@@ -516,77 +587,38 @@ void PluginWrapper::clearCustomDirectories()
     //customDirectories.removeAllChildren (nullptr);
 }
 
-void PluginWrapper::scanAllPluginsInDirectories (bool dontRescanIfAlreadyInList, bool ignoreBlackList)
+void PluginWrapper::startScanProcess()
 {
-    if (formatManager->getNumFormats() == 0 ||
-        (!useDefaultPaths && customDirectories.getNumChildren() == 0)) return;
-    /*
-    if (!dontRescanIfAlreadyInList)
-    {
-        pluginList->clear();
-    }
-    */
-    
-    pluginList->clear();
-    
-    // Sets all the files to search
-    FileSearchPath fsp;
-    for (auto* file : createFileList())
-    {
-        fsp.add (File (*file)); // Creates a copy of the file to prevent leakage / nullptr bad access
-		delete file;
-    }
-        
-    for (int i=0; i<formatManager->getNumFormats(); i++)
-    {
-        PluginDirectoryScanner dirScanner (*pluginList, *formatManager->getFormat (i), fsp, true, File(), true);
-        scanProgress = 0.0f;
-        
-        // Rescans until scanNextFile returns false
-        while (dirScanner.scanNextFile (dontRescanIfAlreadyInList, pluginBeingScanned))
-        {
-            scanProgress = dirScanner.getProgress();
-            pluginBeingScanned = pluginBeingScanned.fromLastOccurrenceOf ("\\", false, false);
-            DBG ("Scanning : " << pluginBeingScanned << " | Progress : " << scanProgress);
-        }
-        
-        scanProgress = dirScanner.getProgress();
-    }
-    
-    savePluginListToFile();
-}
+    PLUME::log::writeToLog ("Starting plugin scan.", PLUME::log::LogCategory::pluginScan);
 
-PluginDirectoryScanner* PluginWrapper::getDirectoryScannerForFormat (int formatToScan)
-{
-    if (formatManager->getNumFormats() == 0 ||
-        (!useDefaultPaths && customDirectories.getNumChildren() == 0)) return nullptr;
-        
-    // Sets all the files to search
-    FileSearchPath fsp;
-    for (auto* file : createFileList())
-    {
-        fsp.add (File (*file)); // Creates a copy of the file to prevent leakage / nullptr bad access
-		delete file;
-    }
-        
-    return new PluginDirectoryScanner (*pluginList, *formatManager->getFormat (formatToScan),
-                                                    fsp, true, File(), true);
+    getOrCreateDeadsManPedalFile();
+    
+    scanHandler->startScanProcess (createFileList());
 }
 
 void PluginWrapper::addPluginsToMenu (PopupMenu& menu, KnownPluginList::SortMethod sort)
 {
-    pluginList->addToMenu (menu, sort);
+    ScopedLock plLock (pluginListLock);
+    
+    if (pluginList->getNumTypes() == 0)
+    {
+        getOwner().sendActionMessage (PLUME::commands::scanRequired);
+    }
+    
+    else KnownPluginList::addToMenu (menu, pluginList->getTypes(), sort);
 }
 
-PluginDescription* PluginWrapper::getDescriptionToWrap (const PluginDescription& description)
+std::unique_ptr<PluginDescription> PluginWrapper::getDescriptionToWrap (const PluginDescription& description)
 {   
-    for (auto desc = pluginList->begin(); desc != pluginList->end(); desc++)
+    ScopedLock plLock (pluginListLock);
+
+    for (auto& desc : pluginList->getTypes())
     {
-        if ((*desc)->uid == description.uid &&
-			(*desc)->pluginFormatName == description.pluginFormatName &&
-			(*desc)->name == description.name)
+		if ((desc.uniqueId == description.uniqueId || desc.deprecatedUid == description.deprecatedUid)&&
+			desc.pluginFormatName == description.pluginFormatName &&
+			(desc.name == description.name || desc.descriptiveName == description.descriptiveName))
         {
-            return *desc;
+            return std::make_unique<PluginDescription> (desc);
         }
     }
     
@@ -595,66 +627,86 @@ PluginDescription* PluginWrapper::getDescriptionToWrap (const PluginDescription&
 
 void PluginWrapper::savePluginListToFile()
 {
+    ScopedLock plLock (pluginListLock);
+
     // Create file if it doesn't exist yet
-    File scannedPlugins;
-    
-  #if JUCE_WINDOWS
-    scannedPlugins = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/")
-                                                                                  .getChildFile ("Plume/");
-  #elif JUCE_MAC
-    scannedPlugins = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/")
-                                                                                  .getChildFile ("Plume/");
-  #endif
-  
-    scannedPlugins = scannedPlugins.getChildFile ("plumepl.cfg");
-  
-    if (!scannedPlugins.exists())
+    if (!PLUME::file::pluginList.exists())
     {
-        scannedPlugins.create();
+        getOrCreatePluginListFile();
     }
     
-    ScopedPointer<XmlElement> listXml = new XmlElement ("PLUME_PLUGINLIST_CONFIG");
+    auto listXml = std::make_unique<XmlElement> ("PLUME_PLUGINLIST_CONFIG");
     
     // Writes plugin list data into the file
-    listXml->addChildElement (pluginList->createXml());
+    listXml->addChildElement (new XmlElement (*pluginList->createXml()));
     
     XmlElement* userDirs = listXml->createNewChildElement ("USER_DIRECTORIES");
-    userDirs->addChildElement (customDirectories.createXml());
-    
-    listXml->writeToFile (scannedPlugins, StringRef());
+    userDirs->addChildElement (new XmlElement (*customDirectories.createXml()));
+
+    XmlElement* searchSettings = listXml->createNewChildElement ("SETTINGS");
+    searchSettings->setAttribute ("use_custom", useCustomPaths  ? 1 : 0);
+    searchSettings->setAttribute ("use_system", useDefaultPaths ? 1 : 0);
+  #if JUCE_MAC
+    searchSettings->setAttribute ("use_au",     useAudioUnits   ? 1 : 0);
+  #endif
+
+    listXml->writeTo (PLUME::file::pluginList);
     listXml->deleteAllChildElements();
 }
-    
-void PluginWrapper::loadPluginListFromFile()
+
+void PluginWrapper::removeNonInstrumentsFromList()
+{
+    ScopedLock plLock (pluginListLock);
+
+    for (auto& type : pluginList->getTypes())
+    {
+        if (!type.isInstrument) pluginList->removeType (type);
+    }
+}
+
+void PluginWrapper::resetDeadsManPedalFile()
 {
     // Attempts to find file
-	File scannedPlugins;
+    if (PLUME::file::deadMansPedal.exists() && PLUME::file::deadMansPedal.loadFileAsString().isNotEmpty())
+    {
+        PLUME::file::deadMansPedal.replaceWithText (String());
+    }
+}
 
-  #if JUCE_WINDOWS
-    scannedPlugins = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Enhancia/")
-                                                                                  .getChildFile ("Plume/");
-  #elif JUCE_MAC
-    scannedPlugins = File::getSpecialLocation (File::userApplicationDataDirectory).getChildFile ("Application Support/")
-                                                                                  .getChildFile ("Plume/");
-  #endif
-  
-    scannedPlugins = scannedPlugins.getChildFile ("plumepl.cfg");
-  
-    if (!scannedPlugins.exists())
+void PluginWrapper::loadPluginListFromFile()
+{
+    ScopedLock plLock (pluginListLock);
+    
+    if (!PLUME::file::pluginList.exists())
     {
         DBG ("Couldn't load plugin list, the file doesn't exist..");
         return;
     }
     
     // Recreates plugin List
-	ScopedPointer<XmlElement> listXml = XmlDocument::parse(scannedPlugins);
+	std::unique_ptr<XmlElement> listXml = XmlDocument::parse (PLUME::file::pluginList);
 	
+	if (listXml == nullptr)
+	{
+		DBG("Couldn't parse plugin list file..");
+		return;
+	}
+
 	if (listXml->getChildByName ("USER_DIRECTORIES")) // checks the file for the right XML
     {
 	    // Recreates custom directories list
 	    customDirectories.copyPropertiesAndChildrenFrom (ValueTree::fromXml (*listXml->getChildByName ("USER_DIRECTORIES")
 	                                                                                ->getChildByName (PLUME::treeId::pluginDirs)),
 	                                                                        nullptr);
+    }
+
+    if (auto* settings = listXml->getChildByName ("SETTINGS"))
+    {
+        useDefaultPaths = settings->getBoolAttribute ("use_system", true);
+        useCustomPaths = settings->getBoolAttribute ("use_custom", true);
+        #if JUCE_MAC
+        useAudioUnits = settings->getBoolAttribute ("use_au", useAudioUnits);
+        #endif
     }
     
     if (listXml->getChildByName ("KNOWNPLUGINS") != nullptr)
@@ -663,6 +715,29 @@ void PluginWrapper::loadPluginListFromFile()
     }
     
 	listXml->deleteAllChildElements();
+}
+
+File PluginWrapper::getOrCreatePluginListFile()
+{
+    ScopedLock plLock (pluginListLock);
+
+    if (PLUME::file::pluginList.exists() || PLUME::file::pluginList.create().wasOk())
+    {
+        return PLUME::file::pluginList;
+    }
+
+    return File();
+}
+
+File PluginWrapper::getOrCreateDeadsManPedalFile()
+{
+    // Attempts to find file
+    if (PLUME::file::deadMansPedal.exists() || PLUME::file::deadMansPedal.create().wasOk())
+    {
+        return PLUME::file::deadMansPedal;
+    }
+
+    return File();
 }
 
 //==============================================================================
@@ -676,18 +751,29 @@ void PluginWrapper::fillInPluginDescription (PluginDescription& pd)
 
 
 void PluginWrapper::addParametersToGestureFromXml (XmlElement& gesture, int gestureNum)
-{
-    TRACE_IN;
-    
+{    
     if (hasWrappedInstance)
     {
-        forEachXmlChildElement (gesture, paramXml)
+        for (auto* paramXml : gesture.getChildIterator())
         {
-            gestArray.addAndSetParameter (wrapperProcessor->getWrappedParameter (paramXml->getIntAttribute("id")),
-                                          gestureNum,
-                                          float (paramXml->getDoubleAttribute("start", 0.0f)),
-                                          float (paramXml->getDoubleAttribute("end", 1.0f)),
-                                          paramXml->getBoolAttribute ("reversed", false));
+            const int parameterIdToUse = paramXml->getIntAttribute ("plumeParameterId", -1);
+
+            if (parameterIdToUse != -1) // parameter is set to a specific plume Id
+            {
+                gestArray.addAndSetParameter (wrapperProcessor->getWrappedParameter (paramXml->getIntAttribute("id")),
+                                              gestureNum, parameterIdToUse,
+                                              float (paramXml->getDoubleAttribute("start", 0.0f)),
+                                              float (paramXml->getDoubleAttribute("end", 1.0f)),
+                                              paramXml->getBoolAttribute ("reversed", false));
+            }
+            else // Automatic id selection
+            {   
+                gestArray.addAndSetParameter (wrapperProcessor->getWrappedParameter (paramXml->getIntAttribute("id")),
+                                              gestureNum,
+                                              float (paramXml->getDoubleAttribute("start", 0.0f)),
+                                              float (paramXml->getDoubleAttribute("end", 1.0f)),
+                                              paramXml->getBoolAttribute ("reversed", false));
+            }
         }
     }
 }
@@ -699,4 +785,6 @@ void PluginWrapper::parameterValueChanged (int parameterIndex, float)
     {
 	    gestArray.addParameterToMapModeGesture (wrapperProcessor->getWrappedParameter (parameterIndex));
     }
+
+    owner.updateHostDisplay (AudioProcessor::ChangeDetails().withParameterInfoChanged (true));
 }

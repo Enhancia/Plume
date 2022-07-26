@@ -15,29 +15,41 @@ FileOptionsSubPanel::FileOptionsSubPanel (PlumeProcessor& proc)   : processor (p
 {
     // Plugin section
     addSeparatorRow ("Plugin Sources");
+    
+    #if JUCE_WINDOWS
+    addRow ("Scan Plugins (hold alt to force rescan)", new ScannerComponent (processor, 4*PLUME::UI::SUBPANEL_ROW_HEIGHT), 20);
+    #elif JUCE_MAC
+    addRow ("Scan Plugins (hold option to force rescan)", new ScannerComponent (processor, 4*PLUME::UI::SUBPANEL_ROW_HEIGHT), 20);
+    #endif
 
-    addRow ("Rescan Plugins", new ScannerComponent (processor, 4*PLUME::UI::SUBPANEL_ROW_HEIGHT), 20);
-    addToggleRow ("Use System Plugin Folder", "sysT", true);
-    addToggleRow ("Use Custom Plugin Folder", "cusT", !processor.getWrapper().getCustomDirectory (0).isEmpty());
-
-  #if JUCE_MAC
-    addToggleRow ("Use Audio Units", "auT", true);
-  #endif
+    addToggleRow ("Use System Plugin Folder", "sysT", processor.getWrapper().usesDefaultPaths());
+    addToggleRow ("Use Custom Plugin Folder", "cusT", processor.getWrapper().usesCustomPaths());
 
     addScannerRow ("Custom Plugin Folder", "pluginDir", TRANS("Select your custom plugin directory:"),
                    File::getSpecialLocation (File::userHomeDirectory), String(),
                    processor.getWrapper().getCustomDirectory (0), true);
 
+  #if JUCE_MAC
+    // TO UNCOMMENT when implementing AU
+    //addToggleRow ("Use Audio Units", "auT", processor.getWrapper().usesAudioUnits());
+  #endif
 
 
     // Preset section
     addSeparatorRow ("Preset Sources");
 
-    addButtonRow ("Rescan Presets", "prscanB", "Scan");
+    addButtonRow ("Scan Presets", "prscanB", "Scan", "Scan Finished !");
     addScannerRow ("User Presets Folder", "presetDir", TRANS("Select your custom preset directory:"),
                    File::getSpecialLocation (File::userHomeDirectory), String(),
                    processor.getPresetHandler().getUserDirectory().getFullPathName(),
                    true);
+
+    if (processor.getStandalonePlayHead())
+    {
+        // BPM section
+        addSeparatorRow ("Standalone Options");
+        addLabelRow ("Hosted Plugin bpm", "bpmL", String (static_cast<int> (processor.getStandalonePlayHead()->plumeBpm)));
+    }
 }
 
 FileOptionsSubPanel::~FileOptionsSubPanel()
@@ -93,44 +105,27 @@ void FileOptionsSubPanel::buttonClicked (Button* bttn)
         processor.getWrapper().setAuUsage (bttn->getToggleState());
     }
 }
-/*
+
 void FileOptionsSubPanel::labelTextChanged (Label* lbl)
 {
-    // Preset Directory Label
-    if (lbl->getComponentID() == "presetDir")
+    if (lbl->getComponentID() == "bpmL")
     {
-        if (File::isAbsolutePath (lbl->getText()) && File (lbl->getText()).exists())
+        if (lbl->getText().containsOnly ("0123456789"))
         {
-            processor.getPresetHandler().setUserDirectory (lbl->getText());
-            processor.getPresetHandler().storePresets();
-            
-            if (auto* sideBar = dynamic_cast<PlumeComponent*> (getParentComponent()->getParentComponent()
-                                                                                   ->findChildWithID ("sideBar")))
+            int newBpm = lbl->getText().getIntValue();
+
+            if (newBpm < PLUME::standalone::minBpm || newBpm > PLUME::standalone::maxBpm)
             {
-                sideBar->update();
+                newBpm = jlimit (PLUME::standalone::minBpm, PLUME::standalone::maxBpm, newBpm);
+                lbl->setText (String (static_cast<double> (newBpm)), dontSendNotification);
             }
+
+            if (processor.getStandalonePlayHead()) processor.getStandalonePlayHead()->plumeBpm = static_cast<double> (newBpm);
         }
         else
         {
-            lbl->setText (processor.getPresetHandler().getUserDirectory().getFullPathName(), dontSendNotification);
-        }
-    }
-    
-    // Plugin Directory Label
-    if (lbl->getComponentID() == "pluginDir")
-    {
-        if (File::isAbsolutePath (lbl->getText()) && File (lbl->getText()).exists())
-        {
-            processor.getWrapper().addCustomDirectory (lbl->getText());
-        }
-        else if (lbl->getText() == "")
-        {
-            processor.getWrapper().clearCustomDirectories();
-        }
-        else
-        {
-            lbl->setText (processor.getWrapper().getCustomDirectory (0), dontSendNotification);
+            if (processor.getStandalonePlayHead())
+                lbl->setText (String (static_cast<int> (processor.getStandalonePlayHead()->plumeBpm)), dontSendNotification);
         }
     }
 }
-*/

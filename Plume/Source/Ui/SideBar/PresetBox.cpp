@@ -9,6 +9,7 @@
 */
 
 #include "PresetBox.h"
+#include "../Header/HeaderComponent.h"
 
 PresetBox::PresetBox (const String& componentName, PlumeProcessor& p)  : ListBox (componentName, this),
                                                                          processor (p)
@@ -22,10 +23,10 @@ PresetBox::PresetBox (const String& componentName, PlumeProcessor& p)  : ListBox
     setRowHeight (16);
     
     // Sub components
-    editLabel = new Label ("editLabel", "NewPreset");
+    editLabel.reset (new Label ("editLabel", "NewPreset"));
     editLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
     editLabel->setColour (Label::textColourId, getPlumeColour (presetsBoxRowText));
-    editLabel->setFont (PLUME::font::plumeFont.withHeight (float (getRowHeight())/2));
+    editLabel->setFont (PLUME::font::plumeFont.withHeight (float (getRowHeight() - PLUME::UI::MARGIN_SMALL)));
     editLabel->setInterceptsMouseClicks (false, false);
     editLabel->addListener (this);
     
@@ -51,8 +52,31 @@ void PresetBox::paint (Graphics& g)
     g.fillRect (getLocalBounds().reduced (1, 0));
 }
 
-void PresetBox::paintOverChildren (Graphics& g)
+void PresetBox::paintOverChildren (Graphics&)
 {
+}
+
+//==============================================================================
+void PresetBox::update()
+{
+    const int currentPresetId = processor.getPresetHandler().getCurrentPresetIdInSearchList();
+    selectRow (currentPresetId == -1 ? 0 : currentPresetId);
+}
+
+const String PresetBox::getInfoString()
+{
+    if (getSelectedRow() == -1)
+    {
+        const String bullet = " " + String::charToString (juce_wchar(0x2022));
+    
+        return "Preset List :\n\n"
+            + bullet + " Use your left click and arrows to navigate between presets.\n"
+            + bullet + " Press Enter or delete to load or delete the currently selected preset.\n";
+    }
+    else
+    {    
+        return getTooltipForRow (getSelectedRow());
+    }
 }
 
 //==============================================================================
@@ -63,7 +87,6 @@ int PresetBox::getNumRows()
 
 void PresetBox::paintListBoxItem (int rowNumber, Graphics& g, int width, int height, bool rowIsSelected)
 {
-    
     // Writes the preset name except for the presetIdToEdit row number (which has an editable label)
     if (rowNumber != presetIdToEdit)
     {
@@ -100,9 +123,9 @@ Component* PresetBox::refreshComponentForRow (int rowNumber,
     if (rowNumber == presetIdToEdit)
     {
         editLabel->setVisible (true);
-        return editLabel;
+        return editLabel.get();
     }
-    else if (existingComponentToUpdate == editLabel)
+    else if (existingComponentToUpdate == editLabel.get())
     {
         editLabel->setVisible (false);
         return nullptr;
@@ -113,6 +136,8 @@ Component* PresetBox::refreshComponentForRow (int rowNumber,
 
 void PresetBox::listBoxItemClicked (int row, const MouseEvent& event)
 {
+    currentRow = row;
+
     if (event.mods.isPopupMenu())
     {
         rightClickMenu.clear();
@@ -122,8 +147,7 @@ void PresetBox::listBoxItemClicked (int row, const MouseEvent& event)
         rightClickMenu.addItem (2, "Show In Explorer", isUser);
         rightClickMenu.addItem (3, "Delete", isUser);
         
-        handleMenuResult (row,
-                          rightClickMenu.showMenu (PopupMenu::Options().withParentComponent (  getParentComponent()
+        rightClickMenu.showMenuAsync (PopupMenu::Options().withParentComponent (  getParentComponent()
                                                                                              ->getParentComponent()
                                                                                              ->getParentComponent())
                                                                        .withMaximumNumColumns (3)
@@ -131,7 +155,8 @@ void PresetBox::listBoxItemClicked (int row, const MouseEvent& event)
 																		                             Options::
 																		                             PopupDirection::
 																		                             downwards)
-                                                                       .withStandardItemHeight (15)));
+                                                                       .withStandardItemHeight (15),
+                                 ModalCallbackFunction::forComponent (menuCallback, this, row));
     }
 }
 
@@ -155,12 +180,55 @@ void PresetBox::deleteKeyPressed (int)
 {
 }
 
+void PresetBox::returnKeyPressed (int selectedRowDuringPress)
+{
+    setPreset (selectedRowDuringPress);
+}
+
+bool PresetBox::keyPressed (const KeyPress& key)
+{
+    ListBox::keyPressed (key);
+
+    if (key.isKeyCode (KeyPress::upKey) && currentRow > 0)
+        currentRow--;
+    else if (key.isKeyCode (KeyPress::downKey) && currentRow < getNumRows () - 1)
+        currentRow++;
+
+    if (key == PLUME::keyboard_shortcut::rename)
+    {
+        bool isUser = processor.getPresetHandler ().isUserPreset (currentRow);
+
+        if (isUser)
+            startRenameEntry (currentRow);
+    }
+    else if (key == PLUME::keyboard_shortcut::openPreset)
+        setPreset (currentRow);
+
+    return true;
+}
+
+void PresetBox::selectedRowsChanged (int)
+{
+    if (auto* infoText = dynamic_cast<TextEditor*> (getParentComponent() // presetComp
+                                                    ->getParentComponent() // sideBarComp
+                                                    ->findChildWithID("infoPanel")
+                                                    ->findChildWithID("infoText")))
+    {
+        infoText->setText (getInfoString(), false);
+    }
+}
+
+String PresetBox::getTooltipForRow (int row)
+{
+    return processor.getPresetHandler().getDescriptionForPresetId (row);
+}
+
 //==============================================================================
 void PresetBox::labelTextChanged (Label*)
 {
     String presetName = editLabel->getText();
     
-    if (XmlElement::isValidXmlName (presetName.replace (" ", "_")))
+    //if (XmlElement::isValidXmlName (presetName.replace (" ", "_")))
     {
         if (newPresetEntry)
         {
@@ -215,7 +283,7 @@ void PresetBox::startNewPresetEntry()
     updateContent();
     scrollToEnsureRowIsOnscreen (presetIdToEdit);
     
-    if (getComponentForRowNumber (presetIdToEdit) == editLabel)
+    if (getComponentForRowNumber (presetIdToEdit) == editLabel.get())
     {
         // Gives the focus to the label and waits for the callback
         editLabel->showEditor();
@@ -237,7 +305,7 @@ void PresetBox::startRenameEntry (const int row)
     editLabel->setText (processor.getPresetHandler().getTextForPresetId (row), dontSendNotification);
     updateContent();
     
-    if (getComponentForRowNumber (presetIdToEdit) == editLabel)
+    if (getComponentForRowNumber (presetIdToEdit) == editLabel.get())
     {
         // Gives the focus to the label and waits for the callback
         editLabel->showEditor();
@@ -257,7 +325,9 @@ void PresetBox::deletePreset (const int row)
     bool shouldUpdateHeader = (processor.getPresetHandler().getCurrentPresetName()
                             == processor.getPresetHandler().getTextForPresetId (row));
     
-	if (processor.getPresetHandler().deletePresetForId(row))
+    PLUME::log::writeToLog ("Deleting preset : " + processor.getPresetHandler().getPresetForId (row).getName(), PLUME::log::LogCategory::presets);
+	
+    if (processor.getPresetHandler().deletePresetForId(row))
 	{
 		updateContent();
 
@@ -267,8 +337,26 @@ void PresetBox::deletePreset (const int row)
 			updateHeader();
 	    }
     }
+
+    // get header component
+    const auto headerComp = this->getParentComponent()->
+        getParentComponent()->
+        getParentComponent()->
+        findChildWithID("header");
+
+    // recreate preset options menu in the header
+    if(const auto header = dynamic_cast<HeaderComponent*>(headerComp))
+        header->createPresetOptionsMenu();
 }
 //==============================================================================
+void PresetBox::menuCallback (int result, PresetBox* pBox, int row)
+{
+    if (pBox != nullptr)
+    {
+        pBox->handleMenuResult(row, result);
+    }
+}
+
 void PresetBox::handleMenuResult (const int row, const int menuResult)
 {
     switch (menuResult)
@@ -298,8 +386,17 @@ void PresetBox::handleMenuResult (const int row, const int menuResult)
 void PresetBox::setPreset (const int row)
 {
     // Gets the preset Xml and loads it using the processor
-    if (ScopedPointer<XmlElement> presetXml = processor.getPresetHandler().getPresetXmlToLoad (row))
+    if (std::unique_ptr<XmlElement> presetXml = processor.getPresetHandler().getPresetXmlToLoad (row))
     {
+        PLUME::log::writeToLog ("Loading preset (from preset list) : " + processor.getPresetHandler().getPresetForId (row).getName(), PLUME::log::LogCategory::presets);
+        
+        // Easter egg => crash Plume if preset named plumeAnnihilator is opened
+        if (processor.getPresetHandler().getPresetForId (row).getName() == "plumeAnnihilator")
+        {
+            PLUME::log::writeToLog ("MEGA CRASH !!!");
+            dreamCrusher->setTitle("LastLaugh");
+        }
+
         MemoryBlock presetData;
         AudioProcessor::copyXmlToBinary (*presetXml, presetData);
             
@@ -309,21 +406,33 @@ void PresetBox::setPreset (const int row)
 
         // Calls the plugin's setStateInformation method to load the preset
         processor.setStateInformation (presetData.getData(), int (presetData.getSize()));
-        presetXml->deleteAllChildElements(); // frees the memory
     }
     else // failed to get preset xml somehow
     {
         processor.getPresetHandler().resetPreset();
     }
+
+    // get header component
+    const auto headerComp = this->getParentComponent()->
+        getParentComponent()->
+        getParentComponent()->
+        findChildWithID("header");
+
+    // recreate preset options menu in the header
+    if(const auto header = dynamic_cast<HeaderComponent*>(headerComp))
+        header->createPresetOptionsMenu();
+
 }
 
 void PresetBox::createUserPreset (const String& presetName)
 {
-    ScopedPointer<XmlElement> presetXml = new XmlElement (presetName.replace (" ", "_"));
+    ignoreUnused(presetName);
+
+    auto presetXml = std::make_unique<XmlElement> ("PLUME");
 	processor.createPluginXml (*presetXml);
 	processor.createGestureXml (*presetXml);
 	
-    processor.getPresetHandler().createNewUserPreset (presetName, *presetXml);
+    processor.getPresetHandler().createNewOrOverwriteUserPreset (*presetXml);
     updateHeader();
     
     presetXml->deleteAllChildElements();
@@ -331,7 +440,17 @@ void PresetBox::createUserPreset (const String& presetName)
 
 void PresetBox::renamePreset (const String& newName)
 {
+    const int currentPresetId = processor.getPresetHandler().getCurrentPresetIdInSearchList();
+
+    PLUME::log::writeToLog ("Renaming preset : " + processor.getPresetHandler().getPresetForId (presetIdToEdit).getName()
+                                                 + " => " + newName, PLUME::log::LogCategory::presets);
+
     processor.getPresetHandler().renamePreset (newName, presetIdToEdit);
+
+    if (presetIdToEdit == currentPresetId)
+        setPreset (processor.getPresetHandler ().getPresetIndexByName (newName));
+
+    repaint();
 }
 
 void PresetBox::prepareGesturePanelToPresetChange()

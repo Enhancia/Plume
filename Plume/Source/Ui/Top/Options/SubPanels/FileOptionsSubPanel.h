@@ -11,9 +11,8 @@
 #pragma once
 
 #include "../../../../../JuceLibraryCode/JuceHeader.h"
-#include "Common/PlumeCommon.h"
-#include "Plugin/PluginProcessor.h"
-#include "Ui/Top/Options/ScannerComponent.h"
+#include "../../../../Plugin/PluginProcessor.h"
+#include "../ScannerComponent.h"
 #include "SubPanelComponent.h"
 
 //==============================================================================
@@ -29,10 +28,12 @@ public:
     //==============================================================================
     void fileScanned (const String& scannerID, const File& fileThatWasScanned) override;
     void buttonClicked (Button* bttn) override;
+    void labelTextChanged (Label* lbl) override;
+
 
 private:
     //==============================================================================
-    ScopedPointer<ScannerComponent> scanner;
+    std::unique_ptr<ScannerComponent> scanner;
     
     //==============================================================================
     PlumeProcessor& processor;

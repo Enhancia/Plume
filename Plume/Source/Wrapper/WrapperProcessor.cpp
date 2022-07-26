@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "Wrapper/PluginWrapper.h"
+#include "PluginWrapper.h"
 
 //==============================================================================
 /*class that wraps a parameter from the plugin, forwarding it's methods to the wrapperProcessor*/
@@ -43,41 +43,77 @@ private:
 
 
 //==============================================================================
-WrapperProcessor::WrapperProcessor(AudioPluginInstance& wrappedPlugin, PluginWrapper& ownerWrapper)
-    : AudioProcessor (BusesProperties()
-                       .withInput ("Input", AudioChannelSet::stereo(), true)
-                       .withOutput ("Output", AudioChannelSet::stereo(), true)),
+WrapperProcessor::WrapperProcessor(AudioPluginInstance& wrappedPlugin,
+                                   PluginWrapper& ownerWrapper,
+                                   AudioProcessorParameter::Listener& proc)
+    : AudioProcessor (WrapperProcessor::createBusesPropertiesFromPluginInstance (wrappedPlugin)),
       plugin (wrappedPlugin),
-      owner (ownerWrapper)
+      owner (ownerWrapper),
+      listener (proc)
 {
-    TRACE_IN;
+    //plugin.setBusesLayout (getBusesLayout());
     initWrappedParameters();
+    disableNonMainBuses();
+    writeBusesLayoutToLog();
 }
 
 WrapperProcessor::~WrapperProcessor()
 {
-    TRACE_IN;
-    auto& params = plugin.getParameters();
+    auto& params = getParameters();
     
     for (auto* param : params)
     {
         param->removeListener (&getOwnerWrapper());
     }
-	
+
+    if (controlParameter)
+    {
+        controlParameter->removeListener (&listener);
+        controlParameter = nullptr;
+    }
 }
 
 //==============================================================================
 void WrapperProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-    // Clears the audioBuffer if its not needed
-    if (plugin.getMainBusNumInputChannels() == 0)
-    {
-        buffer.clear();
-    }
+    if (wrapperBuffer.getNumSamples() != buffer.getNumSamples())
+        wrapperBuffer.setSize(jmax (getTotalNumInputChannels(), getTotalNumOutputChannels()), buffer.getNumSamples());
     
-    plugin.processBlock (buffer, midiMessages);
+    wrapperBuffer.clear();
+    
+    // Makes the plugin use playhead from the DAW
+    plugin.setPlayHead (getPlayHead());
+    plugin.processBlock (wrapperBuffer, midiMessages);
+
+    copyWrapperBuffersIntoPlumeBuffer (buffer);
 }
 
+
+//==============================================================================
+bool WrapperProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+{
+    PLUME::log::writeToLog ("Requested buses Layout : " + String (layouts.getMainInputChannels())
+                                               + " | " + String (layouts.getMainOutputChannels()),
+                            PLUME::log::LogCategory::pluginWrapping);
+
+    return plugin.checkBusesLayoutSupported (layouts);
+}
+
+bool WrapperProcessor::applyBusLayouts (const BusesLayout &layouts)
+{
+    return (AudioProcessor::applyBusLayouts(layouts) && plugin.setBusesLayout (layouts));
+}
+
+//==============================================================================
+bool WrapperProcessor::canAddBus (bool isInput) const
+{
+    return plugin.canAddBus (isInput);
+}
+
+bool WrapperProcessor::canRemoveBus (bool isInput) const
+{
+    return plugin.canRemoveBus (isInput);
+}
 
 //==============================================================================
 void WrapperProcessor::initWrappedParameters()
@@ -86,17 +122,36 @@ void WrapperProcessor::initWrappedParameters()
     
     for (auto* param : params)
     {
-        addParameter(new WrappedParameter(*param));
-        param->addListener (&getOwnerWrapper());
+        // TODO CLEANUP changer condition pour detection auto
+        if (param->getName (50) == "Host Automation" &&
+            param->getParameterIndex() == 127)
+        {
+            if (controlParameter)
+            {
+                controlParameter->removeListener (&listener);
+            }
+
+            controlParameter = param;
+            controlParameter->addListener (&listener);
+        }
+        else
+        {
+            addParameter(new WrappedParameter(*param));
+            param->addListener (&getOwnerWrapper());
+        }
     }
 }
 
 AudioProcessorParameter& WrapperProcessor::getWrappedParameter (int id)
 {
-    TRACE_IN;
     auto& params = plugin.getParameters();
     
     return *(params[id]);
+}
+
+AudioProcessorParameter* WrapperProcessor::getControlParameter()
+{
+    return controlParameter;
 }
 
 PluginWrapper& WrapperProcessor::getOwnerWrapper()
@@ -112,4 +167,92 @@ AudioPluginInstance& WrapperProcessor::getWrappedInstance()
 void WrapperProcessor::clearEditor()
 {
     owner.clearWrapperEditor();
+}
+
+AudioProcessor::BusesProperties WrapperProcessor::createBusesPropertiesFromPluginInstance (AudioPluginInstance& pluginInstance)
+{
+    BusesProperties busesProp;
+
+    for (int isInput =1; isInput >= 0; isInput--)
+    {
+        for (int busNum =0; busNum < pluginInstance.getBusCount (isInput); busNum++)
+        {
+            if (const Bus* bus = pluginInstance.getBus (isInput, busNum))
+            {
+                busesProp.addBus (isInput, bus->getName(),
+                                           bus->getDefaultLayout(),
+                                           bus->isEnabledByDefault());
+            }    
+        }
+    }
+
+    return busesProp;
+}
+
+void WrapperProcessor::copyWrapperBuffersIntoPlumeBuffer (AudioBuffer<float>& plumeBuffer)
+{
+    for (int busNum =0; busNum < plugin.getBusCount (false); busNum++)
+    {
+        if (auto* bus = plugin.getBus (false, busNum))
+        {
+            if (bus->isEnabled() && bus->getNumberOfChannels() <= plumeBuffer.getNumChannels())
+            {
+                for (int channelNum =0; channelNum < plumeBuffer.getNumChannels(); channelNum++)
+                    plumeBuffer.addFrom (channelNum, 0, wrapperBuffer,
+                                         bus->getChannelIndexInProcessBlockBuffer (channelNum % bus->getNumberOfChannels()),
+                                         0, plumeBuffer.getNumSamples());
+            }
+        }
+    }
+}
+
+void WrapperProcessor::writeBusesLayoutToLog()
+{
+    Array<AudioProcessor*> processors (this, &plugin);
+
+    for (auto* processor : processors)
+    {
+        String logString;
+        
+        if (processor->getBusCount (true) > 0)
+        {
+            logString += "Processor " + processor->getName() + " :\nInput buses : " + String (processor->getBusCount (true));
+            
+            for (int inBusNum =0; inBusNum < processor->getBusCount (true); inBusNum++)
+            {
+                if (const AudioProcessor::Bus* bus = processor->getBus (true, inBusNum))
+                {
+                    logString += "\n  -| " + bus->getName()
+                               + " | Main ? " + String (bus->isMain() ? "Y" : "N")
+                               + " | Layout : " + bus->getCurrentLayout().getDescription()
+                               + " (" + bus->getCurrentLayout().getSpeakerArrangementAsString()
+                               + ") | Channels : " + String (bus->getNumberOfChannels())
+                               + " | Enabled ? " + String (bus->isEnabled() ? "Y" : "N")
+                               + " | Enabled By Default ? " + String (bus->isEnabledByDefault() ? "Y" : "N") + "\n";
+                }
+            }
+        }
+        
+        if (processor->getBusCount (false) > 0)
+        {
+            logString += "Processor " + processor->getName() + " :\nOutput buses : " + String (processor->getBusCount (false));
+            
+            for (int outBusNum =0; outBusNum < processor->getBusCount (false); outBusNum++)
+            {
+                if (const AudioProcessor::Bus* bus = processor->getBus (false, outBusNum))
+                {
+                    logString += "\n  -| " + bus->getName()
+                               + " | Main ? " + String (bus->isMain() ? "Y" : "N")
+                               + " | Layout : " + bus->getCurrentLayout().getDescription()
+                               + " (" + bus->getCurrentLayout().getSpeakerArrangementAsString()
+                               + ") | Channels : " + String (bus->getNumberOfChannels())
+                               + " | Enabled ? " + String (bus->isEnabled() ? "Y" : "N")
+                               + " | Enabled By Default ? " + String (bus->isEnabledByDefault() ? "Y" : "N") + "\n";
+                }
+            }
+        }
+
+        if (logString.isNotEmpty()) PLUME::log::writeToLog (logString, PLUME::log::LogCategory::pluginWrapping,
+                                                                       PLUME::log::LogLevel::debug);
+    }
 }

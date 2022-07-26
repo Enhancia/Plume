@@ -5,8 +5,58 @@
 
   ==============================================================================
 */
+#include "../../JuceLibraryCode/JuceHeader.h"
 
-#include "DataReader/DataReader.h"
+#if (JUCE_WINDOWS || defined(__OBJC__))
+
+#include "DataReader.h"
+
+
+/*
+ * GETTERS AND SETTERS
+ */
+
+float& DataReader::getBatteryReference ()
+{
+    return batteryValue;
+}
+
+bool DataReader::getHubIsConnected () const
+{
+    return hubIsConnected;
+}
+
+bool DataReader::getRingIsConnected () const
+{
+    return ringIsConnected;
+}
+
+bool DataReader::getRingIsCharging () const
+{
+    return ringIsCharging;
+}
+
+void DataReader::setHubIsConnected (const bool value)
+{
+    hubIsConnected = value;
+}
+
+void  DataReader::setRingIsConnected (const bool value)
+{
+	ringIsConnected = value;
+	sendActionMessage (PLUME::commands::updateBatteryDisplay);
+}
+
+void  DataReader::setRingIsCharging (const bool value)
+{
+	ringIsCharging = value;
+	sendActionMessage (PLUME::commands::updateBatteryDisplay);
+
+}
+
+/*
+ * //GETTERS AND SETTERS
+ */
 
 //==============================================================================
 DataReader::DataReader(): InterprocessConnection (true, 0x6a6d626e)
@@ -15,31 +65,36 @@ DataReader::DataReader(): InterprocessConnection (true, 0x6a6d626e)
     connected = false;
     
     // Data initialization
-    data = new StringArray (StringArray::fromTokens ("0 0 0 0 0 0 0", " ", String()));
+    data.reset (new StringArray (StringArray::fromTokens ("0 0 0 0 0 0 0", " ", String())));
     
-    #if JUCE_MAC
-        statutPipe = std::make_unique<StatutPipe> ();
-        statutPipe->addChangeListener(this);
-    #else
-        // Pipe creation
-        connectToExistingPipe();
-    #endif
-    
-    // Label creation
-    addAndMakeVisible (connectedLabel = new Label ("connectedLabel", TRANS ("Disconnected")));
-    connectedLabel->setColour (Label::textColourId, Colour (0xaaff0000));
-    connectedLabel->setColour (Label::backgroundColourId, Colour (0x00000000));
-    connectedLabel->setBounds (10, 5, 100, 40);
+  // On MacOS we first connect to the daemon StatutPipe to know which dataPipe we can use
+  #if JUCE_MAC
+    // Run a timer to wait for an amout of time depending on the number of Plume instanciate -> avoid simultaneous connection on statutPipe
+    if (PLUME::nbInstance != 1)
+    {
+        startTimer(1, PLUME::nbInstance*50);
+        return;
+    }
+    // some DAW (ie. Bitwig) host Plume in separated sandBox, so their memory are not shared and nbInstance is not incremented
+    // In this case we wait for a random amount of time avoid concurrent connection on statutpipe
+    Range<int> rangeWaitingTime(0,1000);
+    startTimer(1, juce::Random::getSystemRandom().nextInt(rangeWaitingTime));
+  #else
+    // Pipe creation
+    connectToExistingPipe();
+  #endif
 }
 
 DataReader::~DataReader()
 {
+        
+    disconnect();
+
     data = nullptr;
-    connectedLabel = nullptr;
   #if JUCE_MAC
     statutPipe = nullptr;
   #endif
-}
+ }
 
 //==============================================================================
 void DataReader::paint (Graphics& g)
@@ -59,8 +114,45 @@ bool DataReader::readData (String s)
     // Checks for full lines
     if (strArr.size() == DATA_SIZE)
     {
-        // Splits the string into 7 separate ones
+        // disconnect ring if timer not re-run after 3sec
+        startTimer (0, 3000);
+
+        // Set states of ring (is connected and is charging)
+        if(!getRingIsConnected())
+        {
+            setRingIsConnected (true);
+        }
+        else if (getRingIsCharging())
+        {
+            setRingIsCharging (false);
+        }
+
         *data = strArr;
+        // Get only battery value
+        batteryValue = (*data)[static_cast<int>(PLUME::data::battery)].getFloatValue();
+
+        return true;
+    }
+
+    if(strArr.size() == 1)
+    {
+        // disconnect ring if timer not re-run after 3sec
+        startTimer (0, 3000);
+
+        if(!getRingIsConnected())
+        {
+            setRingIsConnected (true);
+            setRingIsCharging (true);
+        }
+        else if (!getRingIsCharging())
+        {
+            setRingIsCharging (true);
+        }
+
+        // Get battery value
+        *data = strArr;
+        batteryValue = (*data)[0].getFloatValue ();
+
         return true;
     }
     
@@ -77,16 +169,64 @@ bool DataReader::getRawDataAsFloatArray(Array<float>& arrayToFill)
     // Checks that the array has the right amont and type of data
     if (arrayToFill.isEmpty() == false) return false;
     
-    //DBG ("Data: " << data->joinIntoString(", "));
-    
     // Fills the array with new values taken from the "Data" StringArray
     for (int i =0; i<DATA_SIZE; i++)
     {
         arrayToFill.add ((*data)[i].getFloatValue());
-        //DBG ("Value " << i << " = " << arrayToFill[i]);
     }
     
     return true;
+}
+
+//==============================================================================
+void  DataReader::sendString(uint8_t* dataToSend, int data_size)
+{
+    bool test = sendMessage(MemoryBlock(dataToSend, data_size));
+    DBG("Send string return :" + String(int(test)));
+}
+
+//==============================================================================
+void DataReader::timerCallback (int timerID)
+{
+    if (timerID == 0)
+    {
+        if (getRingIsConnected ())
+        {
+            setRingIsConnected (false);
+            setRingIsCharging(false);
+	        sendActionMessage(PLUME::commands::updateBatteryDisplay);
+        }
+
+		stopTimer (0);
+    }
+
+  #if JUCE_MAC
+    if (timerID == 1)
+    {
+        stopTimer (1);
+        instantiateStatutPipe();
+    }
+  #endif
+}
+
+void DataReader::instantiateStatutPipe()
+{
+    //only happens on MacOS
+  #if JUCE_MAC
+    statutPipe = std::make_unique<StatutPipe> ();
+    statutPipe->addChangeListener(this);
+  #endif
+}
+
+void DataReader::changeListenerCallback (ChangeBroadcaster*)
+{
+  //only happens on MacOS
+  #if JUCE_MAC
+    int nbPipeToConnect = statutPipe->getPipeToConnect();
+    connectToExistingPipe(nbPipeToConnect);
+    statutPipe->disconnect();
+    statutPipe.reset();
+  #endif
 }
 
 //==============================================================================
@@ -101,7 +241,7 @@ bool DataReader::connectToExistingPipe(int
                                         #endif
                                        )
 {
-    //only happens on MacOS
+  //only happens on MacOS
   #if JUCE_MAC
     //get current userID
     uid_t currentUID;
@@ -124,26 +264,20 @@ void DataReader::connectionMade()
 {
     connected = true;
     
-    #if JUCE_MAC
-        String test = "Start";
-        sendMessage(MemoryBlock(test.toUTF8(), test.getNumBytesAsUTF8()));
-    #endif
-    
-    connectedLabel->setColour (Label::textColourId, Colour (0xaa00ff00));
-    connectedLabel->setText (TRANS ("<Connected>" /* : pipe " + String(pipeNumber)*/), dontSendNotification);
+  #if JUCE_MAC
+    String test = "Start";
+    sendMessage(MemoryBlock(test.toUTF8(), test.getNumBytesAsUTF8()));
+  #endif
 }
 
 void DataReader::connectionLost()
 {
     connected = false;
     
-    #if JUCE_MAC
-        String test = "Stop";
-        sendMessage(MemoryBlock(test.toUTF8(), test.getNumBytesAsUTF8()));
-    #endif
-    
-    connectedLabel->setColour (Label::textColourId, Colour (0xaaff0000));
-    connectedLabel->setText (TRANS ("Disconnected"), dontSendNotification);
+  #if JUCE_MAC
+    String test = "Stop";
+    sendMessage(MemoryBlock(test.toUTF8(), test.getNumBytesAsUTF8()));
+  #endif
 }
 
 void DataReader::messageReceived (const MemoryBlock &message)
@@ -156,15 +290,4 @@ void DataReader::messageReceived (const MemoryBlock &message)
         }
     }
 }
-
-
-void DataReader::changeListenerCallback (ChangeBroadcaster*)
-{
-    //only happens on MacOS
-  #if JUCE_MAC
-    int nbPipeToConnect = statutPipe->getPipeToConnect();
-    connectToExistingPipe(nbPipeToConnect);
-    statutPipe->disconnect();
-    statutPipe.reset();
-  #endif
-}
+#endif //JUCE_WINDOWS || DEFINED(__OBJC__)
