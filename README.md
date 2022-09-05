@@ -2,7 +2,7 @@
 Holds the JUCE project folder for Enhancia's Plume plugin.
 This project is no longer maintained by Enhancia and is now public for developpers to consult and/or fork.
 
-**Forking this project is strictly NOT meant for commercial use**. If you have questions or remarks concerning the project or the repository, please contact me at a.levacher@hotmail.fr
+**This project is strictly NOT meant for commercial use**. If you have questions or remarks concerning the project or the repository, please contact me at a.levacher@hotmail.fr
 
 ## How to compile Plume
 To compile Plume, you must install the [JUCE library](https://juce.com/get-juce) and create a plugin *.jucer* project called Plume, then link the files from this repo to this project which can easily be done with the Projucer. You can then use the Projucer to export and compile the project. Make sure you have vst/vst3/AudioUnit as an export target depending your needs.
